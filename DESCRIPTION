@@ -1,0 +1,43 @@
+Package: cd
+Title: Climate Departure Analysis from ERA5-Land Reanalysis
+Version: 0.0.0.9000
+Authors@R: c(
+    person("Allan", "Irvine", , "al@newgraphenvironment.com", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0002-3495-2128")),
+    person("New Graph Environment Ltd.", role = "cph")
+  )
+Description: Compute climate anomalies from ERA5-Land reanalysis data for
+    custom areas of interest. Producer functions download ERA5-Land
+    monthly means, derive variables (VPD, RH, soil moisture), and publish
+    Cloud-Optimized GeoTIFFs with a static STAC catalog. Consumer
+    functions query the catalog, crop to AOI, compute baselines and
+    anomalies for arbitrary reference periods, and run trend analysis
+    (Mann-Kendall and Theil-Sen).
+License: MIT + file LICENSE
+URL: https://github.com/NewGraphEnvironment/cd
+BugReports: https://github.com/NewGraphEnvironment/cd/issues
+Depends:
+    R (>= 4.1)
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.3
+Suggests: 
+    aws.s3,
+    bookdown,
+    ecmwfr,
+    ggplot2,
+    gt,
+    Kendall,
+    knitr,
+    rmarkdown,
+    testthat (>= 3.0.0),
+    zyp
+Config/testthat/edition: 3
+Imports: 
+    dplyr,
+    jsonlite,
+    rappdirs,
+    rlang,
+    sf,
+    terra,
+    tibble
