@@ -1,6 +1,6 @@
 # Progress
 
-## Status: In Progress
+## Status: Complete
 
 ### cd_variables() — Issue #1
 - [x] Implementation
@@ -21,6 +21,6 @@
 - [x] Committed
 
 ### Final
-- [ ] `devtools::test()` all pass
-- [ ] `lintr::lint_package()` clean
+- [x] `devtools::test()` all pass (25/25)
+- [x] `lintr::lint_package()` clean
 - [ ] PR created

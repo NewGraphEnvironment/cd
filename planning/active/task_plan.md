@@ -15,10 +15,10 @@ First function group for the cd package. These are the foundational metadata and
 - [x] Write tests: `tests/testthat/test-cd_variables.R`
 - [x] Write tests: `tests/testthat/test-cd_periods.R`
 - [x] Write tests: `tests/testthat/test-cd_cache.R`
-- [ ] `devtools::document()` — generate man pages
-- [ ] `devtools::test()` — all pass
-- [ ] `lintr::lint_package()` — clean
-- [ ] Commit each function with `Fixes #N`
+- [x] `devtools::document()` — generate man pages
+- [x] `devtools::test()` — all pass (25/25)
+- [x] `lintr::lint_package()` — clean
+- [x] Commit each function with `Fixes #N`
 
 ## Findings
 
