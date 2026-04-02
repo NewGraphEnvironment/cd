@@ -29,10 +29,11 @@ A review agent can verify every quote by querying the ragnar store at
 ## 3. Absolute change is computed as recent vs contemporary averages
 
 **Source:** Mora et al. 2013, item key CPJDEZE6
-**Location:** Methods
-**Verbatim:** "Absolute climate change (Fig. 2c and Extended Data Figs 3c and 4) was calculated by subtracting contemporary averages (1996 to 2005) from future averages (2091 to 2100). Decadal averages were chosen to minimize aliasing by inter-annual variability."
+**Location:** Methods / Extended Data (not in main PDF text)
+**Status:** UNVERIFIED — quote not found in ragnar store. May be in Extended Data or supplementary material not captured by PDF extraction. The concepts (subtracting period averages, decadal averaging) are consistent with the paper's methodology but the specific verbatim text could not be confirmed.
+**Paraphrased claim:** Mora et al. compute absolute change by subtracting contemporary decadal averages from future decadal averages, using multi-year windows to smooth interannual variability.
 
-**Implication for cd_compare():** Mora uses decadal averages for the comparison windows to smooth interannual noise. This supports a "recent decade vs historical" framing. The `cd_compare()` function already does this — mean of window_a vs mean of window_b.
+**Implication for cd_compare():** Using multi-year window averages (not individual years) for comparison is consistent with Mora's approach. `cd_compare()` already does this — mean of window_a vs mean of window_b.
 
 ---
 
@@ -40,7 +41,7 @@ A review agent can verify every quote by querying the ragnar store at
 
 **Source:** Alleway et al. 2023, item key 3R4A3VTH
 **Location:** Introduction
-**Verbatim:** "In its original framing, the shifting baseline syndrome describes the ongoing deterioration of fisheries scientists' expectations for the health and productivity of the marine environment. If each new generation of scientists sets their expectations according to their own observations of ecosystem and resource health, this framing can dis[tort understanding]"
+**Verbatim:** "In its original framing, the shifting baseline syndrome describes the ongoing deterioration of fisheries scientists' expectations for the health and productivity of the marine environment. If each new generation of scientists sets their expectations according to their own observations of ecosystem and resource health, this framing can discount changes that occurred before."
 
 **Original concept:** Pauly 1995, item key I9D4ZW68 (PDF extraction poor due to table formatting, but the concept is well-documented in Alleway's review).
 
