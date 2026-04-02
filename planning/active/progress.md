@@ -17,11 +17,11 @@
 - [x] Committed
 
 ### cd_compare() — Issue #14
-- [ ] Implementation
-- [ ] Tests
-- [ ] Docs
-- [ ] `/code-check`
-- [ ] Committed
+- [x] Implementation
+- [x] Tests
+- [x] Docs
+- [x] `/code-check`
+- [x] Committed
 
 ### cd_trend() — Issue #15
 - [ ] Implementation
