@@ -24,11 +24,11 @@
 - [x] Committed
 
 ### cd_trend() — Issue #15
-- [ ] Implementation
-- [ ] Tests
-- [ ] Docs
-- [ ] `/code-check`
-- [ ] Committed
+- [x] Implementation
+- [x] Tests
+- [x] Docs
+- [x] `/code-check`
+- [x] Committed
 
 ### cd_summary() — Issue #16
 - [ ] Implementation
