@@ -10,10 +10,10 @@ First function group for the cd package. These are the foundational metadata and
 
 ## Tasks
 - [x] Implement `cd_variables()` in `R/cd_variables.R`
-- [ ] Implement `cd_periods()` in `R/cd_periods.R`
+- [x] Implement `cd_periods()` in `R/cd_periods.R`
 - [ ] Implement `cd_cache_path()`, `cd_cache_clear()`, `cd_cache_info()` in `R/cd_cache.R`
 - [x] Write tests: `tests/testthat/test-cd_variables.R`
-- [ ] Write tests: `tests/testthat/test-cd_periods.R`
+- [x] Write tests: `tests/testthat/test-cd_periods.R`
 - [ ] Write tests: `tests/testthat/test-cd_cache.R`
 - [ ] `devtools::document()` — generate man pages
 - [ ] `devtools::test()` — all pass

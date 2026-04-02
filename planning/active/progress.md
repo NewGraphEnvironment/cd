@@ -9,10 +9,10 @@
 - [x] Committed
 
 ### cd_periods() — Issue #2
-- [ ] Implementation
-- [ ] Tests
-- [ ] Docs
-- [ ] Committed
+- [x] Implementation
+- [x] Tests
+- [x] Docs
+- [x] Committed
 
 ### cd_cache_*() — Issue #3
 - [ ] Implementation
