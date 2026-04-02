@@ -1,6 +1,6 @@
 # Progress
 
-## Status: In Progress
+## Status: Complete
 
 ### cd_baseline() — Issue #12
 - [x] Implementation
@@ -38,7 +38,7 @@
 - [x] Committed
 
 ### Final
-- [ ] `devtools::test()` all pass
-- [ ] `lintr::lint_package()` clean
-- [ ] End-to-end pipeline verified
+- [x] `devtools::test()` all pass (111/111)
+- [x] `lintr::lint_package()` clean (false positives only: .data pronoun, internal calls)
+- [x] End-to-end pipeline verified (extract → baseline → anomaly → compare → trend → summary)
 - [ ] PR created

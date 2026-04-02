@@ -24,7 +24,6 @@
 #'
 #' @export
 cd_baseline <- function(x, baseline_years = 1981:2010) {
-  available <- intersect(x$year, baseline_years)
   missing <- setdiff(baseline_years, x$year)
 
   if (length(missing) > 0) {
