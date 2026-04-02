@@ -12,10 +12,10 @@ Core consumer pipeline: query catalog, crop to AOI, extract zonal means. Replace
 - [x] Create `data-raw/example_climate_tmean.R`
 - [x] Ship example data in `inst/extdata/`
 - [x] Implement `cd_catalog()` in `R/cd_catalog.R`
-- [ ] Implement `cd_crop()` in `R/cd_crop.R`
+- [x] Implement `cd_crop()` in `R/cd_crop.R`
 - [ ] Implement `cd_extract()` in `R/cd_extract.R`
 - [x] Write tests: `tests/testthat/test-cd_catalog.R`
-- [ ] Write tests: `tests/testthat/test-cd_crop.R`
+- [x] Write tests: `tests/testthat/test-cd_crop.R`
 - [ ] Write tests: `tests/testthat/test-cd_extract.R`
 - [ ] `devtools::test()` — all pass
 - [ ] `lintr::lint_package()` — clean
