@@ -1,6 +1,6 @@
 # Progress
 
-## Status: In Progress
+## Status: Complete
 
 ### Example data
 - [x] `data-raw/example_climate_tmean.R` script
@@ -32,6 +32,6 @@
 - [x] Committed
 
 ### Final
-- [ ] `devtools::test()` all pass
-- [ ] `lintr::lint_package()` clean
+- [x] `devtools::test()` all pass (54/54)
+- [x] `lintr::lint_package()` clean (1 false positive: object_usage_linter on internal cd_crop call)
 - [ ] PR created

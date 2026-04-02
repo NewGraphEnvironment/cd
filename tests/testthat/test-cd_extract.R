@@ -53,7 +53,6 @@ test_that("cd_extract filters by variables", {
     quiet = TRUE
   )
   # Filter to a variable not in catalog — should return empty
-
-ts <- cd_extract(catalog, aoi, variables = "prcp")
+  ts <- cd_extract(catalog, aoi, variables = "prcp")
   expect_equal(nrow(ts), 0)
 })
