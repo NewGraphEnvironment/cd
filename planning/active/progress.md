@@ -25,11 +25,11 @@
 - [x] Committed
 
 ### cd_extract() — Issue #11
-- [ ] Implementation
-- [ ] Tests
-- [ ] Docs
-- [ ] `/code-check`
-- [ ] Committed
+- [x] Implementation
+- [x] Tests
+- [x] Docs
+- [x] `/code-check`
+- [x] Committed
 
 ### Final
 - [ ] `devtools::test()` all pass
