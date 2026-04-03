@@ -30,6 +30,11 @@ aoi <- sf::st_read(
   quiet = TRUE
 )
 ts <- cd_extract(catalog, aoi)
+
+# Early period baseline — pre-warming reference for departure communication
 cd_baseline(ts, baseline_years = 1951:1955)
+
+# Later period baseline — shows how baseline choice affects anomaly magnitude
+cd_baseline(ts, baseline_years = 1956:1960)
 
 }

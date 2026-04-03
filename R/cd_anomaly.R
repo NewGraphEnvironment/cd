@@ -24,6 +24,9 @@
 #'   quiet = TRUE
 #' )
 #' ts <- cd_extract(catalog, aoi)
+#'
+#' # Compute anomalies relative to early-period baseline
+#' # Absolute deviation for temperature; percent of normal for precipitation
 #' bl <- cd_baseline(ts, baseline_years = 1951:1955)
 #' cd_anomaly(ts, bl)
 #'

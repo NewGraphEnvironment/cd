@@ -20,7 +20,14 @@
 #'   quiet = TRUE
 #' )
 #' ts <- cd_extract(catalog, aoi)
+#'
+#' # Trend on raw values
 #' cd_trend(ts, trend_start = 1951)
+#'
+#' # Also works on anomalies — uses 'anomaly' column automatically
+#' bl <- cd_baseline(ts, baseline_years = 1951:1955)
+#' ano <- cd_anomaly(ts, bl)
+#' cd_trend(ano, trend_start = 1951)
 #'
 #' @export
 cd_trend <- function(x, trend_start = c(1950, 1980)) {

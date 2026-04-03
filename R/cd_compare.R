@@ -24,7 +24,12 @@
 #'   quiet = TRUE
 #' )
 #' ts <- cd_extract(catalog, aoi)
+#'
+#' # How has the recent period shifted from the early period?
 #' cd_compare(ts, window_a = 1956:1960, window_b = 1951:1955)
+#'
+#' # Same comparison as percentage change
+#' cd_compare(ts, window_a = 1956:1960, window_b = 1951:1955, method = "pct_change")
 #'
 #' @export
 cd_compare <- function(x, window_a, window_b, method = "mean_diff") {

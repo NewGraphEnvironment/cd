@@ -21,7 +21,12 @@
 #' )
 #' ts <- cd_extract(catalog, aoi)
 #' trn <- cd_trend(ts, trend_start = 1951)
+#'
+#' # Reporting table with Total Change = slope * years
 #' cd_summary(trn)
+#'
+#' # Add region label for multi-AOI reports
+#' cd_summary(trn, region_name = "Example AOI")
 #'
 #' @export
 cd_summary <- function(trend, region_name = NULL) {
