@@ -2,8 +2,11 @@
 
 For each variable and period in the catalog, crops the COG to the AOI
 and computes the spatial mean per year (band). Returns a tidy tibble of
-raw climate values suitable for `cd_baseline()`, `cd_anomaly()`, or
-`cd_trend()`.
+raw climate values suitable for
+[`cd_baseline()`](https://newgraphenvironment.github.io/cd/reference/cd_baseline.md),
+[`cd_anomaly()`](https://newgraphenvironment.github.io/cd/reference/cd_anomaly.md),
+or
+[`cd_trend()`](https://newgraphenvironment.github.io/cd/reference/cd_trend.md).
 
 ## Usage
 
