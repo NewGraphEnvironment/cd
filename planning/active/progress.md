@@ -15,11 +15,11 @@
 - [x] Committed
 
 ### cd_derive() — Issue #5
-- [ ] Implementation
-- [ ] Tests (synthetic)
-- [ ] Docs
-- [ ] `/code-check`
-- [ ] Committed
+- [x] Implementation
+- [x] Tests (synthetic)
+- [x] Docs
+- [x] `/code-check` — fixed VPD/RH clamping (pmax→ifel), test comment typo
+- [x] Committed
 
 ### Validation
 - [ ] `scripts/validate_against_upstream.R`
