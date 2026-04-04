@@ -16,6 +16,8 @@
   : Load and parse a STAC catalog
 - [`cd_catalog_default()`](https://newgraphenvironment.github.io/cd/reference/cd_catalog_default.md)
   : Default STAC catalog URL
+- [`cd_cog_write()`](https://newgraphenvironment.github.io/cd/reference/cd_cog_write.md)
+  : Write a SpatRaster as a Cloud-Optimized GeoTIFF
 - [`cd_compare()`](https://newgraphenvironment.github.io/cd/reference/cd_compare.md)
   : Compare arbitrary time windows
 - [`cd_crop()`](https://newgraphenvironment.github.io/cd/reference/cd_crop.md)
