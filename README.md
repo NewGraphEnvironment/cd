@@ -1,4 +1,4 @@
-# cd
+# cd <img src="man/figures/logo.png" align="right" height="139" />
 
 Climate Departure Analysis from ERA5-Land Reanalysis
 
