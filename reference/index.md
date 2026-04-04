@@ -20,8 +20,12 @@
   : Compare arbitrary time windows
 - [`cd_crop()`](https://newgraphenvironment.github.io/cd/reference/cd_crop.md)
   : Crop and mask a raster to an AOI
+- [`cd_derive()`](https://newgraphenvironment.github.io/cd/reference/cd_derive.md)
+  : Derive climate variables from raw ERA5-Land fields
 - [`cd_extract()`](https://newgraphenvironment.github.io/cd/reference/cd_extract.md)
   : Extract zonal mean time series for an AOI
+- [`cd_fetch()`](https://newgraphenvironment.github.io/cd/reference/cd_fetch.md)
+  : Download ERA5-Land climate data
 - [`cd_periods()`](https://newgraphenvironment.github.io/cd/reference/cd_periods.md)
   : Valid temporal aggregation periods
 - [`cd_summary()`](https://newgraphenvironment.github.io/cd/reference/cd_summary.md)
