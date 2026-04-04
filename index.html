@@ -13,6 +13,7 @@
 <script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Climate Departure Analysis from ERA5-Land Reanalysis">
 <meta name="description" content="Compute climate anomalies from ERA5-Land reanalysis data for custom areas of interest. Producer functions download ERA5-Land monthly means, derive variables (VPD, RH, soil moisture), and publish Cloud-Optimized GeoTIFFs with a static STAC catalog. Consumer functions query the catalog, crop to AOI, compute baselines and anomalies for arbitrary reference periods, and run trend analysis (Mann-Kendall and Theil-Sen).">
 <meta property="og:description" content="Compute climate anomalies from ERA5-Land reanalysis data for custom areas of interest. Producer functions download ERA5-Land monthly means, derive variables (VPD, RH, soil moisture), and publish Cloud-Optimized GeoTIFFs with a static STAC catalog. Consumer functions query the catalog, crop to AOI, compute baselines and anomalies for arbitrary reference periods, and run trend analysis (Mann-Kendall and Theil-Sen).">
+<meta property="og:image" content="https://newgraphenvironment.github.io/cd/logo.png">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -32,6 +33,7 @@
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
 <li class="nav-item"><a class="nav-link" href="reference/index.html">Reference</a></li>
+<li class="nav-item"><a class="nav-link" href="news/index.html">Changelog</a></li>
       </ul>
 <ul class="navbar-nav">
 <li class="nav-item"><form class="form-inline" role="search">
@@ -45,8 +47,64 @@
   </div>
 </nav><div class="container template-home">
 <div class="row">
-  <main id="main" class="col-md-9">
-Compute climate anomalies from ERA5-Land reanalysis data for custom areas of interest. Producer functions download ERA5-Land monthly means, derive variables (VPD, RH, soil moisture), and publish Cloud-Optimized GeoTIFFs with a static STAC catalog. Consumer functions query the catalog, crop to AOI, compute baselines and anomalies for arbitrary reference periods, and run trend analysis (Mann-Kendall and Theil-Sen).
+  <main id="main" class="col-md-9"><div class="section level1">
+<div class="page-header">
+<img src="logo.png" class="logo" alt=""><h1 id="cd-">cd <a class="anchor" aria-label="anchor" href="#cd-"></a>
+</h1>
+</div>
+<p>Climate Departure Analysis from ERA5-Land Reanalysis</p>
+<div class="section level2">
+<h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
+</h2>
+<p>cd computes climate anomalies from <a href="https://www.ecmwf.int/en/era5-land" class="external-link">ERA5-Land</a> reanalysis data for custom areas of interest. It downloads raw climate data, derives variables (VPD, RH, soil moisture), publishes Cloud-Optimized GeoTIFFs to a STAC catalog, and provides consumer functions to extract zonal statistics, compute baselines and anomalies for arbitrary reference periods, and run trend analysis.</p>
+</div>
+<div class="section level2">
+<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+</h2>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"NewGraphEnvironment/cd"</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="quick-start">Quick start<a class="anchor" aria-label="anchor" href="#quick-start"></a>
+</h2>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/NewGraphEnvironment/cd" class="external-link">cd</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Load a STAC catalog and an area of interest</span></span>
+<span><span class="va">catalog</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/cd_catalog.html">cd_catalog</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"example_catalog.json"</span>, package <span class="op">=</span> <span class="st">"cd"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">aoi</span> <span class="op">&lt;-</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html" class="external-link">st_read</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"example_aoi.gpkg"</span>, package <span class="op">=</span> <span class="st">"cd"</span><span class="op">)</span>,</span>
+<span>  quiet <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Extract zonal mean time series</span></span>
+<span><span class="va">ts</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/cd_extract.html">cd_extract</a></span><span class="op">(</span><span class="va">catalog</span>, <span class="va">aoi</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Compute baseline and anomalies</span></span>
+<span><span class="va">bl</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/cd_baseline.html">cd_baseline</a></span><span class="op">(</span><span class="va">ts</span>, baseline_years <span class="op">=</span> <span class="fl">1951</span><span class="op">:</span><span class="fl">1955</span><span class="op">)</span></span>
+<span><span class="va">ano</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/cd_anomaly.html">cd_anomaly</a></span><span class="op">(</span><span class="va">ts</span>, <span class="va">bl</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Trend analysis</span></span>
+<span><span class="va">trn</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/cd_trend.html">cd_trend</a></span><span class="op">(</span><span class="va">ano</span>, trend_start <span class="op">=</span> <span class="fl">1951</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Reporting table</span></span>
+<span><span class="fu"><a href="reference/cd_summary.html">cd_summary</a></span><span class="op">(</span><span class="va">trn</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Compare time windows directly</span></span>
+<span><span class="fu"><a href="reference/cd_compare.html">cd_compare</a></span><span class="op">(</span><span class="va">ts</span>, window_a <span class="op">=</span> <span class="fl">1956</span><span class="op">:</span><span class="fl">1960</span>, window_b <span class="op">=</span> <span class="fl">1951</span><span class="op">:</span><span class="fl">1955</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="links">Links<a class="anchor" aria-label="anchor" href="#links"></a>
+</h2>
+<ul>
+<li><a href="https://newgraphenvironment.github.io/cd/reference/">Function reference</a></li>
+<li>
+<a href="https://newgraphenvironment.github.io/cd/articles/">Vignette</a> (coming soon)</li>
+</ul>
+</div>
+</div>
   </main><aside class="col-md-3"><div class="links">
 <h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
