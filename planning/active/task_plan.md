@@ -9,9 +9,9 @@ Producer-side pipeline: download raw ERA5-Land from CDS, transform to processed 
 
 ## Tasks
 - [x] Resolve open questions (precip units, soil moisture weighting, VPD units)
-- [ ] Implement `cd_fetch()` in `R/cd_fetch.R`
+- [x] Implement `cd_fetch()` in `R/cd_fetch.R`
 - [ ] Implement `cd_derive()` in `R/cd_derive.R`
-- [ ] Write tests: `tests/testthat/test-cd_fetch.R` (mocked)
+- [x] Write tests: `tests/testthat/test-cd_fetch.R` (mocked)
 - [ ] Write tests: `tests/testthat/test-cd_derive.R` (synthetic rasters)
 - [ ] Create `scripts/validate_against_upstream.R`
 - [ ] `devtools::test()` — all pass

@@ -8,11 +8,11 @@
 - [x] VPD units — hPa, Tetens formula natively produces hPa
 
 ### cd_fetch() — Issue #4
-- [ ] Implementation
-- [ ] Tests (mocked)
-- [ ] Docs
-- [ ] `/code-check`
-- [ ] Committed
+- [x] Implementation
+- [x] Tests (mocked)
+- [x] Docs
+- [x] `/code-check` — fixed empty zip crash + temp dir collision
+- [x] Committed
 
 ### cd_derive() — Issue #5
 - [ ] Implementation
