@@ -8,3 +8,4 @@ docs
 /Meta/
 vignettes/*.html
 data/rag/
+data/test_cds/
