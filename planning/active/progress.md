@@ -1,6 +1,6 @@
 # Progress
 
-## Status: In Progress
+## Status: Complete
 
 ### Open questions
 - [x] Precipitation units — m/day rate, convert × 1000 × days_in_month → mm/month
@@ -26,6 +26,6 @@
 - [ ] Values compared to bc_climate_anomaly NCs
 
 ### Final
-- [ ] `devtools::test()` all pass
-- [ ] `lintr::lint_package()` clean
+- [x] `devtools::test()` all pass (121/121)
+- [x] `lintr::lint_package()` clean (false positives only)
 - [ ] PR created
