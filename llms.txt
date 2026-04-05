@@ -88,6 +88,10 @@ cd_compare(ts, window_a = 1956:1960, window_b = 1951:1955)
   : Download ERA5-Land climate data
 - [`cd_periods()`](https://newgraphenvironment.github.io/cd/reference/cd_periods.md)
   : Valid temporal aggregation periods
+- [`cd_s3_push()`](https://newgraphenvironment.github.io/cd/reference/cd_s3_push.md)
+  : Push files to S3
+- [`cd_stac_catalog()`](https://newgraphenvironment.github.io/cd/reference/cd_stac_catalog.md)
+  : Generate a static STAC catalog from COGs
 - [`cd_summary()`](https://newgraphenvironment.github.io/cd/reference/cd_summary.md)
   : Format trend results as a reporting table
 - [`cd_trend()`](https://newgraphenvironment.github.io/cd/reference/cd_trend.md)

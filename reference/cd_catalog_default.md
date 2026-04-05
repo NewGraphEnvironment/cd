@@ -17,5 +17,5 @@ Character URL.
 
 ``` r
 cd_catalog_default()
-#> [1] "https://nge-bc-ce.s3.us-west-2.amazonaws.com/cd/catalog.json"
+#> [1] "https://stac-era5-land.s3.us-west-2.amazonaws.com/catalog.json"
 ```
