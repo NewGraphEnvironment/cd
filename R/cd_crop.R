@@ -24,5 +24,8 @@ cd_crop <- function(href, aoi) {
   if (inherits(aoi, "sf") || inherits(aoi, "sfc")) {
     aoi <- terra::vect(aoi)
   }
+  if (!terra::same.crs(r, aoi)) {
+    aoi <- terra::project(aoi, r)
+  }
   terra::crop(r, aoi, snap = "out", mask = TRUE)
 }

@@ -41,7 +41,7 @@ cd_s3_push <- function(local_dir,
   }
 
   cmd <- sprintf(
-    "aws s3 sync %s %s --exclude '.*' --size-only%s",
+    "aws s3 sync %s %s --exclude '.*' --exclude '*.aux.json' --size-only%s",
     shQuote(local_dir),
     shQuote(s3_target),
     if (dry_run) " --dryrun" else ""
