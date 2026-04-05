@@ -20,14 +20,18 @@
       "type": "Feature",
       "stac_version": "1.0.0",
       "id": "tmean-annual",
-      "geometry": {},
-      "bbox": [-126.75, 54.1, -125.75, 54.7],
+      "bbox": [
+        -126.75,
+        54.1,
+        -125.75,
+        54.7
+      ],
       "properties": {
         "cd:variable": "tmean",
         "cd:period": "annual",
-        "datetime": {},
         "start_datetime": "1951-01-01T00:00:00Z",
-        "end_datetime": "1960-12-31T23:59:59Z"
+        "end_datetime": "1960-12-31T23:59:59Z",
+        "datetime": null
       },
       "links": [],
       "assets": {
@@ -36,7 +40,8 @@
           "type": "image/tiff; application=geotiff; profile=cloud-optimized",
           "title": "Mean temperature annual values"
         }
-      }
+      },
+      "geometry": null
     }
   ]
 }

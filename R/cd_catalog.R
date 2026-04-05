@@ -51,5 +51,5 @@ cd_catalog <- function(catalog = cd_catalog_default()) {
 #'
 #' @export
 cd_catalog_default <- function() {
-  getOption("cd.catalog_url", default = "https://nge-bc-ce.s3.us-west-2.amazonaws.com/cd/catalog.json")
+  getOption("cd.catalog_url", default = "https://stac-era5-land.s3.us-west-2.amazonaws.com/catalog.json")
 }
