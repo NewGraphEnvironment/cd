@@ -10,11 +10,11 @@
 - [x] Committed
 
 ### cd_s3_push() — Issue #8
-- [ ] Implementation
-- [ ] Tests
-- [ ] Docs
-- [ ] `/code-check`
-- [ ] Committed
+- [x] Implementation
+- [x] Tests
+- [x] Docs
+- [x] `/code-check` — fixed command injection via shQuote on s3_target
+- [x] Committed
 
 ### Final
 - [ ] `devtools::test()` all pass
