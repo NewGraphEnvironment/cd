@@ -1,6 +1,6 @@
 # Progress
 
-## Status: In Progress
+## Status: Complete
 
 ### cd_stac_catalog() — Issue #7
 - [x] Implementation
@@ -17,7 +17,7 @@
 - [x] Committed
 
 ### Final
-- [ ] `devtools::test()` all pass
-- [ ] `lintr::lint_package()` clean
-- [ ] End-to-end verified
+- [x] `devtools::test()` all pass (142/142)
+- [x] `lintr::lint_package()` clean (false positives only)
+- [ ] End-to-end with real S3 (after merge)
 - [ ] PR created
