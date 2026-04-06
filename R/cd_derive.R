@@ -65,11 +65,17 @@ cd_derive <- function(input_dir,
       derived <- c(derived, out_path)
     }
 
-    # Soil moisture composite
+    # Soil moisture composite — 4 depth layers per month → 1 layer per month
     if ("soil_moisture" %in% variables && length(soil_idx) >= 4) {
       out_path <- file.path(output_dir, paste0("soil_moisture_", year_str, ".tif"))
       if (!file.exists(out_path) || force) {
-        sm <- cd_derive_soil(r[[soil_idx[1:4]]])
+        n_months <- length(soil_idx) %/% 4
+        monthly_sm <- lapply(seq_len(n_months), function(m) {
+          idx <- soil_idx[((m - 1) * 4 + 1):(m * 4)]
+          cd_derive_soil(r[[idx]])
+        })
+        sm <- terra::rast(monthly_sm)
+        names(sm) <- month.abb[seq_len(n_months)]
         terra::writeRaster(sm, out_path, overwrite = TRUE)
         message("  Derived: ", basename(out_path))
       }
