@@ -8,6 +8,6 @@
 - [x] Committed
 
 ### climate-update.yml — Issue #26
-- [ ] Implementation
-- [ ] `/code-check`
-- [ ] Committed
+- [x] Implementation
+- [x] `/code-check` — fixed missing logs dir, git push without || true
+- [x] Committed
