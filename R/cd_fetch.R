@@ -15,6 +15,8 @@
 #' @param source Character. Data source identifier. Currently only
 #'   `"era5_land"` is supported.
 #' @param force Logical. Re-download even if files exist. Default `FALSE`.
+#' @param retry Numeric. Polling interval in seconds when waiting for CDS
+#'   jobs. Default `60`. Increase if hitting rate limits (429 errors).
 #'
 #' @return Character vector of downloaded file paths (GRIBs extracted
 #'   from zip archives).
@@ -35,7 +37,8 @@ cd_fetch <- function(years,
                      bbox = c(60, -140, 48, -114),
                      output_dir,
                      source = "era5_land",
-                     force = FALSE) {
+                     force = FALSE,
+                     retry = 60) {
   rlang::check_installed("ecmwfr",
     reason = "to download ERA5-Land data from the CDS API"
   )
@@ -85,7 +88,8 @@ cd_fetch <- function(years,
         time = "00:00",
         area = bbox,
         output_dir = output_dir,
-        target = basename(out_file)
+        target = basename(out_file),
+        retry = retry
       )
       downloaded <- c(downloaded, result)
     }
@@ -113,8 +117,11 @@ cd_fetch <- function(years,
           area = bbox,
           output_dir = output_dir,
           target = basename(out_file),
+          retry = retry,
           daily_statistic = stat,
-          frequency = "1_hourly"
+          frequency = "1_hourly",
+          time_zone = "utc+00:00",
+          day = sprintf("%02d", 1:31)
         )
         downloaded <- c(downloaded, result)
       }
@@ -127,7 +134,7 @@ cd_fetch <- function(years,
 #' Submit a CDS API request and extract the GRIB
 #' @noRd
 cd_fetch_cds <- function(dataset, product_type, variable, year, month,
-                         time, area, output_dir, target, ...) {
+                         time, area, output_dir, target, retry = 60, ...) {
   request <- list(
     variable = variable,
     year = year,
@@ -149,10 +156,20 @@ cd_fetch_cds <- function(dataset, product_type, variable, year, month,
 
   result <- ecmwfr::wf_request(
     request = request,
-    path = output_dir
+    path = output_dir,
+    retry = retry
   )
 
-  # ecmwfr renames .grib to .zip — extract the actual GRIB
+
+  # Daily stats product returns .nc (not .grib in zip)
+  # Rename to match the target name but keep .nc extension
+  if (grepl("\\.nc$", result)) {
+    out_path <- file.path(output_dir, sub("\\.[^.]+$", ".nc", basename(target)))
+    if (result != out_path) file.rename(result, out_path)
+    result <- out_path
+  }
+
+  # Monthly means come as zip containing a GRIB
   if (grepl("\\.zip$", result)) {
     grib_dir <- tempfile("cd_grib_", tmpdir = output_dir)
     dir.create(grib_dir, showWarnings = FALSE)

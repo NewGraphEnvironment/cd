@@ -10,13 +10,14 @@
 - [x] Committed
 
 ### Daily statistics (tmax/tmin)
-- [ ] Test CDS product for 1 year
-- [ ] Integration with cd_fetch()
+- [x] Test CDS product — works, returns .nc not .zip
+- [x] Needs `day` and `time_zone` params
+- [x] Rate limiting solved: `retry = 120` (poll every 2 min)
 - [ ] `/code-check`
 - [ ] Committed
 
 ### Backfill script
-- [ ] `scripts/pipeline_backfill.R`
+- [x] `scripts/pipeline_backfill.R`
 - [ ] Tested for 1 year (full BC bbox)
 - [ ] `/code-check`
 - [ ] Committed
