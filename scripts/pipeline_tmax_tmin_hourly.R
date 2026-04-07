@@ -26,6 +26,18 @@ if (requireNamespace("cd", quietly = TRUE)) {
 library(terra)
 library(ecmwfr)
 
+# -- Logging -------------------------------------------------------------------
+log_msg <- function(...) {
+  msg <- paste0("[", format(Sys.time(), "%Y-%m-%d %H:%M:%S"), "] ", ...)
+  message(msg)
+}
+
+status <- new.env(parent = emptyenv())
+status$downloaded <- 0L
+status$skipped <- 0L
+status$failed <- character()
+status$started <- Sys.time()
+
 # -- Configuration ------------------------------------------------------------
 years <- 1950:2025
 bbox <- c(60, -140, 48, -114)
@@ -46,7 +58,7 @@ days_in_month <- function(year, month) {
 }
 
 # -- Step 1: Download hourly 2m_temperature month by month ---------------------
-message("\n=== STEP 1: DOWNLOAD HOURLY TEMPERATURE ===")
+log_msg("=== STEP 1: DOWNLOAD HOURLY TEMPERATURE ===")
 
 for (yr in years) {
   for (mon in 1:12) {
@@ -54,6 +66,7 @@ for (yr in years) {
     out_file <- file.path(hourly_dir, paste0("hourly_t2m_", yr, "_", mon_str, ".grib"))
 
     if (file.exists(out_file)) {
+      status$skipped <- status$skipped + 1L
       next
     }
 
@@ -72,7 +85,7 @@ for (yr in years) {
       target = basename(out_file)
     )
 
-    message("  Fetching ", yr, "-", mon_str, "...")
+    log_msg("Fetching ", yr, "-", mon_str, "...")
     tryCatch({
       result <- wf_request(request = request, path = hourly_dir, retry = retry_interval)
 
@@ -89,16 +102,18 @@ for (yr in years) {
         file.rename(result, out_file)
       }
 
-      message("    Saved: ", basename(out_file),
+      log_msg("  Saved: ", basename(out_file),
               " (", round(file.size(out_file) / 1e6, 1), " MB)")
+      status$downloaded <- status$downloaded + 1L
     }, error = function(e) {
-      message("    FAILED: ", e$message)
+      log_msg("  FAILED: ", yr, "-", mon_str, ": ", e$message)
+      status$failed <- c(status$failed, paste(yr, mon_str))
     })
   }
 }
 
 # -- Step 2: Compute monthly mean of daily max/min ----------------------------
-message("\n=== STEP 2: COMPUTE MONTHLY tmax/tmin ===")
+log_msg("=== STEP 2: COMPUTE MONTHLY tmax/tmin ===")
 
 for (yr in years) {
   tmax_out <- file.path(monthly_dir, paste0("tmax_", yr, ".tif"))
@@ -117,7 +132,7 @@ for (yr in years) {
     grib_file <- file.path(hourly_dir, paste0("hourly_t2m_", yr, "_", mon_str, ".grib"))
 
     if (!file.exists(grib_file)) {
-      message("  Missing: ", basename(grib_file))
+      log_msg("  Missing: ", basename(grib_file))
       all_months_ok <- FALSE
       next
     }
@@ -156,13 +171,13 @@ for (yr in years) {
 
   writeRaster(tmax_year, tmax_out, overwrite = TRUE)
   writeRaster(tmin_year, tmin_out, overwrite = TRUE)
-  message("  ", yr, " done (tmax range: ",
+  log_msg(yr, " done (tmax range: ",
           round(min(values(tmax_year), na.rm = TRUE), 1), " to ",
           round(max(values(tmax_year), na.rm = TRUE), 1), " C)")
 }
 
 # -- Step 3: Aggregate to seasonal/annual COGs --------------------------------
-message("\n=== STEP 3: BUILD MULTI-YEAR COGS ===")
+log_msg("=== STEP 3: BUILD MULTI-YEAR COGS ===")
 
 for (var in c("tmax", "tmin")) {
   for (period in c("annual", names(seasons))) {
@@ -184,15 +199,24 @@ for (var in c("tmax", "tmin")) {
       multi <- rast(year_layers)
       names(multi) <- names(year_layers)
       cd_cog_write(multi, cog_path, overwrite = TRUE)
-      message("  ", basename(cog_path), ": ", nlyr(multi), " years")
+      log_msg(basename(cog_path), ": ", nlyr(multi), " years")
     }
   }
 }
 
 # -- Step 4: Regenerate STAC catalog + push to S3 ----------------------------
-message("\n=== STEP 4: STAC + S3 ===")
+log_msg("=== STEP 4: STAC + S3 ===")
 cd_stac_catalog(cog_dir, file.path(cog_dir, "catalog.json"),
                 base_url = paste0("https://", bucket, ".s3.us-west-2.amazonaws.com"))
 cd_s3_push(cog_dir, bucket = bucket)
 
-message("\n=== tmax/tmin BACKFILL COMPLETE ===")
+elapsed <- round(difftime(Sys.time(), status$started, units = "hours"), 1)
+log_msg("=== tmax/tmin BACKFILL COMPLETE ===")
+log_msg("Elapsed: ", elapsed, " hours")
+log_msg("Downloaded: ", status$downloaded, " month files")
+log_msg("Skipped (existing): ", status$skipped)
+if (length(status$failed) > 0) {
+  log_msg("FAILED (", length(status$failed), "): ", paste(status$failed, collapse = ", "))
+} else {
+  log_msg("No failures")
+}
