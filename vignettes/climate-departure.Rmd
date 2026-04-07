@@ -45,9 +45,37 @@ aoi <- st_read(
 )
 ```
 
-```{r map-location, fig.cap="Kootenay Lake (KOTL) watershed group in southeastern British Columbia.", fig.height=6}
-ggplot(aoi) +
-  geom_sf(fill = "#4575b4", alpha = 0.3, color = "#2166ac") +
+```{r load-context, include = FALSE}
+ctx <- system.file("extdata", "context_kotl.gpkg", package = "cd")
+towns <- st_read(ctx, layer = "towns", quiet = TRUE)
+lakes <- st_read(ctx, layer = "lakes", quiet = TRUE)
+rivers <- st_read(ctx, layer = "rivers", quiet = TRUE)
+streams <- st_read(ctx, layer = "streams", quiet = TRUE)
+highways <- st_read(ctx, layer = "highways", quiet = TRUE)
+```
+
+```{r map-location, fig.cap="Kootenay Lake (KOTL) watershed group in southeastern British Columbia showing major waterbodies, rivers, and highways.", fig.height=7}
+aoi_bb <- sf::st_bbox(aoi)
+
+ggplot() +
+  geom_sf(data = aoi, fill = "#f0f0f0", color = "#2166ac", linewidth = 0.8) +
+  geom_sf(data = lakes, fill = "#a6bddb", color = "#74a9cf", linewidth = 0.2) +
+  geom_sf(data = rivers, fill = "#a6bddb", color = "#74a9cf", linewidth = 0.2) +
+  geom_sf(data = streams, color = "#74a9cf", linewidth = 0.4, alpha = 0.6) +
+  geom_sf(data = highways, color = "#333333", linewidth = 0.8) +
+  geom_sf(data = towns, color = "black", size = 2.5) +
+  ggrepel::geom_label_repel(
+    data = towns,
+    aes(label = name, geometry = geom),
+    stat = "sf_coordinates",
+    size = 3.5, fill = "white", alpha = 0.85,
+    label.padding = unit(0.2, "lines"),
+    min.segment.length = 0
+  ) +
+  coord_sf(
+    xlim = c(aoi_bb["xmin"], aoi_bb["xmax"]),
+    ylim = c(aoi_bb["ymin"], aoi_bb["ymax"])
+  ) +
   labs(title = "Kootenay Lake Watershed Group (KOTL)") +
   theme_minimal(base_size = 12) +
   theme(axis.title = element_blank())
@@ -61,7 +89,7 @@ returns a tidy tibble of available variables and periods.
 
 ```{r catalog}
 catalog <- cd_catalog()
-catalog
+knitr::kable(catalog, caption = "Available climate variables and periods in the STAC catalog.")
 ```
 
 ## Extract Climate Time Series
@@ -72,7 +100,7 @@ download needed.
 
 ```{r extract}
 ts <- cd_extract(catalog, aoi)
-head(ts, 10)
+knitr::kable(head(ts, 10), caption = "First 10 rows of the extracted climate time series.")
 ```
 
 We now have annual and seasonal values for five climate variables across
@@ -93,7 +121,7 @@ bl_early <- cd_baseline(ts, baseline_years = 1951:1980)
 # WMO standard
 bl_wmo <- cd_baseline(ts, baseline_years = 1981:2010)
 
-bl_early
+knitr::kable(bl_early, caption = "Pre-warming baseline means (1951-1980) by variable and period.", digits = 2)
 ```
 
 ## Anomalies
@@ -104,7 +132,7 @@ percent of normal.
 
 ```{r anomaly}
 ano <- cd_anomaly(ts, bl_early)
-head(ano)
+knitr::kable(head(ano, 10), caption = "Anomalies relative to the 1951-1980 baseline.", digits = 3)
 ```
 
 ## Temperature Departure
@@ -121,7 +149,8 @@ cd_plot_timeseries(
 ```
 
 ```{r summary-tmean}
-cd_summary(trn[trn$variable == "tmean", ])
+knitr::kable(cd_summary(trn[trn$variable == "tmean", ]),
+  caption = "Temperature trend statistics for the Kootenay Lake watershed.")
 ```
 
 The Kootenay Lake watershed has warmed substantially since the mid-20th
@@ -139,7 +168,7 @@ cmp <- cd_compare(ts,
   window_b = 1951:1980,
   method = "mean_diff"
 )
-cmp
+knitr::kable(cmp, caption = "Comparison of recent (2015-2025) vs pre-warming (1951-1980) means.", digits = 2)
 ```
 
 ```{r plot-compare, fig.cap="Comparison of recent (2015-2025) vs pre-warming (1951-1980) climate for the Kootenay Lake watershed."}
@@ -174,10 +203,21 @@ names(departure) <- "Temperature departure"
 
 ggplot() +
   geom_spatraster(data = departure) +
-  geom_sf(data = aoi, fill = NA, color = "black", linewidth = 0.5) +
+  geom_sf(data = aoi, fill = NA, color = "black", linewidth = 0.6) +
+  geom_sf(data = lakes, fill = NA, color = "grey40", linewidth = 0.2) +
+  geom_sf(data = highways, color = "#333333", linewidth = 0.5) +
+  geom_sf(data = towns, color = "black", size = 2) +
+  ggrepel::geom_label_repel(
+    data = towns, aes(label = name, geometry = geom),
+    stat = "sf_coordinates", size = 3, fill = "white", alpha = 0.8
+  ) +
   scale_fill_distiller(
     palette = "RdBu", direction = -1,
     name = expression(Delta * degree * C)
+  ) +
+  coord_sf(
+    xlim = c(aoi_bb["xmin"], aoi_bb["xmax"]),
+    ylim = c(aoi_bb["ymin"], aoi_bb["ymax"])
   ) +
   labs(title = "Temperature Departure (2015-2025 vs 1951-1980)") +
   theme_minimal(base_size = 12) +
@@ -196,10 +236,21 @@ names(departure_sm) <- "Soil moisture departure"
 
 ggplot() +
   geom_spatraster(data = departure_sm) +
-  geom_sf(data = aoi, fill = NA, color = "black", linewidth = 0.5) +
+  geom_sf(data = aoi, fill = NA, color = "black", linewidth = 0.6) +
+  geom_sf(data = lakes, fill = NA, color = "grey40", linewidth = 0.2) +
+  geom_sf(data = highways, color = "#333333", linewidth = 0.5) +
+  geom_sf(data = towns, color = "black", size = 2) +
+  ggrepel::geom_label_repel(
+    data = towns, aes(label = name, geometry = geom),
+    stat = "sf_coordinates", size = 3, fill = "white", alpha = 0.8
+  ) +
   scale_fill_distiller(
     palette = "BrBG", direction = 1,
     name = expression(Delta ~ m^3/m^3)
+  ) +
+  coord_sf(
+    xlim = c(aoi_bb["xmin"], aoi_bb["xmax"]),
+    ylim = c(aoi_bb["ymin"], aoi_bb["ymax"])
   ) +
   labs(title = "Summer Soil Moisture Departure (2015-2025 vs 1951-1980)") +
   theme_minimal(base_size = 12) +
@@ -223,7 +274,8 @@ cd_plot_timeseries(summer_ano, period = "summer", trend = trn_summer,
 ```
 
 ```{r seasonal-summary}
-cd_summary(rbind(trn_summer, trn_winter))
+knitr::kable(cd_summary(rbind(trn_summer, trn_winter)),
+  caption = "Seasonal temperature trends (summer vs winter).")
 ```
 
 ## Precipitation and Soil Moisture
@@ -246,7 +298,8 @@ all_trends <- cd_trend(
   ano[ano$period == "annual", ],
   trend_start = c(1951, 1981)
 )
-cd_summary(all_trends)
+knitr::kable(cd_summary(all_trends),
+  caption = "Annual trend statistics for all variables, Kootenay Lake watershed.")
 ```
 
 ## Interpretation

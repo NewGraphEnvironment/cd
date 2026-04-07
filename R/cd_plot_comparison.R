@@ -48,11 +48,12 @@ cd_plot_comparison <- function(x,
     )
   )
 
-  plot_dat$label <- ifelse(
+  plot_dat$param <- ifelse(
     plot_dat$variable %in% names(par_labels),
-    paste(unname(par_labels[plot_dat$variable]), "-", plot_dat$period),
-    paste(plot_dat$variable, "-", plot_dat$period)
+    unname(par_labels[plot_dat$variable]),
+    plot_dat$variable
   )
+  plot_dat$label <- stringr::str_to_title(plot_dat$period)
   plot_dat$window <- factor(plot_dat$window, levels = labels)
 
   color_vals <- stats::setNames(c("#d73027", "#4575b4"), labels)
@@ -62,8 +63,9 @@ cd_plot_comparison <- function(x,
                  color = .data$window, shape = .data$window)) +
     ggplot2::geom_point(size = 3) +
     ggplot2::scale_color_manual(values = color_vals) +
+    ggplot2::facet_wrap(~ .data$param, scales = "free_x") +
     ggplot2::labs(
-      x = "Value", y = NULL, color = "Window", shape = "Window",
+      x = NULL, y = NULL, color = "Window", shape = "Window",
       title = title
     ) +
     ggplot2::theme_minimal(base_size = 12) +
