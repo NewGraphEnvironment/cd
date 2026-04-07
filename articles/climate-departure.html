@@ -84,14 +84,34 @@ works as an AOI.</p>
 <span>  quiet <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span><span class="va">aoi</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">geom_sf</span><span class="op">(</span>fill <span class="op">=</span> <span class="st">"#4575b4"</span>, alpha <span class="op">=</span> <span class="fl">0.3</span>, color <span class="op">=</span> <span class="st">"#2166ac"</span><span class="op">)</span> <span class="op">+</span></span>
+<code class="sourceCode R"><span><span class="va">aoi_bb</span> <span class="op">&lt;-</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_bbox.html" class="external-link">st_bbox</a></span><span class="op">(</span><span class="va">aoi</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">ggplot</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">geom_sf</span><span class="op">(</span>data <span class="op">=</span> <span class="va">aoi</span>, fill <span class="op">=</span> <span class="st">"#f0f0f0"</span>, color <span class="op">=</span> <span class="st">"#2166ac"</span>, linewidth <span class="op">=</span> <span class="fl">0.8</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">geom_sf</span><span class="op">(</span>data <span class="op">=</span> <span class="va">lakes</span>, fill <span class="op">=</span> <span class="st">"#a6bddb"</span>, color <span class="op">=</span> <span class="st">"#74a9cf"</span>, linewidth <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">geom_sf</span><span class="op">(</span>data <span class="op">=</span> <span class="va">rivers</span>, fill <span class="op">=</span> <span class="st">"#a6bddb"</span>, color <span class="op">=</span> <span class="st">"#74a9cf"</span>, linewidth <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">geom_sf</span><span class="op">(</span>data <span class="op">=</span> <span class="va">streams</span>, color <span class="op">=</span> <span class="st">"#74a9cf"</span>, linewidth <span class="op">=</span> <span class="fl">0.4</span>, alpha <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">geom_sf</span><span class="op">(</span>data <span class="op">=</span> <span class="va">highways</span>, color <span class="op">=</span> <span class="st">"#333333"</span>, linewidth <span class="op">=</span> <span class="fl">0.8</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">geom_sf</span><span class="op">(</span>data <span class="op">=</span> <span class="va">towns</span>, color <span class="op">=</span> <span class="st">"black"</span>, size <span class="op">=</span> <span class="fl">2.5</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">ggrepel</span><span class="fu">::</span><span class="fu"><a href="https://ggrepel.slowkow.com/reference/geom_text_repel.html" class="external-link">geom_label_repel</a></span><span class="op">(</span></span>
+<span>    data <span class="op">=</span> <span class="va">towns</span>,</span>
+<span>    <span class="fu">aes</span><span class="op">(</span>label <span class="op">=</span> <span class="va">name</span>, geometry <span class="op">=</span> <span class="va">geom</span><span class="op">)</span>,</span>
+<span>    stat <span class="op">=</span> <span class="st">"sf_coordinates"</span>,</span>
+<span>    size <span class="op">=</span> <span class="fl">3.5</span>, fill <span class="op">=</span> <span class="st">"white"</span>, alpha <span class="op">=</span> <span class="fl">0.85</span>,</span>
+<span>    label.padding <span class="op">=</span> <span class="fu">unit</span><span class="op">(</span><span class="fl">0.2</span>, <span class="st">"lines"</span><span class="op">)</span>,</span>
+<span>    min.segment.length <span class="op">=</span> <span class="fl">0</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">coord_sf</span><span class="op">(</span></span>
+<span>    xlim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">aoi_bb</span><span class="op">[</span><span class="st">"xmin"</span><span class="op">]</span>, <span class="va">aoi_bb</span><span class="op">[</span><span class="st">"xmax"</span><span class="op">]</span><span class="op">)</span>,</span>
+<span>    ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">aoi_bb</span><span class="op">[</span><span class="st">"ymin"</span><span class="op">]</span>, <span class="va">aoi_bb</span><span class="op">[</span><span class="st">"ymax"</span><span class="op">]</span><span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">labs</span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Kootenay Lake Watershed Group (KOTL)"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">theme_minimal</span><span class="op">(</span>base_size <span class="op">=</span> <span class="fl">12</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">theme</span><span class="op">(</span>axis.title <span class="op">=</span> <span class="fu">element_blank</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
-<img src="climate-departure_files/figure-html/map-location-1.png" class="r-plt" alt="Kootenay Lake (KOTL) watershed group in southeastern British Columbia." width="768"><p class="caption">
-Kootenay Lake (KOTL) watershed group in southeastern British Columbia.
+<img src="climate-departure_files/figure-html/map-location-1.png" class="r-plt" alt="Kootenay Lake (KOTL) watershed group in southeastern British Columbia showing major waterbodies, rivers, and highways." width="768"><p class="caption">
+Kootenay Lake (KOTL) watershed group in southeastern British Columbia
+showing major waterbodies, rivers, and highways.
 </p>
 </div>
 </div>
@@ -104,21 +124,148 @@ reads the catalog and returns a tidy tibble of available variables and
 periods.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">catalog</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cd_catalog.html">cd_catalog</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="va">catalog</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 25 × 3</span></span></span>
-<span><span class="co">#&gt;    variable period href                                                         </span></span>
-<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                                                        </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> prcp     annual https://stac-era5-land.s3.us-west-2.amazonaws.com/prcp_annua…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> prcp     fall   https://stac-era5-land.s3.us-west-2.amazonaws.com/prcp_fall.…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> prcp     spring https://stac-era5-land.s3.us-west-2.amazonaws.com/prcp_sprin…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> prcp     summer https://stac-era5-land.s3.us-west-2.amazonaws.com/prcp_summe…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> prcp     winter https://stac-era5-land.s3.us-west-2.amazonaws.com/prcp_winte…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> rh       annual https://stac-era5-land.s3.us-west-2.amazonaws.com/rh_annual.…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> rh       fall   https://stac-era5-land.s3.us-west-2.amazonaws.com/rh_fall.tif</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> rh       spring https://stac-era5-land.s3.us-west-2.amazonaws.com/rh_spring.…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> rh       summer https://stac-era5-land.s3.us-west-2.amazonaws.com/rh_summer.…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> rh       winter https://stac-era5-land.s3.us-west-2.amazonaws.com/rh_winter.…</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 15 more rows</span></span></span></code></pre></div>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">catalog</span>, caption <span class="op">=</span> <span class="st">"Available climate variables and periods in the STAC catalog."</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<caption>Available climate variables and periods in the STAC
+catalog.</caption>
+<colgroup>
+<col width="14%">
+<col width="7%">
+<col width="78%">
+</colgroup>
+<thead><tr class="header">
+<th align="left">variable</th>
+<th align="left">period</th>
+<th align="left">href</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">prcp</td>
+<td align="left">annual</td>
+<td align="left"><a href="https://stac-era5-land.s3.us-west-2.amazonaws.com/prcp_annual.tif" class="external-link uri">https://stac-era5-land.s3.us-west-2.amazonaws.com/prcp_annual.tif</a></td>
+</tr>
+<tr class="even">
+<td align="left">prcp</td>
+<td align="left">fall</td>
+<td align="left"><a href="https://stac-era5-land.s3.us-west-2.amazonaws.com/prcp_fall.tif" class="external-link uri">https://stac-era5-land.s3.us-west-2.amazonaws.com/prcp_fall.tif</a></td>
+</tr>
+<tr class="odd">
+<td align="left">prcp</td>
+<td align="left">spring</td>
+<td align="left"><a href="https://stac-era5-land.s3.us-west-2.amazonaws.com/prcp_spring.tif" class="external-link uri">https://stac-era5-land.s3.us-west-2.amazonaws.com/prcp_spring.tif</a></td>
+</tr>
+<tr class="even">
+<td align="left">prcp</td>
+<td align="left">summer</td>
+<td align="left"><a href="https://stac-era5-land.s3.us-west-2.amazonaws.com/prcp_summer.tif" class="external-link uri">https://stac-era5-land.s3.us-west-2.amazonaws.com/prcp_summer.tif</a></td>
+</tr>
+<tr class="odd">
+<td align="left">prcp</td>
+<td align="left">winter</td>
+<td align="left"><a href="https://stac-era5-land.s3.us-west-2.amazonaws.com/prcp_winter.tif" class="external-link uri">https://stac-era5-land.s3.us-west-2.amazonaws.com/prcp_winter.tif</a></td>
+</tr>
+<tr class="even">
+<td align="left">rh</td>
+<td align="left">annual</td>
+<td align="left"><a href="https://stac-era5-land.s3.us-west-2.amazonaws.com/rh_annual.tif" class="external-link uri">https://stac-era5-land.s3.us-west-2.amazonaws.com/rh_annual.tif</a></td>
+</tr>
+<tr class="odd">
+<td align="left">rh</td>
+<td align="left">fall</td>
+<td align="left"><a href="https://stac-era5-land.s3.us-west-2.amazonaws.com/rh_fall.tif" class="external-link uri">https://stac-era5-land.s3.us-west-2.amazonaws.com/rh_fall.tif</a></td>
+</tr>
+<tr class="even">
+<td align="left">rh</td>
+<td align="left">spring</td>
+<td align="left"><a href="https://stac-era5-land.s3.us-west-2.amazonaws.com/rh_spring.tif" class="external-link uri">https://stac-era5-land.s3.us-west-2.amazonaws.com/rh_spring.tif</a></td>
+</tr>
+<tr class="odd">
+<td align="left">rh</td>
+<td align="left">summer</td>
+<td align="left"><a href="https://stac-era5-land.s3.us-west-2.amazonaws.com/rh_summer.tif" class="external-link uri">https://stac-era5-land.s3.us-west-2.amazonaws.com/rh_summer.tif</a></td>
+</tr>
+<tr class="even">
+<td align="left">rh</td>
+<td align="left">winter</td>
+<td align="left"><a href="https://stac-era5-land.s3.us-west-2.amazonaws.com/rh_winter.tif" class="external-link uri">https://stac-era5-land.s3.us-west-2.amazonaws.com/rh_winter.tif</a></td>
+</tr>
+<tr class="odd">
+<td align="left">soil_moisture</td>
+<td align="left">annual</td>
+<td align="left"><a href="https://stac-era5-land.s3.us-west-2.amazonaws.com/soil_moisture_annual.tif" class="external-link uri">https://stac-era5-land.s3.us-west-2.amazonaws.com/soil_moisture_annual.tif</a></td>
+</tr>
+<tr class="even">
+<td align="left">soil_moisture</td>
+<td align="left">fall</td>
+<td align="left"><a href="https://stac-era5-land.s3.us-west-2.amazonaws.com/soil_moisture_fall.tif" class="external-link uri">https://stac-era5-land.s3.us-west-2.amazonaws.com/soil_moisture_fall.tif</a></td>
+</tr>
+<tr class="odd">
+<td align="left">soil_moisture</td>
+<td align="left">spring</td>
+<td align="left"><a href="https://stac-era5-land.s3.us-west-2.amazonaws.com/soil_moisture_spring.tif" class="external-link uri">https://stac-era5-land.s3.us-west-2.amazonaws.com/soil_moisture_spring.tif</a></td>
+</tr>
+<tr class="even">
+<td align="left">soil_moisture</td>
+<td align="left">summer</td>
+<td align="left"><a href="https://stac-era5-land.s3.us-west-2.amazonaws.com/soil_moisture_summer.tif" class="external-link uri">https://stac-era5-land.s3.us-west-2.amazonaws.com/soil_moisture_summer.tif</a></td>
+</tr>
+<tr class="odd">
+<td align="left">soil_moisture</td>
+<td align="left">winter</td>
+<td align="left"><a href="https://stac-era5-land.s3.us-west-2.amazonaws.com/soil_moisture_winter.tif" class="external-link uri">https://stac-era5-land.s3.us-west-2.amazonaws.com/soil_moisture_winter.tif</a></td>
+</tr>
+<tr class="even">
+<td align="left">tmean</td>
+<td align="left">annual</td>
+<td align="left"><a href="https://stac-era5-land.s3.us-west-2.amazonaws.com/tmean_annual.tif" class="external-link uri">https://stac-era5-land.s3.us-west-2.amazonaws.com/tmean_annual.tif</a></td>
+</tr>
+<tr class="odd">
+<td align="left">tmean</td>
+<td align="left">fall</td>
+<td align="left"><a href="https://stac-era5-land.s3.us-west-2.amazonaws.com/tmean_fall.tif" class="external-link uri">https://stac-era5-land.s3.us-west-2.amazonaws.com/tmean_fall.tif</a></td>
+</tr>
+<tr class="even">
+<td align="left">tmean</td>
+<td align="left">spring</td>
+<td align="left"><a href="https://stac-era5-land.s3.us-west-2.amazonaws.com/tmean_spring.tif" class="external-link uri">https://stac-era5-land.s3.us-west-2.amazonaws.com/tmean_spring.tif</a></td>
+</tr>
+<tr class="odd">
+<td align="left">tmean</td>
+<td align="left">summer</td>
+<td align="left"><a href="https://stac-era5-land.s3.us-west-2.amazonaws.com/tmean_summer.tif" class="external-link uri">https://stac-era5-land.s3.us-west-2.amazonaws.com/tmean_summer.tif</a></td>
+</tr>
+<tr class="even">
+<td align="left">tmean</td>
+<td align="left">winter</td>
+<td align="left"><a href="https://stac-era5-land.s3.us-west-2.amazonaws.com/tmean_winter.tif" class="external-link uri">https://stac-era5-land.s3.us-west-2.amazonaws.com/tmean_winter.tif</a></td>
+</tr>
+<tr class="odd">
+<td align="left">vpd</td>
+<td align="left">annual</td>
+<td align="left"><a href="https://stac-era5-land.s3.us-west-2.amazonaws.com/vpd_annual.tif" class="external-link uri">https://stac-era5-land.s3.us-west-2.amazonaws.com/vpd_annual.tif</a></td>
+</tr>
+<tr class="even">
+<td align="left">vpd</td>
+<td align="left">fall</td>
+<td align="left"><a href="https://stac-era5-land.s3.us-west-2.amazonaws.com/vpd_fall.tif" class="external-link uri">https://stac-era5-land.s3.us-west-2.amazonaws.com/vpd_fall.tif</a></td>
+</tr>
+<tr class="odd">
+<td align="left">vpd</td>
+<td align="left">spring</td>
+<td align="left"><a href="https://stac-era5-land.s3.us-west-2.amazonaws.com/vpd_spring.tif" class="external-link uri">https://stac-era5-land.s3.us-west-2.amazonaws.com/vpd_spring.tif</a></td>
+</tr>
+<tr class="even">
+<td align="left">vpd</td>
+<td align="left">summer</td>
+<td align="left"><a href="https://stac-era5-land.s3.us-west-2.amazonaws.com/vpd_summer.tif" class="external-link uri">https://stac-era5-land.s3.us-west-2.amazonaws.com/vpd_summer.tif</a></td>
+</tr>
+<tr class="odd">
+<td align="left">vpd</td>
+<td align="left">winter</td>
+<td align="left"><a href="https://stac-era5-land.s3.us-west-2.amazonaws.com/vpd_winter.tif" class="external-link uri">https://stac-era5-land.s3.us-west-2.amazonaws.com/vpd_winter.tif</a></td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="section level2">
 <h2 id="extract-climate-time-series">Extract Climate Time Series<a class="anchor" aria-label="anchor" href="#extract-climate-time-series"></a>
@@ -128,20 +275,78 @@ spatial mean per year. This runs directly against the cloud-hosted data
 — no local download needed.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ts</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cd_extract.html">cd_extract</a></span><span class="op">(</span><span class="va">catalog</span>, <span class="va">aoi</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">ts</span>, <span class="fl">10</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 10 × 4</span></span></span>
-<span><span class="co">#&gt;    variable period  year value</span></span>
-<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> prcp     annual  <span style="text-decoration: underline;">1</span>950 <span style="text-decoration: underline;">1</span>107.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> prcp     annual  <span style="text-decoration: underline;">1</span>951 <span style="text-decoration: underline;">1</span>075.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> prcp     annual  <span style="text-decoration: underline;">1</span>952  702.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> prcp     annual  <span style="text-decoration: underline;">1</span>953 <span style="text-decoration: underline;">1</span>174.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> prcp     annual  <span style="text-decoration: underline;">1</span>954 <span style="text-decoration: underline;">1</span>252.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> prcp     annual  <span style="text-decoration: underline;">1</span>955 <span style="text-decoration: underline;">1</span>133.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> prcp     annual  <span style="text-decoration: underline;">1</span>956 <span style="text-decoration: underline;">1</span>030.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> prcp     annual  <span style="text-decoration: underline;">1</span>957  918.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> prcp     annual  <span style="text-decoration: underline;">1</span>958 <span style="text-decoration: underline;">1</span>054.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> prcp     annual  <span style="text-decoration: underline;">1</span>959 <span style="text-decoration: underline;">1</span>221.</span></span></code></pre></div>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">ts</span>, <span class="fl">10</span><span class="op">)</span>, caption <span class="op">=</span> <span class="st">"First 10 rows of the extracted climate time series."</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<caption>First 10 rows of the extracted climate time series.</caption>
+<thead><tr class="header">
+<th align="left">variable</th>
+<th align="left">period</th>
+<th align="right">year</th>
+<th align="right">value</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">prcp</td>
+<td align="left">annual</td>
+<td align="right">1950</td>
+<td align="right">1107.4576</td>
+</tr>
+<tr class="even">
+<td align="left">prcp</td>
+<td align="left">annual</td>
+<td align="right">1951</td>
+<td align="right">1075.4640</td>
+</tr>
+<tr class="odd">
+<td align="left">prcp</td>
+<td align="left">annual</td>
+<td align="right">1952</td>
+<td align="right">701.8242</td>
+</tr>
+<tr class="even">
+<td align="left">prcp</td>
+<td align="left">annual</td>
+<td align="right">1953</td>
+<td align="right">1173.6203</td>
+</tr>
+<tr class="odd">
+<td align="left">prcp</td>
+<td align="left">annual</td>
+<td align="right">1954</td>
+<td align="right">1252.4347</td>
+</tr>
+<tr class="even">
+<td align="left">prcp</td>
+<td align="left">annual</td>
+<td align="right">1955</td>
+<td align="right">1133.0697</td>
+</tr>
+<tr class="odd">
+<td align="left">prcp</td>
+<td align="left">annual</td>
+<td align="right">1956</td>
+<td align="right">1029.7109</td>
+</tr>
+<tr class="even">
+<td align="left">prcp</td>
+<td align="left">annual</td>
+<td align="right">1957</td>
+<td align="right">917.9623</td>
+</tr>
+<tr class="odd">
+<td align="left">prcp</td>
+<td align="left">annual</td>
+<td align="right">1958</td>
+<td align="right">1054.0208</td>
+</tr>
+<tr class="even">
+<td align="left">prcp</td>
+<td align="left">annual</td>
+<td align="right">1959</td>
+<td align="right">1221.0120</td>
+</tr>
+</tbody>
+</table>
 <p>We now have annual and seasonal values for five climate variables
 across 76 years (1950–2025) for the Kootenay Lake watershed.</p>
 </div>
@@ -160,21 +365,143 @@ baseline syndrome.”</p>
 <span><span class="co"># WMO standard</span></span>
 <span><span class="va">bl_wmo</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cd_baseline.html">cd_baseline</a></span><span class="op">(</span><span class="va">ts</span>, baseline_years <span class="op">=</span> <span class="fl">1981</span><span class="op">:</span><span class="fl">2010</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">bl_early</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 25 × 3</span></span></span>
-<span><span class="co">#&gt;    variable period baseline_mean</span></span>
-<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> prcp     annual        <span style="text-decoration: underline;">1</span>061. </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> prcp     fall           261. </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> prcp     spring         251. </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> prcp     summer         208. </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> prcp     winter         340. </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> rh       annual          71.3</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> rh       fall            74.9</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> rh       spring          70.8</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> rh       summer          57.7</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> rh       winter          81.8</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 15 more rows</span></span></span></code></pre></div>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">bl_early</span>, caption <span class="op">=</span> <span class="st">"Pre-warming baseline means (1951-1980) by variable and period."</span>, digits <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<caption>Pre-warming baseline means (1951-1980) by variable and
+period.</caption>
+<thead><tr class="header">
+<th align="left">variable</th>
+<th align="left">period</th>
+<th align="right">baseline_mean</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">prcp</td>
+<td align="left">annual</td>
+<td align="right">1060.91</td>
+</tr>
+<tr class="even">
+<td align="left">prcp</td>
+<td align="left">fall</td>
+<td align="right">261.30</td>
+</tr>
+<tr class="odd">
+<td align="left">prcp</td>
+<td align="left">spring</td>
+<td align="right">251.36</td>
+</tr>
+<tr class="even">
+<td align="left">prcp</td>
+<td align="left">summer</td>
+<td align="right">208.31</td>
+</tr>
+<tr class="odd">
+<td align="left">prcp</td>
+<td align="left">winter</td>
+<td align="right">339.95</td>
+</tr>
+<tr class="even">
+<td align="left">rh</td>
+<td align="left">annual</td>
+<td align="right">71.31</td>
+</tr>
+<tr class="odd">
+<td align="left">rh</td>
+<td align="left">fall</td>
+<td align="right">74.85</td>
+</tr>
+<tr class="even">
+<td align="left">rh</td>
+<td align="left">spring</td>
+<td align="right">70.79</td>
+</tr>
+<tr class="odd">
+<td align="left">rh</td>
+<td align="left">summer</td>
+<td align="right">57.75</td>
+</tr>
+<tr class="even">
+<td align="left">rh</td>
+<td align="left">winter</td>
+<td align="right">81.84</td>
+</tr>
+<tr class="odd">
+<td align="left">soil_moisture</td>
+<td align="left">annual</td>
+<td align="right">0.34</td>
+</tr>
+<tr class="even">
+<td align="left">soil_moisture</td>
+<td align="left">fall</td>
+<td align="right">0.33</td>
+</tr>
+<tr class="odd">
+<td align="left">soil_moisture</td>
+<td align="left">spring</td>
+<td align="right">0.35</td>
+</tr>
+<tr class="even">
+<td align="left">soil_moisture</td>
+<td align="left">summer</td>
+<td align="right">0.34</td>
+</tr>
+<tr class="odd">
+<td align="left">soil_moisture</td>
+<td align="left">winter</td>
+<td align="right">0.33</td>
+</tr>
+<tr class="even">
+<td align="left">tmean</td>
+<td align="left">annual</td>
+<td align="right">1.96</td>
+</tr>
+<tr class="odd">
+<td align="left">tmean</td>
+<td align="left">fall</td>
+<td align="right">2.50</td>
+</tr>
+<tr class="even">
+<td align="left">tmean</td>
+<td align="left">spring</td>
+<td align="right">0.41</td>
+</tr>
+<tr class="odd">
+<td align="left">tmean</td>
+<td align="left">summer</td>
+<td align="right">13.09</td>
+</tr>
+<tr class="even">
+<td align="left">tmean</td>
+<td align="left">winter</td>
+<td align="right">-8.18</td>
+</tr>
+<tr class="odd">
+<td align="left">vpd</td>
+<td align="left">annual</td>
+<td align="right">2.92</td>
+</tr>
+<tr class="even">
+<td align="left">vpd</td>
+<td align="left">fall</td>
+<td align="right">2.33</td>
+</tr>
+<tr class="odd">
+<td align="left">vpd</td>
+<td align="left">spring</td>
+<td align="right">1.94</td>
+</tr>
+<tr class="even">
+<td align="left">vpd</td>
+<td align="left">summer</td>
+<td align="right">6.79</td>
+</tr>
+<tr class="odd">
+<td align="left">vpd</td>
+<td align="left">winter</td>
+<td align="right">0.60</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="section level2">
 <h2 id="anomalies">Anomalies<a class="anchor" aria-label="anchor" href="#anomalies"></a>
@@ -184,16 +511,100 @@ Temperature, VPD, and RH use absolute deviations. Precipitation and soil
 moisture use percent of normal.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ano</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cd_anomaly.html">cd_anomaly</a></span><span class="op">(</span><span class="va">ts</span>, <span class="va">bl_early</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">ano</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 6</span></span></span>
-<span><span class="co">#&gt;   variable period  year anomaly anomaly_type unit </span></span>
-<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> prcp     annual  <span style="text-decoration: underline;">1</span>950    4.39 pct_normal   %    </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> prcp     annual  <span style="text-decoration: underline;">1</span>951    1.37 pct_normal   %    </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> prcp     annual  <span style="text-decoration: underline;">1</span>952  -<span style="color: #BB0000;">33.8</span>  pct_normal   %    </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> prcp     annual  <span style="text-decoration: underline;">1</span>953   10.6  pct_normal   %    </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> prcp     annual  <span style="text-decoration: underline;">1</span>954   18.1  pct_normal   %    </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> prcp     annual  <span style="text-decoration: underline;">1</span>955    6.80 pct_normal   %</span></span></code></pre></div>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">ano</span>, <span class="fl">10</span><span class="op">)</span>, caption <span class="op">=</span> <span class="st">"Anomalies relative to the 1951-1980 baseline."</span>, digits <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<caption>Anomalies relative to the 1951-1980 baseline.</caption>
+<thead><tr class="header">
+<th align="left">variable</th>
+<th align="left">period</th>
+<th align="right">year</th>
+<th align="right">anomaly</th>
+<th align="left">anomaly_type</th>
+<th align="left">unit</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">prcp</td>
+<td align="left">annual</td>
+<td align="right">1950</td>
+<td align="right">4.387</td>
+<td align="left">pct_normal</td>
+<td align="left">%</td>
+</tr>
+<tr class="even">
+<td align="left">prcp</td>
+<td align="left">annual</td>
+<td align="right">1951</td>
+<td align="right">1.371</td>
+<td align="left">pct_normal</td>
+<td align="left">%</td>
+</tr>
+<tr class="odd">
+<td align="left">prcp</td>
+<td align="left">annual</td>
+<td align="right">1952</td>
+<td align="right">-33.847</td>
+<td align="left">pct_normal</td>
+<td align="left">%</td>
+</tr>
+<tr class="even">
+<td align="left">prcp</td>
+<td align="left">annual</td>
+<td align="right">1953</td>
+<td align="right">10.623</td>
+<td align="left">pct_normal</td>
+<td align="left">%</td>
+</tr>
+<tr class="odd">
+<td align="left">prcp</td>
+<td align="left">annual</td>
+<td align="right">1954</td>
+<td align="right">18.052</td>
+<td align="left">pct_normal</td>
+<td align="left">%</td>
+</tr>
+<tr class="even">
+<td align="left">prcp</td>
+<td align="left">annual</td>
+<td align="right">1955</td>
+<td align="right">6.801</td>
+<td align="left">pct_normal</td>
+<td align="left">%</td>
+</tr>
+<tr class="odd">
+<td align="left">prcp</td>
+<td align="left">annual</td>
+<td align="right">1956</td>
+<td align="right">-2.941</td>
+<td align="left">pct_normal</td>
+<td align="left">%</td>
+</tr>
+<tr class="even">
+<td align="left">prcp</td>
+<td align="left">annual</td>
+<td align="right">1957</td>
+<td align="right">-13.474</td>
+<td align="left">pct_normal</td>
+<td align="left">%</td>
+</tr>
+<tr class="odd">
+<td align="left">prcp</td>
+<td align="left">annual</td>
+<td align="right">1958</td>
+<td align="right">-0.650</td>
+<td align="left">pct_normal</td>
+<td align="left">%</td>
+</tr>
+<tr class="even">
+<td align="left">prcp</td>
+<td align="left">annual</td>
+<td align="right">1959</td>
+<td align="right">15.090</td>
+<td align="left">pct_normal</td>
+<td align="left">%</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="section level2">
 <h2 id="temperature-departure">Temperature Departure<a class="anchor" aria-label="anchor" href="#temperature-departure"></a>
@@ -214,20 +625,113 @@ to 1951-1980 baseline. Red bars indicate warmer-than-baseline years.
 </p>
 </div>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/cd_summary.html">cd_summary</a></span><span class="op">(</span><span class="va">trn</span><span class="op">[</span><span class="va">trn</span><span class="op">$</span><span class="va">variable</span> <span class="op">==</span> <span class="st">"tmean"</span>, <span class="op">]</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 10 × 7</span></span></span>
-<span><span class="co">#&gt;    Parameter        Period Slope Years `Total Change` Unit  `p-value`</span></span>
-<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> Mean temperature Annual 0.025    75            1.9 °C       0     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> Mean temperature Fall   0.024    75            1.8 °C       0.001<span style="text-decoration: underline;">4</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> Mean temperature Spring 0.027    75            2.1 °C       0     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> Mean temperature Summer 0.038    75            2.9 °C       0     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> Mean temperature Winter 0.016    75            1.2 °C       0.037 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> Mean temperature Annual 0.031    45            1.4 °C       0.001<span style="text-decoration: underline;">5</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> Mean temperature Fall   0.033    45            1.5 °C       0.003<span style="text-decoration: underline;">7</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> Mean temperature Spring 0.004    45            0.2 °C       0.822 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> Mean temperature Summer 0.053    45            2.4 °C       0     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> Mean temperature Winter 0.02     45            0.9 °C       0.278</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="fu"><a href="../reference/cd_summary.html">cd_summary</a></span><span class="op">(</span><span class="va">trn</span><span class="op">[</span><span class="va">trn</span><span class="op">$</span><span class="va">variable</span> <span class="op">==</span> <span class="st">"tmean"</span>, <span class="op">]</span><span class="op">)</span>,</span>
+<span>  caption <span class="op">=</span> <span class="st">"Temperature trend statistics for the Kootenay Lake watershed."</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<caption>Temperature trend statistics for the Kootenay Lake
+watershed.</caption>
+<thead><tr class="header">
+<th align="left">Parameter</th>
+<th align="left">Period</th>
+<th align="right">Slope</th>
+<th align="right">Years</th>
+<th align="right">Total Change</th>
+<th align="left">Unit</th>
+<th align="right">p-value</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">Mean temperature</td>
+<td align="left">Annual</td>
+<td align="right">0.025</td>
+<td align="right">75</td>
+<td align="right">1.9</td>
+<td align="left">°C</td>
+<td align="right">0.0000</td>
+</tr>
+<tr class="even">
+<td align="left">Mean temperature</td>
+<td align="left">Fall</td>
+<td align="right">0.024</td>
+<td align="right">75</td>
+<td align="right">1.8</td>
+<td align="left">°C</td>
+<td align="right">0.0014</td>
+</tr>
+<tr class="odd">
+<td align="left">Mean temperature</td>
+<td align="left">Spring</td>
+<td align="right">0.027</td>
+<td align="right">75</td>
+<td align="right">2.1</td>
+<td align="left">°C</td>
+<td align="right">0.0000</td>
+</tr>
+<tr class="even">
+<td align="left">Mean temperature</td>
+<td align="left">Summer</td>
+<td align="right">0.038</td>
+<td align="right">75</td>
+<td align="right">2.9</td>
+<td align="left">°C</td>
+<td align="right">0.0000</td>
+</tr>
+<tr class="odd">
+<td align="left">Mean temperature</td>
+<td align="left">Winter</td>
+<td align="right">0.016</td>
+<td align="right">75</td>
+<td align="right">1.2</td>
+<td align="left">°C</td>
+<td align="right">0.0370</td>
+</tr>
+<tr class="even">
+<td align="left">Mean temperature</td>
+<td align="left">Annual</td>
+<td align="right">0.031</td>
+<td align="right">45</td>
+<td align="right">1.4</td>
+<td align="left">°C</td>
+<td align="right">0.0015</td>
+</tr>
+<tr class="odd">
+<td align="left">Mean temperature</td>
+<td align="left">Fall</td>
+<td align="right">0.033</td>
+<td align="right">45</td>
+<td align="right">1.5</td>
+<td align="left">°C</td>
+<td align="right">0.0037</td>
+</tr>
+<tr class="even">
+<td align="left">Mean temperature</td>
+<td align="left">Spring</td>
+<td align="right">0.004</td>
+<td align="right">45</td>
+<td align="right">0.2</td>
+<td align="left">°C</td>
+<td align="right">0.8220</td>
+</tr>
+<tr class="odd">
+<td align="left">Mean temperature</td>
+<td align="left">Summer</td>
+<td align="right">0.053</td>
+<td align="right">45</td>
+<td align="right">2.4</td>
+<td align="left">°C</td>
+<td align="right">0.0000</td>
+</tr>
+<tr class="even">
+<td align="left">Mean temperature</td>
+<td align="left">Winter</td>
+<td align="right">0.020</td>
+<td align="right">45</td>
+<td align="right">0.9</td>
+<td align="left">°C</td>
+<td align="right">0.2776</td>
+</tr>
+</tbody>
+</table>
 <p>The Kootenay Lake watershed has warmed substantially since the
 mid-20th century. The annual mean temperature trend since 1951 gives a
 Total Change that quantifies this cumulative shift.</p>
@@ -243,21 +747,221 @@ recent climate from the historical climate?”</p>
 <span>  window_b <span class="op">=</span> <span class="fl">1951</span><span class="op">:</span><span class="fl">1980</span>,</span>
 <span>  method <span class="op">=</span> <span class="st">"mean_diff"</span></span>
 <span><span class="op">)</span></span>
-<span><span class="va">cmp</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 25 × 6</span></span></span>
-<span><span class="co">#&gt;    variable period mean_a mean_b difference method   </span></span>
-<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> prcp     annual  914.  <span style="text-decoration: underline;">1</span>061.   -<span style="color: #BB0000;">147.</span>     mean_diff</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> prcp     fall    250.   261.    -<span style="color: #BB0000;">11.3</span>    mean_diff</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> prcp     spring  238.   251.    -<span style="color: #BB0000;">13.7</span>    mean_diff</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> prcp     summer  163.   208.    -<span style="color: #BB0000;">45.1</span>    mean_diff</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> prcp     winter  263.   340.    -<span style="color: #BB0000;">77.0</span>    mean_diff</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> rh       annual   68.7   71.3    -<span style="color: #BB0000;">2.57</span>   mean_diff</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> rh       fall     72.9   74.9    -<span style="color: #BB0000;">2.00</span>   mean_diff</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> rh       spring   68.3   70.8    -<span style="color: #BB0000;">2.46</span>   mean_diff</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> rh       summer   51.9   57.7    -<span style="color: #BB0000;">5.85</span>   mean_diff</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> rh       winter   81.9   81.8     0.033<span style="text-decoration: underline;">3</span> mean_diff</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 15 more rows</span></span></span></code></pre></div>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">cmp</span>, caption <span class="op">=</span> <span class="st">"Comparison of recent (2015-2025) vs pre-warming (1951-1980) means."</span>, digits <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<caption>Comparison of recent (2015-2025) vs pre-warming (1951-1980)
+means.</caption>
+<thead><tr class="header">
+<th align="left">variable</th>
+<th align="left">period</th>
+<th align="right">mean_a</th>
+<th align="right">mean_b</th>
+<th align="right">difference</th>
+<th align="left">method</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">prcp</td>
+<td align="left">annual</td>
+<td align="right">913.85</td>
+<td align="right">1060.91</td>
+<td align="right">-147.07</td>
+<td align="left">mean_diff</td>
+</tr>
+<tr class="even">
+<td align="left">prcp</td>
+<td align="left">fall</td>
+<td align="right">249.97</td>
+<td align="right">261.30</td>
+<td align="right">-11.33</td>
+<td align="left">mean_diff</td>
+</tr>
+<tr class="odd">
+<td align="left">prcp</td>
+<td align="left">spring</td>
+<td align="right">237.66</td>
+<td align="right">251.36</td>
+<td align="right">-13.70</td>
+<td align="left">mean_diff</td>
+</tr>
+<tr class="even">
+<td align="left">prcp</td>
+<td align="left">summer</td>
+<td align="right">163.22</td>
+<td align="right">208.31</td>
+<td align="right">-45.09</td>
+<td align="left">mean_diff</td>
+</tr>
+<tr class="odd">
+<td align="left">prcp</td>
+<td align="left">winter</td>
+<td align="right">263.00</td>
+<td align="right">339.95</td>
+<td align="right">-76.95</td>
+<td align="left">mean_diff</td>
+</tr>
+<tr class="even">
+<td align="left">rh</td>
+<td align="left">annual</td>
+<td align="right">68.74</td>
+<td align="right">71.31</td>
+<td align="right">-2.57</td>
+<td align="left">mean_diff</td>
+</tr>
+<tr class="odd">
+<td align="left">rh</td>
+<td align="left">fall</td>
+<td align="right">72.85</td>
+<td align="right">74.85</td>
+<td align="right">-2.00</td>
+<td align="left">mean_diff</td>
+</tr>
+<tr class="even">
+<td align="left">rh</td>
+<td align="left">spring</td>
+<td align="right">68.32</td>
+<td align="right">70.79</td>
+<td align="right">-2.46</td>
+<td align="left">mean_diff</td>
+</tr>
+<tr class="odd">
+<td align="left">rh</td>
+<td align="left">summer</td>
+<td align="right">51.90</td>
+<td align="right">57.75</td>
+<td align="right">-5.85</td>
+<td align="left">mean_diff</td>
+</tr>
+<tr class="even">
+<td align="left">rh</td>
+<td align="left">winter</td>
+<td align="right">81.87</td>
+<td align="right">81.84</td>
+<td align="right">0.03</td>
+<td align="left">mean_diff</td>
+</tr>
+<tr class="odd">
+<td align="left">soil_moisture</td>
+<td align="left">annual</td>
+<td align="right">0.33</td>
+<td align="right">0.34</td>
+<td align="right">-0.01</td>
+<td align="left">mean_diff</td>
+</tr>
+<tr class="even">
+<td align="left">soil_moisture</td>
+<td align="left">fall</td>
+<td align="right">0.31</td>
+<td align="right">0.33</td>
+<td align="right">-0.01</td>
+<td align="left">mean_diff</td>
+</tr>
+<tr class="odd">
+<td align="left">soil_moisture</td>
+<td align="left">spring</td>
+<td align="right">0.36</td>
+<td align="right">0.35</td>
+<td align="right">0.01</td>
+<td align="left">mean_diff</td>
+</tr>
+<tr class="even">
+<td align="left">soil_moisture</td>
+<td align="left">summer</td>
+<td align="right">0.31</td>
+<td align="right">0.34</td>
+<td align="right">-0.02</td>
+<td align="left">mean_diff</td>
+</tr>
+<tr class="odd">
+<td align="left">soil_moisture</td>
+<td align="left">winter</td>
+<td align="right">0.33</td>
+<td align="right">0.33</td>
+<td align="right">0.00</td>
+<td align="left">mean_diff</td>
+</tr>
+<tr class="even">
+<td align="left">tmean</td>
+<td align="left">annual</td>
+<td align="right">3.55</td>
+<td align="right">1.96</td>
+<td align="right">1.59</td>
+<td align="left">mean_diff</td>
+</tr>
+<tr class="odd">
+<td align="left">tmean</td>
+<td align="left">fall</td>
+<td align="right">3.83</td>
+<td align="right">2.50</td>
+<td align="right">1.32</td>
+<td align="left">mean_diff</td>
+</tr>
+<tr class="even">
+<td align="left">tmean</td>
+<td align="left">spring</td>
+<td align="right">2.11</td>
+<td align="right">0.41</td>
+<td align="right">1.70</td>
+<td align="left">mean_diff</td>
+</tr>
+<tr class="odd">
+<td align="left">tmean</td>
+<td align="left">summer</td>
+<td align="right">15.59</td>
+<td align="right">13.09</td>
+<td align="right">2.49</td>
+<td align="left">mean_diff</td>
+</tr>
+<tr class="even">
+<td align="left">tmean</td>
+<td align="left">winter</td>
+<td align="right">-7.33</td>
+<td align="right">-8.18</td>
+<td align="right">0.85</td>
+<td align="left">mean_diff</td>
+</tr>
+<tr class="odd">
+<td align="left">vpd</td>
+<td align="left">annual</td>
+<td align="right">3.73</td>
+<td align="right">2.92</td>
+<td align="right">0.81</td>
+<td align="left">mean_diff</td>
+</tr>
+<tr class="even">
+<td align="left">vpd</td>
+<td align="left">fall</td>
+<td align="right">2.81</td>
+<td align="right">2.33</td>
+<td align="right">0.49</td>
+<td align="left">mean_diff</td>
+</tr>
+<tr class="odd">
+<td align="left">vpd</td>
+<td align="left">spring</td>
+<td align="right">2.45</td>
+<td align="right">1.94</td>
+<td align="right">0.51</td>
+<td align="left">mean_diff</td>
+</tr>
+<tr class="even">
+<td align="left">vpd</td>
+<td align="left">summer</td>
+<td align="right">9.02</td>
+<td align="right">6.79</td>
+<td align="right">2.23</td>
+<td align="left">mean_diff</td>
+</tr>
+<tr class="odd">
+<td align="left">vpd</td>
+<td align="left">winter</td>
+<td align="right">0.64</td>
+<td align="right">0.60</td>
+<td align="right">0.04</td>
+<td align="left">mean_diff</td>
+</tr>
+</tbody>
+</table>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/cd_plot_comparison.html">cd_plot_comparison</a></span><span class="op">(</span></span>
 <span>  <span class="va">cmp</span>,</span>
@@ -296,10 +1000,21 @@ rasters.</p>
 <span></span>
 <span><span class="fu">ggplot</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">geom_spatraster</span><span class="op">(</span>data <span class="op">=</span> <span class="va">departure</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">geom_sf</span><span class="op">(</span>data <span class="op">=</span> <span class="va">aoi</span>, fill <span class="op">=</span> <span class="cn">NA</span>, color <span class="op">=</span> <span class="st">"black"</span>, linewidth <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">geom_sf</span><span class="op">(</span>data <span class="op">=</span> <span class="va">aoi</span>, fill <span class="op">=</span> <span class="cn">NA</span>, color <span class="op">=</span> <span class="st">"black"</span>, linewidth <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">geom_sf</span><span class="op">(</span>data <span class="op">=</span> <span class="va">lakes</span>, fill <span class="op">=</span> <span class="cn">NA</span>, color <span class="op">=</span> <span class="st">"grey40"</span>, linewidth <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">geom_sf</span><span class="op">(</span>data <span class="op">=</span> <span class="va">highways</span>, color <span class="op">=</span> <span class="st">"#333333"</span>, linewidth <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">geom_sf</span><span class="op">(</span>data <span class="op">=</span> <span class="va">towns</span>, color <span class="op">=</span> <span class="st">"black"</span>, size <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">ggrepel</span><span class="fu">::</span><span class="fu"><a href="https://ggrepel.slowkow.com/reference/geom_text_repel.html" class="external-link">geom_label_repel</a></span><span class="op">(</span></span>
+<span>    data <span class="op">=</span> <span class="va">towns</span>, <span class="fu">aes</span><span class="op">(</span>label <span class="op">=</span> <span class="va">name</span>, geometry <span class="op">=</span> <span class="va">geom</span><span class="op">)</span>,</span>
+<span>    stat <span class="op">=</span> <span class="st">"sf_coordinates"</span>, size <span class="op">=</span> <span class="fl">3</span>, fill <span class="op">=</span> <span class="st">"white"</span>, alpha <span class="op">=</span> <span class="fl">0.8</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">scale_fill_distiller</span><span class="op">(</span></span>
 <span>    palette <span class="op">=</span> <span class="st">"RdBu"</span>, direction <span class="op">=</span> <span class="op">-</span><span class="fl">1</span>,</span>
 <span>    name <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="va">Delta</span> <span class="op">*</span> <span class="va">degree</span> <span class="op">*</span> <span class="va">C</span><span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">coord_sf</span><span class="op">(</span></span>
+<span>    xlim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">aoi_bb</span><span class="op">[</span><span class="st">"xmin"</span><span class="op">]</span>, <span class="va">aoi_bb</span><span class="op">[</span><span class="st">"xmax"</span><span class="op">]</span><span class="op">)</span>,</span>
+<span>    ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">aoi_bb</span><span class="op">[</span><span class="st">"ymin"</span><span class="op">]</span>, <span class="va">aoi_bb</span><span class="op">[</span><span class="st">"ymax"</span><span class="op">]</span><span class="op">)</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">labs</span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Temperature Departure (2015-2025 vs 1951-1980)"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">theme_minimal</span><span class="op">(</span>base_size <span class="op">=</span> <span class="fl">12</span><span class="op">)</span> <span class="op">+</span></span>
@@ -323,10 +1038,21 @@ Lake watershed. Difference between 2015-2025 mean and 1951-1980 mean
 <span></span>
 <span><span class="fu">ggplot</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">geom_spatraster</span><span class="op">(</span>data <span class="op">=</span> <span class="va">departure_sm</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">geom_sf</span><span class="op">(</span>data <span class="op">=</span> <span class="va">aoi</span>, fill <span class="op">=</span> <span class="cn">NA</span>, color <span class="op">=</span> <span class="st">"black"</span>, linewidth <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">geom_sf</span><span class="op">(</span>data <span class="op">=</span> <span class="va">aoi</span>, fill <span class="op">=</span> <span class="cn">NA</span>, color <span class="op">=</span> <span class="st">"black"</span>, linewidth <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">geom_sf</span><span class="op">(</span>data <span class="op">=</span> <span class="va">lakes</span>, fill <span class="op">=</span> <span class="cn">NA</span>, color <span class="op">=</span> <span class="st">"grey40"</span>, linewidth <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">geom_sf</span><span class="op">(</span>data <span class="op">=</span> <span class="va">highways</span>, color <span class="op">=</span> <span class="st">"#333333"</span>, linewidth <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">geom_sf</span><span class="op">(</span>data <span class="op">=</span> <span class="va">towns</span>, color <span class="op">=</span> <span class="st">"black"</span>, size <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">ggrepel</span><span class="fu">::</span><span class="fu"><a href="https://ggrepel.slowkow.com/reference/geom_text_repel.html" class="external-link">geom_label_repel</a></span><span class="op">(</span></span>
+<span>    data <span class="op">=</span> <span class="va">towns</span>, <span class="fu">aes</span><span class="op">(</span>label <span class="op">=</span> <span class="va">name</span>, geometry <span class="op">=</span> <span class="va">geom</span><span class="op">)</span>,</span>
+<span>    stat <span class="op">=</span> <span class="st">"sf_coordinates"</span>, size <span class="op">=</span> <span class="fl">3</span>, fill <span class="op">=</span> <span class="st">"white"</span>, alpha <span class="op">=</span> <span class="fl">0.8</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">scale_fill_distiller</span><span class="op">(</span></span>
 <span>    palette <span class="op">=</span> <span class="st">"BrBG"</span>, direction <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>    name <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="va">Delta</span> <span class="op">~</span> <span class="va">m</span><span class="op">^</span><span class="fl">3</span><span class="op">/</span><span class="va">m</span><span class="op">^</span><span class="fl">3</span><span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">coord_sf</span><span class="op">(</span></span>
+<span>    xlim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">aoi_bb</span><span class="op">[</span><span class="st">"xmin"</span><span class="op">]</span>, <span class="va">aoi_bb</span><span class="op">[</span><span class="st">"xmax"</span><span class="op">]</span><span class="op">)</span>,</span>
+<span>    ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">aoi_bb</span><span class="op">[</span><span class="st">"ymin"</span><span class="op">]</span>, <span class="va">aoi_bb</span><span class="op">[</span><span class="st">"ymax"</span><span class="op">]</span><span class="op">)</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">labs</span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Summer Soil Moisture Departure (2015-2025 vs 1951-1980)"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">theme_minimal</span><span class="op">(</span>base_size <span class="op">=</span> <span class="fl">12</span><span class="op">)</span> <span class="op">+</span></span>
@@ -355,12 +1081,40 @@ look at summer and winter separately.</p>
 <span>  title <span class="op">=</span> <span class="st">"Summer Temperature Anomaly"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="climate-departure_files/figure-html/seasonal-1.png" class="r-plt" alt="" width="768"></p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/cd_summary.html">cd_summary</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">trn_summer</span>, <span class="va">trn_winter</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 2 × 7</span></span></span>
-<span><span class="co">#&gt;   Parameter        Period Slope Years `Total Change` Unit  `p-value`</span></span>
-<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Mean temperature Summer 0.038    75            2.9 °C        0    </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Mean temperature Winter 0.016    75            1.2 °C        0.037</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="fu"><a href="../reference/cd_summary.html">cd_summary</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">trn_summer</span>, <span class="va">trn_winter</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  caption <span class="op">=</span> <span class="st">"Seasonal temperature trends (summer vs winter)."</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<caption>Seasonal temperature trends (summer vs winter).</caption>
+<thead><tr class="header">
+<th align="left">Parameter</th>
+<th align="left">Period</th>
+<th align="right">Slope</th>
+<th align="right">Years</th>
+<th align="right">Total Change</th>
+<th align="left">Unit</th>
+<th align="right">p-value</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">Mean temperature</td>
+<td align="left">Summer</td>
+<td align="right">0.038</td>
+<td align="right">75</td>
+<td align="right">2.9</td>
+<td align="left">°C</td>
+<td align="right">0.000</td>
+</tr>
+<tr class="even">
+<td align="left">Mean temperature</td>
+<td align="left">Winter</td>
+<td align="right">0.016</td>
+<td align="right">75</td>
+<td align="right">1.2</td>
+<td align="left">°C</td>
+<td align="right">0.037</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="section level2">
 <h2 id="precipitation-and-soil-moisture">Precipitation and Soil Moisture<a class="anchor" aria-label="anchor" href="#precipitation-and-soil-moisture"></a>
@@ -381,20 +1135,122 @@ evapotranspiration even when rainfall is stable.</p>
 <span>  <span class="va">ano</span><span class="op">[</span><span class="va">ano</span><span class="op">$</span><span class="va">period</span> <span class="op">==</span> <span class="st">"annual"</span>, <span class="op">]</span>,</span>
 <span>  trend_start <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1951</span>, <span class="fl">1981</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/cd_summary.html">cd_summary</a></span><span class="op">(</span><span class="va">all_trends</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 10 × 7</span></span></span>
-<span><span class="co">#&gt;    Parameter               Period  Slope Years `Total Change` Unit  `p-value`</span></span>
-<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> Precipitation           Annual -<span style="color: #BB0000;">0.168</span>    75          -<span style="color: #BB0000;">12.6</span> %        0.006<span style="text-decoration: underline;">2</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> Relative humidity       Annual -<span style="color: #BB0000;">0.038</span>    75           -<span style="color: #BB0000;">2.8</span> %        0.000<span style="text-decoration: underline;">8</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> Soil moisture           Annual -<span style="color: #BB0000;">0.028</span>    75           -<span style="color: #BB0000;">2.1</span> %        0.068 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> Mean temperature        Annual  0.025    75            1.9 °C       0     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> Vapour pressure deficit Annual  0.012    75            0.9 Pa       0     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> Precipitation           Annual -<span style="color: #BB0000;">0.222</span>    45          -<span style="color: #BB0000;">10</span>   %        0.094<span style="text-decoration: underline;">4</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> Relative humidity       Annual -<span style="color: #BB0000;">0.089</span>    45           -<span style="color: #BB0000;">4</span>   %        0.000<span style="text-decoration: underline;">1</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> Soil moisture           Annual -<span style="color: #BB0000;">0.085</span>    45           -<span style="color: #BB0000;">3.8</span> %        0.005<span style="text-decoration: underline;">8</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> Mean temperature        Annual  0.031    45            1.4 °C       0.001<span style="text-decoration: underline;">5</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> Vapour pressure deficit Annual  0.023    45            1.1 Pa       0</span></span></code></pre></div>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="fu"><a href="../reference/cd_summary.html">cd_summary</a></span><span class="op">(</span><span class="va">all_trends</span><span class="op">)</span>,</span>
+<span>  caption <span class="op">=</span> <span class="st">"Annual trend statistics for all variables, Kootenay Lake watershed."</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<caption>Annual trend statistics for all variables, Kootenay Lake
+watershed.</caption>
+<colgroup>
+<col width="34%">
+<col width="10%">
+<col width="10%">
+<col width="8%">
+<col width="18%">
+<col width="7%">
+<col width="11%">
+</colgroup>
+<thead><tr class="header">
+<th align="left">Parameter</th>
+<th align="left">Period</th>
+<th align="right">Slope</th>
+<th align="right">Years</th>
+<th align="right">Total Change</th>
+<th align="left">Unit</th>
+<th align="right">p-value</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">Precipitation</td>
+<td align="left">Annual</td>
+<td align="right">-0.168</td>
+<td align="right">75</td>
+<td align="right">-12.6</td>
+<td align="left">%</td>
+<td align="right">0.0062</td>
+</tr>
+<tr class="even">
+<td align="left">Relative humidity</td>
+<td align="left">Annual</td>
+<td align="right">-0.038</td>
+<td align="right">75</td>
+<td align="right">-2.8</td>
+<td align="left">%</td>
+<td align="right">0.0008</td>
+</tr>
+<tr class="odd">
+<td align="left">Soil moisture</td>
+<td align="left">Annual</td>
+<td align="right">-0.028</td>
+<td align="right">75</td>
+<td align="right">-2.1</td>
+<td align="left">%</td>
+<td align="right">0.0680</td>
+</tr>
+<tr class="even">
+<td align="left">Mean temperature</td>
+<td align="left">Annual</td>
+<td align="right">0.025</td>
+<td align="right">75</td>
+<td align="right">1.9</td>
+<td align="left">°C</td>
+<td align="right">0.0000</td>
+</tr>
+<tr class="odd">
+<td align="left">Vapour pressure deficit</td>
+<td align="left">Annual</td>
+<td align="right">0.012</td>
+<td align="right">75</td>
+<td align="right">0.9</td>
+<td align="left">Pa</td>
+<td align="right">0.0000</td>
+</tr>
+<tr class="even">
+<td align="left">Precipitation</td>
+<td align="left">Annual</td>
+<td align="right">-0.222</td>
+<td align="right">45</td>
+<td align="right">-10.0</td>
+<td align="left">%</td>
+<td align="right">0.0944</td>
+</tr>
+<tr class="odd">
+<td align="left">Relative humidity</td>
+<td align="left">Annual</td>
+<td align="right">-0.089</td>
+<td align="right">45</td>
+<td align="right">-4.0</td>
+<td align="left">%</td>
+<td align="right">0.0001</td>
+</tr>
+<tr class="even">
+<td align="left">Soil moisture</td>
+<td align="left">Annual</td>
+<td align="right">-0.085</td>
+<td align="right">45</td>
+<td align="right">-3.8</td>
+<td align="left">%</td>
+<td align="right">0.0058</td>
+</tr>
+<tr class="odd">
+<td align="left">Mean temperature</td>
+<td align="left">Annual</td>
+<td align="right">0.031</td>
+<td align="right">45</td>
+<td align="right">1.4</td>
+<td align="left">°C</td>
+<td align="right">0.0015</td>
+</tr>
+<tr class="even">
+<td align="left">Vapour pressure deficit</td>
+<td align="left">Annual</td>
+<td align="right">0.023</td>
+<td align="right">45</td>
+<td align="right">1.1</td>
+<td align="left">Pa</td>
+<td align="right">0.0000</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="section level2">
 <h2 id="interpretation">Interpretation<a class="anchor" aria-label="anchor" href="#interpretation"></a>
