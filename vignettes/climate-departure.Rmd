@@ -1,0 +1,206 @@
+---
+title: "Climate Departure Analysis for a Watershed"
+output: bookdown::html_document2
+vignette: >
+  %\VignetteIndexEntry{Climate Departure Analysis for a Watershed}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 8,
+  fig.height = 5,
+  message = FALSE,
+  warning = FALSE
+)
+```
+
+The cd package computes climate departure statistics from ERA5-Land
+reanalysis data for any area of interest. This vignette demonstrates the
+full analysis pipeline: connecting to the cloud-hosted data catalog, extracting
+zonal means for a watershed, computing anomalies against a pre-warming
+baseline, and running trend analysis.
+
+## Area of Interest
+
+We use the Kootenay Lake (KOTL) watershed group from the BC Freshwater
+Atlas, shipped with the package. Any `sf` polygon works as an AOI.
+
+```{r load-aoi}
+library(cd)
+library(sf)
+
+aoi <- st_read(
+  system.file("extdata", "example_aoi_kotl.gpkg", package = "cd"),
+  quiet = TRUE
+)
+```
+
+## Connect to the Data Catalog
+
+The cd package serves ERA5-Land climate data as Cloud-Optimized GeoTIFFs
+on S3, indexed by a STAC catalog. `cd_catalog()` reads the catalog and
+returns a tidy tibble of available variables and periods.
+
+```{r catalog}
+catalog <- cd_catalog()
+catalog
+```
+
+## Extract Climate Time Series
+
+`cd_extract()` crops each COG to the AOI and computes the spatial mean
+per year. This runs directly against the cloud-hosted data — no local
+download needed.
+
+```{r extract}
+ts <- cd_extract(catalog, aoi)
+head(ts, 10)
+```
+
+We now have annual and seasonal values for five climate variables across
+76 years (1950--2025) for the Kootenay Lake watershed.
+
+## Choosing a Baseline
+
+The choice of reference period shapes the story. The WMO standard
+1981--2010 baseline is widely used for comparability, but it includes
+decades of warming. A pre-warming baseline (1951--1980) reveals the
+full magnitude of departure — what Pauly (1995) called avoiding the
+"shifting baseline syndrome."
+
+```{r baseline}
+# Pre-warming baseline
+bl_early <- cd_baseline(ts, baseline_years = 1951:1980)
+
+# WMO standard
+bl_wmo <- cd_baseline(ts, baseline_years = 1981:2010)
+
+bl_early
+```
+
+## Anomalies
+
+`cd_anomaly()` computes departures from the baseline. Temperature, VPD,
+and RH use absolute deviations. Precipitation and soil moisture use
+percent of normal.
+
+```{r anomaly}
+ano <- cd_anomaly(ts, bl_early)
+head(ano)
+```
+
+## Temperature Departure
+
+```{r plot-tmean, fig.cap="Annual mean temperature anomaly for the Kootenay Lake watershed relative to 1951-1980 baseline. Red bars indicate warmer-than-baseline years."}
+trn <- cd_trend(ano, trend_start = c(1951, 1981))
+cd_plot_timeseries(
+  ano,
+  variable = "tmean",
+  period = "annual",
+  trend = trn,
+  title = "Mean Temperature Anomaly — Kootenay Lake Watershed"
+)
+```
+
+```{r summary-tmean}
+cd_summary(trn[trn$variable == "tmean", ])
+```
+
+The Kootenay Lake watershed has warmed substantially since the mid-20th
+century. The annual mean temperature trend since 1951 gives a Total
+Change that quantifies this cumulative shift.
+
+## Comparing Time Windows
+
+`cd_compare()` directly answers: "How different is the recent climate
+from the historical climate?"
+
+```{r compare}
+cmp <- cd_compare(ts,
+  window_a = 2015:2025,
+  window_b = 1951:1980,
+  method = "mean_diff"
+)
+cmp
+```
+
+```{r plot-compare, fig.cap="Comparison of recent (2015-2025) vs pre-warming (1951-1980) climate for the Kootenay Lake watershed."}
+cd_plot_comparison(
+  cmp,
+  labels = c(a = "2015-2025", b = "1951-1980"),
+  title = "Climate Shift — Kootenay Lake Watershed"
+)
+```
+
+## Seasonal Patterns
+
+Temperature warming is often strongest in specific seasons. Let's look
+at summer and winter separately.
+
+```{r seasonal}
+summer_ano <- ano[ano$period == "summer" & ano$variable == "tmean", ]
+winter_ano <- ano[ano$period == "winter" & ano$variable == "tmean", ]
+
+trn_summer <- cd_trend(summer_ano, trend_start = 1951)
+trn_winter <- cd_trend(winter_ano, trend_start = 1951)
+
+cd_plot_timeseries(summer_ano, period = "summer", trend = trn_summer,
+  title = "Summer Temperature Anomaly")
+```
+
+```{r seasonal-summary}
+cd_summary(rbind(trn_summer, trn_winter))
+```
+
+## Precipitation and Soil Moisture
+
+While temperature shows clear departure, precipitation trends in BC
+are often less pronounced. Soil moisture integrates both temperature
+and precipitation signals — warmer temperatures drive more
+evapotranspiration even when rainfall is stable.
+
+```{r soil-moisture}
+sm_ano <- ano[ano$variable == "soil_moisture" & ano$period == "summer", ]
+trn_sm <- cd_trend(sm_ano, trend_start = 1951)
+
+cd_plot_timeseries(sm_ano, variable = "soil_moisture", period = "summer",
+  trend = trn_sm, title = "Summer Soil Moisture Anomaly")
+```
+
+```{r all-trends}
+all_trends <- cd_trend(
+  ano[ano$period == "annual", ],
+  trend_start = c(1951, 1981)
+)
+cd_summary(all_trends)
+```
+
+## Interpretation
+
+The analysis reveals the climate departure pattern common across British
+Columbia's interior watersheds:
+
+- **Temperature is rising.** The cumulative shift since the mid-20th century
+  is substantial and statistically significant across all seasons.
+- **Precipitation trends are weak.** Year-to-year variability is high but
+  there is no strong directional change.
+- **Soils are drying despite stable precipitation.** Warmer temperatures
+  increase evapotranspiration, pulling moisture from soils even when the
+  same amount of rain falls. For aquatic ecosystems, drier soils mean
+  reduced summer baseflows during the period when flows are already lowest.
+
+This pattern — warming without precipitation change leading to hydrological
+drought — is the mechanism connecting climate departure to habitat
+degradation in salmon-bearing watersheds.
+
+## Data Source
+
+All data are from the [ERA5-Land](https://www.ecmwf.int/en/era5-land)
+reanalysis dataset produced by ECMWF for the Copernicus Climate Change
+Service (Muñoz-Sabater et al. 2021). Anomalies are relative to user-defined
+baseline periods. Trends are computed using the Mann-Kendall test for
+significance and the Theil-Sen estimator for slope magnitude.

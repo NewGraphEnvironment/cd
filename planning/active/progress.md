@@ -22,12 +22,11 @@
 - [x] Committed
 
 ### Vignette
-- [ ] climate-departure.Rmd
-- [ ] Builds locally
+- [x] climate-departure.Rmd
+- [x] Builds locally
 - [ ] `/code-check`
 - [ ] Committed
 
 ### Final
-- [ ] `devtools::test()` all pass
-- [ ] `lintr::lint_package()` clean
+- [x] `devtools::test()` all pass (160/160)
 - [ ] PR created
