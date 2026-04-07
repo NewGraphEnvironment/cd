@@ -84,9 +84,11 @@ Default <code>c("COMPRESS=DEFLATE")</code>. Other common options:
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">r</span> <span class="op">&lt;-</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/rast.html" class="external-link">rast</a></span><span class="op">(</span>nrows <span class="op">=</span> <span class="fl">10</span>, ncols <span class="op">=</span> <span class="fl">10</span>, vals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">100</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">tmp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".tif"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">cd_cog_write</span><span class="op">(</span><span class="va">r</span>, <span class="va">tmp</span>, overwrite <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>GDAL Message 6: driver MEM does not support creation option COMPRESS</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Custom compression</span></span></span>
 <span class="r-in"><span><span class="fu">cd_cog_write</span><span class="op">(</span><span class="va">r</span>, <span class="va">tmp</span>, overwrite <span class="op">=</span> <span class="cn">TRUE</span>, gdal <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"COMPRESS=LZW"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>GDAL Message 6: driver MEM does not support creation option COMPRESS</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

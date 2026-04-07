@@ -48,7 +48,9 @@ The output file path (invisibly).
 r <- terra::rast(nrows = 10, ncols = 10, vals = rnorm(100))
 tmp <- tempfile(fileext = ".tif")
 cd_cog_write(r, tmp, overwrite = TRUE)
+#> Warning: GDAL Message 6: driver MEM does not support creation option COMPRESS
 
 # Custom compression
 cd_cog_write(r, tmp, overwrite = TRUE, gdal = c("COMPRESS=LZW"))
+#> Warning: GDAL Message 6: driver MEM does not support creation option COMPRESS
 ```

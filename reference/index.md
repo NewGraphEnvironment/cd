@@ -2,6 +2,8 @@
 
 ## All functions
 
+- [`cd_aggregate()`](https://newgraphenvironment.github.io/cd/reference/cd_aggregate.md)
+  : Aggregate monthly rasters to seasonal and annual periods
 - [`cd_anomaly()`](https://newgraphenvironment.github.io/cd/reference/cd_anomaly.md)
   : Compute climate anomalies
 - [`cd_baseline()`](https://newgraphenvironment.github.io/cd/reference/cd_baseline.md)
@@ -32,6 +34,8 @@
   : Valid temporal aggregation periods
 - [`cd_s3_push()`](https://newgraphenvironment.github.io/cd/reference/cd_s3_push.md)
   : Push files to S3
+- [`cd_seasons()`](https://newgraphenvironment.github.io/cd/reference/cd_seasons.md)
+  : Default meteorological season definitions
 - [`cd_stac_catalog()`](https://newgraphenvironment.github.io/cd/reference/cd_stac_catalog.md)
   : Generate a static STAC catalog from COGs
 - [`cd_summary()`](https://newgraphenvironment.github.io/cd/reference/cd_summary.md)

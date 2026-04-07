@@ -1,11 +1,13 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>https://newgraphenvironment.github.io/cd/404.html</loc></url>
+<url><loc>https://newgraphenvironment.github.io/cd/CLAUDE.html</loc></url>
 <url><loc>https://newgraphenvironment.github.io/cd/LICENSE-text.html</loc></url>
 <url><loc>https://newgraphenvironment.github.io/cd/LICENSE.html</loc></url>
 <url><loc>https://newgraphenvironment.github.io/cd/authors.html</loc></url>
 <url><loc>https://newgraphenvironment.github.io/cd/index.html</loc></url>
 <url><loc>https://newgraphenvironment.github.io/cd/news/index.html</loc></url>
 <url><loc>https://newgraphenvironment.github.io/cd/reference/cd-package.html</loc></url>
+<url><loc>https://newgraphenvironment.github.io/cd/reference/cd_aggregate.html</loc></url>
 <url><loc>https://newgraphenvironment.github.io/cd/reference/cd_anomaly.html</loc></url>
 <url><loc>https://newgraphenvironment.github.io/cd/reference/cd_baseline.html</loc></url>
 <url><loc>https://newgraphenvironment.github.io/cd/reference/cd_cache_clear.html</loc></url>
@@ -21,6 +23,7 @@
 <url><loc>https://newgraphenvironment.github.io/cd/reference/cd_fetch.html</loc></url>
 <url><loc>https://newgraphenvironment.github.io/cd/reference/cd_periods.html</loc></url>
 <url><loc>https://newgraphenvironment.github.io/cd/reference/cd_s3_push.html</loc></url>
+<url><loc>https://newgraphenvironment.github.io/cd/reference/cd_seasons.html</loc></url>
 <url><loc>https://newgraphenvironment.github.io/cd/reference/cd_stac_catalog.html</loc></url>
 <url><loc>https://newgraphenvironment.github.io/cd/reference/cd_summary.html</loc></url>
 <url><loc>https://newgraphenvironment.github.io/cd/reference/cd_trend.html</loc></url>

@@ -54,7 +54,8 @@ statistics for tmax/tmin (which are not available as monthly means).</p>
 <span>  bbox <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">60</span>, <span class="op">-</span><span class="fl">140</span>, <span class="fl">48</span>, <span class="op">-</span><span class="fl">114</span><span class="op">)</span>,</span>
 <span>  <span class="va">output_dir</span>,</span>
 <span>  source <span class="op">=</span> <span class="st">"era5_land"</span>,</span>
-<span>  force <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  force <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  retry <span class="op">=</span> <span class="fl">60</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -91,6 +92,11 @@ Default covers British Columbia.</p></dd>
 
 <dt id="arg-force">force<a class="anchor" aria-label="anchor" href="#arg-force"></a></dt>
 <dd><p>Logical. Re-download even if files exist. Default <code>FALSE</code>.</p></dd>
+
+
+<dt id="arg-retry">retry<a class="anchor" aria-label="anchor" href="#arg-retry"></a></dt>
+<dd><p>Numeric. Polling interval in seconds when waiting for CDS
+jobs. Default <code>60</code>. Increase if hitting rate limits (429 errors).</p></dd>
 
 </dl></div>
     <div class="section level2">

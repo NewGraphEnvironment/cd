@@ -15,7 +15,8 @@ cd_fetch(
   bbox = c(60, -140, 48, -114),
   output_dir,
   source = "era5_land",
-  force = FALSE
+  force = FALSE,
+  retry = 60
 )
 ```
 
@@ -51,6 +52,11 @@ cd_fetch(
 - force:
 
   Logical. Re-download even if files exist. Default `FALSE`.
+
+- retry:
+
+  Numeric. Polling interval in seconds when waiting for CDS jobs.
+  Default `60`. Increase if hitting rate limits (429 errors).
 
 ## Value
 
