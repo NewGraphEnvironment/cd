@@ -18,6 +18,12 @@ knitr::opts_chunk$set(
 )
 ```
 
+```{r libraries, include = FALSE}
+library(terra)
+library(ggplot2)
+library(tidyterra)
+```
+
 The cd package computes climate departure statistics from ERA5-Land
 reanalysis data for any area of interest. This vignette demonstrates the
 full analysis pipeline: connecting to the cloud-hosted data catalog, extracting
@@ -37,6 +43,14 @@ aoi <- st_read(
   system.file("extdata", "example_aoi_kotl.gpkg", package = "cd"),
   quiet = TRUE
 )
+```
+
+```{r map-location, fig.cap="Kootenay Lake (KOTL) watershed group in southeastern British Columbia.", fig.height=6}
+ggplot(aoi) +
+  geom_sf(fill = "#4575b4", alpha = 0.3, color = "#2166ac") +
+  labs(title = "Kootenay Lake Watershed Group (KOTL)") +
+  theme_minimal(base_size = 12) +
+  theme(axis.title = element_blank())
 ```
 
 ## Connect to the Data Catalog
@@ -134,6 +148,62 @@ cd_plot_comparison(
   labels = c(a = "2015-2025", b = "1951-1980"),
   title = "Climate Shift — Kootenay Lake Watershed"
 )
+```
+
+## Spatial Patterns of Departure
+
+The zonal mean tells us the watershed average, but departure varies
+across the landscape. Valley bottoms, high elevation areas, and rain
+shadows respond differently. We can map this by computing the difference
+between recent and historical period means directly from the rasters.
+
+```{r spatial-tmean, fig.cap="Spatial pattern of annual mean temperature departure across the Kootenay Lake watershed. Difference between 2015-2025 mean and 1951-1980 mean (degrees C).", fig.height=6}
+# Read the annual tmean COG and crop to AOI
+tmean_row <- catalog[catalog$variable == "tmean" & catalog$period == "annual", ]
+r_tmean <- cd_crop(tmean_row$href, aoi)
+
+# Compute period means from the multi-year raster bands
+years <- as.integer(names(r_tmean))
+recent_idx <- which(years >= 2015 & years <= 2025)
+historical_idx <- which(years >= 1951 & years <= 1980)
+
+recent_mean <- mean(r_tmean[[recent_idx]])
+historical_mean <- mean(r_tmean[[historical_idx]])
+departure <- recent_mean - historical_mean
+names(departure) <- "Temperature departure"
+
+ggplot() +
+  geom_spatraster(data = departure) +
+  geom_sf(data = aoi, fill = NA, color = "black", linewidth = 0.5) +
+  scale_fill_distiller(
+    palette = "RdBu", direction = -1,
+    name = expression(Delta * degree * C)
+  ) +
+  labs(title = "Temperature Departure (2015-2025 vs 1951-1980)") +
+  theme_minimal(base_size = 12) +
+  theme(axis.title = element_blank())
+```
+
+```{r spatial-sm, fig.cap="Spatial pattern of summer soil moisture departure. Difference between 2015-2025 mean and 1951-1980 mean (m3/m3). Negative values (brown) indicate drying.", fig.height=6}
+sm_row <- catalog[catalog$variable == "soil_moisture" & catalog$period == "summer", ]
+r_sm <- cd_crop(sm_row$href, aoi)
+
+years_sm <- as.integer(names(r_sm))
+recent_sm <- mean(r_sm[[which(years_sm >= 2015 & years_sm <= 2025)]])
+historical_sm <- mean(r_sm[[which(years_sm >= 1951 & years_sm <= 1980)]])
+departure_sm <- recent_sm - historical_sm
+names(departure_sm) <- "Soil moisture departure"
+
+ggplot() +
+  geom_spatraster(data = departure_sm) +
+  geom_sf(data = aoi, fill = NA, color = "black", linewidth = 0.5) +
+  scale_fill_distiller(
+    palette = "BrBG", direction = 1,
+    name = expression(Delta ~ m^3/m^3)
+  ) +
+  labs(title = "Summer Soil Moisture Departure (2015-2025 vs 1951-1980)") +
+  theme_minimal(base_size = 12) +
+  theme(axis.title = element_blank())
 ```
 
 ## Seasonal Patterns
