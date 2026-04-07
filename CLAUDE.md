@@ -719,7 +719,7 @@ Five repos form the governance and operations layer across all New Graph Environ
 | [compass](https://github.com/NewGraphEnvironment/compass) | Ethics, values, guiding principles | The "why" |
 | [soul](https://github.com/NewGraphEnvironment/soul) | Standards, skills, conventions for LLM agents | The "how" |
 | [compost](https://github.com/NewGraphEnvironment/compost) | Communications templates, email workflows, contact management | The "who" |
-| [awshak](https://github.com/NewGraphEnvironment/awshak) | Infrastructure as Code, deployment | The "where" |
+| [rtj](https://github.com/NewGraphEnvironment/rtj) (formerly awshak) | Infrastructure as Code, deployment | The "where" |
 | [gq](https://github.com/NewGraphEnvironment/gq) | Cartographic style management across QGIS, tmap, leaflet, web | The "look" |
 
 **Adaptive management:** Conventions evolve from real project work, not theory. When a pattern is learned or refined during project work, propagate it back to soul so all projects benefit. The `/claude-md-init` skill builds each project's `CLAUDE.md` from soul conventions.
