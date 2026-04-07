@@ -1,0 +1,145 @@
+ℹ Loading cd
+terra 1.9.1
+
+Attaching package: ‘terra’
+
+The following objects are masked from ‘package:testthat’:
+
+    compare, describe
+
+=== BUILDING MONTHLY RASTERS ===
+  1950 monthly exists, skipping
+  1951 done
+  1952 done
+  1953 done
+  1954 done
+  1955 done
+  1956 done
+  1957 done
+  1958 done
+  1959 done
+  1960 done
+  1961 done
+  1962 done
+  1963 done
+  1964 done
+  1965 done
+  1966 done
+  1967 done
+  1968 done
+  1969 done
+  1970 done
+  1971 done
+  1972 done
+  1973 done
+  1974 done
+  1975 done
+  1976 done
+  1977 done
+  1978 done
+  1979 done
+  1980 done
+  1981 done
+  1982 done
+  1983 done
+  1984 done
+  1985 done
+  1986 done
+  1987 done
+  1988 done
+  1989 done
+  1990 done
+  1991 done
+  1992 done
+  1993 done
+  1994 done
+  1995 done
+  1996 done
+  1997 done
+  1998 done
+  1999 done
+  2000 done
+  2001 done
+  2002 done
+  2003 done
+  2004 done
+  2005 done
+  2006 done
+  2007 done
+  2008 done
+  2009 done
+  2010 done
+  2011 done
+  2012 done
+  2013 done
+  2014 done
+  2015 done
+  2016 done
+  2017 done
+  2018 done
+  2019 done
+  2020 done
+  2021 done
+  2022 done
+  2023 done
+  2024 done
+  2025 done
+
+=== BUILDING MULTI-YEAR COGS ===
+  tmean_annual.tif: 76 years
+  tmean_winter.tif: 76 years
+  tmean_spring.tif: 76 years
+  tmean_summer.tif: 76 years
+  tmean_fall.tif: 76 years
+  prcp_annual.tif: 76 years
+  prcp_winter.tif: 76 years
+  prcp_spring.tif: 76 years
+  prcp_summer.tif: 76 years
+  prcp_fall.tif: 76 years
+  vpd_annual.tif: 76 years
+  vpd_winter.tif: 76 years
+  vpd_spring.tif: 76 years
+  vpd_summer.tif: 76 years
+  vpd_fall.tif: 76 years
+  rh_annual.tif: 76 years
+  rh_winter.tif: 76 years
+  rh_spring.tif: 76 years
+  rh_summer.tif: 76 years
+  rh_fall.tif: 76 years
+  soil_moisture_annual.tif: 76 years
+  soil_moisture_winter.tif: 76 years
+  soil_moisture_spring.tif: 76 years
+  soil_moisture_summer.tif: 76 years
+  soil_moisture_fall.tif: 76 years
+
+=== STAC + S3 ===
+Wrote STAC catalog: data/backfill/cogs/catalog.json (25 items)
+Running: aws s3 sync 'data/backfill/cogs' 's3://stac-era5-land' --exclude '.*' --exclude '*.aux.json' --size-only
+Completed 1.0 MiB/127.0 MiB (13.3 MiB/s) with 26 file(s) remainingCompleted 2.0 MiB/127.0 MiB (26.5 MiB/s) with 26 file(s) remainingCompleted 3.0 MiB/127.0 MiB (39.5 MiB/s) with 26 file(s) remainingCompleted 4.0 MiB/127.0 MiB (52.1 MiB/s) with 26 file(s) remainingCompleted 4.0 MiB/127.0 MiB (48.9 MiB/s) with 26 file(s) remainingupload: data/backfill/cogs/catalog.json to s3://stac-era5-land/catalog.json
+Completed 4.0 MiB/127.0 MiB (48.9 MiB/s) with 25 file(s) remainingCompleted 5.0 MiB/127.0 MiB (53.0 MiB/s) with 25 file(s) remainingCompleted 6.0 MiB/127.0 MiB (63.0 MiB/s) with 25 file(s) remainingCompleted 7.0 MiB/127.0 MiB (73.1 MiB/s) with 25 file(s) remainingCompleted 8.0 MiB/127.0 MiB (82.8 MiB/s) with 25 file(s) remainingCompleted 9.0 MiB/127.0 MiB (88.3 MiB/s) with 25 file(s) remainingCompleted 10.0 MiB/127.0 MiB (95.5 MiB/s) with 25 file(s) remainingCompleted 11.0 MiB/127.0 MiB (104.8 MiB/s) with 25 file(s) remainingCompleted 12.0 MiB/127.0 MiB (114.2 MiB/s) with 25 file(s) remainingCompleted 13.0 MiB/127.0 MiB (122.0 MiB/s) with 25 file(s) remainingCompleted 14.0 MiB/127.0 MiB (121.2 MiB/s) with 25 file(s) remainingCompleted 15.0 MiB/127.0 MiB (127.4 MiB/s) with 25 file(s) remainingCompleted 16.0 MiB/127.0 MiB (135.8 MiB/s) with 25 file(s) remainingCompleted 17.0 MiB/127.0 MiB (143.8 MiB/s) with 25 file(s) remainingCompleted 18.0 MiB/127.0 MiB (152.0 MiB/s) with 25 file(s) remainingCompleted 19.0 MiB/127.0 MiB (160.2 MiB/s) with 25 file(s) remainingCompleted 20.0 MiB/127.0 MiB (168.2 MiB/s) with 25 file(s) remainingCompleted 21.0 MiB/127.0 MiB (176.3 MiB/s) with 25 file(s) remainingCompleted 22.0 MiB/127.0 MiB (183.4 MiB/s) with 25 file(s) remainingCompleted 23.0 MiB/127.0 MiB (191.1 MiB/s) with 25 file(s) remainingCompleted 24.0 MiB/127.0 MiB (199.4 MiB/s) with 25 file(s) remainingCompleted 25.0 MiB/127.0 MiB (207.3 MiB/s) with 25 file(s) remainingCompleted 26.0 MiB/127.0 MiB (76.3 MiB/s) with 25 file(s) remaining Completed 27.0 MiB/127.0 MiB (79.0 MiB/s) with 25 file(s) remaining Completed 28.0 MiB/127.0 MiB (81.4 MiB/s) with 25 file(s) remaining Completed 29.0 MiB/127.0 MiB (64.8 MiB/s) with 25 file(s) remaining Completed 30.0 MiB/127.0 MiB (47.6 MiB/s) with 25 file(s) remaining Completed 31.0 MiB/127.0 MiB (48.0 MiB/s) with 25 file(s) remaining Completed 32.0 MiB/127.0 MiB (47.8 MiB/s) with 25 file(s) remaining Completed 33.0 MiB/127.0 MiB (48.2 MiB/s) with 25 file(s) remaining Completed 34.0 MiB/127.0 MiB (49.6 MiB/s) with 25 file(s) remaining Completed 35.0 MiB/127.0 MiB (51.0 MiB/s) with 25 file(s) remaining Completed 36.0 MiB/127.0 MiB (52.5 MiB/s) with 25 file(s) remaining Completed 37.0 MiB/127.0 MiB (53.9 MiB/s) with 25 file(s) remaining Completed 38.0 MiB/127.0 MiB (55.3 MiB/s) with 25 file(s) remaining Completed 39.0 MiB/127.0 MiB (56.7 MiB/s) with 25 file(s) remaining Completed 40.0 MiB/127.0 MiB (58.2 MiB/s) with 25 file(s) remaining Completed 41.0 MiB/127.0 MiB (59.5 MiB/s) with 25 file(s) remaining Completed 42.0 MiB/127.0 MiB (61.0 MiB/s) with 25 file(s) remaining Completed 43.0 MiB/127.0 MiB (62.4 MiB/s) with 25 file(s) remaining Completed 44.0 MiB/127.0 MiB (63.8 MiB/s) with 25 file(s) remaining Completed 45.0 MiB/127.0 MiB (65.1 MiB/s) with 25 file(s) remaining Completed 46.0 MiB/127.0 MiB (66.4 MiB/s) with 25 file(s) remaining Completed 47.0 MiB/127.0 MiB (67.8 MiB/s) with 25 file(s) remaining Completed 48.0 MiB/127.0 MiB (69.1 MiB/s) with 25 file(s) remaining Completed 49.0 MiB/127.0 MiB (70.3 MiB/s) with 25 file(s) remaining Completed 50.0 MiB/127.0 MiB (71.6 MiB/s) with 25 file(s) remaining Completed 51.0 MiB/127.0 MiB (73.0 MiB/s) with 25 file(s) remaining Completed 52.0 MiB/127.0 MiB (74.3 MiB/s) with 25 file(s) remaining Completed 53.0 MiB/127.0 MiB (75.6 MiB/s) with 25 file(s) remaining Completed 54.0 MiB/127.0 MiB (72.7 MiB/s) with 25 file(s) remaining Completed 55.0 MiB/127.0 MiB (74.0 MiB/s) with 25 file(s) remaining Completed 56.0 MiB/127.0 MiB (75.1 MiB/s) with 25 file(s) remaining Completed 56.4 MiB/127.0 MiB (69.8 MiB/s) with 25 file(s) remaining Completed 57.4 MiB/127.0 MiB (33.7 MiB/s) with 25 file(s) remaining Completed 58.4 MiB/127.0 MiB (32.4 MiB/s) with 25 file(s) remaining Completed 59.4 MiB/127.0 MiB (30.7 MiB/s) with 25 file(s) remaining Completed 60.4 MiB/127.0 MiB (30.9 MiB/s) with 25 file(s) remaining Completed 61.4 MiB/127.0 MiB (28.6 MiB/s) with 25 file(s) remaining Completed 62.4 MiB/127.0 MiB (28.5 MiB/s) with 25 file(s) remaining Completed 63.4 MiB/127.0 MiB (28.9 MiB/s) with 25 file(s) remaining Completed 64.4 MiB/127.0 MiB (29.3 MiB/s) with 25 file(s) remaining Completed 65.4 MiB/127.0 MiB (29.8 MiB/s) with 25 file(s) remaining Completed 66.4 MiB/127.0 MiB (30.2 MiB/s) with 25 file(s) remaining Completed 67.4 MiB/127.0 MiB (30.2 MiB/s) with 25 file(s) remaining Completed 68.4 MiB/127.0 MiB (30.7 MiB/s) with 25 file(s) remaining Completed 69.4 MiB/127.0 MiB (31.1 MiB/s) with 25 file(s) remaining Completed 70.4 MiB/127.0 MiB (31.5 MiB/s) with 25 file(s) remaining Completed 71.4 MiB/127.0 MiB (32.0 MiB/s) with 25 file(s) remaining Completed 72.4 MiB/127.0 MiB (32.4 MiB/s) with 25 file(s) remaining Completed 73.4 MiB/127.0 MiB (32.7 MiB/s) with 25 file(s) remaining Completed 74.4 MiB/127.0 MiB (33.1 MiB/s) with 25 file(s) remaining Completed 74.8 MiB/127.0 MiB (32.8 MiB/s) with 25 file(s) remaining Completed 75.8 MiB/127.0 MiB (30.4 MiB/s) with 25 file(s) remaining Completed 76.8 MiB/127.0 MiB (30.7 MiB/s) with 25 file(s) remaining Completed 77.8 MiB/127.0 MiB (27.4 MiB/s) with 25 file(s) remaining Completed 78.8 MiB/127.0 MiB (27.6 MiB/s) with 25 file(s) remaining Completed 79.3 MiB/127.0 MiB (27.6 MiB/s) with 25 file(s) remaining upload: data/backfill/cogs/prcp_summer.tif to s3://stac-era5-land/prcp_summer.tif
+Completed 79.3 MiB/127.0 MiB (27.6 MiB/s) with 24 file(s) remainingCompleted 80.3 MiB/127.0 MiB (27.8 MiB/s) with 24 file(s) remainingCompleted 81.3 MiB/127.0 MiB (28.0 MiB/s) with 24 file(s) remainingCompleted 82.3 MiB/127.0 MiB (28.1 MiB/s) with 24 file(s) remainingCompleted 83.3 MiB/127.0 MiB (28.4 MiB/s) with 24 file(s) remainingCompleted 84.3 MiB/127.0 MiB (28.8 MiB/s) with 24 file(s) remainingCompleted 85.3 MiB/127.0 MiB (28.7 MiB/s) with 24 file(s) remainingCompleted 86.3 MiB/127.0 MiB (29.0 MiB/s) with 24 file(s) remainingCompleted 87.3 MiB/127.0 MiB (29.3 MiB/s) with 24 file(s) remainingCompleted 88.3 MiB/127.0 MiB (29.5 MiB/s) with 24 file(s) remainingCompleted 89.3 MiB/127.0 MiB (27.7 MiB/s) with 24 file(s) remainingupload: data/backfill/cogs/prcp_spring.tif to s3://stac-era5-land/prcp_spring.tif
+Completed 89.3 MiB/127.0 MiB (27.7 MiB/s) with 23 file(s) remainingCompleted 90.3 MiB/127.0 MiB (27.4 MiB/s) with 23 file(s) remainingCompleted 91.3 MiB/127.0 MiB (27.6 MiB/s) with 23 file(s) remainingCompleted 92.3 MiB/127.0 MiB (27.9 MiB/s) with 23 file(s) remainingCompleted 93.3 MiB/127.0 MiB (28.2 MiB/s) with 23 file(s) remainingCompleted 94.3 MiB/127.0 MiB (28.5 MiB/s) with 23 file(s) remainingCompleted 95.3 MiB/127.0 MiB (28.3 MiB/s) with 23 file(s) remainingCompleted 96.3 MiB/127.0 MiB (26.9 MiB/s) with 23 file(s) remainingupload: data/backfill/cogs/soil_moisture_summer.tif to s3://stac-era5-land/soil_moisture_summer.tif
+Completed 96.3 MiB/127.0 MiB (26.9 MiB/s) with 22 file(s) remainingCompleted 97.3 MiB/127.0 MiB (26.2 MiB/s) with 22 file(s) remainingCompleted 98.3 MiB/127.0 MiB (26.3 MiB/s) with 22 file(s) remainingCompleted 99.0 MiB/127.0 MiB (24.8 MiB/s) with 22 file(s) remainingCompleted 100.0 MiB/127.0 MiB (25.1 MiB/s) with 22 file(s) remainingCompleted 101.0 MiB/127.0 MiB (25.3 MiB/s) with 22 file(s) remainingCompleted 102.0 MiB/127.0 MiB (25.6 MiB/s) with 22 file(s) remainingCompleted 103.0 MiB/127.0 MiB (25.7 MiB/s) with 22 file(s) remainingCompleted 104.0 MiB/127.0 MiB (26.0 MiB/s) with 22 file(s) remainingCompleted 105.0 MiB/127.0 MiB (26.1 MiB/s) with 22 file(s) remainingCompleted 106.0 MiB/127.0 MiB (26.3 MiB/s) with 22 file(s) remainingCompleted 106.4 MiB/127.0 MiB (26.3 MiB/s) with 22 file(s) remainingCompleted 106.9 MiB/127.0 MiB (26.4 MiB/s) with 22 file(s) remainingCompleted 107.9 MiB/127.0 MiB (26.6 MiB/s) with 22 file(s) remainingCompleted 108.3 MiB/127.0 MiB (26.7 MiB/s) with 22 file(s) remainingCompleted 109.3 MiB/127.0 MiB (26.8 MiB/s) with 22 file(s) remainingCompleted 109.5 MiB/127.0 MiB (26.2 MiB/s) with 22 file(s) remainingupload: data/backfill/cogs/rh_summer.tif to s3://stac-era5-land/rh_summer.tif
+Completed 109.5 MiB/127.0 MiB (26.2 MiB/s) with 21 file(s) remainingCompleted 110.5 MiB/127.0 MiB (26.3 MiB/s) with 21 file(s) remainingCompleted 111.5 MiB/127.0 MiB (26.4 MiB/s) with 21 file(s) remainingCompleted 112.5 MiB/127.0 MiB (26.2 MiB/s) with 21 file(s) remainingCompleted 113.5 MiB/127.0 MiB (25.8 MiB/s) with 21 file(s) remainingCompleted 113.9 MiB/127.0 MiB (24.8 MiB/s) with 21 file(s) remainingCompleted 114.2 MiB/127.0 MiB (24.7 MiB/s) with 21 file(s) remainingCompleted 114.6 MiB/127.0 MiB (24.7 MiB/s) with 21 file(s) remainingCompleted 114.9 MiB/127.0 MiB (24.5 MiB/s) with 21 file(s) remainingCompleted 115.3 MiB/127.0 MiB (24.6 MiB/s) with 21 file(s) remainingupload: data/backfill/cogs/soil_moisture_spring.tif to s3://stac-era5-land/soil_moisture_spring.tif
+Completed 115.3 MiB/127.0 MiB (24.6 MiB/s) with 20 file(s) remainingupload: data/backfill/cogs/soil_moisture_fall.tif to s3://stac-era5-land/soil_moisture_fall.tif
+Completed 115.3 MiB/127.0 MiB (24.6 MiB/s) with 19 file(s) remainingCompleted 115.8 MiB/127.0 MiB (24.5 MiB/s) with 19 file(s) remainingCompleted 116.1 MiB/127.0 MiB (24.2 MiB/s) with 19 file(s) remainingupload: data/backfill/cogs/tmean_summer.tif to s3://stac-era5-land/tmean_summer.tif
+Completed 116.1 MiB/127.0 MiB (24.2 MiB/s) with 18 file(s) remainingupload: data/backfill/cogs/soil_moisture_annual.tif to s3://stac-era5-land/soil_moisture_annual.tif
+Completed 116.1 MiB/127.0 MiB (24.2 MiB/s) with 17 file(s) remainingCompleted 116.4 MiB/127.0 MiB (24.0 MiB/s) with 17 file(s) remainingCompleted 117.4 MiB/127.0 MiB (24.2 MiB/s) with 17 file(s) remainingupload: data/backfill/cogs/prcp_fall.tif to s3://stac-era5-land/prcp_fall.tif
+Completed 117.4 MiB/127.0 MiB (24.2 MiB/s) with 16 file(s) remainingCompleted 118.4 MiB/127.0 MiB (23.3 MiB/s) with 16 file(s) remainingCompleted 118.7 MiB/127.0 MiB (23.3 MiB/s) with 16 file(s) remainingupload: data/backfill/cogs/vpd_spring.tif to s3://stac-era5-land/vpd_spring.tif
+Completed 118.7 MiB/127.0 MiB (23.3 MiB/s) with 15 file(s) remainingupload: data/backfill/cogs/vpd_annual.tif to s3://stac-era5-land/vpd_annual.tif
+Completed 118.7 MiB/127.0 MiB (23.3 MiB/s) with 14 file(s) remainingupload: data/backfill/cogs/vpd_summer.tif to s3://stac-era5-land/vpd_summer.tif
+Completed 118.7 MiB/127.0 MiB (23.3 MiB/s) with 13 file(s) remainingCompleted 118.9 MiB/127.0 MiB (23.2 MiB/s) with 13 file(s) remainingupload: data/backfill/cogs/tmean_spring.tif to s3://stac-era5-land/tmean_spring.tif
+Completed 118.9 MiB/127.0 MiB (23.2 MiB/s) with 12 file(s) remainingupload: data/backfill/cogs/prcp_winter.tif to s3://stac-era5-land/prcp_winter.tif
+Completed 118.9 MiB/127.0 MiB (23.2 MiB/s) with 11 file(s) remainingCompleted 119.3 MiB/127.0 MiB (23.0 MiB/s) with 11 file(s) remainingupload: data/backfill/cogs/vpd_winter.tif to s3://stac-era5-land/vpd_winter.tif
+Completed 119.3 MiB/127.0 MiB (23.0 MiB/s) with 10 file(s) remainingCompleted 119.4 MiB/127.0 MiB (23.0 MiB/s) with 10 file(s) remainingupload: data/backfill/cogs/tmean_winter.tif to s3://stac-era5-land/tmean_winter.tif
+Completed 119.4 MiB/127.0 MiB (23.0 MiB/s) with 9 file(s) remainingupload: data/backfill/cogs/tmean_annual.tif to s3://stac-era5-land/tmean_annual.tif
+Completed 119.4 MiB/127.0 MiB (23.0 MiB/s) with 8 file(s) remainingupload: data/backfill/cogs/prcp_annual.tif to s3://stac-era5-land/prcp_annual.tif
+Completed 119.4 MiB/127.0 MiB (23.0 MiB/s) with 7 file(s) remainingCompleted 119.5 MiB/127.0 MiB (22.8 MiB/s) with 7 file(s) remainingupload: data/backfill/cogs/rh_annual.tif to s3://stac-era5-land/rh_annual.tif
+Completed 119.5 MiB/127.0 MiB (22.8 MiB/s) with 6 file(s) remainingCompleted 120.5 MiB/127.0 MiB (22.9 MiB/s) with 6 file(s) remainingCompleted 120.6 MiB/127.0 MiB (22.9 MiB/s) with 6 file(s) remainingupload: data/backfill/cogs/rh_spring.tif to s3://stac-era5-land/rh_spring.tif
+Completed 120.6 MiB/127.0 MiB (22.9 MiB/s) with 5 file(s) remainingupload: data/backfill/cogs/tmean_fall.tif to s3://stac-era5-land/tmean_fall.tif
+Completed 120.6 MiB/127.0 MiB (22.9 MiB/s) with 4 file(s) remainingupload: data/backfill/cogs/vpd_fall.tif to s3://stac-era5-land/vpd_fall.tif
+Completed 120.6 MiB/127.0 MiB (22.9 MiB/s) with 3 file(s) remainingCompleted 121.6 MiB/127.0 MiB (22.3 MiB/s) with 3 file(s) remainingCompleted 122.6 MiB/127.0 MiB (21.6 MiB/s) with 3 file(s) remainingCompleted 123.6 MiB/127.0 MiB (21.8 MiB/s) with 3 file(s) remainingCompleted 124.6 MiB/127.0 MiB (21.5 MiB/s) with 3 file(s) remainingCompleted 124.9 MiB/127.0 MiB (20.8 MiB/s) with 3 file(s) remainingCompleted 125.9 MiB/127.0 MiB (20.7 MiB/s) with 3 file(s) remainingCompleted 126.9 MiB/127.0 MiB (20.6 MiB/s) with 3 file(s) remainingupload: data/backfill/cogs/soil_moisture_winter.tif to s3://stac-era5-land/soil_moisture_winter.tif
+Completed 126.9 MiB/127.0 MiB (20.6 MiB/s) with 2 file(s) remainingCompleted 127.0 MiB/127.0 MiB (19.6 MiB/s) with 2 file(s) remainingupload: data/backfill/cogs/rh_fall.tif to s3://stac-era5-land/rh_fall.tif
+Completed 127.0 MiB/127.0 MiB (19.6 MiB/s) with 1 file(s) remainingCompleted 127.0 MiB/127.0 MiB (18.8 MiB/s) with 1 file(s) remainingupload: data/backfill/cogs/rh_winter.tif to s3://stac-era5-land/rh_winter.tif
+
+=== PROCESSING COMPLETE ===
