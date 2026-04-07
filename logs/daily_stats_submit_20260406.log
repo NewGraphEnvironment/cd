@@ -1,0 +1,5174 @@
+Submitting tmax 1950...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  1345c08c-8884-469d-86cd-85234cbd5d02
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/1345c08c-8884-469d-86cd-85234cbd5d02',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmax_1950.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/1345c08c-8884-469d-86cd-85234cbd5d02'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmax 1951...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  e4aa1135-39c2-42b0-b525-e6c316766021
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/e4aa1135-39c2-42b0-b525-e6c316766021',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmax_1951.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/e4aa1135-39c2-42b0-b525-e6c316766021'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmax 1952...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  117d3dea-81b9-4c98-954d-8d0e37b53640
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/117d3dea-81b9-4c98-954d-8d0e37b53640',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmax_1952.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/117d3dea-81b9-4c98-954d-8d0e37b53640'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmax 1953...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  8826a22b-e3a8-4250-a25e-dbac3ab9c44d
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/8826a22b-e3a8-4250-a25e-dbac3ab9c44d',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmax_1953.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/8826a22b-e3a8-4250-a25e-dbac3ab9c44d'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmax 1954...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  8461d701-cf38-4b44-a7c4-c0b6d571c1cb
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/8461d701-cf38-4b44-a7c4-c0b6d571c1cb',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmax_1954.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/8461d701-cf38-4b44-a7c4-c0b6d571c1cb'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmax 1955...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  9286eca0-37f0-44ee-b2aa-1e8575d968a9
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/9286eca0-37f0-44ee-b2aa-1e8575d968a9',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmax_1955.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/9286eca0-37f0-44ee-b2aa-1e8575d968a9'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmax 1956...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  9d842d96-83fd-4eff-8c7c-3aed249de79c
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/9d842d96-83fd-4eff-8c7c-3aed249de79c',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmax_1956.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/9d842d96-83fd-4eff-8c7c-3aed249de79c'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmax 1957...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  9b06abfd-1099-4c2b-bd84-111a613c1d1b
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/9b06abfd-1099-4c2b-bd84-111a613c1d1b',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmax_1957.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/9b06abfd-1099-4c2b-bd84-111a613c1d1b'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmax 1958...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  4ef624c5-a241-49cc-b50f-acf063240d17
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/4ef624c5-a241-49cc-b50f-acf063240d17',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmax_1958.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/4ef624c5-a241-49cc-b50f-acf063240d17'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmax 1959...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  4fc97930-983e-4310-8640-e67ffdbaa94a
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/4fc97930-983e-4310-8640-e67ffdbaa94a',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmax_1959.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/4fc97930-983e-4310-8640-e67ffdbaa94a'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmax 1960...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  4e7838c5-791e-4799-af83-483d80e103aa
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/4e7838c5-791e-4799-af83-483d80e103aa',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmax_1960.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/4e7838c5-791e-4799-af83-483d80e103aa'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmax 1961...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  ef92f005-abb2-4693-b9a4-a6f7a77a2047
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/ef92f005-abb2-4693-b9a4-a6f7a77a2047',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmax_1961.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/ef92f005-abb2-4693-b9a4-a6f7a77a2047'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmax 1962...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  f2f802c5-58a6-4b8d-9163-548276b071eb
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/f2f802c5-58a6-4b8d-9163-548276b071eb',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmax_1962.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/f2f802c5-58a6-4b8d-9163-548276b071eb'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmax 1963...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  6ae11028-6672-4dea-be83-efae54bccfa7
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/6ae11028-6672-4dea-be83-efae54bccfa7',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmax_1963.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/6ae11028-6672-4dea-be83-efae54bccfa7'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmax 1964...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  18111061-fbbc-408a-a4ec-7a3f0d6910e8
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/18111061-fbbc-408a-a4ec-7a3f0d6910e8',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmax_1964.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/18111061-fbbc-408a-a4ec-7a3f0d6910e8'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmax 1965...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  1132841e-4fb1-4846-98d6-f03cdf37e329
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/1132841e-4fb1-4846-98d6-f03cdf37e329',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmax_1965.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/1132841e-4fb1-4846-98d6-f03cdf37e329'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmax 1966...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  bc0b1a94-8d13-4504-8929-91561247cad1
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/bc0b1a94-8d13-4504-8929-91561247cad1',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmax_1966.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/bc0b1a94-8d13-4504-8929-91561247cad1'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmax 1967...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  1a42939c-e37c-4fac-a08c-5c1f0980d358
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/1a42939c-e37c-4fac-a08c-5c1f0980d358',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmax_1967.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/1a42939c-e37c-4fac-a08c-5c1f0980d358'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmax 1968...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  774cd52a-1ecb-4705-8cbf-06bac3b73278
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/774cd52a-1ecb-4705-8cbf-06bac3b73278',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmax_1968.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/774cd52a-1ecb-4705-8cbf-06bac3b73278'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmax 1969...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  2433ebb5-741a-41f9-81ae-45205dafd6fd
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/2433ebb5-741a-41f9-81ae-45205dafd6fd',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmax_1969.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/2433ebb5-741a-41f9-81ae-45205dafd6fd'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmax 1970...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  a848e15b-f53f-4b50-bffc-f80e5a1f4e67
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/a848e15b-f53f-4b50-bffc-f80e5a1f4e67',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmax_1970.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/a848e15b-f53f-4b50-bffc-f80e5a1f4e67'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmax 1971...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  9c78138c-766a-4466-981c-11a099eae64b
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/9c78138c-766a-4466-981c-11a099eae64b',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmax_1971.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/9c78138c-766a-4466-981c-11a099eae64b'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmax 1972...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  254f94bc-a6ae-4f45-a166-e8d9ad92f4c4
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/254f94bc-a6ae-4f45-a166-e8d9ad92f4c4',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmax_1972.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/254f94bc-a6ae-4f45-a166-e8d9ad92f4c4'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmax 1973...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  1674d168-14ea-49f3-970c-29782d9d7dbb
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/1674d168-14ea-49f3-970c-29782d9d7dbb',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmax_1973.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/1674d168-14ea-49f3-970c-29782d9d7dbb'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmax 1974...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  698d66ed-a3c8-4413-b53e-76d9611ce5b7
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/698d66ed-a3c8-4413-b53e-76d9611ce5b7',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmax_1974.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/698d66ed-a3c8-4413-b53e-76d9611ce5b7'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmax 1975...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  4d3beb5e-3ab9-45b2-8c39-fc869a1bda41
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/4d3beb5e-3ab9-45b2-8c39-fc869a1bda41',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmax_1975.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/4d3beb5e-3ab9-45b2-8c39-fc869a1bda41'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmax 1976...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  5a7949c8-57bc-4b23-9710-27b88c752054
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/5a7949c8-57bc-4b23-9710-27b88c752054',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmax_1976.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/5a7949c8-57bc-4b23-9710-27b88c752054'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmax 1977...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  60132512-c6aa-44c7-a7a9-81dc567db81a
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/60132512-c6aa-44c7-a7a9-81dc567db81a',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmax_1977.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/60132512-c6aa-44c7-a7a9-81dc567db81a'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmax 1978...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  4da8cdb0-a467-4fb6-9d9b-61fd439e6c99
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/4da8cdb0-a467-4fb6-9d9b-61fd439e6c99',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmax_1978.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/4da8cdb0-a467-4fb6-9d9b-61fd439e6c99'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmax 1979...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  4c9a1263-e335-4dd6-b37b-5edece23b928
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/4c9a1263-e335-4dd6-b37b-5edece23b928',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmax_1979.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/4c9a1263-e335-4dd6-b37b-5edece23b928'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmax 1980...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  96e55dd1-2195-494f-ba79-3f32e2a6c4b9
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/96e55dd1-2195-494f-ba79-3f32e2a6c4b9',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmax_1980.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/96e55dd1-2195-494f-ba79-3f32e2a6c4b9'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmax 1981...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  45473cb8-6f96-4136-8a59-4032514aec2a
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/45473cb8-6f96-4136-8a59-4032514aec2a',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmax_1981.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/45473cb8-6f96-4136-8a59-4032514aec2a'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmax 1982...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  115c73f3-02b5-4b3c-9dce-e06b15570bd7
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/115c73f3-02b5-4b3c-9dce-e06b15570bd7',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmax_1982.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/115c73f3-02b5-4b3c-9dce-e06b15570bd7'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmax 1983...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  e601d6d1-4182-4649-a628-b22579952b64
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/e601d6d1-4182-4649-a628-b22579952b64',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmax_1983.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/e601d6d1-4182-4649-a628-b22579952b64'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmax 1984...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  12354fcb-0bc1-41b5-a9d0-6851642c18cb
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/12354fcb-0bc1-41b5-a9d0-6851642c18cb',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmax_1984.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/12354fcb-0bc1-41b5-a9d0-6851642c18cb'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmax 1985...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  68f7750f-431a-4d97-84e7-8778ba7cddc8
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/68f7750f-431a-4d97-84e7-8778ba7cddc8',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmax_1985.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/68f7750f-431a-4d97-84e7-8778ba7cddc8'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmax 1986...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  e166af9a-8067-47eb-8b78-4a55b2081224
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/e166af9a-8067-47eb-8b78-4a55b2081224',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmax_1986.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/e166af9a-8067-47eb-8b78-4a55b2081224'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmax 1987...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  342871cf-0f28-4395-9a41-e9ba16fa4150
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/342871cf-0f28-4395-9a41-e9ba16fa4150',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmax_1987.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/342871cf-0f28-4395-9a41-e9ba16fa4150'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmax 1988...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  1bc74d5a-b763-4492-afb5-043d4a5ea2fe
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/1bc74d5a-b763-4492-afb5-043d4a5ea2fe',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmax_1988.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/1bc74d5a-b763-4492-afb5-043d4a5ea2fe'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmax 1989...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  effcd257-6408-49d7-ac13-6341f8fff02d
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/effcd257-6408-49d7-ac13-6341f8fff02d',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmax_1989.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/effcd257-6408-49d7-ac13-6341f8fff02d'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmax 1990...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  03feb9b7-fd28-460d-b267-8c40ccecf713
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/03feb9b7-fd28-460d-b267-8c40ccecf713',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmax_1990.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/03feb9b7-fd28-460d-b267-8c40ccecf713'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmax 1991...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  3e6e3d1d-b43c-4d5d-9081-4c0c0e81124c
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/3e6e3d1d-b43c-4d5d-9081-4c0c0e81124c',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmax_1991.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/3e6e3d1d-b43c-4d5d-9081-4c0c0e81124c'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmax 1992...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  5ff83f07-d87c-4d47-b56c-b1db13a17652
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/5ff83f07-d87c-4d47-b56c-b1db13a17652',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmax_1992.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/5ff83f07-d87c-4d47-b56c-b1db13a17652'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmax 1993...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  34d850ee-2630-4793-8dd7-b8e216241434
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/34d850ee-2630-4793-8dd7-b8e216241434',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmax_1993.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/34d850ee-2630-4793-8dd7-b8e216241434'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmax 1994...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  148511df-6f98-48c7-9fbe-941e54570c12
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/148511df-6f98-48c7-9fbe-941e54570c12',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmax_1994.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/148511df-6f98-48c7-9fbe-941e54570c12'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmax 1995...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  5c137779-e840-498f-9fc1-47988689e828
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/5c137779-e840-498f-9fc1-47988689e828',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmax_1995.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/5c137779-e840-498f-9fc1-47988689e828'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmax 1996...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  81c26ae8-2952-4681-a4c6-04243c2f4423
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/81c26ae8-2952-4681-a4c6-04243c2f4423',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmax_1996.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/81c26ae8-2952-4681-a4c6-04243c2f4423'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmax 1997...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  c4899311-57d7-4ccc-b64b-1b975142bc8c
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/c4899311-57d7-4ccc-b64b-1b975142bc8c',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmax_1997.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/c4899311-57d7-4ccc-b64b-1b975142bc8c'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmax 1998...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  cc395271-1b5a-4c1a-8d8f-226742929721
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/cc395271-1b5a-4c1a-8d8f-226742929721',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmax_1998.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/cc395271-1b5a-4c1a-8d8f-226742929721'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmax 1999...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  98cbad31-8fb0-40d4-87f5-2ca39008b0d0
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/98cbad31-8fb0-40d4-87f5-2ca39008b0d0',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmax_1999.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/98cbad31-8fb0-40d4-87f5-2ca39008b0d0'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmax 2000...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  9db9253d-cc44-4b3f-a59c-12bf6381cafc
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/9db9253d-cc44-4b3f-a59c-12bf6381cafc',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmax_2000.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/9db9253d-cc44-4b3f-a59c-12bf6381cafc'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmax 2001...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  5a1e9caa-4ceb-427d-ac3e-0aa6ce792c01
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/5a1e9caa-4ceb-427d-ac3e-0aa6ce792c01',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmax_2001.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/5a1e9caa-4ceb-427d-ac3e-0aa6ce792c01'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmax 2002...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  e2cb5121-76b5-4995-b608-62896defa708
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/e2cb5121-76b5-4995-b608-62896defa708',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmax_2002.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/e2cb5121-76b5-4995-b608-62896defa708'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmax 2003...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  7c3e099f-f23b-4ec8-adf8-9c9b9059b6fa
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/7c3e099f-f23b-4ec8-adf8-9c9b9059b6fa',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmax_2003.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/7c3e099f-f23b-4ec8-adf8-9c9b9059b6fa'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmax 2004...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  2fa8ebd1-b31b-4002-8617-e9cfe9a3dfdd
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/2fa8ebd1-b31b-4002-8617-e9cfe9a3dfdd',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmax_2004.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/2fa8ebd1-b31b-4002-8617-e9cfe9a3dfdd'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmax 2005...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  b20045d4-5c61-46d7-81a4-81d36b26b79c
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/b20045d4-5c61-46d7-81a4-81d36b26b79c',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmax_2005.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/b20045d4-5c61-46d7-81a4-81d36b26b79c'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmax 2006...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  ff4e6482-3653-4815-8c04-ae0a9479bf80
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/ff4e6482-3653-4815-8c04-ae0a9479bf80',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmax_2006.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/ff4e6482-3653-4815-8c04-ae0a9479bf80'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmax 2007...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  8c9986ec-f2b7-44a3-9911-15df5644e327
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/8c9986ec-f2b7-44a3-9911-15df5644e327',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmax_2007.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/8c9986ec-f2b7-44a3-9911-15df5644e327'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmax 2008...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  40306f53-5d79-43e8-afac-7fd9722d43e7
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/40306f53-5d79-43e8-afac-7fd9722d43e7',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmax_2008.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/40306f53-5d79-43e8-afac-7fd9722d43e7'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmax 2009...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  45582dcc-9757-464d-8cbe-c3ecc157b83a
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/45582dcc-9757-464d-8cbe-c3ecc157b83a',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmax_2009.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/45582dcc-9757-464d-8cbe-c3ecc157b83a'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmax 2010...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  d6f02904-efae-4b2b-bb94-d08a3385552c
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/d6f02904-efae-4b2b-bb94-d08a3385552c',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmax_2010.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/d6f02904-efae-4b2b-bb94-d08a3385552c'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmax 2011...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  3ff95905-966b-4f1f-a1d6-e0265b6f3e2d
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/3ff95905-966b-4f1f-a1d6-e0265b6f3e2d',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmax_2011.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/3ff95905-966b-4f1f-a1d6-e0265b6f3e2d'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmax 2012...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  3c2bc924-3c2f-4dfe-9865-feb5011894a8
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/3c2bc924-3c2f-4dfe-9865-feb5011894a8',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmax_2012.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/3c2bc924-3c2f-4dfe-9865-feb5011894a8'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmax 2013...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  5cfea2db-0ec0-4325-ad63-5a8b0a7375e0
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/5cfea2db-0ec0-4325-ad63-5a8b0a7375e0',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmax_2013.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/5cfea2db-0ec0-4325-ad63-5a8b0a7375e0'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmax 2014...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  1db1870b-1c10-413e-82e8-b7c928796de4
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/1db1870b-1c10-413e-82e8-b7c928796de4',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmax_2014.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/1db1870b-1c10-413e-82e8-b7c928796de4'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmax 2015...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  7a29d661-2a48-498b-bd18-3bc44849e43c
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/7a29d661-2a48-498b-bd18-3bc44849e43c',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmax_2015.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/7a29d661-2a48-498b-bd18-3bc44849e43c'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmax 2016...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  f1e136cb-aa4f-45f9-8222-75f7fb809bc4
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/f1e136cb-aa4f-45f9-8222-75f7fb809bc4',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmax_2016.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/f1e136cb-aa4f-45f9-8222-75f7fb809bc4'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmax 2017...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  1b5af887-77f4-4b3b-bb9f-6e8935045a89
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/1b5af887-77f4-4b3b-bb9f-6e8935045a89',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmax_2017.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/1b5af887-77f4-4b3b-bb9f-6e8935045a89'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmax 2018...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  e08227d3-1741-499f-8166-dac898cbf6d5
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/e08227d3-1741-499f-8166-dac898cbf6d5',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmax_2018.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/e08227d3-1741-499f-8166-dac898cbf6d5'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmax 2019...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  56f4103b-9095-4772-be74-aaa6f76583df
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/56f4103b-9095-4772-be74-aaa6f76583df',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmax_2019.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/56f4103b-9095-4772-be74-aaa6f76583df'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmax 2020...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  acb21972-3e65-4ba8-9197-16575ea59228
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/acb21972-3e65-4ba8-9197-16575ea59228',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmax_2020.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/acb21972-3e65-4ba8-9197-16575ea59228'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmax 2021...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  949f12b1-5f8e-4d36-b1f5-1d02c826f48f
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/949f12b1-5f8e-4d36-b1f5-1d02c826f48f',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmax_2021.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/949f12b1-5f8e-4d36-b1f5-1d02c826f48f'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmax 2022...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  93c659a5-1566-47c5-b0ce-a6fbc2d41512
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/93c659a5-1566-47c5-b0ce-a6fbc2d41512',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmax_2022.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/93c659a5-1566-47c5-b0ce-a6fbc2d41512'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmax 2023...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  cb777696-4c92-4d59-a55e-2ed5f0497181
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/cb777696-4c92-4d59-a55e-2ed5f0497181',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmax_2023.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/cb777696-4c92-4d59-a55e-2ed5f0497181'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmax 2024...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  c42e5076-24eb-4ecf-9dd4-d40e4eb2706a
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/c42e5076-24eb-4ecf-9dd4-d40e4eb2706a',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmax_2024.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/c42e5076-24eb-4ecf-9dd4-d40e4eb2706a'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmax 2025...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  5b27ea58-9dc9-4438-b2b6-c9b3400b51f5
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/5b27ea58-9dc9-4438-b2b6-c9b3400b51f5',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmax_2025.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/5b27ea58-9dc9-4438-b2b6-c9b3400b51f5'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmin 1950...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  5a2a95e4-429a-4420-8481-88a00ed3055d
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/5a2a95e4-429a-4420-8481-88a00ed3055d',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmin_1950.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/5a2a95e4-429a-4420-8481-88a00ed3055d'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmin 1951...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  fbae2e86-4c80-4029-a207-3d3d8f3ddb5c
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/fbae2e86-4c80-4029-a207-3d3d8f3ddb5c',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmin_1951.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/fbae2e86-4c80-4029-a207-3d3d8f3ddb5c'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmin 1952...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  13e4f053-3729-4c27-971b-5bfdce65d2a8
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/13e4f053-3729-4c27-971b-5bfdce65d2a8',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmin_1952.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/13e4f053-3729-4c27-971b-5bfdce65d2a8'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmin 1953...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  e46c79b8-f4d2-414b-9de6-4036b02ace27
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/e46c79b8-f4d2-414b-9de6-4036b02ace27',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmin_1953.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/e46c79b8-f4d2-414b-9de6-4036b02ace27'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmin 1954...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  aa97ef95-ac82-4e08-a7ef-6ef763d0440a
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/aa97ef95-ac82-4e08-a7ef-6ef763d0440a',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmin_1954.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/aa97ef95-ac82-4e08-a7ef-6ef763d0440a'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmin 1955...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  44ac8ff9-21fa-439d-a984-51ec493d21bd
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/44ac8ff9-21fa-439d-a984-51ec493d21bd',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmin_1955.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/44ac8ff9-21fa-439d-a984-51ec493d21bd'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmin 1956...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  d83de61d-307d-48c1-89a3-34c9d3f54680
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/d83de61d-307d-48c1-89a3-34c9d3f54680',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmin_1956.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/d83de61d-307d-48c1-89a3-34c9d3f54680'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmin 1957...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  038b501c-27ce-486f-a218-fd5aa2337b10
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/038b501c-27ce-486f-a218-fd5aa2337b10',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmin_1957.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/038b501c-27ce-486f-a218-fd5aa2337b10'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmin 1958...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  07c6a97a-be25-4e9d-965e-87509b431d58
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/07c6a97a-be25-4e9d-965e-87509b431d58',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmin_1958.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/07c6a97a-be25-4e9d-965e-87509b431d58'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmin 1959...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  67b14aff-a8c6-4c17-99b9-ed47139d9459
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/67b14aff-a8c6-4c17-99b9-ed47139d9459',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmin_1959.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/67b14aff-a8c6-4c17-99b9-ed47139d9459'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmin 1960...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  08aa156f-8b5f-413b-a5e8-3ad0f89e3c90
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/08aa156f-8b5f-413b-a5e8-3ad0f89e3c90',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmin_1960.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/08aa156f-8b5f-413b-a5e8-3ad0f89e3c90'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmin 1961...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  923b937a-75c2-44d0-8bff-12a81546b4fd
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/923b937a-75c2-44d0-8bff-12a81546b4fd',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmin_1961.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/923b937a-75c2-44d0-8bff-12a81546b4fd'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmin 1962...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  0b8994ee-2018-431f-9756-e896019d388f
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/0b8994ee-2018-431f-9756-e896019d388f',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmin_1962.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/0b8994ee-2018-431f-9756-e896019d388f'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmin 1963...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  fe1ca104-5795-4333-8960-ca12b3c57713
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/fe1ca104-5795-4333-8960-ca12b3c57713',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmin_1963.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/fe1ca104-5795-4333-8960-ca12b3c57713'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmin 1964...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  bcec79a1-b662-420c-b9e3-6b132e245d10
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/bcec79a1-b662-420c-b9e3-6b132e245d10',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmin_1964.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/bcec79a1-b662-420c-b9e3-6b132e245d10'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmin 1965...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  136b5421-5bae-48e6-9f36-295f918e5c87
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/136b5421-5bae-48e6-9f36-295f918e5c87',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmin_1965.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/136b5421-5bae-48e6-9f36-295f918e5c87'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmin 1966...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  0b909c61-9da1-49f6-a39f-3128da594bb4
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/0b909c61-9da1-49f6-a39f-3128da594bb4',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmin_1966.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/0b909c61-9da1-49f6-a39f-3128da594bb4'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmin 1967...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  f2e8efde-cdf4-4e8a-b3c9-4ace6300fb02
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/f2e8efde-cdf4-4e8a-b3c9-4ace6300fb02',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmin_1967.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/f2e8efde-cdf4-4e8a-b3c9-4ace6300fb02'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmin 1968...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  bba5471d-62bc-47d6-98e3-c4a43c6191bd
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/bba5471d-62bc-47d6-98e3-c4a43c6191bd',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmin_1968.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/bba5471d-62bc-47d6-98e3-c4a43c6191bd'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmin 1969...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  0618ac1c-8bb3-410e-a864-c8f4329cc10a
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/0618ac1c-8bb3-410e-a864-c8f4329cc10a',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmin_1969.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/0618ac1c-8bb3-410e-a864-c8f4329cc10a'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmin 1970...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  1dcc5193-fed5-4b89-991c-d0a95f01de86
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/1dcc5193-fed5-4b89-991c-d0a95f01de86',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmin_1970.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/1dcc5193-fed5-4b89-991c-d0a95f01de86'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmin 1971...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  ac685a34-403e-4c10-bbca-af8d97775874
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/ac685a34-403e-4c10-bbca-af8d97775874',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmin_1971.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/ac685a34-403e-4c10-bbca-af8d97775874'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmin 1972...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  b56de412-a72a-4ace-97a3-916982e655d1
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/b56de412-a72a-4ace-97a3-916982e655d1',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmin_1972.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/b56de412-a72a-4ace-97a3-916982e655d1'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmin 1973...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  f40f2090-357d-46ab-a075-13df5c8fa974
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/f40f2090-357d-46ab-a075-13df5c8fa974',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmin_1973.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/f40f2090-357d-46ab-a075-13df5c8fa974'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmin 1974...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  d268d579-d2ba-4ddf-8a7a-8ba8adb4da5d
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/d268d579-d2ba-4ddf-8a7a-8ba8adb4da5d',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmin_1974.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/d268d579-d2ba-4ddf-8a7a-8ba8adb4da5d'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmin 1975...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  69a8ac98-e4dd-4709-a714-183d534984b6
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/69a8ac98-e4dd-4709-a714-183d534984b6',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmin_1975.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/69a8ac98-e4dd-4709-a714-183d534984b6'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmin 1976...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  d37510aa-f6c6-427c-bc07-176c79b59637
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/d37510aa-f6c6-427c-bc07-176c79b59637',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmin_1976.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/d37510aa-f6c6-427c-bc07-176c79b59637'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmin 1977...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  c824d86c-397f-407e-aaab-1006a2aa1f2b
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/c824d86c-397f-407e-aaab-1006a2aa1f2b',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmin_1977.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/c824d86c-397f-407e-aaab-1006a2aa1f2b'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmin 1978...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  e7352205-ef38-404c-ab59-4a9741622372
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/e7352205-ef38-404c-ab59-4a9741622372',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmin_1978.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/e7352205-ef38-404c-ab59-4a9741622372'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmin 1979...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  7fb89962-ddb1-4083-82bc-857d42bc1ef7
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/7fb89962-ddb1-4083-82bc-857d42bc1ef7',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmin_1979.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/7fb89962-ddb1-4083-82bc-857d42bc1ef7'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmin 1980...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  ad2dba10-83f1-4115-8f28-d2323f3f0e37
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/ad2dba10-83f1-4115-8f28-d2323f3f0e37',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmin_1980.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/ad2dba10-83f1-4115-8f28-d2323f3f0e37'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmin 1981...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  42d63898-7661-4c30-ad49-2f6661464093
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/42d63898-7661-4c30-ad49-2f6661464093',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmin_1981.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/42d63898-7661-4c30-ad49-2f6661464093'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmin 1982...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  d9465863-060a-4e92-8f1b-f640ec8f1926
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/d9465863-060a-4e92-8f1b-f640ec8f1926',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmin_1982.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/d9465863-060a-4e92-8f1b-f640ec8f1926'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmin 1983...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  38f19c01-ebf8-474b-a241-9a094cdcb13c
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/38f19c01-ebf8-474b-a241-9a094cdcb13c',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmin_1983.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/38f19c01-ebf8-474b-a241-9a094cdcb13c'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmin 1984...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  d661abdc-548d-4af2-b08c-86b0a48118e3
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/d661abdc-548d-4af2-b08c-86b0a48118e3',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmin_1984.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/d661abdc-548d-4af2-b08c-86b0a48118e3'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmin 1985...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  23585a07-6fd4-4d1b-9690-ec5833a0c07a
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/23585a07-6fd4-4d1b-9690-ec5833a0c07a',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmin_1985.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/23585a07-6fd4-4d1b-9690-ec5833a0c07a'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmin 1986...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  3b7b6f09-59b6-4dbb-bf80-9f6fd7b5f596
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/3b7b6f09-59b6-4dbb-bf80-9f6fd7b5f596',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmin_1986.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/3b7b6f09-59b6-4dbb-bf80-9f6fd7b5f596'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmin 1987...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  33bbd125-31e1-4e5a-82a2-d90bb962c858
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/33bbd125-31e1-4e5a-82a2-d90bb962c858',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmin_1987.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/33bbd125-31e1-4e5a-82a2-d90bb962c858'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmin 1988...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  accc4b33-e1ac-4ade-9b12-4c90211b39bc
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/accc4b33-e1ac-4ade-9b12-4c90211b39bc',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmin_1988.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/accc4b33-e1ac-4ade-9b12-4c90211b39bc'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmin 1989...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  24e29dbc-cce7-4c79-b9bb-2b7a2c7d8c9a
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/24e29dbc-cce7-4c79-b9bb-2b7a2c7d8c9a',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmin_1989.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/24e29dbc-cce7-4c79-b9bb-2b7a2c7d8c9a'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmin 1990...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  1c6033dc-8f65-49a5-9949-479d835979a9
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/1c6033dc-8f65-49a5-9949-479d835979a9',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmin_1990.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/1c6033dc-8f65-49a5-9949-479d835979a9'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmin 1991...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  193630ea-89ca-45f2-bafa-82e362565295
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/193630ea-89ca-45f2-bafa-82e362565295',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmin_1991.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/193630ea-89ca-45f2-bafa-82e362565295'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmin 1992...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  ea4449af-8e40-48a8-afba-13471f3c1b53
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/ea4449af-8e40-48a8-afba-13471f3c1b53',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmin_1992.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/ea4449af-8e40-48a8-afba-13471f3c1b53'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmin 1993...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  8c0463e9-c27a-473c-be27-3e97d3337e15
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/8c0463e9-c27a-473c-be27-3e97d3337e15',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmin_1993.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/8c0463e9-c27a-473c-be27-3e97d3337e15'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmin 1994...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  a5ad1bea-ae1e-456a-a880-63394746f253
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/a5ad1bea-ae1e-456a-a880-63394746f253',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmin_1994.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/a5ad1bea-ae1e-456a-a880-63394746f253'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmin 1995...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  6392134a-8ad6-4c9b-8fb3-0eea00247dd8
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/6392134a-8ad6-4c9b-8fb3-0eea00247dd8',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmin_1995.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/6392134a-8ad6-4c9b-8fb3-0eea00247dd8'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmin 1996...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  cdd72a6b-9556-46b7-98ab-0eb4756a9e35
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/cdd72a6b-9556-46b7-98ab-0eb4756a9e35',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmin_1996.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/cdd72a6b-9556-46b7-98ab-0eb4756a9e35'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmin 1997...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  104fbe29-43d7-4436-8e68-4f5948bf5f77
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/104fbe29-43d7-4436-8e68-4f5948bf5f77',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmin_1997.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/104fbe29-43d7-4436-8e68-4f5948bf5f77'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmin 1998...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  e1a75bb7-66bd-4232-9441-7d4be8d3bc00
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/e1a75bb7-66bd-4232-9441-7d4be8d3bc00',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmin_1998.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/e1a75bb7-66bd-4232-9441-7d4be8d3bc00'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmin 1999...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  1de7e716-8cf9-4c00-966c-8172d9a78102
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/1de7e716-8cf9-4c00-966c-8172d9a78102',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmin_1999.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/1de7e716-8cf9-4c00-966c-8172d9a78102'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmin 2000...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  7e45121f-1c23-490f-9aad-2b0dbe648728
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/7e45121f-1c23-490f-9aad-2b0dbe648728',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmin_2000.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/7e45121f-1c23-490f-9aad-2b0dbe648728'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmin 2001...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  4ae5dced-023f-457f-a9c0-6c78f23a8ec9
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/4ae5dced-023f-457f-a9c0-6c78f23a8ec9',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmin_2001.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/4ae5dced-023f-457f-a9c0-6c78f23a8ec9'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmin 2002...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  80d8386c-ff4e-4026-8824-2a1534735abe
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/80d8386c-ff4e-4026-8824-2a1534735abe',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmin_2002.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/80d8386c-ff4e-4026-8824-2a1534735abe'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmin 2003...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  01966db3-5977-4742-a37b-bf766263446b
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/01966db3-5977-4742-a37b-bf766263446b',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmin_2003.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/01966db3-5977-4742-a37b-bf766263446b'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmin 2004...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  5bc91f8c-332d-4916-b89f-5f71da33a1b1
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/5bc91f8c-332d-4916-b89f-5f71da33a1b1',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmin_2004.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/5bc91f8c-332d-4916-b89f-5f71da33a1b1'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmin 2005...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  cc0cfa83-aefb-43d1-a102-fff4b1c2a43e
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/cc0cfa83-aefb-43d1-a102-fff4b1c2a43e',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmin_2005.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/cc0cfa83-aefb-43d1-a102-fff4b1c2a43e'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmin 2006...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  035e968c-b939-44a4-82be-92d748218fec
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/035e968c-b939-44a4-82be-92d748218fec',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmin_2006.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/035e968c-b939-44a4-82be-92d748218fec'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmin 2007...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  834221a3-dd44-41ec-a215-a5a0f2a15a50
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/834221a3-dd44-41ec-a215-a5a0f2a15a50',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmin_2007.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/834221a3-dd44-41ec-a215-a5a0f2a15a50'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmin 2008...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  ee5b3d1c-290b-419d-baf8-9fae53f392db
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/ee5b3d1c-290b-419d-baf8-9fae53f392db',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmin_2008.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/ee5b3d1c-290b-419d-baf8-9fae53f392db'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmin 2009...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  4b8eed65-d03a-4a0a-90de-9b10d592c3e6
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/4b8eed65-d03a-4a0a-90de-9b10d592c3e6',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmin_2009.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/4b8eed65-d03a-4a0a-90de-9b10d592c3e6'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmin 2010...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  33eea569-80c8-4b34-8921-cacb37347d6a
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/33eea569-80c8-4b34-8921-cacb37347d6a',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmin_2010.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/33eea569-80c8-4b34-8921-cacb37347d6a'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmin 2011...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  2f097898-4844-4868-9da6-48d04ad88207
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/2f097898-4844-4868-9da6-48d04ad88207',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmin_2011.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/2f097898-4844-4868-9da6-48d04ad88207'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmin 2012...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  da8de4f1-85e8-4d42-823e-f2fc1e5bc354
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/da8de4f1-85e8-4d42-823e-f2fc1e5bc354',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmin_2012.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/da8de4f1-85e8-4d42-823e-f2fc1e5bc354'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmin 2013...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  3156e9ee-24a2-4e12-a096-133c8423487c
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/3156e9ee-24a2-4e12-a096-133c8423487c',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmin_2013.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/3156e9ee-24a2-4e12-a096-133c8423487c'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmin 2014...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  74e62484-9640-4104-ba6e-af86cb8eb055
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/74e62484-9640-4104-ba6e-af86cb8eb055',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmin_2014.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/74e62484-9640-4104-ba6e-af86cb8eb055'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmin 2015...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  59671430-85e9-4ddb-ae6b-295b40247bc1
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/59671430-85e9-4ddb-ae6b-295b40247bc1',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmin_2015.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/59671430-85e9-4ddb-ae6b-295b40247bc1'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmin 2016...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  79226659-910e-4328-822d-1bd6be29e290
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/79226659-910e-4328-822d-1bd6be29e290',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmin_2016.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/79226659-910e-4328-822d-1bd6be29e290'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmin 2017...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  26b71b27-cabd-4470-95a9-76661c071e4f
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/26b71b27-cabd-4470-95a9-76661c071e4f',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmin_2017.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/26b71b27-cabd-4470-95a9-76661c071e4f'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmin 2018...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  8769b708-0632-46af-85a5-dfc5ea3f33dd
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/8769b708-0632-46af-85a5-dfc5ea3f33dd',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmin_2018.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/8769b708-0632-46af-85a5-dfc5ea3f33dd'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmin 2019...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  7d09724a-555c-4228-bb77-2907d4e71ae3
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/7d09724a-555c-4228-bb77-2907d4e71ae3',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmin_2019.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/7d09724a-555c-4228-bb77-2907d4e71ae3'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmin 2020...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  6b6a483c-30b8-494f-876a-e1e56a1454d0
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/6b6a483c-30b8-494f-876a-e1e56a1454d0',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmin_2020.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/6b6a483c-30b8-494f-876a-e1e56a1454d0'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmin 2021...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  f19a3199-8983-4472-b5f2-64f040ff1b2e
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/f19a3199-8983-4472-b5f2-64f040ff1b2e',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmin_2021.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/f19a3199-8983-4472-b5f2-64f040ff1b2e'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmin 2022...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  da3434c5-12c0-44bd-b27f-fd317b9ad2b3
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/da3434c5-12c0-44bd-b27f-fd317b9ad2b3',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmin_2022.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/da3434c5-12c0-44bd-b27f-fd317b9ad2b3'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmin 2023...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  04796628-d88b-462b-b4b0-c6bc506bfbd9
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/04796628-d88b-462b-b4b0-c6bc506bfbd9',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmin_2023.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/04796628-d88b-462b-b4b0-c6bc506bfbd9'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmin 2024...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  128e1b50-41c1-4566-9866-3858009a0a70
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/128e1b50-41c1-4566-9866-3858009a0a70',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmin_2024.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/128e1b50-41c1-4566-9866-3858009a0a70'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+Submitting tmin 2025...
+Requesting data to the cds service with username ecmwfr
+Superclass ecmwfr_service has cloneable=FALSE, but subclass ecmwfr_ds has cloneable=TRUE. A subclass cannot be cloneable when its superclass is not cloneable, so cloning will be disabled for ecmwfr_ds.
+- staging data transfer at url endpoint or request id:
+  de38efa0-234f-4dae-9b62-f09cbd28ec48
+
+  on server: https://cds.climate.copernicus.eu/api
+
+- Your request has been submitted as a CDS request.
+
+  Even after exiting your request is still beeing processed!
+
+- Retry downloading as soon as completed! 
+
+  If you close your session use the following code: 
+
+  wf_transfer(
+   url = 'https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/de38efa0-234f-4dae-9b62-f09cbd28ec48',
+   path = 'data/backfill/raw',
+   filename = 'era5land_tmin_2025.grib'
+  )
+
+- Delete the job upon completion using:
+  wf_delete(
+   url ='https://cds.climate.copernicus.eu/api/retrieve/v1/jobs/de38efa0-234f-4dae-9b62-f09cbd28ec48'
+  )
+
+  If your session stays open you can donwload or delete requests using: 
+
+  file$download() and file$delete() *
+
+ [* with file from: file <- wf_request(request)] 
+
+
+
+Submitted 152 jobs
+Job URLs saved to: data/backfill/daily_stats_jobs.csv
+
+Wait a few hours, then run:
+  Rscript scripts/pipeline_daily_stats_retrieve.R

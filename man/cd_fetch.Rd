@@ -11,7 +11,8 @@ cd_fetch(
   bbox = c(60, -140, 48, -114),
   output_dir,
   source = "era5_land",
-  force = FALSE
+  force = FALSE,
+  retry = 60
 )
 }
 \arguments{
@@ -31,6 +32,9 @@ Default covers British Columbia.}
 \code{"era5_land"} is supported.}
 
 \item{force}{Logical. Re-download even if files exist. Default \code{FALSE}.}
+
+\item{retry}{Numeric. Polling interval in seconds when waiting for CDS
+jobs. Default \code{60}. Increase if hitting rate limits (429 errors).}
 }
 \value{
 Character vector of downloaded file paths (GRIBs extracted
