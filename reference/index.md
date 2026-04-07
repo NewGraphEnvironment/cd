@@ -32,6 +32,10 @@
   : Download ERA5-Land climate data
 - [`cd_periods()`](https://newgraphenvironment.github.io/cd/reference/cd_periods.md)
   : Valid temporal aggregation periods
+- [`cd_plot_comparison()`](https://newgraphenvironment.github.io/cd/reference/cd_plot_comparison.md)
+  : Plot time window comparison
+- [`cd_plot_timeseries()`](https://newgraphenvironment.github.io/cd/reference/cd_plot_timeseries.md)
+  : Plot climate anomaly time series
 - [`cd_s3_push()`](https://newgraphenvironment.github.io/cd/reference/cd_s3_push.md)
   : Push files to S3
 - [`cd_seasons()`](https://newgraphenvironment.github.io/cd/reference/cd_seasons.md)

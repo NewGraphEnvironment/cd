@@ -90,6 +90,10 @@ cd_compare(ts, window_a = 1956:1960, window_b = 1951:1955)
   : Download ERA5-Land climate data
 - [`cd_periods()`](https://newgraphenvironment.github.io/cd/reference/cd_periods.md)
   : Valid temporal aggregation periods
+- [`cd_plot_comparison()`](https://newgraphenvironment.github.io/cd/reference/cd_plot_comparison.md)
+  : Plot time window comparison
+- [`cd_plot_timeseries()`](https://newgraphenvironment.github.io/cd/reference/cd_plot_timeseries.md)
+  : Plot climate anomaly time series
 - [`cd_s3_push()`](https://newgraphenvironment.github.io/cd/reference/cd_s3_push.md)
   : Push files to S3
 - [`cd_seasons()`](https://newgraphenvironment.github.io/cd/reference/cd_seasons.md)
@@ -103,3 +107,9 @@ cd_compare(ts, window_a = 1956:1960, window_b = 1951:1955)
 - [`cd_variables()`](https://newgraphenvironment.github.io/cd/reference/cd_variables.md)
   : Climate variable metadata
 
+# Articles
+
+### All vignettes
+
+- [Climate Departure Analysis for a
+  Watershed](https://newgraphenvironment.github.io/cd/articles/climate-departure.md):

@@ -3,6 +3,8 @@
 <url><loc>https://newgraphenvironment.github.io/cd/CLAUDE.html</loc></url>
 <url><loc>https://newgraphenvironment.github.io/cd/LICENSE-text.html</loc></url>
 <url><loc>https://newgraphenvironment.github.io/cd/LICENSE.html</loc></url>
+<url><loc>https://newgraphenvironment.github.io/cd/articles/climate-departure.html</loc></url>
+<url><loc>https://newgraphenvironment.github.io/cd/articles/index.html</loc></url>
 <url><loc>https://newgraphenvironment.github.io/cd/authors.html</loc></url>
 <url><loc>https://newgraphenvironment.github.io/cd/index.html</loc></url>
 <url><loc>https://newgraphenvironment.github.io/cd/news/index.html</loc></url>
@@ -22,6 +24,8 @@
 <url><loc>https://newgraphenvironment.github.io/cd/reference/cd_extract.html</loc></url>
 <url><loc>https://newgraphenvironment.github.io/cd/reference/cd_fetch.html</loc></url>
 <url><loc>https://newgraphenvironment.github.io/cd/reference/cd_periods.html</loc></url>
+<url><loc>https://newgraphenvironment.github.io/cd/reference/cd_plot_comparison.html</loc></url>
+<url><loc>https://newgraphenvironment.github.io/cd/reference/cd_plot_timeseries.html</loc></url>
 <url><loc>https://newgraphenvironment.github.io/cd/reference/cd_s3_push.html</loc></url>
 <url><loc>https://newgraphenvironment.github.io/cd/reference/cd_seasons.html</loc></url>
 <url><loc>https://newgraphenvironment.github.io/cd/reference/cd_stac_catalog.html</loc></url>
