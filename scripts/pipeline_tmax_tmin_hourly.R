@@ -85,6 +85,9 @@ for (yr in years) {
       target = basename(out_file)
     )
 
+    # Small delay between requests to stay under rate limits
+    Sys.sleep(5)
+
     log_msg("Fetching ", yr, "-", mon_str, "...")
     tryCatch({
       result <- wf_request(request = request, path = hourly_dir, retry = retry_interval)
@@ -106,8 +109,13 @@ for (yr in years) {
               " (", round(file.size(out_file) / 1e6, 1), " MB)")
       status$downloaded <- status$downloaded + 1L
     }, error = function(e) {
-      log_msg("  FAILED: ", yr, "-", mon_str, ": ", e$message)
+      log_msg("  FAILED: ", yr, "-", mon_str, ": ", conditionMessage(e))
       status$failed <- c(status$failed, paste(yr, mon_str))
+      # Back off on rate limit errors
+      if (grepl("rate limit", conditionMessage(e), ignore.case = TRUE)) {
+        log_msg("  Rate limited — sleeping 60 seconds")
+        Sys.sleep(60)
+      }
     })
   }
 }
