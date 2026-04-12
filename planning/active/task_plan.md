@@ -26,7 +26,8 @@ Runs outside R, produces monthly GRIB or NetCDF that downstream R stages already
 - [x] Band descriptions Jan..Dec so `cd_aggregate()` seasonal grouping works
 - [x] Idempotent — skip years where both output files exist
 - [x] Test on one year (1950) — 114s, realistic values, terra reads correctly
-- [ ] Run full backfill 1950-2025 (~2.5 hours unattended)
+- [x] Run full backfill 1950-2025 — completed in ~1h 53min (76 years × tmax + tmin)
+- [x] Regenerate 2024 from EDH (was a CDS leftover) for homogeneous methodology
 - [ ] Run R stage 3 (COG + STAC + S3) against the EDH-generated TIFs
 - [ ] (Later) Extend to other variables — tmean, prcp, dewpoint, soil_moisture
 
