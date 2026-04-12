@@ -28,8 +28,27 @@ Runs outside R, produces monthly GRIB or NetCDF that downstream R stages already
 - [x] Test on one year (1950) — 114s, realistic values, terra reads correctly
 - [x] Run full backfill 1950-2025 — completed in ~1h 53min (76 years × tmax + tmin)
 - [x] Regenerate 2024 from EDH (was a CDS leftover) for homogeneous methodology
-- [ ] Run R stage 3 (COG + STAC + S3) against the EDH-generated TIFs
-- [ ] (Later) Extend to other variables — tmean, prcp, dewpoint, soil_moisture
+- [x] QA — discovered CDS-era vars on a different grid (ext shifted 0.1°, CRS missing, 121×261 vs EDH 120×260)
+- [x] Probe EDH products — confirmed two-Zarr approach: hourly for state vars, daily for prcp
+
+## Phase 2b: Unified backfill (all variables on EDH grid)
+
+Grid mismatch between CDS-era vars and EDH-era tmax/tmin blocks release.
+Regenerating everything from EDH gives one internally-consistent dataset.
+
+- [ ] Extend backfill to all 7 cd variables using appropriate EDH product
+  - tmax, tmin: hourly `t2m` → daily max/min → monthly mean (done)
+  - tmean: hourly `t2m` → monthly mean
+  - dewpoint: hourly `d2m` → monthly mean (feeds derived vpd/rh)
+  - prcp: **daily** `tp` → monthly sum of daily totals (handles accum reset)
+  - soil_moisture: hourly `swvl1..4` → monthly mean per depth, composite in R
+- [ ] Regenerate all `data/backfill/monthly/*_YYYY.tif` with consistent grid + CRS
+- [ ] Re-run QA (scripts/qa_monthly.R) — confirm all grids align, all CRS tagged
+- [ ] Re-run R cd_derive for vpd/rh (depends on fresh tmean + dewpoint)
+
+## Phase 2c: R Stage 3
+
+- [ ] Run R stage 3 (COG + STAC + S3) against the unified EDH-generated TIFs
 
 ## Phase 3: R integration for cd_fetch()
 

@@ -72,6 +72,35 @@ introducing a small systematic bias vs. a local-time daily aggregation.
   outputs are directly comparable. Addressing this bias is a follow-up issue
   (cd package methodology).
 
+## Precipitation accumulation (ERA5-Land tp)
+
+The hourly `tp` variable has `GRIB_stepType=accum` — it is a **running
+accumulation** from 01:00 UTC reset to 00:00 UTC next day. Naive
+`.sum()` over hourly values gives a monthly precip ~8× too high.
+
+**Solution:** use EDH's daily product
+`https://data.earthdatahub.destine.eu/era5/era5-land-daily-utc-v1.zarr`
+which pre-computes daily totals correctly. Monthly precip = sum of
+daily totals.
+
+**Why not fix the hourly sum:** writing accumulation logic ourselves
+is bug-prone. The daily product is what ECMWF designed for this
+exact case.
+
+**Caveat:** daily product only has 14 variables (t2m, d2m, swvl1-2, tp,
+wind, radiation, etc.) — no swvl3 or swvl4. So soil moisture stays on
+the hourly product. tmean and dewpoint could use either; we use hourly
+for consistency and because the 0.99 correlation (vs CDS) was already
+validated.
+
+## EDH product catalogue (what's available for cd package)
+
+| Product | Zarr URL | Variables | Use |
+|---|---|---|---|
+| Hourly ERA5-Land | `reanalysis-era5-land-no-antartica-v0.zarr` | 50 | tmax/tmin, tmean, dewpoint, soil_moisture |
+| Daily ERA5-Land (UTC) | `era5-land-daily-utc-v1.zarr` | 14 | prcp only |
+| Monthly ERA5 (not Land) | — | - | NOT useful (ERA5 parent, 31 km) |
+
 ## Out-of-scope confirmations
 
 - GEE has ERA5-Land but commercial license blocks us

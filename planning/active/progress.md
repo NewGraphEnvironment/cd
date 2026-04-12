@@ -32,6 +32,30 @@
 - 2025 Jul tmax up to 31.9 °C
 - All years: 12 layers, Jan..Dec names, EPSG:4326, BC bbox extent
 
+## Session 2026-04-12 (morning QA)
+
+**Completed:**
+- Wrote `scripts/qa_monthly.R` — checks grid alignment, time coverage,
+  physical sanity across all variables
+- Wrote `scripts/probe_edh_vars.py` — pulls one month of each EDH
+  variable, compares to CDS, validates aggregation semantics
+- **Discovered grid mismatch:** CDS-era vars on 121×261 grid with no CRS
+  tag, vs EDH-era tmax/tmin on 120×260 EPSG:4326. Blocks release.
+- **Validated EDH semantics:**
+  - tmean (hourly t2m mean): 0.99 correlation with CDS, 0.43 °C mean abs diff
+  - dewpoint: plausible BC winter values
+  - soil_moisture: all 4 depths match CDS composite closely
+  - prcp: hourly `tp` is accumulation (`GRIB_stepType=accum`) — need
+    EDH daily product for correct monthly precip
+- **Decision:** two-Zarr approach, extend backfill to all variables so
+  the whole dataset is internally grid-aligned
+
+**Next:**
+- Commit QA + probe scripts on the branch (durable tooling)
+- Extend backfill script to all 7 cd variables
+- Regenerate `data/backfill/monthly/` entirely
+- Re-run QA → R Stage 3 → PR
+
 **Commits this session:**
 - `0014bf2` — Add planning docs for EDH migration
 - `7ef03cb` — Add EDH Zarr benchmark test script
