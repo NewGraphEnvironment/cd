@@ -14,7 +14,7 @@ CDS (`ecmwfr`) rate limiting makes the tmax/tmin backfill take ~3 days of babysi
 - [x] Confirm commercial license (CC-BY 4.0, validated #35)
 - [x] Write portable PEP 723 test script (`scripts/test_edh_era5_land.py`)
 - [x] Bench one month BC t2m — 15.9s vs CDS 80s
-- [ ] Commit test script on the branch
+- [x] Commit test script on the branch
 
 ## Phase 2: Pragmatic Python backfill (unblock #33)
 
