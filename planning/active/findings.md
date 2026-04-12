@@ -55,6 +55,23 @@ Alternative: `storage_options={"client_kwargs":{"trust_env":True}}` to read from
 
 Decision deferred to Phase 3 after Phase 2 unblocks the data.
 
+## Known limitation: UTC-day aggregation for tmax/tmin
+
+Both the existing R pipeline (`pipeline_tmax_tmin_hourly.R`) and the new EDH
+Python script compute daily max/min over UTC-day windows, not local-time days.
+For BC (UTC-7/-8) the local-afternoon tmax peak straddles UTC day boundaries,
+introducing a small systematic bias vs. a local-time daily aggregation.
+
+- CDS's `derived-era5-land-daily-statistics` product accepts a `time_zone`
+  parameter and would fix this — but we abandoned it in #33 due to its
+  ~2-hour-per-job queue time.
+- Fixing properly requires shifting hourly timestamps by the local UTC offset
+  before `.resample("1D")`, or doing per-pixel local-time aggregation
+  (computationally expensive and overkill for a regional dataset).
+- For now: the EDH script replicates the R pipeline's existing behavior so
+  outputs are directly comparable. Addressing this bias is a follow-up issue
+  (cd package methodology).
+
 ## Out-of-scope confirmations
 
 - GEE has ERA5-Land but commercial license blocks us

@@ -21,13 +21,14 @@ CDS (`ecmwfr`) rate limiting makes the tmax/tmin backfill take ~3 days of babysi
 The quickest path to finishing the tmax/tmin data: a Python script that uses EDH directly.
 Runs outside R, produces monthly GRIB or NetCDF that downstream R stages already consume.
 
-- [ ] Write `scripts/backfill_edh.py` — pull all variables for 1950-2025, BC bbox, monthly NetCDF
-- [ ] Variable mapping: t2m → tmean/tmax/tmin inputs, tp → prcp, d2m → dewpoint, swvl1-4 → soil_moisture
-- [ ] Output format matches existing `data/backfill/raw/` layout
-- [ ] Idempotent — skip months already downloaded
-- [ ] Test on one year (1950) end to end
-- [ ] Run full backfill (~4 hours unattended)
-- [ ] Confirm outputs feed cleanly into `cd_derive()` / `cd_aggregate()`
+- [x] Write `scripts/backfill_edh_tmax_tmin.py` — tmax/tmin only for now (unblocks #33)
+- [x] Output matches existing R pipeline's Stage 2 format (yearly `.tif` × 12 month bands, °C, EPSG:4326)
+- [x] Band descriptions Jan..Dec so `cd_aggregate()` seasonal grouping works
+- [x] Idempotent — skip years where both output files exist
+- [x] Test on one year (1950) — 114s, realistic values, terra reads correctly
+- [ ] Run full backfill 1950-2025 (~2.5 hours unattended)
+- [ ] Run R stage 3 (COG + STAC + S3) against the EDH-generated TIFs
+- [ ] (Later) Extend to other variables — tmean, prcp, dewpoint, soil_moisture
 
 ## Phase 3: R integration for cd_fetch()
 
