@@ -42,6 +42,7 @@ Usage:
 """
 import argparse
 import os
+import subprocess
 import sys
 import time
 from pathlib import Path
@@ -65,6 +66,44 @@ MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
 
 
 # -- Helpers -------------------------------------------------------------------
+def preflight_single_instance():
+    """Refuse to start if another backfill_edh_all.py is already running."""
+    my_pid = os.getpid()
+    try:
+        out = subprocess.run(
+            ["pgrep", "-f", "backfill_edh_all"],
+            capture_output=True, text=True, check=False,
+        )
+        pids = [int(p) for p in out.stdout.strip().splitlines()
+                if p.strip() and int(p) != my_pid]
+    except (FileNotFoundError, ValueError):
+        pids = []
+    if pids:
+        sys.exit(f"ABORT: another backfill_edh_all is running (pids: {pids}). "
+                 f"Kill them first: kill {' '.join(str(p) for p in pids)}")
+
+
+def with_retry(fn, *, attempts: int = 4, initial_delay: float = 10.0,
+               what: str = "operation"):
+    """Run `fn()` with exponential backoff on transient errors.
+
+    EDH is chunk-based (no job queue), so network blips are the main failure
+    mode. Retry on OSError, ConnectionError, TimeoutError. Let other errors
+    (KeyError, ValueError etc) propagate — those are bugs, not transient.
+    """
+    delay = initial_delay
+    for i in range(1, attempts + 1):
+        try:
+            return fn()
+        except (OSError, ConnectionError, TimeoutError) as e:
+            if i == attempts:
+                raise
+            log(f"  {what} failed (attempt {i}/{attempts}): {type(e).__name__}: {e}. "
+                f"Retrying in {delay:.0f}s...")
+            time.sleep(delay)
+            delay *= 2
+
+
 def get_token() -> str:
     token = os.environ.get("EDH_TOKEN")
     if token:
@@ -243,16 +282,30 @@ def process_year(year: int, hourly_ds: xr.Dataset, daily_ds: xr.Dataset):
 
 # -- Main ----------------------------------------------------------------------
 def main(years):
+    preflight_single_instance()
     MONTHLY_DIR.mkdir(parents=True, exist_ok=True)
     token = get_token()
 
     log("Opening hourly Zarr (reanalysis-era5-land-no-antartica-v0)...")
-    hourly_ds = open_zarr("era5/reanalysis-era5-land-no-antartica-v0.zarr", token)
+    hourly_ds = with_retry(
+        lambda: open_zarr("era5/reanalysis-era5-land-no-antartica-v0.zarr", token),
+        what="open hourly zarr",
+    )
     log("Opening daily Zarr (era5-land-daily-utc-v1)...")
-    daily_ds = open_zarr("era5/era5-land-daily-utc-v1.zarr", token)
+    daily_ds = with_retry(
+        lambda: open_zarr("era5/era5-land-daily-utc-v1.zarr", token),
+        what="open daily zarr",
+    )
 
     for year in years:
-        process_year(year, hourly_ds, daily_ds)
+        try:
+            with_retry(
+                lambda y=year: process_year(y, hourly_ds, daily_ds),
+                what=f"process year {year}",
+            )
+        except Exception as e:
+            log(f"FAILED year {year} after retries: {type(e).__name__}: {e}")
+            log("Continuing to next year (idempotent — restart to retry this one)")
 
     log("ALL DONE")
 
