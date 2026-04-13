@@ -15,6 +15,20 @@
 - S3 push (requires user confirmation)
 - Land the PR
 
+## Session 2026-04-12 (unified backfill run)
+
+**Completed:**
+- Full 1950-2025 unified backfill of 5 non-tmax/tmin variables via EDH in ~4 hours
+  (10:19 - 14:20 wall time)
+- 532 monthly TIFs total (7 vars × 76 years), all on matching EPSG:4326 120×260 grid
+- CDS-era files safely preserved in `data/backfill/monthly/_cds_backup/` (375 files)
+- Two transient errors handled well:
+  - 1989: TimeoutError → retry-with-backoff caught it, completed on attempt 2
+  - 2008: ClientPayloadError → retry catch didn't include aiohttp class; outer handler
+    skipped the year and continued. Filled later via `--year 2008` rerun.
+- QA confirmed: all grids aligned, tmin<=tmean<=tmax with zero violations,
+  physically plausible values, soil_moisture composite correct.
+
 ## Session 2026-04-12 (overnight run)
 
 **Completed:**

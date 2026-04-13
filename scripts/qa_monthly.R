@@ -20,8 +20,7 @@ log_msg <- function(...) cat(sprintf("[%s] %s\n", format(Sys.time(), "%H:%M:%S")
 
 # -- 1. Grid alignment across variables (sample year 2000) --------------------
 log_msg("=== 1. GRID ALIGNMENT (year 2000) ===")
-vars <- c("tmax", "tmin", "tmean", "prcp", "vpd", "rh", "soil_moisture1",
-          "soil_moisture2", "soil_moisture3", "soil_moisture4")
+vars <- c("tmax", "tmin", "tmean", "prcp", "vpd", "rh", "soil_moisture")
 ref <- NULL
 for (v in vars) {
   f <- file.path(monthly_dir, paste0(v, "_2000.tif"))

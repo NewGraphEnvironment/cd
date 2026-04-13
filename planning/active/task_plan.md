@@ -36,15 +36,18 @@ Runs outside R, produces monthly GRIB or NetCDF that downstream R stages already
 Grid mismatch between CDS-era vars and EDH-era tmax/tmin blocks release.
 Regenerating everything from EDH gives one internally-consistent dataset.
 
-- [ ] Extend backfill to all 7 cd variables using appropriate EDH product
-  - tmax, tmin: hourly `t2m` → daily max/min → monthly mean (done)
-  - tmean: hourly `t2m` → monthly mean
-  - dewpoint: hourly `d2m` → monthly mean (feeds derived vpd/rh)
-  - prcp: **daily** `tp` → monthly sum of daily totals (handles accum reset)
-  - soil_moisture: hourly `swvl1..4` → monthly mean per depth, composite in R
-- [ ] Regenerate all `data/backfill/monthly/*_YYYY.tif` with consistent grid + CRS
-- [ ] Re-run QA (scripts/qa_monthly.R) — confirm all grids align, all CRS tagged
-- [ ] Re-run R cd_derive for vpd/rh (depends on fresh tmean + dewpoint)
+- [x] Extend backfill to all 7 cd variables (scripts/backfill_edh_all.py)
+- [x] Regenerate all `data/backfill/monthly/*_YYYY.tif` with consistent grid + CRS
+- [x] Re-run QA — all grids aligned, all CRS tagged, tmin<=tmean<=tmax sanity passes
+- [x] VPD/RH derived in Python (Tetens), no R cd_derive re-run needed
+
+**QA summary 2026-04-12:**
+- 7 variables × 76 years = 532 monthly TIFs
+- All on 120×260 EPSG:4326 grid, extent [-139.95, -113.95, 47.95, 59.95]
+- Zero tmin>tmax or tmean inversion violations (163,888 cell-checks)
+- (tmax+tmin)/2 vs tmean mean diff = 0.57°C (classical climatology shortcut bias, normal)
+- 2008 had a ClientPayloadError that my retry didn't catch (wrong exception class);
+  re-ran --year 2008 to fill the gap. Filed as future improvement in #38.
 
 ## Phase 2c: R Stage 3
 
