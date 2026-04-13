@@ -11,7 +11,7 @@ jobs:
     timeout-minutes: 360   # 6 hours max
 
     env:
-      CDS_API_KEY: ${{ secrets.CDS_API_KEY }}
+      EDH_TOKEN: ${{ secrets.EDH_TOKEN }}
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_DEFAULT_REGION: us-west-2
@@ -24,26 +24,30 @@ jobs:
           use-public-rspm: true
 
       - uses: r-lib/actions/setup-r-dependencies@v2
-        with:
-          extra-packages: any::ecmwfr
 
-      - name: Configure CDS API
+      - name: Install uv (runs the Python backfill)
+        uses: astral-sh/setup-uv@v5
+
+      - name: Verify required secrets present
         run: |
-          echo "url: https://cds.climate.copernicus.eu/api" > ~/.cdsapirc
-          echo "key: $CDS_API_KEY" >> ~/.cdsapirc
-          chmod 600 ~/.cdsapirc
+          missing=()
+          [ -z "$EDH_TOKEN" ] && missing+=("EDH_TOKEN")
+          [ -z "$AWS_ACCESS_KEY_ID" ] && missing+=("AWS_ACCESS_KEY_ID")
+          [ -z "$AWS_SECRET_ACCESS_KEY" ] && missing+=("AWS_SECRET_ACCESS_KEY")
+          if [ ${#missing[@]} -gt 0 ]; then
+            echo "ERROR: missing secrets: ${missing[*]}"
+            exit 1
+          fi
 
-      - name: Set ecmwfr key
-        run: |
-          Rscript -e 'ecmwfr::wf_set_key(key = Sys.getenv("CDS_API_KEY"))'
-
-      - name: Run update pipeline
+      - name: Run EDH update pipeline
         run: |
           mkdir -p logs
-          Rscript scripts/pipeline_update.R 2>&1 | tee logs/update_$(date +%Y%m%d).log
+          Rscript scripts/pipeline_update_edh.R 2>&1 | tee logs/update_$(date +%Y%m%d).log
 
+      # Only commit logs when running on main. workflow_dispatch from a
+      # feature branch should not rebase onto or push to main.
       - name: Commit log
-        if: always()
+        if: always() && github.ref == 'refs/heads/main'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
