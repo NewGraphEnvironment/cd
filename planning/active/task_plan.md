@@ -51,7 +51,9 @@ Regenerating everything from EDH gives one internally-consistent dataset.
 
 ## Phase 2c: R Stage 3
 
-- [ ] Run R stage 3 (COG + STAC + S3) against the unified EDH-generated TIFs
+- [x] Run R stage 3 (COG + STAC + S3) against the unified EDH-generated TIFs
+  (scripts/pipeline_stage3_edh.R; 35 COGs live on s3://stac-era5-land,
+  verified via /vsicurl read)
 
 ## Phase 3: R integration for cd_fetch()
 

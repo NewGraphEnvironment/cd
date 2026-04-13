@@ -10,10 +10,27 @@
 - Set up PWF files (this document, task_plan.md, findings.md)
 
 **Next:**
-- Run R stage 3 (COG/STAC/S3) against EDH-generated TIFs
-- Validate COGs structurally match what the pipeline previously produced
-- S3 push (requires user confirmation)
+- Update climate-update.yml GHA to use EDH (replace CDS fetcher with
+  scripts/backfill_edh_all.py + stage 3)
+- Write pipeline_update_edh (EDH incremental update, replaces
+  CDS-based pipeline_update.R)
 - Land the PR
+
+## Session 2026-04-12 (Stage 3 to S3)
+
+**Completed:**
+- Wrote `scripts/pipeline_stage3_edh.R` — slim Stage-3-only against
+  `data/backfill/monthly/` (avoids CDS fetch in existing pipeline_backfill.R)
+- Built 35 COGs locally: 7 variables × (annual + 4 seasons) × 76 years
+- STAC catalog built, 35 items
+- S3 sync pushed all 35 COGs to s3://stac-era5-land (178 MB total,
+  replacing the April 6-7 CDS-era COGs)
+- Catalog.json unchanged (byte-identical) because filenames + extents
+  + metadata didn't change — legitimate sync behavior, not a bug
+- Verified end-to-end via /vsicurl: tmean_annual reads back with correct
+  76 years, CRS, extent. BC annual mean 1950 = -1.42 C, 2024 = +1.85 C
+  (3.3 C warming in 74 years — the climate departure signal the package
+  is built to show, now live on S3 from EDH data)
 
 ## Session 2026-04-12 (unified backfill run)
 
