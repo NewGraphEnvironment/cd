@@ -69,9 +69,15 @@ MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
 def preflight_single_instance():
     """Refuse to start if another backfill_edh_all.py is already running.
 
-    When launched via `uv run`, uv is the parent and its cmdline also
-    contains "backfill_edh_all" — filter it out along with our own pid.
+    Protects against the CDS-era hammering incident where we had zombie
+    processes stacking up (see #33). Skipped on CI because each GHA run
+    is in a fresh container — no other instances are possible — and the
+    pgrep check has false positives there (uv wrapper, shell ancestors,
+    pgrep's own pre-exec cmdline) that are not worth chasing.
     """
+    if os.environ.get("GITHUB_ACTIONS") == "true":
+        return
+
     my_pid = os.getpid()
     my_ppid = os.getppid()
     try:
