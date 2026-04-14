@@ -85,11 +85,21 @@ knitr::kable(catalog, caption = "Available climate variables and periods in the 
 | soil_moisture | spring | <https://stac-era5-land.s3.us-west-2.amazonaws.com/soil_moisture_spring.tif> |
 | soil_moisture | summer | <https://stac-era5-land.s3.us-west-2.amazonaws.com/soil_moisture_summer.tif> |
 | soil_moisture | winter | <https://stac-era5-land.s3.us-west-2.amazonaws.com/soil_moisture_winter.tif> |
+| tmax          | annual | <https://stac-era5-land.s3.us-west-2.amazonaws.com/tmax_annual.tif>          |
+| tmax          | fall   | <https://stac-era5-land.s3.us-west-2.amazonaws.com/tmax_fall.tif>            |
+| tmax          | spring | <https://stac-era5-land.s3.us-west-2.amazonaws.com/tmax_spring.tif>          |
+| tmax          | summer | <https://stac-era5-land.s3.us-west-2.amazonaws.com/tmax_summer.tif>          |
+| tmax          | winter | <https://stac-era5-land.s3.us-west-2.amazonaws.com/tmax_winter.tif>          |
 | tmean         | annual | <https://stac-era5-land.s3.us-west-2.amazonaws.com/tmean_annual.tif>         |
 | tmean         | fall   | <https://stac-era5-land.s3.us-west-2.amazonaws.com/tmean_fall.tif>           |
 | tmean         | spring | <https://stac-era5-land.s3.us-west-2.amazonaws.com/tmean_spring.tif>         |
 | tmean         | summer | <https://stac-era5-land.s3.us-west-2.amazonaws.com/tmean_summer.tif>         |
 | tmean         | winter | <https://stac-era5-land.s3.us-west-2.amazonaws.com/tmean_winter.tif>         |
+| tmin          | annual | <https://stac-era5-land.s3.us-west-2.amazonaws.com/tmin_annual.tif>          |
+| tmin          | fall   | <https://stac-era5-land.s3.us-west-2.amazonaws.com/tmin_fall.tif>            |
+| tmin          | spring | <https://stac-era5-land.s3.us-west-2.amazonaws.com/tmin_spring.tif>          |
+| tmin          | summer | <https://stac-era5-land.s3.us-west-2.amazonaws.com/tmin_summer.tif>          |
+| tmin          | winter | <https://stac-era5-land.s3.us-west-2.amazonaws.com/tmin_winter.tif>          |
 | vpd           | annual | <https://stac-era5-land.s3.us-west-2.amazonaws.com/vpd_annual.tif>           |
 | vpd           | fall   | <https://stac-era5-land.s3.us-west-2.amazonaws.com/vpd_fall.tif>             |
 | vpd           | spring | <https://stac-era5-land.s3.us-west-2.amazonaws.com/vpd_spring.tif>           |
@@ -111,16 +121,16 @@ knitr::kable(head(ts, 10), caption = "First 10 rows of the extracted climate tim
 
 | variable | period | year |     value |
 |:---------|:-------|-----:|----------:|
-| prcp     | annual | 1950 | 1107.4576 |
-| prcp     | annual | 1951 | 1075.4640 |
-| prcp     | annual | 1952 |  701.8242 |
-| prcp     | annual | 1953 | 1173.6203 |
-| prcp     | annual | 1954 | 1252.4347 |
-| prcp     | annual | 1955 | 1133.0697 |
-| prcp     | annual | 1956 | 1029.7109 |
-| prcp     | annual | 1957 |  917.9623 |
-| prcp     | annual | 1958 | 1054.0208 |
-| prcp     | annual | 1959 | 1221.0120 |
+| prcp     | annual | 1950 | 1107.4588 |
+| prcp     | annual | 1951 | 1075.4634 |
+| prcp     | annual | 1952 |  701.8241 |
+| prcp     | annual | 1953 | 1173.6221 |
+| prcp     | annual | 1954 | 1252.4337 |
+| prcp     | annual | 1955 | 1133.0714 |
+| prcp     | annual | 1956 | 1029.7095 |
+| prcp     | annual | 1957 |  917.9605 |
+| prcp     | annual | 1958 | 1054.0203 |
+| prcp     | annual | 1959 | 1221.0144 |
 
 First 10 rows of the extracted climate time series.
 
@@ -153,7 +163,7 @@ knitr::kable(bl_early, caption = "Pre-warming baseline means (1951-1980) by vari
 | prcp          | summer |        208.31 |
 | prcp          | winter |        339.95 |
 | rh            | annual |         71.31 |
-| rh            | fall   |         74.85 |
+| rh            | fall   |         74.83 |
 | rh            | spring |         70.79 |
 | rh            | summer |         57.75 |
 | rh            | winter |         81.84 |
@@ -162,11 +172,21 @@ knitr::kable(bl_early, caption = "Pre-warming baseline means (1951-1980) by vari
 | soil_moisture | spring |          0.35 |
 | soil_moisture | summer |          0.34 |
 | soil_moisture | winter |          0.33 |
+| tmax          | annual |          6.66 |
+| tmax          | fall   |          7.35 |
+| tmax          | spring |          5.04 |
+| tmax          | summer |         19.11 |
+| tmax          | winter |         -4.85 |
 | tmean         | annual |          1.96 |
-| tmean         | fall   |          2.50 |
-| tmean         | spring |          0.41 |
+| tmean         | fall   |          2.51 |
+| tmean         | spring |          0.40 |
 | tmean         | summer |         13.09 |
 | tmean         | winter |         -8.18 |
+| tmin          | annual |         -2.00 |
+| tmin          | fall   |         -1.36 |
+| tmin          | spring |         -3.40 |
+| tmin          | summer |          7.33 |
+| tmin          | winter |        -10.57 |
 | vpd           | annual |          2.92 |
 | vpd           | fall   |          2.33 |
 | vpd           | spring |          1.94 |
@@ -192,13 +212,13 @@ knitr::kable(head(ano, 10), caption = "Anomalies relative to the 1951-1980 basel
 | prcp     | annual | 1950 |   4.387 | pct_normal   | %    |
 | prcp     | annual | 1951 |   1.371 | pct_normal   | %    |
 | prcp     | annual | 1952 | -33.847 | pct_normal   | %    |
-| prcp     | annual | 1953 |  10.623 | pct_normal   | %    |
+| prcp     | annual | 1953 |  10.624 | pct_normal   | %    |
 | prcp     | annual | 1954 |  18.052 | pct_normal   | %    |
 | prcp     | annual | 1955 |   6.801 | pct_normal   | %    |
 | prcp     | annual | 1956 |  -2.941 | pct_normal   | %    |
-| prcp     | annual | 1957 | -13.474 | pct_normal   | %    |
+| prcp     | annual | 1957 | -13.475 | pct_normal   | %    |
 | prcp     | annual | 1958 |  -0.650 | pct_normal   | %    |
-| prcp     | annual | 1959 |  15.090 | pct_normal   | %    |
+| prcp     | annual | 1959 |  15.091 | pct_normal   | %    |
 
 Anomalies relative to the 1951-1980 baseline.
 
@@ -231,14 +251,14 @@ knitr::kable(cd_summary(trn[trn$variable == "tmean", ]),
 |:-----------------|:-------|------:|------:|-------------:|:-----|--------:|
 | Mean temperature | Annual | 0.025 |    75 |          1.9 | °C   |  0.0000 |
 | Mean temperature | Fall   | 0.024 |    75 |          1.8 | °C   |  0.0014 |
-| Mean temperature | Spring | 0.027 |    75 |          2.1 | °C   |  0.0000 |
+| Mean temperature | Spring | 0.028 |    75 |          2.1 | °C   |  0.0000 |
 | Mean temperature | Summer | 0.038 |    75 |          2.9 | °C   |  0.0000 |
-| Mean temperature | Winter | 0.016 |    75 |          1.2 | °C   |  0.0370 |
+| Mean temperature | Winter | 0.016 |    75 |          1.2 | °C   |  0.0362 |
 | Mean temperature | Annual | 0.031 |    45 |          1.4 | °C   |  0.0015 |
-| Mean temperature | Fall   | 0.033 |    45 |          1.5 | °C   |  0.0037 |
+| Mean temperature | Fall   | 0.033 |    45 |          1.5 | °C   |  0.0042 |
 | Mean temperature | Spring | 0.004 |    45 |          0.2 | °C   |  0.8220 |
 | Mean temperature | Summer | 0.053 |    45 |          2.4 | °C   |  0.0000 |
-| Mean temperature | Winter | 0.020 |    45 |          0.9 | °C   |  0.2776 |
+| Mean temperature | Winter | 0.019 |    45 |          0.9 | °C   |  0.2863 |
 
 Temperature trend statistics for the Kootenay Lake watershed.
 
@@ -263,14 +283,14 @@ knitr::kable(cmp, caption = "Comparison of recent (2015-2025) vs pre-warming (19
 
 | variable      | period | mean_a |  mean_b | difference | method    |
 |:--------------|:-------|-------:|--------:|-----------:|:----------|
-| prcp          | annual | 913.85 | 1060.91 |    -147.07 | mean_diff |
-| prcp          | fall   | 249.97 |  261.30 |     -11.33 | mean_diff |
-| prcp          | spring | 237.66 |  251.36 |     -13.70 | mean_diff |
-| prcp          | summer | 163.22 |  208.31 |     -45.09 | mean_diff |
-| prcp          | winter | 263.00 |  339.95 |     -76.95 | mean_diff |
+| prcp          | annual | 977.41 | 1060.91 |     -83.50 | mean_diff |
+| prcp          | fall   | 267.53 |  261.30 |       6.23 | mean_diff |
+| prcp          | spring | 251.63 |  251.36 |       0.27 | mean_diff |
+| prcp          | summer | 172.99 |  208.31 |     -35.31 | mean_diff |
+| prcp          | winter | 285.26 |  339.95 |     -54.69 | mean_diff |
 | rh            | annual |  68.74 |   71.31 |      -2.57 | mean_diff |
-| rh            | fall   |  72.85 |   74.85 |      -2.00 | mean_diff |
-| rh            | spring |  68.32 |   70.79 |      -2.46 | mean_diff |
+| rh            | fall   |  72.83 |   74.83 |      -2.00 | mean_diff |
+| rh            | spring |  68.34 |   70.79 |      -2.45 | mean_diff |
 | rh            | summer |  51.90 |   57.75 |      -5.85 | mean_diff |
 | rh            | winter |  81.87 |   81.84 |       0.03 | mean_diff |
 | soil_moisture | annual |   0.33 |    0.34 |      -0.01 | mean_diff |
@@ -278,13 +298,23 @@ knitr::kable(cmp, caption = "Comparison of recent (2015-2025) vs pre-warming (19
 | soil_moisture | spring |   0.36 |    0.35 |       0.01 | mean_diff |
 | soil_moisture | summer |   0.31 |    0.34 |      -0.02 | mean_diff |
 | soil_moisture | winter |   0.33 |    0.33 |       0.00 | mean_diff |
+| tmax          | annual |   8.21 |    6.66 |       1.55 | mean_diff |
+| tmax          | fall   |   8.31 |    7.35 |       0.95 | mean_diff |
+| tmax          | spring |   6.85 |    5.04 |       1.82 | mean_diff |
+| tmax          | summer |  21.60 |   19.11 |       2.49 | mean_diff |
+| tmax          | winter |  -3.93 |   -4.85 |       0.93 | mean_diff |
 | tmean         | annual |   3.55 |    1.96 |       1.59 | mean_diff |
-| tmean         | fall   |   3.83 |    2.50 |       1.32 | mean_diff |
-| tmean         | spring |   2.11 |    0.41 |       1.70 | mean_diff |
-| tmean         | summer |  15.59 |   13.09 |       2.49 | mean_diff |
-| tmean         | winter |  -7.33 |   -8.18 |       0.85 | mean_diff |
-| vpd           | annual |   3.73 |    2.92 |       0.81 | mean_diff |
-| vpd           | fall   |   2.81 |    2.33 |       0.49 | mean_diff |
+| tmean         | fall   |   3.84 |    2.51 |       1.32 | mean_diff |
+| tmean         | spring |   2.10 |    0.40 |       1.70 | mean_diff |
+| tmean         | summer |  15.59 |   13.09 |       2.50 | mean_diff |
+| tmean         | winter |  -7.34 |   -8.18 |       0.85 | mean_diff |
+| tmin          | annual |  -0.44 |   -2.00 |       1.56 | mean_diff |
+| tmin          | fall   |   0.24 |   -1.36 |       1.61 | mean_diff |
+| tmin          | spring |  -1.96 |   -3.40 |       1.44 | mean_diff |
+| tmin          | summer |   9.74 |    7.33 |       2.41 | mean_diff |
+| tmin          | winter |  -9.77 |  -10.57 |       0.80 | mean_diff |
+| vpd           | annual |   3.73 |    2.92 |       0.82 | mean_diff |
+| vpd           | fall   |   2.82 |    2.33 |       0.49 | mean_diff |
 | vpd           | spring |   2.45 |    1.94 |       0.51 | mean_diff |
 | vpd           | summer |   9.02 |    6.79 |       2.23 | mean_diff |
 | vpd           | winter |   0.64 |    0.60 |       0.04 | mean_diff |
@@ -426,8 +456,8 @@ knitr::kable(cd_summary(rbind(trn_summer, trn_winter)),
 
 | Parameter        | Period | Slope | Years | Total Change | Unit | p-value |
 |:-----------------|:-------|------:|------:|-------------:|:-----|--------:|
-| Mean temperature | Summer | 0.038 |    75 |          2.9 | °C   |   0.000 |
-| Mean temperature | Winter | 0.016 |    75 |          1.2 | °C   |   0.037 |
+| Mean temperature | Summer | 0.038 |    75 |          2.9 | °C   |  0.0000 |
+| Mean temperature | Winter | 0.016 |    75 |          1.2 | °C   |  0.0362 |
 
 Seasonal temperature trends (summer vs winter).
 
@@ -459,16 +489,20 @@ knitr::kable(cd_summary(all_trends),
 
 | Parameter               | Period |  Slope | Years | Total Change | Unit | p-value |
 |:------------------------|:-------|-------:|------:|-------------:|:-----|--------:|
-| Precipitation           | Annual | -0.168 |    75 |        -12.6 | %    |  0.0062 |
-| Relative humidity       | Annual | -0.038 |    75 |         -2.8 | %    |  0.0008 |
+| Precipitation           | Annual | -0.143 |    75 |        -10.7 | %    |  0.0153 |
+| Relative humidity       | Annual | -0.038 |    75 |         -2.8 | %    |  0.0009 |
 | Soil moisture           | Annual | -0.028 |    75 |         -2.1 | %    |  0.0680 |
+| Maximum temperature     | Annual |  0.024 |    75 |          1.8 | °C   |  0.0000 |
 | Mean temperature        | Annual |  0.025 |    75 |          1.9 | °C   |  0.0000 |
+| Minimum temperature     | Annual |  0.025 |    75 |          1.9 | °C   |  0.0000 |
 | Vapour pressure deficit | Annual |  0.012 |    75 |          0.9 | Pa   |  0.0000 |
-| Precipitation           | Annual | -0.222 |    45 |        -10.0 | %    |  0.0944 |
+| Precipitation           | Annual | -0.155 |    45 |         -7.0 | %    |  0.2214 |
 | Relative humidity       | Annual | -0.089 |    45 |         -4.0 | %    |  0.0001 |
 | Soil moisture           | Annual | -0.085 |    45 |         -3.8 | %    |  0.0058 |
+| Maximum temperature     | Annual |  0.031 |    45 |          1.4 | °C   |  0.0025 |
 | Mean temperature        | Annual |  0.031 |    45 |          1.4 | °C   |  0.0015 |
-| Vapour pressure deficit | Annual |  0.023 |    45 |          1.1 | Pa   |  0.0000 |
+| Minimum temperature     | Annual |  0.028 |    45 |          1.3 | °C   |  0.0019 |
+| Vapour pressure deficit | Annual |  0.024 |    45 |          1.1 | Pa   |  0.0000 |
 
 Annual trend statistics for all variables, Kootenay Lake watershed.
 
