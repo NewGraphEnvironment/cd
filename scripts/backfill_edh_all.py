@@ -67,15 +67,20 @@ MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
 
 # -- Helpers -------------------------------------------------------------------
 def preflight_single_instance():
-    """Refuse to start if another backfill_edh_all.py is already running."""
+    """Refuse to start if another backfill_edh_all.py is already running.
+
+    When launched via `uv run`, uv is the parent and its cmdline also
+    contains "backfill_edh_all" — filter it out along with our own pid.
+    """
     my_pid = os.getpid()
+    my_ppid = os.getppid()
     try:
         out = subprocess.run(
             ["pgrep", "-f", "backfill_edh_all"],
             capture_output=True, text=True, check=False,
         )
         pids = [int(p) for p in out.stdout.strip().splitlines()
-                if p.strip() and int(p) != my_pid]
+                if p.strip() and int(p) not in (my_pid, my_ppid)]
     except (FileNotFoundError, ValueError):
         pids = []
     if pids:

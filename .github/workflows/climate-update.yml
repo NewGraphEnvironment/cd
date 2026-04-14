@@ -40,7 +40,11 @@ jobs:
           fi
 
       - name: Run EDH update pipeline
+        # pipefail so Rscript's exit code propagates through `tee`; default
+        # bash -e alone would let tee swallow a non-zero R exit.
+        shell: bash
         run: |
+          set -o pipefail
           mkdir -p logs
           Rscript scripts/pipeline_update_edh.R 2>&1 | tee logs/update_$(date +%Y%m%d).log
 
