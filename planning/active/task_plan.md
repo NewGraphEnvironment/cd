@@ -1,88 +1,71 @@
-# Task Plan: Migrate cd_fetch() to DestinE Earth Data Hub Zarr
+# Task Plan: Vignette — tmax/tmin ecological content + map clipping
 
-Issue: NewGraphEnvironment/cd#36
-Branch: `36-edh-migration`
+Issue: NewGraphEnvironment/cd#39
+Branch: `39-vignette-tmax-tmin-maps`
 
 ## Context
 
-CDS (`ecmwfr`) rate limiting makes the tmax/tmin backfill take ~3 days of babysitting. Benchmark in #35 showed EDH Zarr delivers the same ERA5-Land data at ~15s/month (5× faster, no rate limits, 500K requests/month quota). Pivot the producer pipeline to EDH.
+`vignettes/climate-departure.Rmd` currently narrates tmean + soil_moisture
+anomalies for a BC watershed AOI (Kootenay Lake). Post-#36 the package also
+ships tmax/tmin on STAC, and the existing maps show context layers that
+spread beyond the watershed group and dilute the story.
 
-## Phase 1: Scaffold and benchmark (mostly done from #35)
+Goal: land two improvements in one focused PR without restructuring the vignette.
 
-- [x] Confirm EDH carries ERA5-Land at 9 km native (validated #35)
-- [x] Confirm temporal coverage 1950 to present (validated #35)
-- [x] Confirm commercial license (CC-BY 4.0, validated #35)
-- [x] Write portable PEP 723 test script (`scripts/test_edh_era5_land.py`)
-- [x] Bench one month BC t2m — 15.9s vs CDS 80s
-- [x] Commit test script on the branch
+## Phase 1: Inspect + plan specific figures
 
-## Phase 2: Pragmatic Python backfill (unblock #33)
+- [ ] Read current vignette end-to-end; list every figure chunk
+- [ ] Confirm AOI watershed group code / fwapg query (or note that we need to add one)
+- [ ] Decide on the 2-3 tmax/tmin angles to actually ship (don't cram all four)
+- [ ] Sketch figure list in findings.md so reviewer can preview the narrative shape
 
-The quickest path to finishing the tmax/tmin data: a Python script that uses EDH directly.
-Runs outside R, produces monthly GRIB or NetCDF that downstream R stages already consume.
+## Phase 2: Watershed group helper
 
-- [x] Write `scripts/backfill_edh_tmax_tmin.py` — tmax/tmin only for now (unblocks #33)
-- [x] Output matches existing R pipeline's Stage 2 format (yearly `.tif` × 12 month bands, °C, EPSG:4326)
-- [x] Band descriptions Jan..Dec so `cd_aggregate()` seasonal grouping works
-- [x] Idempotent — skip years where both output files exist
-- [x] Test on one year (1950) — 114s, realistic values, terra reads correctly
-- [x] Run full backfill 1950-2025 — completed in ~1h 53min (76 years × tmax + tmin)
-- [x] Regenerate 2024 from EDH (was a CDS leftover) for homogeneous methodology
-- [x] QA — discovered CDS-era vars on a different grid (ext shifted 0.1°, CRS missing, 121×261 vs EDH 120×260)
-- [x] Probe EDH products — confirmed two-Zarr approach: hourly for state vars, daily for prcp
+- [ ] Pull the watershed group polygon containing the example AOI from fwapg
+- [ ] Cache as an `sf` object early in the vignette setup chunk
+- [ ] Decide: inline fwapg query vs a small helper function (prefer inline unless reused)
 
-## Phase 2b: Unified backfill (all variables on EDH grid)
+## Phase 3: Clip existing maps to watershed group
 
-Grid mismatch between CDS-era vars and EDH-era tmax/tmin blocks release.
-Regenerating everything from EDH gives one internally-consistent dataset.
+- [ ] For tmap static figures: `st_intersection(layer, wsg)` on every context layer before plotting
+- [ ] For mapgl interactive: `fitBounds` to the WSG extent, add WSG outline as a faint reference layer, don't render features outside
+- [ ] Keep the four-corner rule (legend / logo / scale / keymap each in own quadrant)
+- [ ] Self-review each rendered figure per cartography convention (legend over least-important terrain, map fills frame, no element overlap)
 
-- [x] Extend backfill to all 7 cd variables (scripts/backfill_edh_all.py)
-- [x] Regenerate all `data/backfill/monthly/*_YYYY.tif` with consistent grid + CRS
-- [x] Re-run QA — all grids aligned, all CRS tagged, tmin<=tmean<=tmax sanity passes
-- [x] VPD/RH derived in Python (Tetens), no R cd_derive re-run needed
+## Phase 4: tmax/tmin narrative content
 
-**QA summary 2026-04-12:**
-- 7 variables × 76 years = 532 monthly TIFs
-- All on 120×260 EPSG:4326 grid, extent [-139.95, -113.95, 47.95, 59.95]
-- Zero tmin>tmax or tmean inversion violations (163,888 cell-checks)
-- (tmax+tmin)/2 vs tmean mean diff = 0.57°C (classical climatology shortcut bias, normal)
-- 2008 had a ClientPayloadError that my retry didn't catch (wrong exception class);
-  re-ran --year 2008 to fill the gap. Filed as future improvement in #38.
+Pick 2-3 (not all) of:
+- [ ] **Shrinking diurnal range** — plot `tmax - tmin` annual trend with commentary on evapotranspiration / cold-air pooling
+- [ ] **Frost days** — count of months per year with `tmin < 0 °C` (or a simpler monthly-proxy). Commentary on pest range / phenology.
+- [ ] **Heat stress envelope** — `tmax > threshold` frequency with commentary on salmon thermal stress
+- [ ] **VPD × tmax compound** — single hot-dry summer figure showing drought stress signal
 
-## Phase 2c: R Stage 3
+Keep prose tight: 1-2 paragraphs per figure.
 
-- [x] Run R stage 3 (COG + STAC + S3) against the unified EDH-generated TIFs
-  (scripts/pipeline_stage3_edh.R; 35 COGs live on s3://stac-era5-land,
-  verified via /vsicurl read)
+## Phase 5: Build + verify
 
-## Phase 3: R integration for cd_fetch()
+- [ ] Render pkgdown locally — check vignette builds and images render
+- [ ] Check render time stays ≤ 2 min
+- [ ] Verify all figures have captions, cross-references work
+- [ ] `lintr::lint_package()` passes
+- [ ] `devtools::check()` passes with 0 errors / 0 warnings
 
-- [ ] Decide: reticulate + Python xarray, OR stars::read_mdim() via GDAL zarr driver
-- [ ] Prototype both on one month, compare simplicity and performance
-- [ ] Refactor `cd_fetch()` with `source = c("edh", "cds")` parameter, default `"edh"`
-- [ ] Keep `cd_fetch()` CDS path for fallback
-- [ ] Update tests to exercise both paths
-- [ ] Update examples and docs
+## Phase 6: PR
 
-## Phase 4: Pipeline and docs
-
-- [ ] Update `scripts/pipeline_backfill.R` to use EDH source
-- [ ] Update monthly GitHub Action to use EDH
-- [ ] Add `EDH_TOKEN` to repo secrets (rotate current token first)
-- [ ] Update CLAUDE.md — CDS section → EDH primary, CDS fallback
-- [ ] Update README / pkgdown auth setup instructions
-
-## Phase 5: Close out
-
-- [ ] Run full backfill from scratch via integrated R path — validate output matches phase 2
-- [ ] Close #33 (tmax/tmin saga resolved by EDH)
-- [ ] Close #35 (evaluation → migration done)
-- [ ] Merge PR closing #36
-- [ ] Archive planning to `planning/completed/`
+- [ ] Branch per issue convention, PR to main with `Fixes #39`
+- [ ] SRED cross-ref in PR body (`Relates to NewGraphEnvironment/sred-2025-2026#23`)
+- [ ] Archive this PWF dir to `planning/archive/` on merge
 
 ## Success criteria
 
-- `cd_fetch()` default path uses EDH; CDS path works as fallback
-- Full 1950-2025 backfill completes in under 8 hours (single session, unattended)
-- Vignette and tests pass with EDH as source
-- CDS API knowledge preserved in CLAUDE.md but marked as fallback
+- Two clean changes, one PR: tmax/tmin ecological narrative + tightened maps
+- Every figure renders correctly in both gitbook and PDF output
+- Keeps existing tmean / soil_moisture content intact
+- Doesn't change any `R/` function signatures
+
+## Out of scope (explicit)
+
+- No new cd package functions
+- No restructuring of existing tmean/soil_moisture content
+- No change to the example AOI (Kootenay Lake stays)
+- No bulk-rename of `planning/completed/` to `planning/archive/` (separate concern)
