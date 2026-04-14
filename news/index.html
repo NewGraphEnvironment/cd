@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">cd</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,11 +36,12 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="development version" id="cd-development-version">cd (development version)<a class="anchor" aria-label="anchor" href="#cd-development-version"></a></h2>
-<div class="section level3">
-<h3 id="id_0009000-development-version">0.0.0.9000<a class="anchor" aria-label="anchor" href="#id_0009000-development-version"></a></h3>
-<p>Initial development version. Consumer and producer pipelines for ERA5-Land climate departure analysis.</p>
+<h2 class="pkg-version" data-toc-text="0.1.0" id="cd-010-2026-04-14">cd 0.1.0 (2026-04-14)<a class="anchor" aria-label="anchor" href="#cd-010-2026-04-14"></a></h2><p class="text-muted">CRAN release: 2020-10-22</p>
+<p>First minor release. Producer pipeline migrated from Copernicus CDS to DestinE Earth Data Hub (Zarr). Same ERA5-Land data at the same 9 km native grid, no rate limiting, ~5x faster fetches. All 7 cd variables (tmax, tmin, tmean, prcp, vpd, rh, soil_moisture) regenerated on a single internally-consistent EPSG:4326 BC grid. Monthly GitHub Action rewired to use EDH. Consumer API unchanged — <code><a href="../reference/cd_catalog.html">cd_catalog()</a></code> and friends work exactly as before against the refreshed STAC catalog on <code>s3://stac-era5-land</code>. See <a href="https://newgraphenvironment.com/cd/reference/" class="external-link">pkgdown reference</a> for the current function list. (<a href="https://github.com/NewGraphEnvironment/cd/issues/36" class="external-link">#36</a>)</p>
 </div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.0.9000" id="cd-0009000">cd 0.0.0.9000<a class="anchor" aria-label="anchor" href="#cd-0009000"></a></h2>
+<p>Initial development version. Consumer and producer pipelines for ERA5-Land climate departure analysis.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
