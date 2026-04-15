@@ -14,33 +14,29 @@ Goal: land two improvements in one focused PR without restructuring the vignette
 
 ## Phase 1: Inspect + plan specific figures
 
-- [ ] Read current vignette end-to-end; list every figure chunk
-- [ ] Confirm AOI watershed group code / fwapg query (or note that we need to add one)
-- [ ] Decide on the 2-3 tmax/tmin angles to actually ship (don't cram all four)
-- [ ] Sketch figure list in findings.md so reviewer can preview the narrative shape
+- [x] Read current vignette end-to-end; list every figure chunk
+- [x] Confirm AOI watershed group — `example_aoi_kotl.gpkg` IS the WSG, no fwapg needed
+- [x] Decide on the 2 tmax/tmin angles to ship: tmax/tmin trend asymmetry + diurnal range
+- [x] Existing `data-raw/example_context_kotl.R` already builds context_kotl.gpkg via fwapg
 
 ## Phase 2: Watershed group helper
 
-- [ ] Pull the watershed group polygon containing the example AOI from fwapg
-- [ ] Cache as an `sf` object early in the vignette setup chunk
-- [ ] Decide: inline fwapg query vs a small helper function (prefer inline unless reused)
+- [x] Not needed — AOI = WSG, vignette-side `st_intersection` is the pragmatic clip
 
 ## Phase 3: Clip existing maps to watershed group
 
-- [ ] For tmap static figures: `st_intersection(layer, wsg)` on every context layer before plotting
-- [ ] For mapgl interactive: `fitBounds` to the WSG extent, add WSG outline as a faint reference layer, don't render features outside
-- [ ] Keep the four-corner rule (legend / logo / scale / keymap each in own quadrant)
-- [ ] Self-review each rendered figure per cartography convention (legend over least-important terrain, map fills frame, no element overlap)
+- [x] `load-context` chunk: `st_intersection(layer, aoi)` for towns/lakes/rivers/streams/highways
+- [x] `spatial-tmean` chunk: `terra::mask(departure, aoi)` so non-WSG cells are NA
+- [x] `spatial-sm` chunk: same masking treatment
+- [x] Render verified end-to-end
 
 ## Phase 4: tmax/tmin narrative content
 
-Pick 2-3 (not all) of:
-- [ ] **Shrinking diurnal range** — plot `tmax - tmin` annual trend with commentary on evapotranspiration / cold-air pooling
-- [ ] **Frost days** — count of months per year with `tmin < 0 °C` (or a simpler monthly-proxy). Commentary on pest range / phenology.
-- [ ] **Heat stress envelope** — `tmax > threshold` frequency with commentary on salmon thermal stress
-- [ ] **VPD × tmax compound** — single hot-dry summer figure showing drought stress signal
-
-Keep prose tight: 1-2 paragraphs per figure.
+Shipped 2 of the 4 candidate angles:
+- [x] **tmax + tmin annual anomaly** — two `cd_plot_timeseries` chunks side-by-side showing tmin warming faster
+- [x] **Diurnal range trend** — DTR = tmax − tmin annual with linear-trend overlay
+- [x] Ecological framing in 3 bullets: ET intensification, cold-air pooling weakening, stream thermal regime
+- [ ] (Skipped, not blocking) Frost days, heat stress envelope, VPD × tmax — out of scope for this PR
 
 ## Phase 5: Build + verify
 

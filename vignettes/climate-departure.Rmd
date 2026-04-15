@@ -52,6 +52,16 @@ lakes <- st_read(ctx, layer = "lakes", quiet = TRUE)
 rivers <- st_read(ctx, layer = "rivers", quiet = TRUE)
 streams <- st_read(ctx, layer = "streams", quiet = TRUE)
 highways <- st_read(ctx, layer = "highways", quiet = TRUE)
+
+# Clip context layers to the watershed group (AOI) so maps stay focused
+# on the basin and do not show features outside the boundary. Mark
+# attributes as spatially constant to silence the (irrelevant) attribute-
+# constancy notice without hiding genuine geometry warnings.
+for (lyr in list("towns", "lakes", "rivers", "streams", "highways")) {
+  x <- get(lyr)
+  sf::st_agr(x) <- "constant"
+  assign(lyr, sf::st_intersection(x, aoi))
+}
 ```
 
 ```{r map-location, fig.cap="Kootenay Lake (KOTL) watershed group in southeastern British Columbia showing major waterbodies, rivers, and highways.", fig.height=7}
@@ -199,6 +209,8 @@ historical_idx <- which(years >= 1951 & years <= 1980)
 recent_mean <- mean(r_tmean[[recent_idx]])
 historical_mean <- mean(r_tmean[[historical_idx]])
 departure <- recent_mean - historical_mean
+# Mask to the watershed boundary so cells outside the AOI go transparent
+departure <- terra::mask(departure, aoi)
 names(departure) <- "Temperature departure"
 
 ggplot() +
@@ -232,6 +244,8 @@ years_sm <- as.integer(names(r_sm))
 recent_sm <- mean(r_sm[[which(years_sm >= 2015 & years_sm <= 2025)]])
 historical_sm <- mean(r_sm[[which(years_sm >= 1951 & years_sm <= 1980)]])
 departure_sm <- recent_sm - historical_sm
+# Mask to the watershed boundary so cells outside the AOI go transparent
+departure_sm <- terra::mask(departure_sm, aoi)
 names(departure_sm) <- "Soil moisture departure"
 
 ggplot() +
@@ -277,6 +291,75 @@ cd_plot_timeseries(summer_ano, period = "summer", trend = trn_summer,
 knitr::kable(cd_summary(rbind(trn_summer, trn_winter)),
   caption = "Seasonal temperature trends (summer vs winter).")
 ```
+
+## Day-Night Asymmetry
+
+Mean temperature smooths over a signal that matters ecologically: in most
+of British Columbia's interior, **overnight lows (tmin) have warmed faster
+than daytime highs (tmax)** since the mid-20th century. This day-night
+asymmetry is one of the clearest fingerprints of greenhouse warming
+(Karl et al. 1993; IPCC AR6) — and it is precisely the signal that
+salmon, soils, and snowpack respond to.
+
+The cd package now ships tmax and tmin alongside tmean. Pulling the same
+extracted time series and plotting them separately reveals the asymmetry
+that the mean alone hides.
+
+```{r plot-tmax, fig.cap="Annual daytime maximum temperature (tmax) anomaly for the Kootenay Lake watershed relative to the 1951-1980 baseline."}
+trn_tmax <- cd_trend(
+  ano[ano$variable == "tmax" & ano$period == "annual", ],
+  trend_start = c(1951, 1981)
+)
+cd_plot_timeseries(ano, variable = "tmax", period = "annual", trend = trn_tmax,
+  title = "Daytime Maximum (tmax) — Annual Anomaly")
+```
+
+```{r plot-tmin, fig.cap="Annual overnight minimum temperature (tmin) anomaly for the Kootenay Lake watershed relative to the 1951-1980 baseline. Compare the trend slope to tmax above to see the day-night asymmetry."}
+trn_tmin <- cd_trend(
+  ano[ano$variable == "tmin" & ano$period == "annual", ],
+  trend_start = c(1951, 1981)
+)
+cd_plot_timeseries(ano, variable = "tmin", period = "annual", trend = trn_tmin,
+  title = "Overnight Minimum (tmin) — Annual Anomaly")
+```
+
+The Theil-Sen slopes typically show tmin warming faster than tmax for
+interior BC watersheds. The implication is that the **diurnal temperature
+range** (DTR = tmax − tmin) is shrinking — nights are catching up to
+days. We can compute and plot DTR directly from the extracted series.
+
+```{r plot-dtr, fig.cap="Diurnal temperature range (tmax minus tmin) annual mean for the Kootenay Lake watershed. A declining trend indicates that overnight lows are warming faster than daytime highs."}
+tmax_ts <- ts[ts$variable == "tmax" & ts$period == "annual", c("year", "value")]
+tmin_ts <- ts[ts$variable == "tmin" & ts$period == "annual", c("year", "value")]
+dtr <- merge(tmax_ts, tmin_ts, by = "year", suffixes = c("_max", "_min"))
+dtr$dtr <- dtr$value_max - dtr$value_min
+
+ggplot(dtr, aes(x = year, y = dtr)) +
+  geom_line(color = "grey50") +
+  geom_point(color = "grey30", size = 1) +
+  geom_smooth(method = "lm", se = FALSE, color = "#b2182b", linewidth = 0.8) +
+  labs(
+    title = "Diurnal Temperature Range — Kootenay Lake Watershed",
+    x = NULL,
+    y = expression("DTR (" * degree * "C)")
+  ) +
+  theme_minimal(base_size = 12)
+```
+
+A shrinking DTR has cascading consequences:
+
+- **Evapotranspiration intensifies.** Warmer nights mean less overnight
+  cooling, raising daily-mean vapour pressure deficit and pulling more
+  water from soils and plants. This compounds the soil-drying signal
+  seen in the next section.
+- **Cold-air pooling weakens.** Valley-bottom inversions that historically
+  trapped frost in the growing season are eroded, shifting frost-free
+  windows and altering pest range — for example, mountain pine beetle
+  overwintering survival is governed by tmin extremes.
+- **Stream thermal regime shifts.** While salmon thermal stress is
+  primarily an afternoon-tmax problem, summer tmin sets the *minimum*
+  daily temperature that streams cool back toward overnight, raising the
+  daily-mean substrate temperature that drives metabolism.
 
 ## Precipitation and Soil Moisture
 
