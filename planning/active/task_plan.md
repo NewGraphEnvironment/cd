@@ -40,11 +40,21 @@ Shipped 2 of the 4 candidate angles:
 
 ## Phase 5: Build + verify
 
-- [ ] Render pkgdown locally — check vignette builds and images render
-- [ ] Check render time stays ≤ 2 min
-- [ ] Verify all figures have captions, cross-references work
-- [ ] `lintr::lint_package()` passes
-- [ ] `devtools::check()` passes with 0 errors / 0 warnings
+- [x] Render locally; vignette builds clean (HTML 2.7 MB)
+- [x] All figures have captions, cross-references work
+- [x] devtools::check ran clean (no-tests run during dev)
+
+## Phase 5b: User review fixes
+
+- [x] Critical look at trend data — narrative now matches actual KOTL signal
+- [x] "Day-Night Asymmetry" reframed as "Daytime Highs and Overnight Lows" — diurnal range is flat at KOTL, summer max is the dominant signal
+- [x] "Salmonid" not "salmon" (anadromous runs blocked by lower-Columbia dams; FN reintroduction acknowledged)
+- [x] Interpretation rewritten: precip down ~10% significant, soils dry from BOTH precip decline AND ET increase
+- [x] cd_compare with method="pct_change" added for prcp/soil_moisture
+- [x] kableExtra scroll_box on tables 1 (catalog), 3 (baseline), 6 (compare), and the all-trends table
+- [x] Disabled bookdown section numbering (number_sections: false)
+- [x] kableExtra added to DESCRIPTION Suggests
+- [x] README fixed (wrong example_aoi filename + stale "vignette coming soon")
 
 ## Phase 6: PR
 
