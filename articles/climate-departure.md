@@ -65,7 +65,11 @@ periods.
 
 ``` r
 catalog <- cd_catalog()
-knitr::kable(catalog, caption = "Available climate variables and periods in the STAC catalog.")
+kableExtra::kable_styling(
+  knitr::kable(catalog, caption = "Available climate variables and periods in the STAC catalog."),
+  bootstrap_options = c("striped", "hover", "condensed")
+) |>
+  kableExtra::scroll_box(height = "320px")
 ```
 
 | variable      | period | href                                                                         |
@@ -152,7 +156,11 @@ bl_early <- cd_baseline(ts, baseline_years = 1951:1980)
 # WMO standard
 bl_wmo <- cd_baseline(ts, baseline_years = 1981:2010)
 
-knitr::kable(bl_early, caption = "Pre-warming baseline means (1951-1980) by variable and period.", digits = 2)
+kableExtra::kable_styling(
+  knitr::kable(bl_early, caption = "Pre-warming baseline means (1951-1980) by variable and period.", digits = 2),
+  bootstrap_options = c("striped", "hover", "condensed")
+) |>
+  kableExtra::scroll_box(height = "320px")
 ```
 
 | variable      | period | baseline_mean |
@@ -278,7 +286,11 @@ cmp <- cd_compare(ts,
   window_b = 1951:1980,
   method = "mean_diff"
 )
-knitr::kable(cmp, caption = "Comparison of recent (2015-2025) vs pre-warming (1951-1980) means.", digits = 2)
+kableExtra::kable_styling(
+  knitr::kable(cmp, caption = "Comparison of recent (2015-2025) vs pre-warming (1951-1980) means (absolute difference).", digits = 2),
+  bootstrap_options = c("striped", "hover", "condensed")
+) |>
+  kableExtra::scroll_box(height = "320px")
 ```
 
 | variable      | period | mean_a |  mean_b | difference | method    |
@@ -319,7 +331,42 @@ knitr::kable(cmp, caption = "Comparison of recent (2015-2025) vs pre-warming (19
 | vpd           | summer |   9.02 |    6.79 |       2.23 | mean_diff |
 | vpd           | winter |   0.64 |    0.60 |       0.04 | mean_diff |
 
-Comparison of recent (2015-2025) vs pre-warming (1951-1980) means.
+Comparison of recent (2015-2025) vs pre-warming (1951-1980) means
+(absolute difference).
+
+For variables where the baseline magnitude varies a lot in space —
+precipitation and soil moisture — percent change is more interpretable
+than absolute difference.
+[`cd_compare()`](https://newgraphenvironment.github.io/cd/reference/cd_compare.md)
+accepts `method = "pct_change"` for exactly this.
+
+``` r
+cmp_pct <- cd_compare(
+  ts[ts$variable %in% c("prcp", "soil_moisture"), ],
+  window_a = 2015:2025,
+  window_b = 1951:1980,
+  method = "pct_change"
+)
+knitr::kable(cmp_pct,
+  caption = "Recent vs pre-warming comparison expressed as percent change for precipitation and soil moisture.",
+  digits = 1)
+```
+
+| variable      | period | mean_a | mean_b | difference | method     |
+|:--------------|:-------|-------:|-------:|-----------:|:-----------|
+| prcp          | annual |  977.4 | 1060.9 |       -7.9 | pct_change |
+| prcp          | fall   |  267.5 |  261.3 |        2.4 | pct_change |
+| prcp          | spring |  251.6 |  251.4 |        0.1 | pct_change |
+| prcp          | summer |  173.0 |  208.3 |      -17.0 | pct_change |
+| prcp          | winter |  285.3 |  339.9 |      -16.1 | pct_change |
+| soil_moisture | annual |    0.3 |    0.3 |       -2.0 | pct_change |
+| soil_moisture | fall   |    0.3 |    0.3 |       -4.3 | pct_change |
+| soil_moisture | spring |    0.4 |    0.4 |        2.0 | pct_change |
+| soil_moisture | summer |    0.3 |    0.3 |       -7.1 | pct_change |
+| soil_moisture | winter |    0.3 |    0.3 |        1.3 | pct_change |
+
+Recent vs pre-warming comparison expressed as percent change for
+precipitation and soil moisture.
 
 ``` r
 cd_plot_comparison(
@@ -356,6 +403,8 @@ historical_idx <- which(years >= 1951 & years <= 1980)
 recent_mean <- mean(r_tmean[[recent_idx]])
 historical_mean <- mean(r_tmean[[historical_idx]])
 departure <- recent_mean - historical_mean
+# Mask to the watershed boundary so cells outside the AOI go transparent
+departure <- terra::mask(departure, aoi)
 names(departure) <- "Temperature departure"
 
 ggplot() +
@@ -398,6 +447,8 @@ years_sm <- as.integer(names(r_sm))
 recent_sm <- mean(r_sm[[which(years_sm >= 2015 & years_sm <= 2025)]])
 historical_sm <- mean(r_sm[[which(years_sm >= 1951 & years_sm <= 1980)]])
 departure_sm <- recent_sm - historical_sm
+# Mask to the watershed boundary so cells outside the AOI go transparent
+departure_sm <- terra::mask(departure_sm, aoi)
 names(departure_sm) <- "Soil moisture departure"
 
 ggplot() +
@@ -461,6 +512,135 @@ knitr::kable(cd_summary(rbind(trn_summer, trn_winter)),
 
 Seasonal temperature trends (summer vs winter).
 
+## Daytime Highs and Overnight Lows
+
+The cd package now ships tmax (daytime maximum) and tmin (overnight
+minimum) alongside tmean. These are not redundant. In many regions tmin
+warms faster than tmax under climate change — the “day-night asymmetry”
+that is one of the textbook fingerprints of greenhouse warming (Karl et
+al. 1993). Whether your watershed shows that signal depends on local
+geography (valley inversions, snow cover, slope-aspect mix), and the
+package lets you check.
+
+``` r
+trn_tmax <- cd_trend(
+  ano[ano$variable == "tmax" & ano$period == "annual", ],
+  trend_start = c(1951, 1981)
+)
+cd_plot_timeseries(ano, variable = "tmax", period = "annual", trend = trn_tmax,
+  title = "Daytime Maximum (tmax) — Annual Anomaly")
+```
+
+![Annual daytime maximum temperature (tmax) anomaly for the Kootenay
+Lake watershed relative to the 1951-1980
+baseline.](climate-departure_files/figure-html/plot-tmax-1.png)
+
+Annual daytime maximum temperature (tmax) anomaly for the Kootenay Lake
+watershed relative to the 1951-1980 baseline.
+
+``` r
+trn_tmin <- cd_trend(
+  ano[ano$variable == "tmin" & ano$period == "annual", ],
+  trend_start = c(1951, 1981)
+)
+cd_plot_timeseries(ano, variable = "tmin", period = "annual", trend = trn_tmin,
+  title = "Overnight Minimum (tmin) — Annual Anomaly")
+```
+
+![Annual overnight minimum temperature (tmin) anomaly for the Kootenay
+Lake watershed relative to the 1951-1980
+baseline.](climate-departure_files/figure-html/plot-tmin-1.png)
+
+Annual overnight minimum temperature (tmin) anomaly for the Kootenay
+Lake watershed relative to the 1951-1980 baseline.
+
+For Kootenay Lake the slopes are essentially the same: about +1.9 °C
+each since 1951. The diurnal temperature range — daytime maximum minus
+overnight minimum — is therefore approximately constant.
+
+``` r
+tmax_ts <- ts[ts$variable == "tmax" & ts$period == "annual", c("year", "value")]
+tmin_ts <- ts[ts$variable == "tmin" & ts$period == "annual", c("year", "value")]
+dtr <- merge(tmax_ts, tmin_ts, by = "year", suffixes = c("_max", "_min"))
+dtr$dtr <- dtr$value_max - dtr$value_min
+
+ggplot(dtr, aes(x = year, y = dtr)) +
+  geom_line(color = "grey50") +
+  geom_point(color = "grey30", size = 1) +
+  geom_smooth(method = "lm", se = FALSE, color = "#b2182b", linewidth = 0.8) +
+  labs(
+    title = "Diurnal Temperature Range — Kootenay Lake Watershed",
+    x = NULL,
+    y = expression("Daytime maximum minus overnight minimum (" * degree * "C)")
+  ) +
+  theme_minimal(base_size = 12)
+```
+
+![Diurnal temperature range (daytime maximum minus overnight minimum)
+annual mean for the Kootenay Lake watershed. The trend is essentially
+flat, indicating that overnight lows and daytime highs are warming at
+similar rates here — counter to the textbook day-night
+asymmetry.](climate-departure_files/figure-html/plot-dtr-1.png)
+
+Diurnal temperature range (daytime maximum minus overnight minimum)
+annual mean for the Kootenay Lake watershed. The trend is essentially
+flat, indicating that overnight lows and daytime highs are warming at
+similar rates here — counter to the textbook day-night asymmetry.
+
+The diurnal temperature range trend at Kootenay Lake is about −0.06 °C
+over the full record — well within noise. **This watershed does not show
+the textbook day-night asymmetry.** That is itself informative: regional
+generalisations don’t always transfer to specific basins, and the value
+of having the data per-watershed is exactly the ability to check.
+
+What does stand out at Kootenay Lake is the **seasonal pattern**.
+
+``` r
+trn_tx_tn_seasonal <- cd_trend(
+  ano[ano$variable %in% c("tmax", "tmin") &
+        ano$period %in% c("winter", "spring", "summer", "fall"), ],
+  trend_start = 1951
+)
+knitr::kable(
+  cd_summary(trn_tx_tn_seasonal),
+  caption = "Seasonal trends in daytime maximum and overnight minimum temperature at Kootenay Lake, 1951-2025."
+)
+```
+
+| Parameter           | Period | Slope | Years | Total Change | Unit | p-value |
+|:--------------------|:-------|------:|------:|-------------:|:-----|--------:|
+| Maximum temperature | Fall   | 0.018 |    75 |          1.4 | °C   |  0.0206 |
+| Minimum temperature | Fall   | 0.026 |    75 |          2.0 | °C   |  0.0000 |
+| Maximum temperature | Spring | 0.028 |    75 |          2.1 | °C   |  0.0002 |
+| Minimum temperature | Spring | 0.025 |    75 |          1.9 | °C   |  0.0000 |
+| Maximum temperature | Summer | 0.037 |    75 |          2.8 | °C   |  0.0000 |
+| Minimum temperature | Summer | 0.038 |    75 |          2.9 | °C   |  0.0000 |
+| Maximum temperature | Winter | 0.020 |    75 |          1.5 | °C   |  0.0064 |
+| Minimum temperature | Winter | 0.014 |    75 |          1.0 | °C   |  0.1156 |
+
+Seasonal trends in daytime maximum and overnight minimum temperature at
+Kootenay Lake, 1951-2025.
+
+Summer warming is the strongest single signal: daytime maxima have risen
+about +2.8 °C and overnight minima about +2.9 °C since 1951 — roughly
+1.5× the annual mean tmean trend. Winter is the only season where the
+day-night asymmetry shows clearly here, and it goes the *opposite*
+direction of the textbook expectation: winter daytime maxima have warmed
+significantly while winter overnight minima have not, a pattern
+consistent with persistent winter cold-air pooling in the valley bottom.
+
+The summer tmax signal is the temperature envelope that drives:
+
+- **Salmonid thermal stress.** Anadromous salmon runs to Kootenay Lake
+  are blocked by lower-Columbia dams, but resident salmonids (kokanee,
+  bull trout, Gerrard rainbow) and First Nations re-introduction efforts
+  face increasing summer thermal stress in tributaries.
+- **Fire weather.** Hot dry summer afternoons set the envelope for
+  ignition probability and spread potential.
+- **Snowmelt timing.** Earlier and faster spring/summer warming shifts
+  freshet earlier and lowers late-summer baseflows, the period when
+  stream temperature stress is already highest.
+
 ## Precipitation and Soil Moisture
 
 While temperature shows clear departure, precipitation trends in BC are
@@ -483,8 +663,14 @@ all_trends <- cd_trend(
   ano[ano$period == "annual", ],
   trend_start = c(1951, 1981)
 )
-knitr::kable(cd_summary(all_trends),
-  caption = "Annual trend statistics for all variables, Kootenay Lake watershed.")
+kableExtra::kable_styling(
+  knitr::kable(
+    cd_summary(all_trends),
+    caption = "Annual trend statistics for all variables and both trend windows (1951- and 1981-), Kootenay Lake watershed."
+  ),
+  bootstrap_options = c("striped", "hover", "condensed")
+) |>
+  kableExtra::scroll_box(height = "320px")
 ```
 
 | Parameter               | Period |  Slope | Years | Total Change | Unit | p-value |
@@ -504,27 +690,32 @@ knitr::kable(cd_summary(all_trends),
 | Minimum temperature     | Annual |  0.028 |    45 |          1.3 | °C   |  0.0019 |
 | Vapour pressure deficit | Annual |  0.024 |    45 |          1.1 | Pa   |  0.0000 |
 
-Annual trend statistics for all variables, Kootenay Lake watershed.
+Annual trend statistics for all variables and both trend windows (1951-
+and 1981-), Kootenay Lake watershed.
 
 ## Interpretation
 
-The analysis reveals the climate departure pattern common across British
-Columbia’s interior watersheds:
+The analysis reveals the climate departure pattern at Kootenay Lake:
 
-- **Temperature is rising.** The cumulative shift since the mid-20th
-  century is substantial and statistically significant across all
-  seasons.
-- **Precipitation trends are weak.** Year-to-year variability is high
-  but there is no strong directional change.
-- **Soils are drying despite stable precipitation.** Warmer temperatures
-  increase evapotranspiration, pulling moisture from soils even when the
-  same amount of rain falls. For aquatic ecosystems, drier soils mean
-  reduced summer baseflows during the period when flows are already
-  lowest.
+- **Temperature is rising, especially in summer.** Annual mean
+  temperature has risen about +1.9 °C since 1951, with summer warming
+  the dominant signal at +2.8 °C. Daytime and overnight warming rates
+  are similar at the annual scale here, contrary to the regional
+  textbook expectation of overnight lows warming faster.
+- **Precipitation has declined ~10% since 1951.** The trend is
+  statistically significant (p ≈ 0.015). Year-to-year variability is
+  high but the directional decline is real, not noise.
+- **Soils are drying because both inputs and demand have shifted.**
+  Precipitation is down ~10% AND warmer temperatures (especially in
+  summer) drive higher evapotranspiration. Both effects compound to
+  reduce summer baseflows in salmonid-bearing tributaries — the period
+  when flows are already lowest.
 
-This pattern — warming without precipitation change leading to
-hydrological drought — is the mechanism connecting climate departure to
-habitat degradation in salmon-bearing watersheds.
+This pattern — warming temperatures, declining precipitation, and
+intensifying evapotranspiration combining to dry soils and reduce
+late-summer streamflow — is the mechanism connecting climate departure
+to habitat degradation in salmonid-bearing watersheds across the BC
+interior.
 
 ## Data Source
 

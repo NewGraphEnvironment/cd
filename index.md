@@ -23,12 +23,10 @@ pak::pak("NewGraphEnvironment/cd")
 ``` r
 library(cd)
 
-# Load a STAC catalog and an area of interest
-catalog <- cd_catalog(
-  system.file("extdata", "example_catalog.json", package = "cd")
-)
+# Load the live STAC catalog and an example area of interest
+catalog <- cd_catalog()
 aoi <- sf::st_read(
-  system.file("extdata", "example_aoi.gpkg", package = "cd"),
+  system.file("extdata", "example_aoi_kotl.gpkg", package = "cd"),
   quiet = TRUE
 )
 
@@ -53,5 +51,5 @@ cd_compare(ts, window_a = 1956:1960, window_b = 1951:1955)
 
 - [Function
   reference](https://newgraphenvironment.github.io/cd/reference/)
-- [Vignette](https://newgraphenvironment.github.io/cd/articles/) (coming
-  soon)
+- [Vignette: Climate Departure Analysis for a
+  Watershed](https://newgraphenvironment.github.io/cd/articles/climate-departure.html)
