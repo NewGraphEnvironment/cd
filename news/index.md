@@ -1,5 +1,21 @@
 # Changelog
 
+## cd 0.1.1 (2026-04-15)
+
+Vignette and docs patch. The `climate-departure` vignette gained a
+“Daytime Highs and Overnight Lows” section using the tmax/tmin variables
+now on STAC, with honest framing for the example watershed (the textbook
+day-night asymmetry doesn’t show at Kootenay Lake — the dominant signal
+is summer daytime maximum, the temperature envelope for salmonid thermal
+stress in tributaries). Existing maps now clip context layers and mask
+departure rasters to the watershed group polygon for tighter framing.
+Interpretation section corrected: precipitation has declined ~10%
+(statistically significant) and soils are drying due to both falling
+precipitation and rising evapotranspiration. README quick-start fixed
+(was referencing files that don’t exist) and now links to the live
+pkgdown vignette.
+([\#39](https://github.com/NewGraphEnvironment/cd/issues/39))
+
 ## cd 0.1.0 (2026-04-14)
 
 CRAN release: 2020-10-22
