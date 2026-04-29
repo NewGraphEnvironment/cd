@@ -53,3 +53,14 @@ cd_compare(ts, window_a = 1956:1960, window_b = 1951:1955)
   reference](https://newgraphenvironment.github.io/cd/reference/)
 - [Vignette: Climate Departure Analysis for a
   Watershed](https://newgraphenvironment.github.io/cd/articles/climate-departure.html)
+
+## Acknowledgements
+
+This package is inspired by
+[`bcgov/bc_climate_anomaly`](https://github.com/bcgov/bc_climate_anomaly),
+a Shiny app developed by the Province of British Columbia (Aseem Sharma
+and contributors) that visualizes monthly, seasonal, and annual climate
+anomalies for temperature, precipitation, humidity, vapor pressure, and
+soil moisture across BC. The variable set and the eco-region / watershed
+framing in `cd` follow directly from that work. `bc_climate_anomaly` is
+licensed under the Apache License 2.0.
