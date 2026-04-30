@@ -15,3 +15,8 @@ data/e2e_cogs/
 data/backfill/
 data/backfill_test/
 data/update/
+
+# Track .claude/visibility (overriding global ~/.gitignore that excludes .claude/)
+!.claude/
+.claude/*
+!.claude/visibility

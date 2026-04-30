@@ -85,406 +85,6 @@ Configurable via `cd_seasons()`. Default: standard meteorological (DJF, MAM, JJA
 
 <!-- BEGIN SOUL CONVENTIONS — DO NOT EDIT BELOW THIS LINE -->
 
-# Agent Teams
-
-When to use Claude Code agent teams vs subagents, and key constraints.
-
-**Source:** [code.claude.com/docs/en/agent-teams](https://code.claude.com/docs/en/agent-teams)
-
-## When to Use Teams (vs. Subagents)
-
-Use agent teams when teammates need to **talk to each other** — research debates, competing hypotheses, cross-layer coordination. Use subagents when you just need focused workers that report back results.
-
-**Good fit:** parallel code review, investigating competing bug hypotheses, new modules that don't share files, research from multiple angles.
-
-**Bad fit:** sequential tasks, edits to the same file, simple work where coordination overhead exceeds benefit.
-
-## Key Rules
-
-- **Give enough context in the spawn prompt** — teammates don't inherit the lead's conversation history
-- **Ensure teammates own different files** — two teammates editing the same file leads to overwrites
-- **Shut down all teammates before cleanup** — cleanup fails if teammates are still running
-- **Always clean up via the lead** — teammates should never run cleanup
-- **No session resumption** — after `/resume`, spawn new teammates
-
-# Bookdown Conventions
-
-Standards for bookdown report projects across New Graph Environment.
-
-## Template Repos
-
-These are the canonical references. Child repos inherit their structure and patterns.
-
-- [mybookdown-template](https://github.com/NewGraphEnvironment/mybookdown-template) — General-purpose bookdown starter
-- [fish_passage_template_reporting](https://github.com/NewGraphEnvironment/fish_passage_template_reporting) — Fish passage reporting template
-
-When in doubt, match what the template does. When the template and production repos disagree, production wins — update the template.
-
-## Project Structure
-
-```
-project/
-├── index.Rmd                # Master config, YAML params, setup chunks
-├── _bookdown.yml            # book_filename, output_dir: "docs"
-├── _output.yml              # Gitbook, pagedown, pdf_book config
-├── 0100-intro.Rmd           # Chapter numbering: 4-digit, 100s increment
-├── 0200-background.Rmd
-├── 0300-methods.Rmd
-├── 0400-results.Rmd
-├── 0500-*.Rmd               # Discussion/recommendations
-├── 0800-appendix-*.Rmd      # Appendices (site-specific in fish passage)
-├── 2000-references.Rmd      # Auto-generated from .bib
-├── 2090-report-change-log.Rmd  # Auto-generated from NEWS.md
-├── 2100-session-info.Rmd    # Reproducibility
-├── NEWS.md                  # Changelog (semantic versioning)
-├── scripts/
-│   ├── packages.R           # Package loading (renv-managed)
-│   ├── functions.R          # Project-specific functions
-│   ├── staticimports.R      # Auto-generated from staticimports pkg
-│   ├── setup_docs.R         # Build helper
-│   └── run.R                # Local build (gitbook + PDF)
-├── fig/                     # Figures (organized by chapter or type)
-├── data/                    # Project data
-├── docs/                    # Rendered output (GitHub Pages)
-├── renv.lock                # Locked dependencies
-└── .Rprofile                # Activates renv
-```
-
-## Setup Chunk Pattern
-
-Every `index.Rmd` follows this setup sequence. Order matters.
-
-```r
-# 1. Gitbook vs PDF switch
-gitbook_on <- TRUE
-
-# 2. Knitr options
-knitr::opts_chunk$set(
-  echo = identical(gitbook_on, TRUE),  # Show code only in gitbook
-  message = FALSE, warning = FALSE,
-  dpi = 60, out.width = "100%"
-)
-options(scipen = 999)
-options(knitr.kable.NA = '--')
-options(knitr.kable.NAN = '--')
-
-# 3. Source in order: packages → static imports → functions → data
-source('scripts/packages.R')
-source('scripts/staticimports.R')
-source('scripts/functions.R')
-```
-
-Responsive settings by output format:
-
-```r
-# Gitbook
-photo_width <- "100%"; font_set <- 11
-
-# PDF (paged.js)
-photo_width <- "80%"; font_set <- 9
-```
-
-## YAML Parameters
-
-Parameters live in `index.Rmd` frontmatter (not a separate file). Child repos override by editing these values.
-
-```yaml
-params:
-  repo_url: 'https://github.com/NewGraphEnvironment/repo_name'
-  report_url: 'https://www.newgraphenvironment.com/repo_name/'
-  update_packages: FALSE
-  update_bib: TRUE
-  gitbook_on: TRUE
-```
-
-Fish passage repos add project-specific params (`project_region`, `model_species`, `wsg_code`, update flags for forms). These are project-specific — don't add them to the general template.
-
-## Chunk Naming
-
-Embed context and purpose in chunk names. The principle is universal; the codes are project-specific.
-
-**Pattern:** `{type}-{system}-{description}`
-
-| Type | Examples |
-|------|---------|
-| Tables | `tab-kln-load-int-yr`, `tab-sites-sum`, `tab-wshd-196332` |
-| Figures | `plot-wq-kln-quadratic`, `map-interactive`, `map-196332` |
-| Photos | `photo-196332-01`, `photo-196332-d01` (dual layout) |
-
-## Cross-References
-
-Bookdown auto-prepends `fig:` or `tab:` to chunk names.
-
-- **Tables:** `Table \@ref(tab:chunk-name)`
-- **Figures:** `Figure \@ref(fig:chunk-name)`
-
-No `fig:` or `tab:` prefix in the chunk label itself — bookdown adds it.
-
-## Table Caption Workaround
-
-Interactive tables (DT) can't use standard bookdown captions. Use the `my_tab_caption()` function from `staticimports.R`.
-
-**Pattern:** Separate `-cap` chunk from table chunk.
-
-```r
-# Caption chunk — must use results="asis"
-{r tab-sites-sum-cap, results="asis"}
-my_caption <- "Summary of fish passage assessment procedures."
-my_tab_caption()
-```
-
-```r
-# Table chunk — renders the DT
-{r tab-sites-sum}
-data |> my_dt_table(page_length = 20, cols_freeze_left = 0)
-```
-
-`my_tab_caption()` auto-grabs the chunk label via `knitr::opts_current$get()$label` and wraps it in HTML caption tags that bookdown can cross-reference.
-
-## Photo Layout
-
-Separate prep chunk (find the file) from display chunk (render it).
-
-```r
-# Prep — find the photo
-{r photo-196332-01-prep}
-my_photo1 <- fpr::fpr_photo_pull_by_str(str_to_pull = 'ds_typical_1_')
-my_caption1 <- paste0('Typical habitat downstream of PSCIS crossing ', my_site, '.')
-```
-
-```r
-# Gitbook — full width
-{r photo-196332-01, fig.cap=my_caption1, out.width=photo_width, eval=gitbook_on}
-knitr::include_graphics(my_photo1)
-```
-
-```r
-# PDF — side by side with 1% spacer
-{r photo-196332-d01, fig.show="hold", out.width=c("49.5%","1%","49.5%"), eval=identical(gitbook_on, FALSE)}
-knitr::include_graphics(my_photo1)
-knitr::include_graphics("fig/pixel.png")
-knitr::include_graphics(my_photo2)
-```
-
-## Bibliography
-
-**`references.bib` is auto-generated — never edit it manually.** On each build, `rbbt::bbt_write_bib()` scans all `.Rmd` files for `@citekey` references, pulls the BibTeX from Zotero's Better BibTeX, and overwrites `references.bib`. Any manual additions will be lost on the next build.
-
-To add a reference: add it to the shared Zotero group library, use its BBT citation key (`@key`) in the `.Rmd` text, and build. rbbt handles the rest.
-
-```yaml
-bibliography: "`r rbbt::bbt_write_bib('references.bib', overwrite = TRUE)`"
-biblio-style: apalike
-link-citations: no
-```
-
-When `update_bib: FALSE` in params, the build uses the existing `references.bib` without regenerating — useful for offline builds or CI where Zotero isn't running.
-
-Auto-generate package citations:
-
-```r
-knitr::write_bib(c(.packages(), 'bookdown', 'knitr', 'rmarkdown'), 'packages.bib')
-```
-
-Use `nocite:` in YAML to include references not cited in text.
-
-## Acknowledgement & AI Disclosure
-
-`index.Rmd` contains two separate front-matter sections after the setup chunks:
-
-### Acknowledgement {.front-matter .unnumbered}
-
-Three parts, in order:
-
-1. **Personal connection to land** (template-level, same across all reports):
-   > At New Graph Environment, we understand our well-being as inseparable from the health of the land and waters we work within. When we care for ecosystems, we care for ourselves and for the communities connected to them. This relationship is not metaphorical — it is the foundation of our practice.
-
-2. **Colonial acknowledgement** (template-level):
-   > Modern civilization has a long journey ahead to acknowledge and address the historic and ongoing impacts of colonialism...
-
-3. **Territorial acknowledgement** (project-specific, must be edited per report): Name the Nations, governance systems, watersheds, and species relevant to the project. Do not use a generic office-location acknowledgement — tie it to the territory where the work happens. See the Wedzin Kwa chinook example for the pattern.
-
-4. **Funding and partners** (project-specific).
-
-### AI Disclosure
-
-Do not use a `#` heading for the disclosure — this creates a separate chapter page in gitbook. Instead, add it to the YAML `date:` field so it renders in the title block:
-
-```yaml
-date: |
- |
- | Version X.X.X DRAFT `r format(Sys.Date(), "%Y-%m-%d")`
- |
- | *Claude Sonnet 4.6 (Anthropic) assisted with literature synthesis, drafting, and technical writing. All scientific interpretation, data analysis, and conclusions are the responsibility of the authors.*
-```
-
-**Wording principle:** Be accurate about what the LLM did. It assisted with drafting and synthesis — it did not make scientific interpretations or conclusions. Do not say "independently verified by the authors" (redundant) or attribute "ecological assessments" to the LLM.
-
-For regulatory/EGBC-stamped work, use the extended disclaimer from `soul/research/20260212_ai_disclosure_research.md`. See NewGraphEnvironment/mybookdown-template#89.
-
-## Conditional Rendering (Gitbook vs PDF)
-
-A single boolean `gitbook_on` controls output format throughout.
-
-```r
-# Show only in gitbook
-{r map-interactive, eval=gitbook_on}
-
-# Show only in PDF
-{r fig-print-only, eval=identical(gitbook_on, FALSE)}
-
-# Conditional inline content
-`r if(identical(gitbook_on, FALSE)) knitr::asis_output("This report is available online...")`
-
-# Page breaks for PDF only
-`r if(gitbook_on){knitr::asis_output("")} else knitr::asis_output("\\pagebreak")`
-```
-
-## Versioning and Changelog
-
-Reports use MAJOR.MINOR.PATCH versioning with a `NEWS.md` changelog.
-
-**Version in `index.Rmd` YAML:**
-```yaml
-date: |
- |
- | Version 1.1.0 DRAFT `r format(Sys.Date(), "%Y-%m-%d")`
-```
-
-**NEWS.md format:**
-```markdown
-## 1.1.0 (2026-02-17)
-
-- Add feature X
-- Fix issue Y ([Issue #N](https://github.com/Org/repo/issues/N))
-```
-
-**Auto-append as appendix** via `my_news_to_appendix()` in `staticimports.R`:
-```r
-news_to_appendix(md_name = "NEWS.md", rmd_name = "2090-report-change-log.Rmd")
-```
-
-**Convention:**
-- Bump version in `index.Rmd` and add NEWS entry for every commit to main that changes report content
-- Tag releases: `git tag -a v1.1.0 -m "v1.1.0: Brief description"`
-- MAJOR: structural changes, new chapters, methodology changes
-- MINOR: new content, figures, tables, discussion sections
-- PATCH: prose fixes, corrections, formatting
-
-## COG Viewer Embedding
-
-Always use `ngr::ngr_str_viewer_cog()` — never hardcode viewer iframes.
-
-```r
-knitr::asis_output(ngr::ngr_str_viewer_cog("https://bucket.s3.us-west-2.amazonaws.com/ortho.tif"))
-```
-
-The function includes a cache-busting `?v=` parameter. Bump `v` in the function default when `viewer.html` has breaking changes.
-
-## Dependency Management
-
-Use `renv` for reproducible package management:
-- `.Rprofile` activates renv on startup
-- `renv::restore()` installs from lockfile
-- `renv::snapshot()` updates lockfile after adding packages
-- Use `pak::pak("pkg")` to install (not `install.packages`)
-
-## Known Drift
-
-Production repos (2024-2025) have drifted from templates in these areas. When working in a child repo, match what that repo does, not the template:
-
-- **Script naming in `02_reporting/`** — older repos use `tables.R`, `0165-read-sqlite.R`; newer repos use numbered `0130-tables.R`. Follow the repo you're in.
-- **Removed packages** — `elevatr`, `rayshader`, `arrow` removed from production but still in template.
-- **`staticimports::import()` call** — some repos skip it and source `staticimports.R` directly.
-- **Hardcoded vs parameterized years** — older repos hardcode years in file paths; newer repos use `params$project_year`. Prefer parameterized.
-
-# Cartography
-
-## Style Registry
-
-Use the `gq` package for all shared layer symbology. Never hardcode hex color values when a registry style exists.
-
-```r
-library(gq)
-reg <- gq_reg_main()  # load once per script — 51+ layers
-```
-
-**Core pattern:** `reg$layers$lake`, `reg$layers$road`, `reg$layers$bec_zone`, etc.
-
-### Translators
-
-| Target | Simple layer | Classified layer |
-|--------|-------------|-----------------|
-| tmap | `gq_tmap_style(layer)` → `do.call(tm_polygons, ...)` | `gq_tmap_classes(layer)` → field, values, labels |
-| mapgl | `gq_mapgl_style(layer)` → paint properties | `gq_mapgl_classes(layer)` → match expression |
-
-### Custom styles
-
-For project-specific layers not in the main registry, use a hand-curated CSV and merge:
-
-```r
-reg <- gq_reg_merge(gq_reg_main(), gq_reg_read_csv("path/to/custom.csv"))
-```
-
-Install: `pak::pak("NewGraphEnvironment/gq")`
-
-## Map Targets
-
-| Output | Tool | When |
-|--------|------|------|
-| PDF / print figures | `tmap` v4 | Bookdown PDF, static reports |
-| Interactive HTML | `mapgl` (MapLibre GL) | Bookdown gitbook, memos, web pages |
-| QGIS project | Native QML | Field work, Mergin Maps |
-
-## Key Rules
-
-- **`sf_use_s2(FALSE)`** at top of every mapping script
-- **Compute area BEFORE simplify** in SQL
-- **No map title** — title belongs in the report caption
-- **Legend over least-important terrain** — swap legend and logo sides when it reduces AOI occlusion. No fixed convention for which side.
-- **Four-corner rule** — legend, logo, scale bar, keymap each get their own corner. Never stack two in the same quadrant.
-- **Bbox must match canvas aspect ratio** — compute the ratio from geographic extents and page dimensions. Mismatch causes white space bands.
-- **Consistent element-to-frame spacing** — all inset elements should have visually equal margins from the frame edge
-- **Map fills to frame** — basemap extends edge-to-edge, no dead bands. Use near-zero `inner.margins` and `outer.margins`.
-- **Suppress auto-legends** — build manual ones from registry values
-- **ALL CAPS labels appear larger** — use title case for legend labels (gq `gq_tmap_classes()` handles this automatically via `to_title()` fallback)
-
-## Self-Review (after every render)
-
-Read the PNG and check before showing anyone:
-
-1. Correct polygon/study area shown? (verify source data, not just the bbox)
-2. Map fills the page? (no white/black bands)
-3. Keymap inside frame with spacing from edge?
-4. No element overlap? (each in its own corner)
-5. Legend over least-important terrain?
-6. Consistent spacing across all elements?
-7. Scale bar breaks appropriate for extent?
-
-See the `cartography` skill for full reference: basemap blending, BC spatial data queries, label hierarchy, mapgl gotchas, and worked examples.
-
-## Land Cover Change
-
-Use [drift](https://github.com/NewGraphEnvironment/drift) and [flooded](https://github.com/NewGraphEnvironment/flooded) together for riparian land cover change analysis. flooded delineates floodplain extents from DEMs and stream networks; drift tracks what's changing inside them over time.
-
-**Pipeline:**
-
-```r
-# 1. Delineate floodplain AOI (flooded)
-valleys <- flooded::fl_valley_confine(dem, streams)
-
-# 2. Fetch, classify, summarize (drift)
-rasters   <- drift::dft_stac_fetch(aoi, source = "io-lulc", years = c(2017, 2020, 2023))
-classified <- drift::dft_rast_classify(rasters, source = "io-lulc")
-summary    <- drift::dft_rast_summarize(classified, unit = "ha")
-
-# 3. Interactive map with layer toggle
-drift::dft_map_interactive(classified, aoi = aoi)
-```
-
-- Class colors come from drift's shipped class tables (IO LULC, ESA WorldCover)
-- For production COGs on S3, `dft_map_interactive()` serves tiles via titiler — set `options(drift.titiler_url = "...")`
-- See the [drift vignette](https://www.newgraphenvironment.com/drift/articles/neexdzii-kwa.html) for a worked example (Neexdzii Kwa floodplain, 2017-2023)
 
 # Code Check Conventions
 
@@ -569,71 +169,20 @@ Add new checks here when a bug class is discovered — they compound over time.
 
 ## General
 
+### Adopting Existing Config
+
+When importing config from one location into a canonical one (legacy `~/.bash_profile` → dotfiles repo, old script's env → repo, another project's `settings.json` → soul):
+
+- **Verify every referenced path/binary exists.** Dead PATH exports, missing interpreters, stale env vars should be cut, not codified.
+  Shell paths: `for p in $(echo "$PATH" | tr ':' ' '); do [ -d "$p" ] || echo "DEAD: $p"; done`
+- **Ask before dropping a reference** — it may be something the user forgot to reinstall on this machine, not something to delete.
+- **Curated subset, not verbatim copy.** The diff should reflect what you verified, not the whole source.
+
 ### Documentation Staleness
 - Moving/renaming scripts: update CLAUDE.md, READMEs, usage comments
 - New variables: update .tfvars.example
 - New workflows: update relevant README
 
-# Communications Conventions
-
-Standards for external communications across New Graph Environment.
-
-[compost](https://github.com/NewGraphEnvironment/compost) is the working repo for email drafts, scripts, contact management, and Gmail utilities. These conventions capture the universal principles; compost has the implementation details.
-
-## Tone
-
-Three levels. Default to casual unless context dictates otherwise.
-
-| Level | When | Style |
-|-------|------|-------|
-| **Casual** | Established working relationships | Professional but warm. Direct, concise. No slang. |
-| **Very casual** | Close collaborators with rapport | Colloquial OK. Light humor. Slang acceptable. |
-| **Formal** | New contacts, senior officials, formal requests | Full sentences, no contractions, state purpose early. |
-
-**Collaborative, not directive.** Acknowledge their constraints:
-
-- **Avoid:** "Work these in as makes sense for your lab"
-- **Better:** "If you're able to work these in when it fits your schedule that would be really helpful"
-
-## Email Workflow
-
-Draft in markdown, convert to HTML at send time via gmailr. See compost for script templates, OAuth setup, and `search_gmail.R`.
-
-**File naming:** `YYYYMMDD_recipient_topic_draft.md` + `YYYYMMDD_recipient_topic.R`
-
-**Key gotchas** (documented in detail in compost):
-- Gmail strips `<style>` blocks — use inline styles for tables
-- `gm_create_draft()` does NOT support `thread_id` — only `gm_send_message()` can reply into threads. Drafts land outside the conversation.
-- Always use `test_mode` and `create_draft` variables for safe workflows
-
-## Data in Emails
-
-- **Never manually type data into tables** — generate programmatically from source files
-- **Link to canonical sources** (GitHub repos, public reports) rather than embedding raw data
-- **Provide both CSV and Excel** when sharing tabular data
-- **Document ID codes** — when using compressed IDs (e.g., `id_lab`), include a reference sheet so recipients can decode
-
-## What Not to Expose Externally
-
-- Internal QA info (blanks, control samples, calibration data)
-- Internal tracking codes or SRED references
-- Draft status or revision history
-- Internal project management details
-
-Keep client-facing communications focused on deliverables and technical content.
-
-## Signature
-
-```
-Al Irvine B.Sc., R.P.Bio.
-New Graph Environment Ltd.
-
-Cell: 250-777-1518
-Email: al@newgraphenvironment.com
-Website: www.newgraphenvironment.com
-```
-
-In HTML emails, use `<br>` tags between lines.
 
 # LLM Behavioral Guidelines
 
@@ -702,153 +251,106 @@ For multi-step tasks, state a brief plan:
 
 Strong success criteria let you loop independently. Weak criteria ("make it work") require constant clarification.
 
----
 
 **These guidelines are working if:** fewer unnecessary changes in diffs, fewer rewrites due to overcomplication, and clarifying questions come before implementation rather than after mistakes.
 
-# New Graph Environment Conventions
 
-Core patterns for professional, efficient workflows across New Graph Environment repositories.
+# Planning Conventions
 
-## Ecosystem Overview
+How Claude manages structured planning for complex tasks using planning-with-files (PWF).
 
-Five repos form the governance and operations layer across all New Graph Environment work:
+## When to Plan
 
-| Repo | Purpose | Analogy |
-|------|---------|---------|
-| [compass](https://github.com/NewGraphEnvironment/compass) | Ethics, values, guiding principles | The "why" |
-| [soul](https://github.com/NewGraphEnvironment/soul) | Standards, skills, conventions for LLM agents | The "how" |
-| [compost](https://github.com/NewGraphEnvironment/compost) | Communications templates, email workflows, contact management | The "who" |
-| [awshak](https://github.com/NewGraphEnvironment/awshak) | Infrastructure as Code, deployment | The "where" |
-| [gq](https://github.com/NewGraphEnvironment/gq) | Cartographic style management across QGIS, tmap, leaflet, web | The "look" |
+Use PWF when a task has multiple phases, requires research, or involves more than ~5 tool calls. Triggers:
+- User says "let's plan this", "plan mode", "use planning", or invokes `/planning-init`
+- Complex issue work begins (multi-step, uncertain approach)
+- Claude judges the task warrants structured tracking
 
-**Adaptive management:** Conventions evolve from real project work, not theory. When a pattern is learned or refined during project work, propagate it back to soul so all projects benefit. The `/claude-md-init` skill builds each project's `CLAUDE.md` from soul conventions.
+Skip planning for single-file edits, quick fixes, or tasks with obvious next steps.
 
-**Cross-references:** [sred-2025-2026](https://github.com/NewGraphEnvironment/sred-2025-2026) tracks R&D activities across repos. Compost cross-cuts all projects as the centralized communications workflow — email drafts, contact registry, and tone guidelines live there and are copied to individual project `communications/` folders as needed.
+## The Workflow
 
-## Issue Workflow
+1. **Explore first** — Enter plan mode (read-only). Read code, trace paths, understand the problem before proposing anything.
+2. **Plan to files** — Write the plan into 3 files in `planning/active/`:
+   - `task_plan.md` — Phases with checkbox tasks
+   - `findings.md` — Research, discoveries, technical analysis
+   - `progress.md` — Session log with timestamps and commit refs
+3. **Commit the plan** — Commit the planning files before starting implementation. This is the baseline.
+4. **Work in atomic commits** — Each commit bundles code changes WITH checkbox updates in the planning files. The diff shows both what was done and the checkbox marking it done.
+5. **Code check before commit** — Run `/code-check` on staged diffs before committing. Don't mark a task done until the diff passes review.
+6. **Archive when complete** — Move `planning/active/` to `planning/archive/` via `/planning-archive`. Write a README.md in the archive directory with a one-paragraph outcome summary and closing commit/PR ref — future sessions scan these to catch up fast.
 
-### Before Creating an Issue (non-negotiable)
+## Atomic Commits (Critical)
 
-1. **Check for duplicates:** `gh issue list --state open --search "<keywords>"` -- search before creating
-2. **Link to SRED:** If work involves infrastructure, R&D, tooling, or performance benchmarking, add `Relates to NewGraphEnvironment/sred-2025-2026#N` (match by repo name in SRED issue title)
-3. **One issue, one concern.** Keep focused.
+Every commit that completes a planned task MUST include:
+- The code/script changes
+- The checkbox update in `task_plan.md` (`- [ ]` -> `- [x]`)
+- A progress entry in `progress.md` if meaningful
 
-### Professional Issue Writing
+This creates a git audit trail where `git log -- planning/` tells the full story. Each commit is self-documenting — you can backtrack with git and understand everything that happened.
 
-Write issues with clear technical focus:
+## File Formats
 
-- **Use normal technical language** in titles and descriptions
-- **Focus on the problem and solution** approach
-- **Add tracking links at the end** (e.g., `Relates to Owner/repo#N`)
+### task_plan.md
 
-**Issue body structure:**
+Phases with checkboxes. This is the core tracking file.
+
 ```markdown
-## Problem
-<what's wrong or missing>
+# Task Plan
 
-## Proposed Solution
-<approach>
+## Phase 1: [Name]
+- [ ] Task description
+- [ ] Another task
 
-Relates to #<local>
-Relates to NewGraphEnvironment/sred-2025-2026#<N>
+## Phase 2: [Name]
+- [ ] Task description
 ```
 
-### GitHub Issue Creation - Always Use Files
+Mark tasks done as they're completed: `- [x] Task description`
 
-The `gh issue create` command with heredoc syntax fails repeatedly with EOF errors. ALWAYS use `--body-file`:
+### findings.md
 
-```bash
-cat > /tmp/issue_body.md << 'EOF'
-## Problem
-...
+Append-only research log. Discoveries, technical analysis, things learned.
 
-## Proposed Solution
-...
-EOF
+```markdown
+# Findings
 
-gh issue create --title "Brief technical title" --body-file /tmp/issue_body.md
+## [Topic]
+[What was found, with source/date]
 ```
 
-## Closing Issues
+### progress.md
 
-**DO:** Close issues via commit messages. The commit IS the closure and the documentation.
+Session entries with commit references.
 
-```
-Fix broken DEM path in loading pipeline
+```markdown
+# Progress
 
-Update hardcoded path to use config-driven resolution.
-
-Fixes #20
-Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>
-```
-
-**DON'T:** Close issues with `gh issue close`. This breaks the audit trail — there's no linked diff showing what changed.
-
-- `Fixes #N` or `Closes #N` — auto-closes and links the commit to the issue
-- `Relates to #N` — partial progress, does not close
-- Always close issues when work is complete. Don't leave stale open issues.
-
-## Commit Quality
-
-Write clear, informative commit messages:
-
-```
-Brief description (50 chars or less)
-
-Detailed explanation of changes and impact.
-
-Fixes #<issue> (or Relates to #<issue>)
-Relates to NewGraphEnvironment/sred-2025-2026#<N>
-
-Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>
+## Session YYYY-MM-DD
+- Completed: [items]
+- Commits: [refs]
+- Next: [items]
 ```
 
-**When to commit:**
-- Logical, atomic units of work
-- Working state (tests pass)
-- Clear description of changes
+## Directory Structure
 
-**What to avoid:**
-- "WIP" or "temp" commits in main branch
-- Combining unrelated changes
-- Vague messages like "fixes" or "updates"
+```
+planning/
+  active/          <- Current work (3 PWF files)
+  archive/         <- Completed issues
+    YYYY-MM-issue-N-slug/
+```
 
-## LLM Agent Conventions
+If `planning/` doesn't exist in the repo, run `/planning-init` first.
 
-Rules learned from real project sessions. These apply across all repos.
+## Skills
 
-- **Install missing packages, don't workaround** — if a package is needed, ask the user to install it (e.g. `pak::pak("pkg")`). Don't write degraded fallback code to avoid the dependency.
-- **Never hardcode extractable data** — if coordinates, station names, or metadata can be pulled from an API or database at runtime, do that. Don't hardcode values that have a programmatic source.
-- **Close issues via commits, not `gh issue close`** — see Closing Issues above.
-- **Cite primary sources** — see references conventions.
+| Skill | When to use |
+|-------|-------------|
+| `/planning-init` | First time in a repo — creates directory structure |
+| `/planning-update` | Mid-session — sync checkboxes and progress |
+| `/planning-archive` | Issue complete — archive and create fresh active/ |
 
-## Naming Conventions
-
-**Pattern: `noun_verb-detail`** -- noun first, verb second across all naming:
-
-| What | Example |
-|------|---------|
-| Skills | `claude-md-init`, `gh-issue-create`, `planning-update` |
-| Scripts | `stac_register-baseline.sh`, `stac_register-pypgstac.sh` |
-| Logs | `20260209_stac_register-baseline_stac-dem-bc.txt` |
-| Log format | `yyyymmdd_noun_verb-detail_target.ext` |
-
-Scripts and logs live together: `scripts/<module>/logs/`
-
-## Projects vs Milestones
-
-- **Projects** = daily cross-repo tracking (always add to relevant project)
-- **Milestones** = iteration boundaries (only for release/claim prep)
-- Don't double-track unless there's a reason
-
-| Content | Project |
-|---------|---------|
-| R&D, experiments, SRED-related | **SRED R&D Tracking (#8)** |
-| Data storage, sqlite, postgres, pipelines | **Data Architecture (#9)** |
-| Fish passage field/reporting | **Fish Passage 2025 (#6)** |
-| Restoration planning | **Aquatic Restoration Planning (#5)** |
-| QGIS, Mergin, field forms | **Collaborative GIS (#3)** |
 
 # R Package Development Conventions
 
@@ -1015,7 +517,7 @@ exclusions: list(
      Link to the pkgdown reference page for details — don't duplicate it.
    - Don't list every function; the pkgdown reference page is the single
      source of truth for what's in the package.
-2. Bump version in `DESCRIPTION` (e.g., `0.0.0.9000` → `0.1.0`)
+2. Bump version in `DESCRIPTION` (e.g., `0.0.0.9000` → `0.1.0`) — as the **final** commit of the branch, after verification numbers/tests are final. Mid-branch bumps are premature and churn: additional code changes end up bundled inside a "release" that already claimed the version.
 3. Commit as "Release vX.Y.Z"
 4. Tag: `git tag vX.Y.Z && git push && git push --tags`
 
@@ -1082,6 +584,7 @@ When an LLM assistant modifies R package code:
    ```bash
    Rscript -e 'devtools::check()' 2>&1 | grep -E "(ERROR|WARNING|NOTE|errors|warnings|notes)" | tail -10
    ```
+
 
 # Reference Management Conventions
 
@@ -1207,49 +710,3 @@ Always verify downloads: `file paper.pdf` should say "PDF document", not HTML.
 - NEVER write abstracts manually — if CrossRef has no abstract, leave blank
 - NEVER cite specific numbers without verifying from the source PDF via ragnar search
 - NEVER paraphrase equations — copy exact notation and cite page/section
-
-# SRED Conventions
-
-How SR&ED tracking integrates with New Graph Environment's development workflows.
-
-## The Claim: One Project
-
-All SRED-eligible work across NGE falls under a **single continuous project**:
-
-> **Dynamic GIS-based Data Processing and Reporting Framework**
-
-- **Field:** Software Engineering (2.02.09)
-- **Start date:** May 2022
-- **Fiscal year:** May 1 – April 30
-- **Consultant:** Boast Capital (prepares final technical report)
-
-**Do not fragment work into separate claims.** Each fiscal year's work is structured as iterations within this one project. Internal tracking (experiment numbers in `sred-2025-2026`) maps to iterations — Boast assembles the final narrative.
-
-## Tagging Work for SRED
-
-### Commits
-
-Use `Relates to NewGraphEnvironment/sred-2025-2026#N` in commit messages when work is SRED-eligible.
-
-### Time entries (rolex)
-
-Tag hours with `sred_ref` field linking to the relevant `sred-2025-2026` issue number.
-
-### GitHub issues
-
-Link SRED-eligible issues to the tracking repo: `Relates to NewGraphEnvironment/sred-2025-2026#N`
-
-## What Qualifies as SRED
-
-**Eligible (systematic investigation to overcome technological uncertainty):**
-- Building tools/functions that don't exist in standard practice
-- Prototyping new integrations between systems (GIS ↔ reporting ↔ field collection)
-- Testing whether an approach works and documenting why it did/didn't
-- Iterating on failed approaches with new hypotheses
-
-**Not eligible:**
-- Standard configuration of known tools
-- Routine bug fixes in working systems
-- Writing reports using the framework (that's service delivery)
-
-**The test:** "Did we try something we weren't sure would work, and did we learn something from the attempt?" If yes, it's likely eligible.
