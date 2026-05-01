@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">cd</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -19,6 +19,7 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/climate-departure.html">Climate Departure Analysis for a Watershed</a></li>
+    <li><a class="dropdown-item" href="../articles/peace-fwcp.html">Climate Departure for the FWCP Peace Region</a></li>
   </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
@@ -35,6 +36,10 @@
       <small>Source: <a href="https://github.com/NewGraphEnvironment/cd/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.1.2" id="cd-012-2026-04-30">cd 0.1.2 (2026-04-30)<a class="anchor" aria-label="anchor" href="#cd-012-2026-04-30"></a></h2>
+<p>Vignette and docs patch. New <code>peace-fwcp</code> vignette runs the consumer pipeline on a regional administrative AOI (FWCP Peace Region, ~73,000 km², ~11x KOTL) — catalog → extract → trends → recent vs pre-warming → spatial map → per-ecoregion breakdown across the five BC ecoregions intersecting the region, with faceted time-series carrying both 75-yr and 45-yr Theil-Sen trend lines, a wide roll-up table, day-night asymmetry section (textbook signal does show up here, unlike KOTL), and three-finding interpretation. Plain-language explainers for trend windows, WMO climate normal, and “warming has accelerated/slowed” framing. README gains a Data section with the catalog URL and the <code>/vsicurl/</code> direct-read pattern so the COGs are usable outside R (QGIS, gdalcubes, rasterio). Issue <a href="https://github.com/NewGraphEnvironment/cd/issues/43" class="external-link">#43</a> filed for <code><a href="../reference/cd_compare.html">cd_compare()</a></code> to gain a proper window-vs-window p-value. (<a href="https://github.com/NewGraphEnvironment/cd/issues/42" class="external-link">#42</a>)</p>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.1" id="cd-011-2026-04-15">cd 0.1.1 (2026-04-15)<a class="anchor" aria-label="anchor" href="#cd-011-2026-04-15"></a></h2>
 <p>Vignette and docs patch. The <code>climate-departure</code> vignette gained a “Daytime Highs and Overnight Lows” section using the tmax/tmin variables now on STAC, with honest framing for the example watershed (the textbook day-night asymmetry doesn’t show at Kootenay Lake — the dominant signal is summer daytime maximum, the temperature envelope for salmonid thermal stress in tributaries). Existing maps now clip context layers and mask departure rasters to the watershed group polygon for tighter framing. Interpretation section corrected: precipitation has declined ~10% (statistically significant) and soils are drying due to both falling precipitation and rising evapotranspiration. README quick-start fixed (was referencing files that don’t exist) and now links to the live pkgdown vignette. (<a href="https://github.com/NewGraphEnvironment/cd/issues/39" class="external-link">#39</a>)</p>

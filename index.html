@@ -23,7 +23,7 @@
 
     <a class="navbar-brand me-2" href="index.html">cd</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -37,6 +37,7 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="articles/climate-departure.html">Climate Departure Analysis for a Watershed</a></li>
+    <li><a class="dropdown-item" href="articles/peace-fwcp.html">Climate Departure for the FWCP Peace Region</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="news/index.html">Changelog</a></li>
@@ -62,7 +63,7 @@
 <div class="section level2">
 <h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
 </h2>
-<p>cd computes climate anomalies from <a href="https://www.ecmwf.int/en/era5-land" class="external-link">ERA5-Land</a> reanalysis data for custom areas of interest. It downloads raw climate data, derives variables (VPD, RH, soil moisture), publishes Cloud-Optimized GeoTIFFs to a STAC catalog, and provides consumer functions to extract zonal statistics, compute baselines and anomalies for arbitrary reference periods, and run trend analysis.</p>
+<p>cd fetches <a href="https://www.ecmwf.int/en/era5-land" class="external-link">ERA5-Land</a> hourly reanalysis (1950–present, ~9 km native grid) from the <a href="https://earthdatahub.destine.eu/" class="external-link">DestinE Earth Data Hub</a>, subsets to British Columbia, aggregates to monthly, seasonal, and annual periods, derives additional variables (vapour pressure deficit and relative humidity from temperature + dewpoint via the Tetens equation, soil moisture as a 4-depth mean), and writes Cloud-Optimized GeoTIFFs alongside a static SpatioTemporal Asset Catalog (STAC) in a public S3 bucket. A monthly GitHub Action keeps the catalog current. On the consumer side, R functions (<code>cd_catalog</code>, <code>cd_extract</code>, <code>cd_baseline</code>, <code>cd_anomaly</code>, <code>cd_trend</code>, <code>cd_compare</code>, <code>cd_summary</code>) read the COGs directly via GDAL’s <code>/vsicurl/</code> — no credentials, no tile server — crop to a user-supplied area of interest, compute baselines and anomalies for arbitrary reference periods, and run Mann-Kendall and Theil-Sen trend statistics. All baseline and comparison logic stays on the consumer side, so reference periods are not baked into the served data.</p>
 </div>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
@@ -100,11 +101,25 @@
 <span><span class="fu"><a href="reference/cd_compare.html">cd_compare</a></span><span class="op">(</span><span class="va">ts</span>, window_a <span class="op">=</span> <span class="fl">1956</span><span class="op">:</span><span class="fl">1960</span>, window_b <span class="op">=</span> <span class="fl">1951</span><span class="op">:</span><span class="fl">1955</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
+<h2 id="data">Data<a class="anchor" aria-label="anchor" href="#data"></a>
+</h2>
+<p>The producer pipeline fetches ERA5-Land hourly reanalysis from <a href="https://earthdatahub.destine.eu/" class="external-link">DestinE Earth Data Hub</a>, derives additional variables (VPD, RH, soil moisture), aggregates to monthly, seasonal, and annual periods on a single EPSG:4326 BC grid, and writes Cloud-Optimized GeoTIFFs alongside a static SpatioTemporal Asset Catalog (STAC) in a public S3 bucket.</p>
+<ul>
+<li>Catalog (JSON): <a href="https://stac-era5-land.s3.us-west-2.amazonaws.com/catalog.json" class="external-link uri">https://stac-era5-land.s3.us-west-2.amazonaws.com/catalog.json</a>
+</li>
+<li>Region: BC (~48–60° N, 114–140° W), 1950–2025, ~9 km native grid</li>
+<li>Variables: tmean, tmax, tmin, prcp, vpd, rh, soil_moisture</li>
+<li>Periods: monthly, seasonal (DJF/MAM/JJA/SON), annual</li>
+</ul>
+<p>The catalog is consumable directly outside R — for example, in QGIS via the STAC plugin, in <code>gdalcubes</code>, or with any STAC-aware client. The <code><a href="reference/cd_catalog.html">cd_catalog()</a></code> consumer function reads the catalog URL by default.</p>
+</div>
+<div class="section level2">
 <h2 id="links">Links<a class="anchor" aria-label="anchor" href="#links"></a>
 </h2>
 <ul>
 <li><a href="https://newgraphenvironment.github.io/cd/reference/">Function reference</a></li>
 <li><a href="https://newgraphenvironment.github.io/cd/articles/climate-departure.html">Vignette: Climate Departure Analysis for a Watershed</a></li>
+<li><a href="https://newgraphenvironment.github.io/cd/articles/peace-fwcp.html">Vignette: Climate Departure for the FWCP Peace Region</a></li>
 </ul>
 </div>
 <div class="section level2">

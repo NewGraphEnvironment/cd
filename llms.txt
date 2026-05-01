@@ -4,23 +4,34 @@ Climate Departure Analysis from ERA5-Land Reanalysis
 
 ## Overview
 
-cd computes climate anomalies from
-[ERA5-Land](https://www.ecmwf.int/en/era5-land) reanalysis data for
-custom areas of interest. It downloads raw climate data, derives
-variables (VPD, RH, soil moisture), publishes Cloud-Optimized GeoTIFFs
-to a STAC catalog, and provides consumer functions to extract zonal
-statistics, compute baselines and anomalies for arbitrary reference
-periods, and run trend analysis.
+cd fetches [ERA5-Land](https://www.ecmwf.int/en/era5-land) hourly
+reanalysis (1950–present, ~9 km native grid) from the [DestinE Earth
+Data Hub](https://earthdatahub.destine.eu/), subsets to British
+Columbia, aggregates to monthly, seasonal, and annual periods, derives
+additional variables (vapour pressure deficit and relative humidity from
+temperature + dewpoint via the Tetens equation, soil moisture as a
+4-depth mean), and writes Cloud-Optimized GeoTIFFs alongside a static
+SpatioTemporal Asset Catalog (STAC) in a public S3 bucket. A monthly
+GitHub Action keeps the catalog current. On the consumer side, R
+functions (`cd_catalog`, `cd_extract`, `cd_baseline`, `cd_anomaly`,
+`cd_trend`, `cd_compare`, `cd_summary`) read the COGs directly via
+GDAL’s `/vsicurl/` — no credentials, no tile server — crop to a
+user-supplied area of interest, compute baselines and anomalies for
+arbitrary reference periods, and run Mann-Kendall and Theil-Sen trend
+statistics. All baseline and comparison logic stays on the consumer
+side, so reference periods are not baked into the served data.
 
 ## Installation
 
 ``` r
+
 pak::pak("NewGraphEnvironment/cd")
 ```
 
 ## Quick start
 
 ``` r
+
 library(cd)
 
 # Load the live STAC catalog and an example area of interest
@@ -47,12 +58,34 @@ cd_summary(trn)
 cd_compare(ts, window_a = 1956:1960, window_b = 1951:1955)
 ```
 
+## Data
+
+The producer pipeline fetches ERA5-Land hourly reanalysis from [DestinE
+Earth Data Hub](https://earthdatahub.destine.eu/), derives additional
+variables (VPD, RH, soil moisture), aggregates to monthly, seasonal, and
+annual periods on a single EPSG:4326 BC grid, and writes Cloud-Optimized
+GeoTIFFs alongside a static SpatioTemporal Asset Catalog (STAC) in a
+public S3 bucket.
+
+- Catalog (JSON):
+  <https://stac-era5-land.s3.us-west-2.amazonaws.com/catalog.json>
+- Region: BC (~48–60° N, 114–140° W), 1950–2025, ~9 km native grid
+- Variables: tmean, tmax, tmin, prcp, vpd, rh, soil_moisture
+- Periods: monthly, seasonal (DJF/MAM/JJA/SON), annual
+
+The catalog is consumable directly outside R — for example, in QGIS via
+the STAC plugin, in `gdalcubes`, or with any STAC-aware client. The
+[`cd_catalog()`](https://newgraphenvironment.github.io/cd/reference/cd_catalog.md)
+consumer function reads the catalog URL by default.
+
 ## Links
 
 - [Function
   reference](https://newgraphenvironment.github.io/cd/reference/)
 - [Vignette: Climate Departure Analysis for a
   Watershed](https://newgraphenvironment.github.io/cd/articles/climate-departure.html)
+- [Vignette: Climate Departure for the FWCP Peace
+  Region](https://newgraphenvironment.github.io/cd/articles/peace-fwcp.html)
 
 ## Acknowledgements
 
@@ -122,3 +155,5 @@ licensed under the Apache License 2.0.
 
 - [Climate Departure Analysis for a
   Watershed](https://newgraphenvironment.github.io/cd/articles/climate-departure.md):
+- [Climate Departure for the FWCP Peace
+  Region](https://newgraphenvironment.github.io/cd/articles/peace-fwcp.md):

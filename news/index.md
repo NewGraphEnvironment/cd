@@ -1,5 +1,24 @@
 # Changelog
 
+## cd 0.1.2 (2026-04-30)
+
+Vignette and docs patch. New `peace-fwcp` vignette runs the consumer
+pipeline on a regional administrative AOI (FWCP Peace Region, ~73,000
+km², ~11x KOTL) — catalog → extract → trends → recent vs pre-warming →
+spatial map → per-ecoregion breakdown across the five BC ecoregions
+intersecting the region, with faceted time-series carrying both 75-yr
+and 45-yr Theil-Sen trend lines, a wide roll-up table, day-night
+asymmetry section (textbook signal does show up here, unlike KOTL), and
+three-finding interpretation. Plain-language explainers for trend
+windows, WMO climate normal, and “warming has accelerated/slowed”
+framing. README gains a Data section with the catalog URL and the
+`/vsicurl/` direct-read pattern so the COGs are usable outside R (QGIS,
+gdalcubes, rasterio). Issue
+[\#43](https://github.com/NewGraphEnvironment/cd/issues/43) filed for
+[`cd_compare()`](https://newgraphenvironment.github.io/cd/reference/cd_compare.md)
+to gain a proper window-vs-window p-value.
+([\#42](https://github.com/NewGraphEnvironment/cd/issues/42))
+
 ## cd 0.1.1 (2026-04-15)
 
 Vignette and docs patch. The `climate-departure` vignette gained a

@@ -12,6 +12,7 @@ We use the Kootenay Lake (KOTL) watershed group from the BC Freshwater
 Atlas, shipped with the package. Any `sf` polygon works as an AOI.
 
 ``` r
+
 library(cd)
 library(sf)
 
@@ -22,6 +23,7 @@ aoi <- st_read(
 ```
 
 ``` r
+
 aoi_bb <- sf::st_bbox(aoi)
 
 ggplot() +
@@ -64,6 +66,7 @@ reads the catalog and returns a tidy tibble of available variables and
 periods.
 
 ``` r
+
 catalog <- cd_catalog()
 kableExtra::kable_styling(
   knitr::kable(catalog, caption = "Available climate variables and periods in the STAC catalog."),
@@ -72,45 +75,47 @@ kableExtra::kable_styling(
   kableExtra::scroll_box(height = "320px")
 ```
 
-| variable      | period | href                                                                         |
-|:--------------|:-------|:-----------------------------------------------------------------------------|
-| prcp          | annual | <https://stac-era5-land.s3.us-west-2.amazonaws.com/prcp_annual.tif>          |
-| prcp          | fall   | <https://stac-era5-land.s3.us-west-2.amazonaws.com/prcp_fall.tif>            |
-| prcp          | spring | <https://stac-era5-land.s3.us-west-2.amazonaws.com/prcp_spring.tif>          |
-| prcp          | summer | <https://stac-era5-land.s3.us-west-2.amazonaws.com/prcp_summer.tif>          |
-| prcp          | winter | <https://stac-era5-land.s3.us-west-2.amazonaws.com/prcp_winter.tif>          |
-| rh            | annual | <https://stac-era5-land.s3.us-west-2.amazonaws.com/rh_annual.tif>            |
-| rh            | fall   | <https://stac-era5-land.s3.us-west-2.amazonaws.com/rh_fall.tif>              |
-| rh            | spring | <https://stac-era5-land.s3.us-west-2.amazonaws.com/rh_spring.tif>            |
-| rh            | summer | <https://stac-era5-land.s3.us-west-2.amazonaws.com/rh_summer.tif>            |
-| rh            | winter | <https://stac-era5-land.s3.us-west-2.amazonaws.com/rh_winter.tif>            |
+| variable | period | href |
+|:---|:---|:---|
+| prcp | annual | <https://stac-era5-land.s3.us-west-2.amazonaws.com/prcp_annual.tif> |
+| prcp | fall | <https://stac-era5-land.s3.us-west-2.amazonaws.com/prcp_fall.tif> |
+| prcp | spring | <https://stac-era5-land.s3.us-west-2.amazonaws.com/prcp_spring.tif> |
+| prcp | summer | <https://stac-era5-land.s3.us-west-2.amazonaws.com/prcp_summer.tif> |
+| prcp | winter | <https://stac-era5-land.s3.us-west-2.amazonaws.com/prcp_winter.tif> |
+| rh | annual | <https://stac-era5-land.s3.us-west-2.amazonaws.com/rh_annual.tif> |
+| rh | fall | <https://stac-era5-land.s3.us-west-2.amazonaws.com/rh_fall.tif> |
+| rh | spring | <https://stac-era5-land.s3.us-west-2.amazonaws.com/rh_spring.tif> |
+| rh | summer | <https://stac-era5-land.s3.us-west-2.amazonaws.com/rh_summer.tif> |
+| rh | winter | <https://stac-era5-land.s3.us-west-2.amazonaws.com/rh_winter.tif> |
 | soil_moisture | annual | <https://stac-era5-land.s3.us-west-2.amazonaws.com/soil_moisture_annual.tif> |
-| soil_moisture | fall   | <https://stac-era5-land.s3.us-west-2.amazonaws.com/soil_moisture_fall.tif>   |
+| soil_moisture | fall | <https://stac-era5-land.s3.us-west-2.amazonaws.com/soil_moisture_fall.tif> |
 | soil_moisture | spring | <https://stac-era5-land.s3.us-west-2.amazonaws.com/soil_moisture_spring.tif> |
 | soil_moisture | summer | <https://stac-era5-land.s3.us-west-2.amazonaws.com/soil_moisture_summer.tif> |
 | soil_moisture | winter | <https://stac-era5-land.s3.us-west-2.amazonaws.com/soil_moisture_winter.tif> |
-| tmax          | annual | <https://stac-era5-land.s3.us-west-2.amazonaws.com/tmax_annual.tif>          |
-| tmax          | fall   | <https://stac-era5-land.s3.us-west-2.amazonaws.com/tmax_fall.tif>            |
-| tmax          | spring | <https://stac-era5-land.s3.us-west-2.amazonaws.com/tmax_spring.tif>          |
-| tmax          | summer | <https://stac-era5-land.s3.us-west-2.amazonaws.com/tmax_summer.tif>          |
-| tmax          | winter | <https://stac-era5-land.s3.us-west-2.amazonaws.com/tmax_winter.tif>          |
-| tmean         | annual | <https://stac-era5-land.s3.us-west-2.amazonaws.com/tmean_annual.tif>         |
-| tmean         | fall   | <https://stac-era5-land.s3.us-west-2.amazonaws.com/tmean_fall.tif>           |
-| tmean         | spring | <https://stac-era5-land.s3.us-west-2.amazonaws.com/tmean_spring.tif>         |
-| tmean         | summer | <https://stac-era5-land.s3.us-west-2.amazonaws.com/tmean_summer.tif>         |
-| tmean         | winter | <https://stac-era5-land.s3.us-west-2.amazonaws.com/tmean_winter.tif>         |
-| tmin          | annual | <https://stac-era5-land.s3.us-west-2.amazonaws.com/tmin_annual.tif>          |
-| tmin          | fall   | <https://stac-era5-land.s3.us-west-2.amazonaws.com/tmin_fall.tif>            |
-| tmin          | spring | <https://stac-era5-land.s3.us-west-2.amazonaws.com/tmin_spring.tif>          |
-| tmin          | summer | <https://stac-era5-land.s3.us-west-2.amazonaws.com/tmin_summer.tif>          |
-| tmin          | winter | <https://stac-era5-land.s3.us-west-2.amazonaws.com/tmin_winter.tif>          |
-| vpd           | annual | <https://stac-era5-land.s3.us-west-2.amazonaws.com/vpd_annual.tif>           |
-| vpd           | fall   | <https://stac-era5-land.s3.us-west-2.amazonaws.com/vpd_fall.tif>             |
-| vpd           | spring | <https://stac-era5-land.s3.us-west-2.amazonaws.com/vpd_spring.tif>           |
-| vpd           | summer | <https://stac-era5-land.s3.us-west-2.amazonaws.com/vpd_summer.tif>           |
-| vpd           | winter | <https://stac-era5-land.s3.us-west-2.amazonaws.com/vpd_winter.tif>           |
+| tmax | annual | <https://stac-era5-land.s3.us-west-2.amazonaws.com/tmax_annual.tif> |
+| tmax | fall | <https://stac-era5-land.s3.us-west-2.amazonaws.com/tmax_fall.tif> |
+| tmax | spring | <https://stac-era5-land.s3.us-west-2.amazonaws.com/tmax_spring.tif> |
+| tmax | summer | <https://stac-era5-land.s3.us-west-2.amazonaws.com/tmax_summer.tif> |
+| tmax | winter | <https://stac-era5-land.s3.us-west-2.amazonaws.com/tmax_winter.tif> |
+| tmean | annual | <https://stac-era5-land.s3.us-west-2.amazonaws.com/tmean_annual.tif> |
+| tmean | fall | <https://stac-era5-land.s3.us-west-2.amazonaws.com/tmean_fall.tif> |
+| tmean | spring | <https://stac-era5-land.s3.us-west-2.amazonaws.com/tmean_spring.tif> |
+| tmean | summer | <https://stac-era5-land.s3.us-west-2.amazonaws.com/tmean_summer.tif> |
+| tmean | winter | <https://stac-era5-land.s3.us-west-2.amazonaws.com/tmean_winter.tif> |
+| tmin | annual | <https://stac-era5-land.s3.us-west-2.amazonaws.com/tmin_annual.tif> |
+| tmin | fall | <https://stac-era5-land.s3.us-west-2.amazonaws.com/tmin_fall.tif> |
+| tmin | spring | <https://stac-era5-land.s3.us-west-2.amazonaws.com/tmin_spring.tif> |
+| tmin | summer | <https://stac-era5-land.s3.us-west-2.amazonaws.com/tmin_summer.tif> |
+| tmin | winter | <https://stac-era5-land.s3.us-west-2.amazonaws.com/tmin_winter.tif> |
+| vpd | annual | <https://stac-era5-land.s3.us-west-2.amazonaws.com/vpd_annual.tif> |
+| vpd | fall | <https://stac-era5-land.s3.us-west-2.amazonaws.com/vpd_fall.tif> |
+| vpd | spring | <https://stac-era5-land.s3.us-west-2.amazonaws.com/vpd_spring.tif> |
+| vpd | summer | <https://stac-era5-land.s3.us-west-2.amazonaws.com/vpd_summer.tif> |
+| vpd | winter | <https://stac-era5-land.s3.us-west-2.amazonaws.com/vpd_winter.tif> |
 
-Available climate variables and periods in the STAC catalog.
+Available climate variables and periods in the STAC catalog. {.table
+.table .table-striped .table-hover .table-condensed
+style="margin-left: auto; margin-right: auto;"}
 
 ## Extract Climate Time Series
 
@@ -119,6 +124,7 @@ crops each COG to the AOI and computes the spatial mean per year. This
 runs directly against the cloud-hosted data — no local download needed.
 
 ``` r
+
 ts <- cd_extract(catalog, aoi)
 knitr::kable(head(ts, 10), caption = "First 10 rows of the extracted climate time series.")
 ```
@@ -136,7 +142,7 @@ knitr::kable(head(ts, 10), caption = "First 10 rows of the extracted climate tim
 | prcp     | annual | 1958 | 1054.0203 |
 | prcp     | annual | 1959 | 1221.0144 |
 
-First 10 rows of the extracted climate time series.
+First 10 rows of the extracted climate time series. {.table}
 
 We now have annual and seasonal values for five climate variables across
 76 years (1950–2025) for the Kootenay Lake watershed.
@@ -150,6 +156,7 @@ magnitude of departure — what Pauly (1995) called avoiding the “shifting
 baseline syndrome.”
 
 ``` r
+
 # Pre-warming baseline
 bl_early <- cd_baseline(ts, baseline_years = 1951:1980)
 
@@ -201,7 +208,9 @@ kableExtra::kable_styling(
 | vpd           | summer |          6.79 |
 | vpd           | winter |          0.60 |
 
-Pre-warming baseline means (1951-1980) by variable and period.
+Pre-warming baseline means (1951-1980) by variable and period. {.table
+.table .table-striped .table-hover .table-condensed
+style="margin-left: auto; margin-right: auto;"}
 
 ## Anomalies
 
@@ -211,6 +220,7 @@ absolute deviations. Precipitation and soil moisture use percent of
 normal.
 
 ``` r
+
 ano <- cd_anomaly(ts, bl_early)
 knitr::kable(head(ano, 10), caption = "Anomalies relative to the 1951-1980 baseline.", digits = 3)
 ```
@@ -228,11 +238,12 @@ knitr::kable(head(ano, 10), caption = "Anomalies relative to the 1951-1980 basel
 | prcp     | annual | 1958 |  -0.650 | pct_normal   | %    |
 | prcp     | annual | 1959 |  15.091 | pct_normal   | %    |
 
-Anomalies relative to the 1951-1980 baseline.
+Anomalies relative to the 1951-1980 baseline. {.table}
 
 ## Temperature Departure
 
 ``` r
+
 trn <- cd_trend(ano, trend_start = c(1951, 1981))
 cd_plot_timeseries(
   ano,
@@ -251,6 +262,7 @@ Annual mean temperature anomaly for the Kootenay Lake watershed relative
 to 1951-1980 baseline. Red bars indicate warmer-than-baseline years.
 
 ``` r
+
 knitr::kable(cd_summary(trn[trn$variable == "tmean", ]),
   caption = "Temperature trend statistics for the Kootenay Lake watershed.")
 ```
@@ -268,7 +280,7 @@ knitr::kable(cd_summary(trn[trn$variable == "tmean", ]),
 | Mean temperature | Summer | 0.053 |    45 |          2.4 | °C   |  0.0000 |
 | Mean temperature | Winter | 0.019 |    45 |          0.9 | °C   |  0.2863 |
 
-Temperature trend statistics for the Kootenay Lake watershed.
+Temperature trend statistics for the Kootenay Lake watershed. {.table}
 
 The Kootenay Lake watershed has warmed substantially since the mid-20th
 century. The annual mean temperature trend since 1951 gives a Total
@@ -281,6 +293,7 @@ directly answers: “How different is the recent climate from the
 historical climate?”
 
 ``` r
+
 cmp <- cd_compare(ts,
   window_a = 2015:2025,
   window_b = 1951:1980,
@@ -332,7 +345,8 @@ kableExtra::kable_styling(
 | vpd           | winter |   0.64 |    0.60 |       0.04 | mean_diff |
 
 Comparison of recent (2015-2025) vs pre-warming (1951-1980) means
-(absolute difference).
+(absolute difference). {.table .table .table-striped .table-hover
+.table-condensed style="margin-left: auto; margin-right: auto;"}
 
 For variables where the baseline magnitude varies a lot in space —
 precipitation and soil moisture — percent change is more interpretable
@@ -341,6 +355,7 @@ than absolute difference.
 accepts `method = "pct_change"` for exactly this.
 
 ``` r
+
 cmp_pct <- cd_compare(
   ts[ts$variable %in% c("prcp", "soil_moisture"), ],
   window_a = 2015:2025,
@@ -366,9 +381,10 @@ knitr::kable(cmp_pct,
 | soil_moisture | winter |    0.3 |    0.3 |        1.3 | pct_change |
 
 Recent vs pre-warming comparison expressed as percent change for
-precipitation and soil moisture.
+precipitation and soil moisture. {.table}
 
 ``` r
+
 cd_plot_comparison(
   cmp,
   labels = c(a = "2015-2025", b = "1951-1980"),
@@ -391,6 +407,7 @@ shadows respond differently. We can map this by computing the difference
 between recent and historical period means directly from the rasters.
 
 ``` r
+
 # Read the annual tmean COG and crop to AOI
 tmean_row <- catalog[catalog$variable == "tmean" & catalog$period == "annual", ]
 r_tmean <- cd_crop(tmean_row$href, aoi)
@@ -440,6 +457,7 @@ Lake watershed. Difference between 2015-2025 mean and 1951-1980 mean
 (degrees C).
 
 ``` r
+
 sm_row <- catalog[catalog$variable == "soil_moisture" & catalog$period == "summer", ]
 r_sm <- cd_crop(sm_row$href, aoi)
 
@@ -488,6 +506,7 @@ Temperature warming is often strongest in specific seasons. Let’s look
 at summer and winter separately.
 
 ``` r
+
 summer_ano <- ano[ano$period == "summer" & ano$variable == "tmean", ]
 winter_ano <- ano[ano$period == "winter" & ano$variable == "tmean", ]
 
@@ -501,6 +520,7 @@ cd_plot_timeseries(summer_ano, period = "summer", trend = trn_summer,
 ![](climate-departure_files/figure-html/seasonal-1.png)
 
 ``` r
+
 knitr::kable(cd_summary(rbind(trn_summer, trn_winter)),
   caption = "Seasonal temperature trends (summer vs winter).")
 ```
@@ -510,7 +530,7 @@ knitr::kable(cd_summary(rbind(trn_summer, trn_winter)),
 | Mean temperature | Summer | 0.038 |    75 |          2.9 | °C   |  0.0000 |
 | Mean temperature | Winter | 0.016 |    75 |          1.2 | °C   |  0.0362 |
 
-Seasonal temperature trends (summer vs winter).
+Seasonal temperature trends (summer vs winter). {.table}
 
 ## Daytime Highs and Overnight Lows
 
@@ -523,6 +543,7 @@ geography (valley inversions, snow cover, slope-aspect mix), and the
 package lets you check.
 
 ``` r
+
 trn_tmax <- cd_trend(
   ano[ano$variable == "tmax" & ano$period == "annual", ],
   trend_start = c(1951, 1981)
@@ -539,6 +560,7 @@ Annual daytime maximum temperature (tmax) anomaly for the Kootenay Lake
 watershed relative to the 1951-1980 baseline.
 
 ``` r
+
 trn_tmin <- cd_trend(
   ano[ano$variable == "tmin" & ano$period == "annual", ],
   trend_start = c(1951, 1981)
@@ -559,6 +581,7 @@ each since 1951. The diurnal temperature range — daytime maximum minus
 overnight minimum — is therefore approximately constant.
 
 ``` r
+
 tmax_ts <- ts[ts$variable == "tmax" & ts$period == "annual", c("year", "value")]
 tmin_ts <- ts[ts$variable == "tmin" & ts$period == "annual", c("year", "value")]
 dtr <- merge(tmax_ts, tmin_ts, by = "year", suffixes = c("_max", "_min"))
@@ -596,6 +619,7 @@ of having the data per-watershed is exactly the ability to check.
 What does stand out at Kootenay Lake is the **seasonal pattern**.
 
 ``` r
+
 trn_tx_tn_seasonal <- cd_trend(
   ano[ano$variable %in% c("tmax", "tmin") &
         ano$period %in% c("winter", "spring", "summer", "fall"), ],
@@ -619,7 +643,7 @@ knitr::kable(
 | Minimum temperature | Winter | 0.014 |    75 |          1.0 | °C   |  0.1156 |
 
 Seasonal trends in daytime maximum and overnight minimum temperature at
-Kootenay Lake, 1951-2025.
+Kootenay Lake, 1951-2025. {.table}
 
 Summer warming is the strongest single signal: daytime maxima have risen
 about +2.8 °C and overnight minima about +2.9 °C since 1951 — roughly
@@ -649,6 +673,7 @@ precipitation signals — warmer temperatures drive more
 evapotranspiration even when rainfall is stable.
 
 ``` r
+
 sm_ano <- ano[ano$variable == "soil_moisture" & ano$period == "summer", ]
 trn_sm <- cd_trend(sm_ano, trend_start = 1951)
 
@@ -659,6 +684,7 @@ cd_plot_timeseries(sm_ano, variable = "soil_moisture", period = "summer",
 ![](climate-departure_files/figure-html/soil-moisture-1.png)
 
 ``` r
+
 all_trends <- cd_trend(
   ano[ano$period == "annual", ],
   trend_start = c(1951, 1981)
@@ -691,7 +717,9 @@ kableExtra::kable_styling(
 | Vapour pressure deficit | Annual |  0.024 |    45 |          1.1 | Pa   |  0.0000 |
 
 Annual trend statistics for all variables and both trend windows (1951-
-and 1981-), Kootenay Lake watershed.
+and 1981-), Kootenay Lake watershed. {.table .table .table-striped
+.table-hover .table-condensed
+style="margin-left: auto; margin-right: auto;"}
 
 ## Interpretation
 
