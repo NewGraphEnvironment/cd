@@ -39,6 +39,13 @@ boundary — the Fish & Wildlife Compensation Program (FWCP) Peace Region,
 ~73,000 km² in northeastern British Columbia covering Williston Reservoir
 and surrounding watersheds.
 
+For build speed and CI robustness the heavy zonal extracts and the
+spatial-pattern raster are pre-computed by
+`data-raw/peace_fwcp_vignette_data.R` and shipped under
+`inst/vignette-data/`. The vignette below loads those results rather
+than re-fetching them from S3 on every render. Re-run the script when
+the underlying STAC catalog updates.
+
 ## Area of Interest
 
 The bundled AOI is the FWCP Peace Region polygon (single multi-polygon,
@@ -141,15 +148,27 @@ kableExtra::kable_styling(
 
 <br>
 
+```{r load-vignette-data, include = FALSE}
+# Pre-computed by data-raw/peace_fwcp_vignette_data.R — see note above.
+vignette_data <- readRDS(system.file(
+  "vignette-data", "peace_fwcp.rds", package = "cd"
+))
+ts       <- vignette_data$regional$ts
+bl_early <- vignette_data$regional$bl
+ano      <- vignette_data$regional$ano
+trn      <- vignette_data$regional$trn
+cmp      <- vignette_data$regional$cmp
+cmp_pct  <- vignette_data$regional$cmp_pct
+```
+
 ## Extract Climate Time Series
 
 `cd_extract()` crops each cloud-hosted COG to the AOI and computes the
-spatial mean per year. For an AOI of this size, expect a few seconds per
-variable rather than the sub-second extraction you get with a small
-watershed.
+spatial mean per year. For an AOI of this size a live extraction takes
+a few seconds per variable; here we load the pre-computed result.
 
 ```{r extract}
-ts <- cd_extract(catalog, aoi)
+# Equivalent to: ts <- cd_extract(catalog, aoi)
 knitr::kable(head(ts, 10),
   caption = "First 10 rows of the extracted climate time series.")
 ```
@@ -183,13 +202,11 @@ roughly steady across the full record.
 Total Change is the slope multiplied by the number of years — the
 cumulative shift over the trend window.
 
-```{r baseline, include = FALSE}
-bl_early <- cd_baseline(ts, baseline_years = 1951:1980)
-ano <- cd_anomaly(ts, bl_early)
-```
-
 ```{r trend, tab.cap = "Trend statistics for all variables and periods, FWCP Peace Region."}
-trn <- cd_trend(ano, trend_start = c(1951, 1981))
+# Equivalent to:
+#   bl_early <- cd_baseline(ts, baseline_years = 1951:1980)
+#   ano <- cd_anomaly(ts, bl_early)
+#   trn <- cd_trend(ano, trend_start = c(1951, 1981))
 kableExtra::kable_styling(
   knitr::kable(cd_summary(trn), caption = NA),
   bootstrap_options = c("striped", "hover", "condensed")
@@ -288,11 +305,9 @@ trn_p$trend_p <- round(trn_p$trend_p, 3)
 ```
 
 ```{r compare, tab.cap = "Recent (2015-2025) minus pre-warming (1951-1980) means. The trend_p column is the Mann-Kendall p-value for the 75-year (1951-present) trend on the same variable and period."}
-cmp <- cd_compare(ts,
-  window_a = 2015:2025,
-  window_b = 1951:1980,
-  method = "mean_diff"
-)
+# Equivalent to:
+#   cmp <- cd_compare(ts, window_a = 2015:2025, window_b = 1951:1980,
+#                     method = "mean_diff")
 cmp <- merge(cmp, trn_p, by = c("variable", "period"), all.x = TRUE)
 kableExtra::kable_styling(
   knitr::kable(cmp, caption = NA, digits = 2),
@@ -304,12 +319,10 @@ kableExtra::kable_styling(
 <br>
 
 ```{r compare-pct, tab.cap = "Percent change for precipitation and soil moisture, recent vs pre-warming. The trend_p column is the Mann-Kendall p-value for the 75-year trend."}
-cmp_pct <- cd_compare(
-  ts[ts$variable %in% c("prcp", "soil_moisture"), ],
-  window_a = 2015:2025,
-  window_b = 1951:1980,
-  method = "pct_change"
-)
+# Equivalent to:
+#   cmp_pct <- cd_compare(
+#     ts[ts$variable %in% c("prcp", "soil_moisture"), ],
+#     window_a = 2015:2025, window_b = 1951:1980, method = "pct_change")
 cmp_pct <- merge(cmp_pct, trn_p, by = c("variable", "period"), all.x = TRUE)
 knitr::kable(cmp_pct, caption = NA, digits = 1)
 ```
@@ -322,15 +335,16 @@ The zonal mean reduces a region this size to a single number; the spatial
 pattern carries the rest of the story.
 
 ```{r spatial-tmean, fig.cap="Spatial pattern of annual mean temperature departure across the FWCP Peace Region (2015-2025 mean minus 1951-1980 mean, degrees C).", fig.height=7}
-tmean_row <- catalog[catalog$variable == "tmean" & catalog$period == "annual", ]
-r_tmean <- cd_crop(tmean_row$href, aoi)
-
-years <- as.integer(names(r_tmean))
-recent_idx     <- which(years >= 2015 & years <= 2025)
-historical_idx <- which(years >= 1951 & years <= 1980)
-
-departure <- mean(r_tmean[[recent_idx]]) - mean(r_tmean[[historical_idx]])
-departure <- terra::mask(departure, aoi)
+# Pre-computed by data-raw/peace_fwcp_vignette_data.R. Live equivalent:
+#   r_tmean <- cd_crop(catalog$href[catalog$variable == "tmean"
+#                                   & catalog$period == "annual"], aoi)
+#   years <- as.integer(names(r_tmean))
+#   departure <- mean(r_tmean[[which(years >= 2015 & years <= 2025)]]) -
+#                mean(r_tmean[[which(years >= 1951 & years <= 1980)]])
+#   departure <- terra::mask(departure, aoi)
+departure <- terra::rast(system.file(
+  "vignette-data", "peace_fwcp_departure_tmean.tif", package = "cd"
+))
 names(departure) <- "Temperature departure"
 
 ggplot() +
@@ -366,19 +380,14 @@ within each ecoregion — and where it does not — we run the same
 pipeline on each ecoregion polygon individually.
 
 ```{r per-ecoregion-compute, include = FALSE}
-results <- lapply(seq_len(nrow(ecoregions)), function(i) {
-  er <- ecoregions[i, ]
-  er_ts <- cd_extract(catalog, er)
-  er_bl <- cd_baseline(er_ts, baseline_years = 1951:1980)
-  er_ano <- cd_anomaly(er_ts, er_bl)
-  er_trn <- cd_trend(er_ano, trend_start = c(1951, 1981))
-  er_cmp <- cd_compare(
-    er_ts[er_ts$variable %in% c("prcp", "soil_moisture"), ],
-    window_a = 2015:2025, window_b = 1951:1980, method = "pct_change"
-  )
-  list(ano = er_ano, trn = er_trn, cmp = er_cmp)
+# Pre-computed by data-raw/peace_fwcp_vignette_data.R. Live equivalent
+# would loop cd_extract / cd_baseline / cd_anomaly / cd_trend / cd_compare
+# over each ecoregion polygon.
+results <- lapply(vignette_data$ecoregion, function(x) {
+  list(ano = x$ano, trn = x$trn, cmp = x$cmp_pct)
 })
-names(results) <- ecoregions$code
+# Reorder to match ecoregions (already by area_km2 desc on disk)
+results <- results[ecoregions$code]
 
 # Long-form labels: "OMM: Omineca Mountains"
 er_labels <- setNames(
