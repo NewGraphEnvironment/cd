@@ -76,6 +76,12 @@ baselines, anomalies, and Mann-Kendall / Theil-Sen trend statistics.</p>
 boundary — the Fish &amp; Wildlife Compensation Program (FWCP) Peace
 Region, ~73,000 km² in northeastern British Columbia covering Williston
 Reservoir and surrounding watersheds.</p>
+<p>For build speed and CI robustness the heavy zonal extracts and the
+spatial-pattern raster are pre-computed by
+<code>data-raw/peace_fwcp_vignette_data.R</code> and shipped under
+<code>inst/vignette-data/</code>. The vignette below loads those results
+rather than re-fetching them from S3 on every render. Re-run the script
+when the underlying STAC catalog updates.</p>
 <div class="section level2">
 <h2 id="area-of-interest">Area of Interest<a class="anchor" aria-label="anchor" href="#area-of-interest"></a>
 </h2>
@@ -572,11 +578,11 @@ winter
 <h2 id="extract-climate-time-series">Extract Climate Time Series<a class="anchor" aria-label="anchor" href="#extract-climate-time-series"></a>
 </h2>
 <p><code><a href="../reference/cd_extract.html">cd_extract()</a></code> crops each cloud-hosted COG to the AOI and
-computes the spatial mean per year. For an AOI of this size, expect a
-few seconds per variable rather than the sub-second extraction you get
-with a small watershed.</p>
+computes the spatial mean per year. For an AOI of this size a live
+extraction takes a few seconds per variable; here we load the
+pre-computed result.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">ts</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cd_extract.html">cd_extract</a></span><span class="op">(</span><span class="va">catalog</span>, <span class="va">aoi</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="co"># Equivalent to: ts &lt;- cd_extract(catalog, aoi)</span></span>
 <span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">ts</span>, <span class="fl">10</span><span class="op">)</span>,</span>
 <span>  caption <span class="op">=</span> <span class="st">"First 10 rows of the extracted climate time series."</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
@@ -681,7 +687,10 @@ roughly steady across the full record.</p>
 <p>Total Change is the slope multiplied by the number of years — the
 cumulative shift over the trend window.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">trn</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cd_trend.html">cd_trend</a></span><span class="op">(</span><span class="va">ano</span>, trend_start <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1951</span>, <span class="fl">1981</span><span class="op">)</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="co"># Equivalent to:</span></span>
+<span><span class="co">#   bl_early &lt;- cd_baseline(ts, baseline_years = 1951:1980)</span></span>
+<span><span class="co">#   ano &lt;- cd_anomaly(ts, bl_early)</span></span>
+<span><span class="co">#   trn &lt;- cd_trend(ano, trend_start = c(1951, 1981))</span></span>
 <span><span class="fu">kableExtra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/kableExtra/man/kable_styling.html" class="external-link">kable_styling</a></span><span class="op">(</span></span>
 <span>  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="fu"><a href="../reference/cd_summary.html">cd_summary</a></span><span class="op">(</span><span class="va">trn</span><span class="op">)</span>, caption <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span>,</span>
 <span>  bootstrap_options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"striped"</span>, <span class="st">"hover"</span>, <span class="st">"condensed"</span><span class="op">)</span></span>
@@ -2431,11 +2440,9 @@ test asks a slightly different question than “are these two windows
 different” — it tests for a steady directional change — but it is the
 closest available proxy for now.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">cmp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cd_compare.html">cd_compare</a></span><span class="op">(</span><span class="va">ts</span>,</span>
-<span>  window_a <span class="op">=</span> <span class="fl">2015</span><span class="op">:</span><span class="fl">2025</span>,</span>
-<span>  window_b <span class="op">=</span> <span class="fl">1951</span><span class="op">:</span><span class="fl">1980</span>,</span>
-<span>  method <span class="op">=</span> <span class="st">"mean_diff"</span></span>
-<span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="co"># Equivalent to:</span></span>
+<span><span class="co">#   cmp &lt;- cd_compare(ts, window_a = 2015:2025, window_b = 1951:1980,</span></span>
+<span><span class="co">#                     method = "mean_diff")</span></span>
 <span><span class="va">cmp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/merge.html" class="external-link">merge</a></span><span class="op">(</span><span class="va">cmp</span>, <span class="va">trn_p</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"variable"</span>, <span class="st">"period"</span><span class="op">)</span>, all.x <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu">kableExtra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/kableExtra/man/kable_styling.html" class="external-link">kable_styling</a></span><span class="op">(</span></span>
 <span>  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">cmp</span>, caption <span class="op">=</span> <span class="cn">NA</span>, digits <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>,</span>
@@ -3278,12 +3285,10 @@ mean_diff
 </div>
 <p><br></p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">cmp_pct</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cd_compare.html">cd_compare</a></span><span class="op">(</span></span>
-<span>  <span class="va">ts</span><span class="op">[</span><span class="va">ts</span><span class="op">$</span><span class="va">variable</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"prcp"</span>, <span class="st">"soil_moisture"</span><span class="op">)</span>, <span class="op">]</span>,</span>
-<span>  window_a <span class="op">=</span> <span class="fl">2015</span><span class="op">:</span><span class="fl">2025</span>,</span>
-<span>  window_b <span class="op">=</span> <span class="fl">1951</span><span class="op">:</span><span class="fl">1980</span>,</span>
-<span>  method <span class="op">=</span> <span class="st">"pct_change"</span></span>
-<span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="co"># Equivalent to:</span></span>
+<span><span class="co">#   cmp_pct &lt;- cd_compare(</span></span>
+<span><span class="co">#     ts[ts$variable %in% c("prcp", "soil_moisture"), ],</span></span>
+<span><span class="co">#     window_a = 2015:2025, window_b = 1951:1980, method = "pct_change")</span></span>
 <span><span class="va">cmp_pct</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/merge.html" class="external-link">merge</a></span><span class="op">(</span><span class="va">cmp_pct</span>, <span class="va">trn_p</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"variable"</span>, <span class="st">"period"</span><span class="op">)</span>, all.x <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">cmp_pct</span>, caption <span class="op">=</span> <span class="cn">NA</span>, digits <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
 <table style="width:100%;" class="table">
@@ -3406,15 +3411,16 @@ mean_diff
 <p>The zonal mean reduces a region this size to a single number; the
 spatial pattern carries the rest of the story.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">tmean_row</span> <span class="op">&lt;-</span> <span class="va">catalog</span><span class="op">[</span><span class="va">catalog</span><span class="op">$</span><span class="va">variable</span> <span class="op">==</span> <span class="st">"tmean"</span> <span class="op">&amp;</span> <span class="va">catalog</span><span class="op">$</span><span class="va">period</span> <span class="op">==</span> <span class="st">"annual"</span>, <span class="op">]</span></span>
-<span><span class="va">r_tmean</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cd_crop.html">cd_crop</a></span><span class="op">(</span><span class="va">tmean_row</span><span class="op">$</span><span class="va">href</span>, <span class="va">aoi</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">years</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">r_tmean</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">recent_idx</span>     <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">years</span> <span class="op">&gt;=</span> <span class="fl">2015</span> <span class="op">&amp;</span> <span class="va">years</span> <span class="op">&lt;=</span> <span class="fl">2025</span><span class="op">)</span></span>
-<span><span class="va">historical_idx</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">years</span> <span class="op">&gt;=</span> <span class="fl">1951</span> <span class="op">&amp;</span> <span class="va">years</span> <span class="op">&lt;=</span> <span class="fl">1980</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">departure</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">r_tmean</span><span class="op">[[</span><span class="va">recent_idx</span><span class="op">]</span><span class="op">]</span><span class="op">)</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">r_tmean</span><span class="op">[[</span><span class="va">historical_idx</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
-<span><span class="va">departure</span> <span class="op">&lt;-</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/mask.html" class="external-link">mask</a></span><span class="op">(</span><span class="va">departure</span>, <span class="va">aoi</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="co"># Pre-computed by data-raw/peace_fwcp_vignette_data.R. Live equivalent:</span></span>
+<span><span class="co">#   r_tmean &lt;- cd_crop(catalog$href[catalog$variable == "tmean"</span></span>
+<span><span class="co">#                                   &amp; catalog$period == "annual"], aoi)</span></span>
+<span><span class="co">#   years &lt;- as.integer(names(r_tmean))</span></span>
+<span><span class="co">#   departure &lt;- mean(r_tmean[[which(years &gt;= 2015 &amp; years &lt;= 2025)]]) -</span></span>
+<span><span class="co">#                mean(r_tmean[[which(years &gt;= 1951 &amp; years &lt;= 1980)]])</span></span>
+<span><span class="co">#   departure &lt;- terra::mask(departure, aoi)</span></span>
+<span><span class="va">departure</span> <span class="op">&lt;-</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/rast.html" class="external-link">rast</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span></span>
+<span>  <span class="st">"vignette-data"</span>, <span class="st">"peace_fwcp_departure_tmean.tif"</span>, package <span class="op">=</span> <span class="st">"cd"</span></span>
+<span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">departure</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="st">"Temperature departure"</span></span>
 <span></span>
 <span><span class="fu">ggplot</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>

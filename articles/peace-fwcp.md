@@ -13,6 +13,13 @@ boundary — the Fish & Wildlife Compensation Program (FWCP) Peace Region,
 ~73,000 km² in northeastern British Columbia covering Williston
 Reservoir and surrounding watersheds.
 
+For build speed and CI robustness the heavy zonal extracts and the
+spatial-pattern raster are pre-computed by
+`data-raw/peace_fwcp_vignette_data.R` and shipped under
+`inst/vignette-data/`. The vignette below loads those results rather
+than re-fetching them from S3 on every render. Re-run the script when
+the underlying STAC catalog updates.
+
 ## Area of Interest
 
 The bundled AOI is the FWCP Peace Region polygon (single multi-polygon,
@@ -156,12 +163,12 @@ kableExtra::kable_styling(
 
 [`cd_extract()`](https://newgraphenvironment.github.io/cd/reference/cd_extract.md)
 crops each cloud-hosted COG to the AOI and computes the spatial mean per
-year. For an AOI of this size, expect a few seconds per variable rather
-than the sub-second extraction you get with a small watershed.
+year. For an AOI of this size a live extraction takes a few seconds per
+variable; here we load the pre-computed result.
 
 ``` r
 
-ts <- cd_extract(catalog, aoi)
+# Equivalent to: ts <- cd_extract(catalog, aoi)
 knitr::kable(head(ts, 10),
   caption = "First 10 rows of the extracted climate time series.")
 ```
@@ -212,7 +219,10 @@ cumulative shift over the trend window.
 
 ``` r
 
-trn <- cd_trend(ano, trend_start = c(1951, 1981))
+# Equivalent to:
+#   bl_early <- cd_baseline(ts, baseline_years = 1951:1980)
+#   ano <- cd_anomaly(ts, bl_early)
+#   trn <- cd_trend(ano, trend_start = c(1951, 1981))
 kableExtra::kable_styling(
   knitr::kable(cd_summary(trn), caption = NA),
   bootstrap_options = c("striped", "hover", "condensed")
@@ -419,11 +429,9 @@ closest available proxy for now.
 
 ``` r
 
-cmp <- cd_compare(ts,
-  window_a = 2015:2025,
-  window_b = 1951:1980,
-  method = "mean_diff"
-)
+# Equivalent to:
+#   cmp <- cd_compare(ts, window_a = 2015:2025, window_b = 1951:1980,
+#                     method = "mean_diff")
 cmp <- merge(cmp, trn_p, by = c("variable", "period"), all.x = TRUE)
 kableExtra::kable_styling(
   knitr::kable(cmp, caption = NA, digits = 2),
@@ -474,12 +482,10 @@ kableExtra::kable_styling(
 
 ``` r
 
-cmp_pct <- cd_compare(
-  ts[ts$variable %in% c("prcp", "soil_moisture"), ],
-  window_a = 2015:2025,
-  window_b = 1951:1980,
-  method = "pct_change"
-)
+# Equivalent to:
+#   cmp_pct <- cd_compare(
+#     ts[ts$variable %in% c("prcp", "soil_moisture"), ],
+#     window_a = 2015:2025, window_b = 1951:1980, method = "pct_change")
 cmp_pct <- merge(cmp_pct, trn_p, by = c("variable", "period"), all.x = TRUE)
 knitr::kable(cmp_pct, caption = NA, digits = 1)
 ```
@@ -506,15 +512,16 @@ spatial pattern carries the rest of the story.
 
 ``` r
 
-tmean_row <- catalog[catalog$variable == "tmean" & catalog$period == "annual", ]
-r_tmean <- cd_crop(tmean_row$href, aoi)
-
-years <- as.integer(names(r_tmean))
-recent_idx     <- which(years >= 2015 & years <= 2025)
-historical_idx <- which(years >= 1951 & years <= 1980)
-
-departure <- mean(r_tmean[[recent_idx]]) - mean(r_tmean[[historical_idx]])
-departure <- terra::mask(departure, aoi)
+# Pre-computed by data-raw/peace_fwcp_vignette_data.R. Live equivalent:
+#   r_tmean <- cd_crop(catalog$href[catalog$variable == "tmean"
+#                                   & catalog$period == "annual"], aoi)
+#   years <- as.integer(names(r_tmean))
+#   departure <- mean(r_tmean[[which(years >= 2015 & years <= 2025)]]) -
+#                mean(r_tmean[[which(years >= 1951 & years <= 1980)]])
+#   departure <- terra::mask(departure, aoi)
+departure <- terra::rast(system.file(
+  "vignette-data", "peace_fwcp_departure_tmean.tif", package = "cd"
+))
 names(departure) <- "Temperature departure"
 
 ggplot() +
