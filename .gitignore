@@ -15,3 +15,13 @@ data/e2e_cogs/
 data/backfill/
 data/backfill_test/
 data/update/
+
+# Exploratory rendered docs in dev/
+dev/*.html
+dev/*_files/
+dev/*_cache/
+
+# Track .claude/visibility (overriding global ~/.gitignore that excludes .claude/)
+!.claude/
+.claude/*
+!.claude/visibility
