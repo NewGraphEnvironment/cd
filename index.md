@@ -82,8 +82,6 @@ consumer function reads the catalog URL by default.
 
 - [Function
   reference](https://newgraphenvironment.github.io/cd/reference/)
-- [Vignette: Climate Departure Analysis for a
-  Watershed](https://newgraphenvironment.github.io/cd/articles/climate-departure.html)
 - [Vignette: Climate Departure for the FWCP Peace
   Region](https://newgraphenvironment.github.io/cd/articles/peace-fwcp.html)
 
