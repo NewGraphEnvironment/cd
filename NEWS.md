@@ -1,3 +1,7 @@
+# cd 0.1.3 (2026-05-01)
+
+CI fragility patch. The `peace-fwcp` vignette previously re-fetched ~144 `/vsicurl/` COG range requests on every pkgdown render; one transient flake failed the whole build. Heavy data is now pre-computed by `data-raw/peace_fwcp_vignette_data.R` and shipped under `inst/vignette-data/` (160 KB rds + 6 KB tif). Vignette loads via `system.file()` and renders in ~10 s instead of ~6 min. Live `cd_catalog()` read kept as the consumer entry-point demonstration. ([#45](https://github.com/NewGraphEnvironment/cd/issues/45))
+
 # cd 0.1.2 (2026-04-30)
 
 Vignette and docs patch. New `peace-fwcp` vignette runs the consumer pipeline on a regional administrative AOI (FWCP Peace Region, ~73,000 km², ~11x KOTL) — catalog → extract → trends → recent vs pre-warming → spatial map → per-ecoregion breakdown across the five BC ecoregions intersecting the region, with faceted time-series carrying both 75-yr and 45-yr Theil-Sen trend lines, a wide roll-up table, day-night asymmetry section (textbook signal does show up here, unlike KOTL), and three-finding interpretation. Plain-language explainers for trend windows, WMO climate normal, and "warming has accelerated/slowed" framing. README gains a Data section with the catalog URL and the `/vsicurl/` direct-read pattern so the COGs are usable outside R (QGIS, gdalcubes, rasterio). Issue [#43](https://github.com/NewGraphEnvironment/cd/issues/43) filed for `cd_compare()` to gain a proper window-vs-window p-value. ([#42](https://github.com/NewGraphEnvironment/cd/issues/42))
