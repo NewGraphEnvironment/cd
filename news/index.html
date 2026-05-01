@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">cd</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.4</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -35,6 +35,10 @@
       <small>Source: <a href="https://github.com/NewGraphEnvironment/cd/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.1.4" id="cd-014-2026-05-01">cd 0.1.4 (2026-05-01)<a class="anchor" aria-label="anchor" href="#cd-014-2026-05-01"></a></h2>
+<p>KOTL vignette removed. <code>peace-fwcp</code> is now the canonical worked example — it covers everything KOTL did at higher fidelity (regional + per-ecoregion + day-night asymmetry + plain-language explainers + interpretation), and dropping the second live-S3 vignette saves ~60 s per pkgdown render and removes the last <code>/vsicurl/</code> flake surface from the doc build. KOTL polygon assets stay in <code>inst/extdata/</code> because the README quick-start still uses them. Future direction (single-vignette snowpack story or split vignettes by AOI scale) deferred until snow-pack variables land — see <a href="https://github.com/NewGraphEnvironment/cd/issues/49" class="external-link">#49</a>. (<a href="https://github.com/NewGraphEnvironment/cd/pull/50" class="external-link">#50</a>)</p>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.3" id="cd-013-2026-05-01">cd 0.1.3 (2026-05-01)<a class="anchor" aria-label="anchor" href="#cd-013-2026-05-01"></a></h2>
 <p>CI fragility patch. The <code>peace-fwcp</code> vignette previously re-fetched ~144 <code>/vsicurl/</code> COG range requests on every pkgdown render; one transient flake failed the whole build. Heavy data is now pre-computed by <code>data-raw/peace_fwcp_vignette_data.R</code> and shipped under <code>inst/vignette-data/</code> (160 KB rds + 6 KB tif). Vignette loads via <code><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file()</a></code> and renders in ~10 s instead of ~6 min. Live <code><a href="../reference/cd_catalog.html">cd_catalog()</a></code> read kept as the consumer entry-point demonstration. (<a href="https://github.com/NewGraphEnvironment/cd/issues/45" class="external-link">#45</a>)</p>

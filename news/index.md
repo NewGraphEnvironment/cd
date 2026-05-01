@@ -1,5 +1,19 @@
 # Changelog
 
+## cd 0.1.4 (2026-05-01)
+
+KOTL vignette removed. `peace-fwcp` is now the canonical worked example
+— it covers everything KOTL did at higher fidelity (regional +
+per-ecoregion + day-night asymmetry + plain-language explainers +
+interpretation), and dropping the second live-S3 vignette saves ~60 s
+per pkgdown render and removes the last `/vsicurl/` flake surface from
+the doc build. KOTL polygon assets stay in `inst/extdata/` because the
+README quick-start still uses them. Future direction (single-vignette
+snowpack story or split vignettes by AOI scale) deferred until snow-pack
+variables land — see
+[\#49](https://github.com/NewGraphEnvironment/cd/issues/49).
+([\#50](https://github.com/NewGraphEnvironment/cd/pull/50))
+
 ## cd 0.1.3 (2026-05-01)
 
 CI fragility patch. The `peace-fwcp` vignette previously re-fetched ~144
