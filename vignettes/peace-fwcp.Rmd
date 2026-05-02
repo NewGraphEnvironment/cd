@@ -39,28 +39,20 @@ boundary — the Fish & Wildlife Compensation Program (FWCP) Peace Region,
 ~73,000 km² in northeastern British Columbia covering Williston Reservoir
 and surrounding watersheds.
 
-For build speed and CI robustness the heavy zonal extracts and the
-spatial-pattern raster are pre-computed by
-`data-raw/peace_fwcp_vignette_data.R` and shipped under
-`inst/vignette-data/`. The vignette below loads those results rather
-than re-fetching them from S3 on every render. Re-run the script when
-the underlying STAC catalog updates.
-
 ## Area of Interest
 
-The bundled AOI is the FWCP Peace Region polygon (single multi-polygon,
-EPSG:4326). Any `sf` polygon works. The watersheds within this region
-all drain to the Mackenzie River — the Peace flows east into the Slave,
-which flows into the Mackenzie, which empties into the Beaufort Sea on
-the Arctic Ocean. This is the Arctic-draining side of British Columbia,
-distinct from the Pacific-draining watersheds south and west of the
-Continental Divide.
+The bundled area of interest is the FWCP Peace Region polygon (single
+multi-polygon, EPSG:4326). Any `sf` polygon works. The watersheds
+within this region all drain to the Mackenzie River — the Peace flows
+east into the Slave, which flows into the Mackenzie, which empties
+into the Beaufort Sea on the Arctic Ocean.
 
-We also carry BC ecoregions through the analysis. Ecoregions partition
-the province into broad climate-physiography zones based on latitude,
-elevation, and dominant vegetation. Climate departure can vary across
-them in ways the regional average hides, and we use them later as the
-sub-region for the per-ecoregion breakdown.
+We also carry British Columbia ecoregions through the analysis.
+Ecoregions partition the province into broad climate-physiography
+zones based on latitude, elevation, and dominant vegetation. Climate
+departure can vary across them in ways the regional average hides,
+and we use them later as the sub-region for the per-ecoregion
+breakdown.
 
 ```{r load-aoi}
 library(cd)
@@ -86,7 +78,7 @@ ecoregions  <- ecoregions[ecoregions$area_km2 > 100, ]
 ecoregions$name_tc <- tools::toTitleCase(tolower(ecoregions$name))
 ```
 
-```{r map-location, fig.cap="FWCP Peace Region area of interest (~73,000 km^2) in northeastern British Columbia, coloured by BC ecoregion. Williston Reservoir dominates the basin.", fig.height=7}
+```{r map-location, fig.cap="FWCP Peace Region area of interest (~73,000 km^2) in northeastern British Columbia, coloured by ecoregion. Williston Reservoir dominates the basin.", fig.height=7}
 aoi_bb <- st_bbox(aoi)
 
 ggplot() +
@@ -137,10 +129,11 @@ JSON live at
 are also usable directly outside R — for example, in QGIS via the STAC
 plugin, in `gdalcubes`, or with any STAC-aware client.
 
-```{r catalog, tab.cap = "Available climate variables and periods in the STAC catalog."}
+```{r catalog}
 catalog <- cd_catalog()
 kableExtra::kable_styling(
-  knitr::kable(catalog, caption = NA),
+  knitr::kable(catalog, label = NA,
+    caption = "Available climate variables and periods in the STAC catalog."),
   bootstrap_options = c("striped", "hover", "condensed")
 ) |>
   kableExtra::scroll_box(height = "320px")
@@ -148,8 +141,20 @@ kableExtra::kable_styling(
 
 <br>
 
-```{r load-vignette-data, include = FALSE}
-# Pre-computed by data-raw/peace_fwcp_vignette_data.R — see note above.
+## Extract Climate Time Series
+
+`cd_extract()` crops each cloud-hosted GeoTIFF to the area of interest
+and computes the spatial mean per year. For an area of interest of
+this size a live extraction takes a few seconds per variable. To keep
+the vignette fast and reproducible we load a pre-computed result of
+exactly that call.
+
+```{r extract}
+# In a fresh interactive session, you would compute this with:
+#   ts <- cd_extract(catalog, aoi)
+# Below we load the pre-computed equivalent so the vignette renders
+# without hitting the network. ts is the time series tibble; bl_early,
+# ano, trn, cmp, and cmp_pct are the downstream products.
 vignette_data <- readRDS(system.file(
   "vignette-data", "peace_fwcp.rds", package = "cd"
 ))
@@ -159,16 +164,7 @@ ano      <- vignette_data$regional$ano
 trn      <- vignette_data$regional$trn
 cmp      <- vignette_data$regional$cmp
 cmp_pct  <- vignette_data$regional$cmp_pct
-```
 
-## Extract Climate Time Series
-
-`cd_extract()` crops each cloud-hosted COG to the AOI and computes the
-spatial mean per year. For an AOI of this size a live extraction takes
-a few seconds per variable; here we load the pre-computed result.
-
-```{r extract}
-# Equivalent to: ts <- cd_extract(catalog, aoi)
 knitr::kable(head(ts, 10),
   caption = "First 10 rows of the extracted climate time series.")
 ```
@@ -202,13 +198,14 @@ roughly steady across the full record.
 Total Change is the slope multiplied by the number of years — the
 cumulative shift over the trend window.
 
-```{r trend, tab.cap = "Trend statistics for all variables and periods, FWCP Peace Region."}
+```{r trend}
 # Equivalent to:
 #   bl_early <- cd_baseline(ts, baseline_years = 1951:1980)
 #   ano <- cd_anomaly(ts, bl_early)
 #   trn <- cd_trend(ano, trend_start = c(1951, 1981))
 kableExtra::kable_styling(
-  knitr::kable(cd_summary(trn), caption = NA),
+  knitr::kable(cd_summary(trn), label = NA,
+    caption = "Trend statistics for all variables and periods, FWCP Peace Region."),
   bootstrap_options = c("striped", "hover", "condensed")
 ) |>
   kableExtra::scroll_box(height = "320px")
@@ -239,6 +236,16 @@ Overnight minimums warming faster than daytime maximums — the
 greenhouse warming (Karl et al. 1993). Whether a watershed or region
 shows that signal depends on local geography (valley inversions, snow
 cover, slope-aspect mix).
+
+For the FWCP Peace Region, **overnight minimums are warming faster
+than daytime maximums** — the textbook day-night asymmetry. Daytime
+maximums warmed about +0.027 °C per year since 1951 (+2.0 °C
+cumulative), while overnight minimums warmed about +0.032 °C per year
+(+2.4 °C cumulative). The overnight side warmed roughly 0.4 °C more
+than the daytime side over the full record, narrowing the diurnal
+temperature range by the same amount. The three figures below show
+the tmax, tmin and diurnal-range time series that yield those
+numbers.
 
 ```{r plot-tmax, fig.cap="Annual daytime maximum temperature (tmax) anomaly for the FWCP Peace Region relative to the 1951-1980 baseline."}
 trn_tmax <- cd_trend(
@@ -276,55 +283,58 @@ ggplot(dtr, aes(x = year, y = dtr)) +
   theme_minimal(base_size = 12)
 ```
 
-For the FWCP Peace Region, **overnight minimums are warming faster
-than daytime maximums** — the textbook day-night asymmetry. Daytime
-maximums warmed about +0.027 °C per year since 1951 (+2.0 °C
-cumulative), while overnight minimums warmed about +0.032 °C per
-year (+2.4 °C cumulative). The overnight side warmed roughly 0.4 °C
-more than the daytime side over the full record, narrowing the
-diurnal temperature range by the same amount.
-
 ## Recent vs Pre-warming
 
-The tables below compare two windows directly — the recent decade
-(2015–2025) against the pre-warming reference (1951–1980). Each row
-includes the long-term Mann-Kendall p-value from the trend test (the
-75-year window) so you can see whether the variable also has a
-statistically significant monotonic trend. A small p-value (rule of
-thumb: < 0.05) means the trend is unlikely to be noise. The trend test
-asks a slightly different question than "are these two windows
-different" — it tests for a steady directional change — but it is the
-closest available proxy for now.
+The table below compares two windows directly — the recent decade
+(2015–2025) against the pre-warming reference (1951–1980). Δ
+absolute is the difference of the two means in the variable's native
+units. Δ % is shown only for variables where it is meaningful
+(precipitation, soil moisture, vapour pressure deficit, relative
+humidity). The trend p column is the Mann-Kendall p-value of the
+75-year (1951–present) trend on the same variable and period; it
+tests for a steady year-on-year ramp, which is a related but distinct
+question from "do these two windows differ".
 
-```{r compare-helpers, include = FALSE}
-# Long-term Mann-Kendall p-values from the 1951 trend window, joined
-# onto the compare tables so the reader can flag noisy variables.
+The recent decade was 1.7 to 2.4 °C warmer than the pre-warming
+reference for annual mean, daytime maximum, and overnight minimum,
+with Mann-Kendall trend p-values below 0.001. Vapour pressure deficit
+is up significantly. Annual precipitation was about 3 to 4 % higher
+in the recent decade; the long-term trend test does not confirm a
+steady year-on-year ramp (p ≈ 0.20). Soil moisture and relative
+humidity show no meaningful change.
+
+```{r compare}
 trn_p <- trn[trn$trend_start == 1951, c("variable", "period", "mk_pvalue")]
 names(trn_p)[3] <- "trend_p"
 trn_p$trend_p <- round(trn_p$trend_p, 3)
-```
 
-```{r compare, tab.cap = "Recent (2015-2025) minus pre-warming (1951-1980) means. The trend_p column is the Mann-Kendall p-value for the 75-year (1951-present) trend on the same variable and period."}
-# Equivalent to:
-#   cmp <- cd_compare(ts, window_a = 2015:2025, window_b = 1951:1980,
-#                     method = "mean_diff")
-cmp <- merge(cmp, trn_p, by = c("variable", "period"), all.x = TRUE)
+cmp_combined <- cmp |>
+  dplyr::mutate(
+    pct_change = ifelse(
+      variable %in% c("tmean", "tmax", "tmin"),
+      NA_real_,
+      round(100 * (mean_a - mean_b) / mean_b, 1)
+    ),
+    mean_a   = round(mean_a, 2),
+    mean_b   = round(mean_b, 2),
+    abs_diff = round(difference, 2)
+  ) |>
+  dplyr::select(variable, period, mean_a, mean_b, abs_diff, pct_change) |>
+  merge(trn_p, by = c("variable", "period"), all.x = TRUE)
+
+names(cmp_combined) <- c(
+  "Variable", "Period",
+  "Recent (2015–2025)", "Pre-warming (1951–1980)",
+  "Δ absolute", "Δ %", "Trend p (75-yr)"
+)
+
 kableExtra::kable_styling(
-  knitr::kable(cmp, caption = NA, digits = 2),
+  knitr::kable(cmp_combined, label = NA,
+    caption = "Recent decade (2015-2025 mean) compared to pre-warming reference (1951-1980 mean) for the FWCP Peace Region.",
+    row.names = FALSE),
   bootstrap_options = c("striped", "hover", "condensed")
 ) |>
-  kableExtra::scroll_box(height = "320px")
-```
-
-<br>
-
-```{r compare-pct, tab.cap = "Percent change for precipitation and soil moisture, recent vs pre-warming. The trend_p column is the Mann-Kendall p-value for the 75-year trend."}
-# Equivalent to:
-#   cmp_pct <- cd_compare(
-#     ts[ts$variable %in% c("prcp", "soil_moisture"), ],
-#     window_a = 2015:2025, window_b = 1951:1980, method = "pct_change")
-cmp_pct <- merge(cmp_pct, trn_p, by = c("variable", "period"), all.x = TRUE)
-knitr::kable(cmp_pct, caption = NA, digits = 1)
+  kableExtra::scroll_box(height = "360px")
 ```
 
 <br>
@@ -333,6 +343,14 @@ knitr::kable(cmp_pct, caption = NA, digits = 1)
 
 The zonal mean reduces a region this size to a single number; the spatial
 pattern carries the rest of the story.
+
+Warming is not spatially uniform. Total departures range from about
++1.5 °C in the southeast to over +2.1 °C in the west and centre. The
+dominant gradient runs east-to-west — the western half of the region
+averages roughly 0.2 °C more warming than the eastern half — with a
+smaller south-to-north component. The west-of-Rockies pattern is
+consistent with windward-slope amplification along the Continental
+Divide.
 
 ```{r spatial-tmean, fig.cap="Spatial pattern of annual mean temperature departure across the FWCP Peace Region (2015-2025 mean minus 1951-1980 mean, degrees C).", fig.height=7}
 # Pre-computed by data-raw/peace_fwcp_vignette_data.R. Live equivalent:
@@ -378,6 +396,14 @@ The regional zonal mean averages over five ecoregions with different
 elevations and exposures. To check whether the regional story holds
 within each ecoregion — and where it does not — we run the same
 pipeline on each ecoregion polygon individually.
+
+All five ecoregions warmed at roughly the same rate — about +0.3 °C
+per decade since 1951, with cumulative changes within 0.2 °C of each
+other. Precipitation is the variable that diverges: the two
+northernmost ecoregions (Boreal Mountains and Plateaus, Northern
+Canadian Rocky Mountains) show statistically significant precipitation
+increases, while the southern and central ecoregions do not. Vapour
+pressure deficit is up significantly in all five.
 
 ```{r per-ecoregion-compute, include = FALSE}
 # Pre-computed by data-raw/peace_fwcp_vignette_data.R. Live equivalent
@@ -460,7 +486,7 @@ ggplot(ano_all[ano_all$variable == "prcp" & ano_all$period == "annual", ],
   theme(legend.position = "bottom")
 ```
 
-```{r rollup, tab.cap = "Per-ecoregion roll-up over the 75-year window (1951-present): annual mean, daytime maximum, and overnight minimum temperature trends (degrees C per decade); annual precipitation trend (mm per year) and Mann-Kendall p-value; annual vapour pressure deficit trend (hPa per decade) and p-value; and recent (2015-2025) vs pre-warming (1951-1980) percent change for precipitation and soil moisture. All temperature p-values are below 0.001. A tmin slope greater than the tmax slope indicates the textbook day-night asymmetry."}
+```{r rollup}
 get_75 <- function(trn, var) {
   trn[trn$variable == var & trn$period == "annual" & trn$trend_start == 1951, ]
 }
@@ -490,18 +516,86 @@ rollup <- do.call(rbind, lapply(seq_along(results), function(i) {
     check.names = FALSE
   )
 }))
-knitr::kable(rollup, row.names = FALSE, caption = NA)
+knitr::kable(rollup, row.names = FALSE,
+  caption = "Per-ecoregion roll-up over the 75-year window (1951-present): annual mean, daytime maximum, and overnight minimum temperature trends (degrees C per decade); annual precipitation trend (mm per year) and Mann-Kendall p-value; annual vapour pressure deficit trend (hPa per decade) and p-value; and recent (2015-2025) vs pre-warming (1951-1980) percent change for precipitation and soil moisture. All temperature p-values are below 0.001. A tmin slope greater than the tmax slope indicates the textbook day-night asymmetry.")
 ```
 
 Ecoregion codes used in the table above: `r paste0(ecoregions$code, " — ", ecoregions$name_tc, collapse = "; ")`.
 
 <br>
 
+## Watershed Groups Across Ecoregions
+
+The FWCP Peace Region is reported and managed at the watershed-group
+scale — the British Columbia Freshwater Atlas hydrological reporting
+unit, and the unit the Fish & Wildlife Compensation Program funds
+work in. Sixteen watershed groups make up the canonical FWCP Peace
+list. They span the five ecoregions in different ways: some sit
+entirely within one, others split across two or three. The map below
+shows the watershed groups labelled with their codes, on top of the
+ecoregion fills. The table that follows gives, for each watershed
+group, the share of its area falling in each ecoregion.
+
+The Upper Peace River watershed group is also intersected by the FWCP
+boundary, but only at its upstream end — its main drainage runs east
+beyond the region, so it is excluded here to keep the reporting unit
+clean.
+
+```{r map-wsgs, fig.cap="Watershed groups intersecting the FWCP Peace Region (full extent, including the parts spilling outside the FWCP boundary), labelled with their codes, on top of ecoregion fills. The Fraser Basin, Central Canadian Rockies, and Omineca Mountains ecoregions occupy the southern and central portions; Boreal Mountains and Plateaus and Northern Canadian Rocky Mountains sit in the north.", fig.height=7}
+wsgs <- st_read(ctx, layer = "wsgs", quiet = TRUE)
+
+wsg_centroids <- suppressWarnings(st_centroid(wsgs))
+
+ggplot() +
+  geom_sf(data = ecoregions, aes(fill = name_tc), color = "grey45",
+          linewidth = 0.3, alpha = 0.45) +
+  geom_sf(data = aoi, fill = NA, color = "#2166ac", linewidth = 0.8) +
+  geom_sf(data = wsgs, fill = NA, color = "grey25", linewidth = 0.4) +
+  ggrepel::geom_label_repel(
+    data = wsg_centroids,
+    aes(label = code, geometry = geom),
+    stat = "sf_coordinates",
+    size = 2.6, fill = "white", alpha = 0.85,
+    label.padding = unit(0.15, "lines"),
+    min.segment.length = 0
+  ) +
+  scale_fill_brewer(palette = "Set3", name = "Ecoregion") +
+  guides(fill = guide_legend(nrow = 2, byrow = TRUE)) +
+  coord_sf(
+    xlim = c(aoi_bb["xmin"] - 0.4, aoi_bb["xmax"] + 0.4),
+    ylim = c(aoi_bb["ymin"] - 0.5, aoi_bb["ymax"] + 0.3)
+  ) +
+  labs(title = "Watershed Groups on Ecoregion Backdrop") +
+  theme_minimal(base_size = 12) +
+  theme(axis.title = element_blank(),
+        legend.position = "bottom",
+        legend.text = element_text(size = 8),
+        legend.title = element_text(size = 9),
+        legend.key.size = unit(0.4, "cm"))
+```
+
+```{r wsg-ecoregion-table}
+wsg_xref <- read.csv(
+  system.file("extdata", "peace_wsg_ecoregion_commentary.csv", package = "cd"),
+  check.names = FALSE
+)
+wsg_xref$commentary <- NULL
+names(wsg_xref) <- c("Code", "Name", "km² in FWCP",
+                     "FAB %", "CRM %", "OMM %", "BMP %", "NRM %")
+kableExtra::kable_styling(
+  knitr::kable(wsg_xref, label = NA,
+    caption = "Watershed groups in the FWCP Peace Region with the percent of each group's area falling in each of the five ecoregions. Rows where one ecoregion is at or near 100 percent indicate watershed groups contained within a single climatic-physiographic zone; rows split across two or more ecoregions indicate watershed groups whose climate departure can pull from more than one regional pattern. Codes match those in earlier figures. Source: data-raw/peace_wsg_ecoregion_commentary.R.",
+    row.names = FALSE),
+  bootstrap_options = c("striped", "hover", "condensed")
+) |>
+  kableExtra::scroll_box(height = "420px")
+```
+
 <br>
 
 ## Interpretation
 
-Three findings emerge from the FWCP Peace Region trends.
+Three findings emerge from the climate departures shown above.
 
 **Warming is broad, fast, and uniform.** All five ecoregions warmed
 between +1.7 °C and +1.9 °C cumulative since 1951, at a rate near
@@ -526,6 +620,16 @@ the region — show real increases in annual precipitation
 significant change. This is a north-versus-south contrast that the
 regional average hides, and the place where breaking the analysis
 down by ecoregion was worth doing.
+
+Mapping that contrast onto the watershed-group reporting unit: five
+watershed groups sit in or are dominated by the wetter ecoregions —
+Toodoggone, Firesteel and Ingenika sit almost entirely within Boreal
+Mountains and Plateaus, and Finlay and Fox are mostly in Northern
+Canadian Rocky Mountains. For these, the small upward precipitation
+trend is statistically defensible. The remaining 13 watershed groups
+sit elsewhere — Fraser Basin, Central Canadian Rockies, Omineca
+Mountains — where annual precipitation has not changed in a way
+distinguishable from natural variability.
 
 **The atmosphere is drying despite, in places, more precipitation.**
 Vapour pressure deficit — the gap between how much water the air

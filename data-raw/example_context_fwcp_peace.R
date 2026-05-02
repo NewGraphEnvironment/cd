@@ -95,18 +95,24 @@ highways <- st_zm(highways, drop = TRUE, what = "ZM")
 highways <- st_transform(highways, 4326)
 cat("Highway segments:", nrow(highways), "\n")
 
-# -- Watershed groups intersecting the AOI ------------------------------------
-# Full WSG extent (not clipped to AOI) — some will spill outside the FWCP
-# admin boundary, which honestly shows that the boundary is administrative
-# rather than hydrological. Filter out WSGs that only edge-touch the AOI
-# (intersection area < 50 km^2).
+# -- Watershed groups in the FWCP Peace Region --------------------------------
+# Canonical 16-WSG list: each WSG is >=99% inside the FWCP polygon and is a
+# direct or headwater contributor to Williston Reservoir or the immediate Peace.
+# UPCE (only 11.8% inside, mostly drains east past FWCP) and MURR (1% sliver)
+# are intentionally excluded. Keep this list aligned with the shared GIS
+# project so the boundary set is consistent across reports.
+fwcp_peace_wsg_codes <- c(
+  "CARP", "CRKD", "FINA", "FINL", "FIRE", "FOXR", "INGR", "LOMI",
+  "MESI", "NATR", "OSPK", "PARA", "PARS", "PCEA", "TOOD", "UOMI"
+)
+wsg_codes_sql <- paste0("'", fwcp_peace_wsg_codes, "'", collapse = ", ")
 wsgs <- frs_db_query(conn, sprintf("
   SELECT watershed_group_code AS code,
          watershed_group_name AS name,
          geom
   FROM whse_basemapping.fwa_watershed_groups_poly
-  WHERE ST_Area(ST_Intersection(geom, %s)) > 50000000
-", aoi_geom_sql))
+  WHERE watershed_group_code IN (%s)
+", wsg_codes_sql))
 wsgs <- st_zm(wsgs, drop = TRUE, what = "ZM")
 wsgs <- st_transform(wsgs, 4326)
 cat("Watershed groups intersecting AOI (>50 km^2):", nrow(wsgs), "\n")
