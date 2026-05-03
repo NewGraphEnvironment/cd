@@ -1,5 +1,22 @@
 # Changelog
 
+## cd 0.1.5 (2026-05-02)
+
+- Adds a “Watershed Groups Across Ecoregions” section to the
+  `peace-fwcp` vignette: a map of the 16 canonical FWCP Peace watershed
+  groups labelled with codes on top of ecoregion fills, plus a table
+  showing the percent of each watershed group’s area falling in each of
+  the five ecoregions. Lets readers map per-ecoregion climate departure
+  findings (precipitation up only in BMP and NRM) onto the
+  watershed-group reporting unit. Canonical 16-WSG list (CARP, CRKD,
+  FINA, FINL, FIRE, FOXR, INGR, LOMI, MESI, NATR, OSPK, PARA, PARS,
+  PCEA, TOOD, UOMI) hardcoded in `data-raw/example_context_fwcp_peace.R`
+  for reuse — UPCE and MURR dropped because they sit mostly outside the
+  FWCP boundary. Recent vs Pre-warming consolidated into one table. All
+  six vignette tables now render with single, clean bookdown captions
+  (`label = NA` + `caption = "..."` pattern).
+  ([\#47](https://github.com/NewGraphEnvironment/cd/issues/47))
+
 ## cd 0.1.4 (2026-05-01)
 
 KOTL vignette removed. `peace-fwcp` is now the canonical worked example
