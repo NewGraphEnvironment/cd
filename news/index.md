@@ -1,5 +1,22 @@
 # Changelog
 
+## cd 0.1.7 (2026-05-04)
+
+- Snow-methodology literature review for the upcoming “Snowpack”
+  vignette section. Adds `scripts/rag_build_snow_methodology.R` and
+  `scripts/rag_query_snow_methodology.R`, builds a local ragnar DuckDB
+  from 11 peer-reviewed papers (now in the
+  `NewGraphEnvironment/hydrology` Zotero collection), and ships the
+  methodology synthesis + 15-row “cite this for that” citation map at
+  `planning/archive/2026-05-issue-53-snow-lit-review/findings.md`.
+  Headline finding:
+  [`cd_trend()`](https://newgraphenvironment.github.io/cd/reference/cd_trend.md)’s
+  raw Mann-Kendall + Theil-Sen (no prewhitening) is methodologically
+  correct for our 76-year series with strong trends per [Yue & Wang
+  2002](https://doi.org/10.1029/2001WR000861) — prewhitening would
+  *underestimate* slope when a real trend exists.
+  ([\#54](https://github.com/NewGraphEnvironment/cd/pull/54))
+
 ## cd 0.1.6 (2026-05-03)
 
 - Producer-side refactor. Extracted shared safeguards (single-instance

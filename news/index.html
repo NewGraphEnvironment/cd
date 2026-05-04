@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">cd</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.6</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.7</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -35,6 +35,10 @@
       <small>Source: <a href="https://github.com/NewGraphEnvironment/cd/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.1.7" id="cd-017-2026-05-04">cd 0.1.7 (2026-05-04)<a class="anchor" aria-label="anchor" href="#cd-017-2026-05-04"></a></h2>
+<ul><li>Snow-methodology literature review for the upcoming “Snowpack” vignette section. Adds <code>scripts/rag_build_snow_methodology.R</code> and <code>scripts/rag_query_snow_methodology.R</code>, builds a local ragnar DuckDB from 11 peer-reviewed papers (now in the <code>NewGraphEnvironment/hydrology</code> Zotero collection), and ships the methodology synthesis + 15-row “cite this for that” citation map at <code>planning/archive/2026-05-issue-53-snow-lit-review/findings.md</code>. Headline finding: <code><a href="../reference/cd_trend.html">cd_trend()</a></code>’s raw Mann-Kendall + Theil-Sen (no prewhitening) is methodologically correct for our 76-year series with strong trends per <a href="https://doi.org/10.1029/2001WR000861" class="external-link">Yue &amp; Wang 2002</a> — prewhitening would <em>underestimate</em> slope when a real trend exists. (<a href="https://github.com/NewGraphEnvironment/cd/pull/54" class="external-link">#54</a>)</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.6" id="cd-016-2026-05-03">cd 0.1.6 (2026-05-03)<a class="anchor" aria-label="anchor" href="#cd-016-2026-05-03"></a></h2>
 <ul><li>Producer-side refactor. Extracted shared safeguards (single-instance pgrep guard, exponential-backoff retry, atomic GeoTIFF write, timestamped logging, EDH token loader) from <code>scripts/backfill_edh_all.py</code> into a new <code>scripts/_lib.py</code>, and ported them to the sibling <code>scripts/backfill_edh_tmax_tmin.py</code> (which previously had none). Adds a <code>backup_before_delete()</code> helper codifying the on-disk pattern at <code>data/backfill/monthly/_cds_backup/</code>. No consumer-side changes; sets up the planned snow-variables backfill (<a href="https://github.com/NewGraphEnvironment/cd/issues/48" class="external-link">#48</a>) to inherit the safeguards via a single import. (<a href="https://github.com/NewGraphEnvironment/cd/pull/52" class="external-link">#52</a>)</li>
