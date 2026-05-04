@@ -74,17 +74,28 @@ cd_stac_item <- function(cog_path, base_url) {
   fname <- basename(cog_path)
   name_parts <- tools::file_path_sans_ext(fname)
 
-  # Parse variable and period from filename
-  # Expected patterns: "tmean_annual.tif", "vpd_2024.tif",
-  # "example_climate.tif", etc.
+  # Parse variable and period from filename. Expected pattern:
+  # "{variable}_{period}.tif". Variable names may themselves contain
+  # underscores (e.g. "swe_max", "snowmelt_doy_50") so substring matching
+  # is unsafe — "swe" substring-matches "swe_max_annual" and would
+  # mis-route the file. Use exact "{var}_{period}" matching against the
+  # registries; fall back to filename-as-variable / "unknown" period if
+  # nothing matches.
   known_vars <- cd_variables()$variable
   known_periods <- cd_periods(include_monthly = TRUE)
 
-  var_match <- known_vars[vapply(known_vars, function(v) grepl(v, name_parts), logical(1))]
-  period_match <- known_periods[vapply(known_periods, function(p) grepl(p, name_parts), logical(1))]
-
-  variable <- if (length(var_match) > 0) var_match[1] else name_parts
-  period <- if (length(period_match) > 0) period_match[1] else "unknown"
+  variable <- name_parts
+  period <- "unknown"
+  for (v in known_vars) {
+    for (p in known_periods) {
+      if (identical(name_parts, paste0(v, "_", p))) {
+        variable <- v
+        period <- p
+        break
+      }
+    }
+    if (period != "unknown") break
+  }
 
   # Extract spatial metadata
   r <- terra::rast(cog_path)
