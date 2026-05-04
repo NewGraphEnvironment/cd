@@ -105,9 +105,16 @@ identified PDF access. Citation keys follow the BBT
 - Did NOT search for streamflow-modelling-specific or glacier-dynamics literature (per #53 out-of-scope list).
 - Did NOT search for very recent (2024–2026) papers — focus is on the established methodology canon. If something in Phase 4 mining points us at a critical recent paper, can add 1–2 more.
 
-## Papers added to Zotero — `hydrology` collection (per user direction; key `JI7EBZNF`)
+## Papers added to Zotero — top-level `NewGraphEnvironment/hydrology` collection (key `X29BX4U8`)
 
-10 new entries added via Web API POST with `collections=["JI7EBZNF"]` (single
+NOTE — there are TWO `hydrology` collections in the NGE library:
+`X29BX4U8` (top-level, the right one) and `JI7EBZNF` (deep-nested
+under `blackwater/aquatic/hydrology`, project-specific). Initial Phase 2
+adds went to the wrong one; PATCH'd all 10 to the top-level on
+2026-05-04 after user feedback. Future scripts that need the snow-
+methodology corpus should use `X29BX4U8`.
+
+10 new entries added via Web API POST with `collections=["X29BX4U8"]` (single
 batch, all succeeded). 11th paper `munoz_sabater_etal2021` already in Zotero
 from prior project (attachKey `SUS5A57A`).
 

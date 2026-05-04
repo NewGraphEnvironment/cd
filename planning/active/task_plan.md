@@ -57,11 +57,14 @@ Starting candidate list:
       (10 parallel `zotero_search_items` calls all returned no matches;
       11th paper `munoz_sabater_etal2021` already known to exist with
       attachKey `SUS5A57A`).
-- [x] Used existing `hydrology` collection (key `JI7EBZNF`,
-      `blackwater/aquatic/hydrology`) per user direction; did not
-      create a new `snowpack-departure-methodology` collection.
+- [x] Used existing top-level `NewGraphEnvironment/hydrology`
+      collection (key `X29BX4U8`) per user direction; did not create
+      a new `snowpack-departure-methodology` collection. (Initial
+      adds mistakenly went to the deep-nested
+      `blackwater/aquatic/hydrology` `JI7EBZNF` — PATCH'd all 10
+      items to `X29BX4U8` after user feedback.)
 - [x] Added 10 new entries via Web API POST with
-      `"collections": ["JI7EBZNF"]`. CrossRef-driven metadata for all 10.
+      `"collections": ["X29BX4U8"]`. CrossRef-driven metadata for all 10.
       Tags: `snowpack-departure-methodology`, `cd-issue-53`.
 - [x] Auto-attached 6 PDFs via 4-step S3 upload:
       `mote_etal2005`, `knowles_etal2006`, `mote_etal2018`,
