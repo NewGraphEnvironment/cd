@@ -52,6 +52,27 @@
   - Tests: 166 PASS, 0 FAIL. New cases for pct_point_diff
     arithmetic and cap_pct non-application.
   - Post-backfill: `mv snow_depth_*.tif → swe_*.tif` (~76 files).
-- Next: Phase 5 vignette extension (precompute snow time series for
-  Peace AOI, add Snowpack section). Can prep against the 4 already-
-  fetched sample years until the backfill completes.
+- Phase 2 backfill completed: 2h52min for 75 years + 3min for the
+  2022 retry. Renamed 75 `snow_depth_*.tif` → `swe_*.tif`. 76 monthly
+  files per var × 4 monthly vars + 76 annual files per var × 4 annual
+  vars = 608 fresh outputs.
+- Phase 2b Stage 3 + S3 push completed: 24 new COGs + updated
+  `catalog.json` live on `s3://stac-era5-land`. `cd_catalog()` from
+  the default S3 URL returns 59 entries including all 8 new snow
+  vars at expected periods.
+- Two bugs caught and fixed during Phase 2b:
+  1. `cd_stac_item()` substring-match `grepl(v, name_parts)` was
+     mis-routing `swe_max_annual.tif` under `swe`. Replaced with
+     strict `{var}_{period}` exact-match — non-breaking change for
+     existing tests.
+  2. Stage 3 script preferred installed cd over `devtools::load_all()`,
+     caught a stale v0.1.1 install. Reinstalled from the working
+     tree before regenerating the catalog.
+- Filed companion issue #53 (snowpack-departure methodology lit
+  review) so vignette interp paragraph in Phase 5 lands with citations
+  baked in rather than retrofitted. Decoupled boundary: #53 produces
+  a `findings.md` of methodology quotes; #48 Phase 5 consumes via
+  `[@key]` citations.
+- Next: `/planning-init 53` to enter plan-mode for the lit review,
+  parallel-track with #48 Phase 3 (ASWS QA cross-check) and Phase 5
+  (vignette).

@@ -71,14 +71,28 @@ Target release: **v0.2.0** (minor bump — new variables and a new
 
 ## Phase 2 — Producer: full backfill + Stage 3 aggregation + S3 push
 
-- [ ] Full 76-year backfill (1950–2025).
-- [ ] Adapt `scripts/pipeline_stage3_edh.R` for annual-only vars:
-      monthly natives flow through `cd_aggregate` like the existing 7
-      vars; annual derived skip `cd_aggregate` and go straight to
-      `{var}_annual.tif` 76-band COGs.
-- [ ] Generate updated `catalog.json` via `cd_stac_catalog`.
-- [ ] Push to `s3://stac-era5-land`.
-- [ ] Verify catalog readable from `cd_catalog()` and new vars appear.
+- [x] Full 76-year backfill (1950–2025) — 2h52min wall clock; one transient
+      EDH `ClientPayloadError` on year 2022, recovered via single-year
+      retry (idempotent skip on the rest).
+- [x] `mv data/backfill/monthly/snow_depth_*.tif → swe_*.tif` (75 files;
+      year 2022 retry produced `swe_2022.tif` directly under the
+      post-rename script).
+- [x] Adapt `scripts/pipeline_stage3_edh.R` for annual-only vars:
+      monthly natives flow through `cd_aggregate` (Step 1); annual
+      derived skip `cd_aggregate` and stack 1-band-per-year files into
+      multi-band COGs in a new Step 1b. Extended `agg_methods` for the
+      4 new monthly vars (sum for snowfall/snowmelt, mean for
+      swe/snow_cover).
+- [x] Bug fix in `cd_stac_item()` caught during dry-run: substring
+      `grepl(v, name_parts)` mis-routed `swe_max_annual.tif` under
+      `swe`. Replaced with strict `{var}_{period}` exact-match against
+      both registries.
+- [x] Generate updated `catalog.json` via `cd_stac_catalog` (59 items).
+- [x] Push to `s3://stac-era5-land` (24 new COGs + updated catalog,
+      ~114 MB, ~5s sync).
+- [x] Verify catalog readable from `cd_catalog()` (default S3 URL):
+      4 monthly natives × 5 periods + 4 annual derived × 1 period = 24
+      new entries returned correctly.
 
 ## Phase 3 — Producer-side QA cross-check vs ASWS / manual snow surveys
 
