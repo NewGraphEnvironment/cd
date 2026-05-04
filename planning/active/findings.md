@@ -105,10 +105,41 @@ identified PDF access. Citation keys follow the BBT
 - Did NOT search for streamflow-modelling-specific or glacier-dynamics literature (per #53 out-of-scope list).
 - Did NOT search for very recent (2024–2026) papers — focus is on the established methodology canon. If something in Phase 4 mining points us at a critical recent paper, can add 1–2 more.
 
-## Papers added to Zotero (`snowpack-departure-methodology` collection)
+## Papers added to Zotero — `hydrology` collection (per user direction; key `JI7EBZNF`)
 
-_Phase 2 will populate this section with `citationKey + attachKey + DOI +
-PDF status` per paper._
+10 new entries added via Web API POST with `collections=["JI7EBZNF"]` (single
+batch, all succeeded). 11th paper `munoz_sabater_etal2021` already in Zotero
+from prior project (attachKey `SUS5A57A`).
+
+### PDFs attached automatically (6/10)
+
+| Citation key | Zotero itemKey | Attachment key | Source URL |
+|---|---|---|---|
+| `mote_etal2005` | `UUB24X5K` | `G9IRM42Z` | `journals.ametsoc.org/downloadpdf/journals/bams/86/1/bams-86-1-39.pdf` (Unpaywall OA) |
+| `knowles_etal2006` | `TD2GMMC8` | `I8DV96F4` | `journals.ametsoc.org/downloadpdf/journals/clim/19/18/jcli3850.1.pdf` (Unpaywall OA) |
+| `mote_etal2018` | `2IIWVD5J` | `DEV98ZWA` | `nature.com/articles/s41612-018-0012-1.pdf` (npj OA) |
+| `cayan_etal2001` | `39JIJR3F` | `9R74HB5D` | `journals.ametsoc.org/downloadpdf/journals/bams/82/3/...` (Unpaywall OA) |
+| `kang_etal2016` | `BHN3CHWI` | `I6HJU2U9` | `nature.com/articles/srep19299.pdf` (Sci Rep OA) |
+| `kouki_etal2023` | `CAE7SFPP` | `XXK3PP36` | `tc.copernicus.org/articles/17/5007/2023/tc-17-5007-2023.pdf` (TC CC-BY) |
+
+### PDFs need manual download (4/10)
+
+Zotero entry exists in the hydrology collection; just needs the PDF
+dragged into it. See companion list output below findings.md → user
+drops PDFs into the existing Zotero items by the parent key.
+
+| Citation key | Zotero itemKey | Reason |
+|---|---|---|
+| `stewart_etal2005` | `ZHU2DW9V` | Unpaywall: no OA. Direct AMS PDF returns HTTP 403 (paywall, despite the matching Mote 2005 paper being OA) |
+| `najafi_etal2017` | `KHPBJR3H` | Unpaywall: no OA. AMS direct also 403 |
+| `yue_wang2002` | `G4578ERF` | Wiley/AGU paywalled (expected) |
+| `pederson_etal2011` | `WSTZDDGG` | Science paywalled (expected) |
+
+### munoz_sabater_etal2021 (already in library)
+
+| Citation key | Zotero attachKey | Source |
+|---|---|---|
+| `munoz_sabater_etal2021` | `SUS5A57A` | Already in Zotero from prior `rag_build_departure_framing.R` |
 
 ## Methodology quotes by #48 metric
 

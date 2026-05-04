@@ -51,18 +51,28 @@ Starting candidate list:
 | `yue_wang2002` Yue & Wang 2002 (WRR) | Autocorrelation correction for MK |
 | `munoz_sabater_etal2021` Muñoz-Sabater et al. 2021 (ESSD) | ERA5-Land dataset (already in Zotero, attachKey SUS5A57A) |
 
-## Phase 2 — Add papers to Zotero (`snowpack-departure-methodology` collection)
+## Phase 2 — Add papers to Zotero (`hydrology` collection per user direction)
 
-- [ ] Check existing `zotero_search_items` for each candidate — many
-      may already be in the library from other projects.
-- [ ] Create `snowpack-departure-methodology` collection if not present.
-- [ ] Add new entries via web API POST with `"collections": ["{key}"]`.
-- [ ] Attach PDFs via web-API S3 upload (per `/zotero-api` skill,
-      section 4) for OA papers. JS-console fallback for paywalled with
-      manual download.
-- [ ] Run `collection_dedup.js` if `saveItems` retries left dupes.
-- [ ] Verify via `zotero_get_item_children` that PDFs attached.
-- [ ] Capture per-paper `citationKey + attachKey` in `findings.md`.
+- [x] Verified none of the 10 candidates already in Zotero
+      (10 parallel `zotero_search_items` calls all returned no matches;
+      11th paper `munoz_sabater_etal2021` already known to exist with
+      attachKey `SUS5A57A`).
+- [x] Used existing `hydrology` collection (key `JI7EBZNF`,
+      `blackwater/aquatic/hydrology`) per user direction; did not
+      create a new `snowpack-departure-methodology` collection.
+- [x] Added 10 new entries via Web API POST with
+      `"collections": ["JI7EBZNF"]`. CrossRef-driven metadata for all 10.
+      Tags: `snowpack-departure-methodology`, `cd-issue-53`.
+- [x] Auto-attached 6 PDFs via 4-step S3 upload:
+      `mote_etal2005`, `knowles_etal2006`, `mote_etal2018`,
+      `cayan_etal2001`, `kang_etal2016`, `kouki_etal2023`.
+- [ ] **User manual download required** (paywalled + `najafi`,
+      `stewart` returning 403 from AMS direct):
+      `stewart_etal2005`, `najafi_etal2017`, `yue_wang2002`,
+      `pederson_etal2011`. RG search links provided; user drags PDFs
+      onto the existing Zotero entries (parent keys recorded above).
+- [x] Captured per-paper `citationKey + parent itemKey + attachment
+      key` in `findings.md`.
 
 ## Phase 3 — Build ragnar DuckDB store
 

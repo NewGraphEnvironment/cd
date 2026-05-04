@@ -31,6 +31,16 @@
 - 8 of 11 papers are OA (npj, Sci Rep, Cryosphere, ESSD, plus AMS
   6-month embargo for the older AMS papers). 2 require manual
   download from ResearchGate (`pederson_etal2011`, `yue_wang2002`).
-- Next: pause for user review of candidate list before Phase 2
-  Zotero adds (Zotero state is user-shared, modifications worth
-  explicit confirmation per auto-mode guidance).
+- Phase 2 complete: 10 new entries added to existing
+  `blackwater/aquatic/hydrology` Zotero collection (key `JI7EBZNF`)
+  per user direction (skipped creating a new
+  `snowpack-departure-methodology` sub-collection). Single-batch
+  POST via Web API with CrossRef-driven metadata; all 10 succeeded.
+- 6 of 10 PDFs auto-attached via 4-step S3 upload (Mote 2005, Mote
+  2018, Knowles 2006, Cayan 2001, Kang 2016, Kouki 2023). 4 need
+  manual download (Stewart 2005, Najafi 2017, Yue & Wang 2002,
+  Pederson 2011). RG search links provided for user.
+- Next: hand off RG-link list to user, then proceed with Phase 3
+  (rag-build script) once all PDFs are in Zotero. Phase 3 hardcodes
+  `citationKey -> attachKey` map; the missing attach keys come
+  online once user attaches the 4 manual PDFs.
