@@ -1,5 +1,19 @@
 # Changelog
 
+## cd 0.1.6 (2026-05-03)
+
+- Producer-side refactor. Extracted shared safeguards (single-instance
+  pgrep guard, exponential-backoff retry, atomic GeoTIFF write,
+  timestamped logging, EDH token loader) from
+  `scripts/backfill_edh_all.py` into a new `scripts/_lib.py`, and ported
+  them to the sibling `scripts/backfill_edh_tmax_tmin.py` (which
+  previously had none). Adds a `backup_before_delete()` helper codifying
+  the on-disk pattern at `data/backfill/monthly/_cds_backup/`. No
+  consumer-side changes; sets up the planned snow-variables backfill
+  ([\#48](https://github.com/NewGraphEnvironment/cd/issues/48)) to
+  inherit the safeguards via a single import.
+  ([\#52](https://github.com/NewGraphEnvironment/cd/pull/52))
+
 ## cd 0.1.5 (2026-05-02)
 
 - Adds a “Watershed Groups Across Ecoregions” section to the

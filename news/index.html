@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">cd</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -35,6 +35,10 @@
       <small>Source: <a href="https://github.com/NewGraphEnvironment/cd/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.1.6" id="cd-016-2026-05-03">cd 0.1.6 (2026-05-03)<a class="anchor" aria-label="anchor" href="#cd-016-2026-05-03"></a></h2>
+<ul><li>Producer-side refactor. Extracted shared safeguards (single-instance pgrep guard, exponential-backoff retry, atomic GeoTIFF write, timestamped logging, EDH token loader) from <code>scripts/backfill_edh_all.py</code> into a new <code>scripts/_lib.py</code>, and ported them to the sibling <code>scripts/backfill_edh_tmax_tmin.py</code> (which previously had none). Adds a <code>backup_before_delete()</code> helper codifying the on-disk pattern at <code>data/backfill/monthly/_cds_backup/</code>. No consumer-side changes; sets up the planned snow-variables backfill (<a href="https://github.com/NewGraphEnvironment/cd/issues/48" class="external-link">#48</a>) to inherit the safeguards via a single import. (<a href="https://github.com/NewGraphEnvironment/cd/pull/52" class="external-link">#52</a>)</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.5" id="cd-015-2026-05-02">cd 0.1.5 (2026-05-02)<a class="anchor" aria-label="anchor" href="#cd-015-2026-05-02"></a></h2>
 <ul><li>Adds a “Watershed Groups Across Ecoregions” section to the <code>peace-fwcp</code> vignette: a map of the 16 canonical FWCP Peace watershed groups labelled with codes on top of ecoregion fills, plus a table showing the percent of each watershed group’s area falling in each of the five ecoregions. Lets readers map per-ecoregion climate departure findings (precipitation up only in BMP and NRM) onto the watershed-group reporting unit. Canonical 16-WSG list (CARP, CRKD, FINA, FINL, FIRE, FOXR, INGR, LOMI, MESI, NATR, OSPK, PARA, PARS, PCEA, TOOD, UOMI) hardcoded in <code>data-raw/example_context_fwcp_peace.R</code> for reuse — UPCE and MURR dropped because they sit mostly outside the FWCP boundary. Recent vs Pre-warming consolidated into one table. All six vignette tables now render with single, clean bookdown captions (<code>label = NA</code> + <code>caption = "..."</code> pattern). (<a href="https://github.com/NewGraphEnvironment/cd/issues/47" class="external-link">#47</a>)</li>
