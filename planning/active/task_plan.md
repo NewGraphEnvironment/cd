@@ -18,49 +18,54 @@ helper that codifies the on-disk pattern. Soul convention extraction
 
 ## Phase 1 — Extract `scripts/_lib.py`
 
-- [ ] Create `scripts/_lib.py` with helpers parameterized for reuse:
+- [x] Create `scripts/_lib.py` with helpers parameterized for reuse:
       `preflight_single_instance(name)`, `with_retry(fn, ...)`,
-      `write_geotiff(da, out_path, month_names)`, `log(msg)`,
+      `write_geotiff(da, out_path, band_names)`, `log(msg)`,
       `MONTH_NAMES`. Hoist `get_token()` too — both scripts duplicate it.
-- [ ] Refactor `backfill_edh_all.py` to `from _lib import (...)`. Drop
+- [x] Refactor `backfill_edh_all.py` to `from _lib import (...)`. Drop
       the now-redundant local copies (lines 69-94, 97-115, 118-127,
       153-178, 181-182).
-- [ ] Smoke test on one year:
-      `uv run scripts/backfill_edh_all.py --year 1950`. Outputs match
-      pre-refactor.
+- [x] Smoke test on one year:
+      `uv run scripts/backfill_edh_all.py --year 1950`. Idempotent skip
+      fired; opened both Zarr stores under `with_retry`; clean exit.
 
 ## Phase 2 — Port safeguards to `backfill_edh_tmax_tmin.py`
 
-- [ ] `from _lib import (...)` at top.
-- [ ] `preflight_single_instance("backfill_edh_tmax_tmin")` at top of
+- [x] `from _lib import (...)` at top.
+- [x] `preflight_single_instance("backfill_edh_tmax_tmin")` at top of
       `main()`.
-- [ ] Wrap `xr.open_dataset(zarr_url, ...)` (line 96) in `with_retry`.
-- [ ] Wrap each `.compute()` call (lines 132-133) in `with_retry`.
-- [ ] Replace inline `to_geotiff_raster` (lines 141-155) with
+- [x] Wrap `xr.open_dataset(zarr_url, ...)` (line 96) in `with_retry`.
+- [x] Wrap each `.compute()` call (lines 132-133) in `with_retry`.
+- [x] Replace inline `to_geotiff_raster` (lines 141-155) with
       `write_geotiff` from `_lib.py`.
-- [ ] Replace ad-hoc `print(...)` with `log(...)`.
-- [ ] Smoke test:
-      `uv run scripts/backfill_edh_tmax_tmin.py --year 1950`.
+- [x] Replace ad-hoc `print(...)` with `log(...)`.
+- [x] Smoke test:
+      `uv run scripts/backfill_edh_tmax_tmin.py --year 1950`. Idempotent
+      skip fired; clean exit.
 
 ## Phase 3 — Add `backup_before_delete()` helper
 
-- [ ] Add `backup_before_delete(files, backup_subdir="_backup")` to
+- [x] Add `backup_before_delete(files, backup_subdir="_backup")` to
       `_lib.py`. Each file moves to `file.parent/backup_subdir/file.name`.
       No overwrite (skip with warning if backup target exists).
-- [ ] Module docstring documents intended use during regenerations and
+- [x] Module docstring documents intended use during regenerations and
       points at `data/backfill/monthly/_cds_backup/` as the worked
       example.
-- [ ] No call sites added now — both current scripts are pure-write,
+- [x] No call sites added now — both current scripts are pure-write,
       protected by idempotency. Helper exists for #48 if its
       aggregation method requires re-running existing years.
 
 ## Phase 4 — Verify safeguard behaviors
 
-- [ ] Pgrep guard fires: start one
-      `backfill_edh_tmax_tmin --year 1950` in background, immediately
-      try to start a second; second ABORTs.
+- [x] Pgrep guard fires: started a `backfill_edh_tmax_tmin --year 2026`
+      in background, second instance ABORTed with the expected message
+      naming both pids.
 - [ ] Output equivalence: byte-compare a re-rendered year file from
-      both scripts against the pre-refactor file.
+      both scripts against the pre-refactor file. (Deferred — both
+      scripts hit the idempotent-skip path on existing years; full
+      re-render would re-fetch from EDH unnecessarily. The atomic-write
+      and band-naming logic are byte-identical to the pre-refactor
+      versions by code inspection — only the call site moved.)
 
 ## Phase 5 — File soul-convention follow-up
 

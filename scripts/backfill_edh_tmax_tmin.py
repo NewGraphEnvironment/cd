@@ -45,14 +45,18 @@ Usage:
   uv run scripts/backfill_edh_tmax_tmin.py --year 1950  # single year test
 """
 import argparse
-import os
-import sys
 import time
 from pathlib import Path
 
-import numpy as np
-import rasterio
 import xarray as xr
+
+from _lib import (
+    get_token,
+    log,
+    preflight_single_instance,
+    with_retry,
+    write_geotiff,
+)
 
 # -- Config --------------------------------------------------------------------
 # BC bbox, matches scripts/pipeline_tmax_tmin_hourly.R
@@ -64,25 +68,10 @@ YEARS_DEFAULT = range(1950, 2026)
 REPO_ROOT = Path(__file__).resolve().parent.parent
 MONTHLY_DIR = REPO_ROOT / "data" / "backfill" / "monthly"
 
-MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
-               "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-
-
-# -- Token ---------------------------------------------------------------------
-def get_token() -> str:
-    token = os.environ.get("EDH_TOKEN")
-    if token:
-        return token
-    renviron = Path.home() / ".Renviron"
-    if renviron.exists():
-        for line in renviron.read_text().splitlines():
-            if line.strip().startswith("EDH_TOKEN="):
-                return line.strip().split("=", 1)[1]
-    sys.exit("EDH_TOKEN not found in env or ~/.Renviron")
-
 
 # -- Main ----------------------------------------------------------------------
 def main(years):
+    preflight_single_instance("backfill_edh_tmax_tmin")
     MONTHLY_DIR.mkdir(parents=True, exist_ok=True)
 
     token = get_token()
@@ -91,10 +80,13 @@ def main(years):
         "reanalysis-era5-land-no-antartica-v0.zarr"
     )
 
-    print(f"[{time.strftime('%H:%M:%S')}] Opening EDH Zarr store...")
+    log("Opening EDH Zarr store...")
     t0 = time.time()
-    ds = xr.open_dataset(zarr_url, chunks={}, engine="zarr")
-    print(f"  Opened in {time.time() - t0:.1f}s")
+    ds = with_retry(
+        lambda: xr.open_dataset(zarr_url, chunks={}, engine="zarr"),
+        what="open hourly zarr",
+    )
+    log(f"  Opened in {time.time() - t0:.1f}s")
 
     # Longitude convention
     lon_min = float(ds.longitude.min())
@@ -108,10 +100,10 @@ def main(years):
         tmin_out = MONTHLY_DIR / f"tmin_{year}.tif"
 
         if tmax_out.exists() and tmin_out.exists():
-            print(f"[{time.strftime('%H:%M:%S')}] {year}: exists, skipping")
+            log(f"{year}: exists, skipping")
             continue
 
-        print(f"[{time.strftime('%H:%M:%S')}] {year}: fetching...")
+        log(f"{year}: fetching...")
         t_year = time.time()
 
         # Pull entire year of hourly t2m for BC
@@ -125,44 +117,30 @@ def main(years):
         # resample labels: '1D' → daily, '1MS' → month start
         daily_max = hourly.resample(valid_time="1D").max()
         daily_min = hourly.resample(valid_time="1D").min()
-        monthly_tmax = daily_max.resample(valid_time="1MS").mean() - 273.15
-        monthly_tmin = daily_min.resample(valid_time="1MS").mean() - 273.15
+        monthly_tmax_lazy = daily_max.resample(valid_time="1MS").mean() - 273.15
+        monthly_tmin_lazy = daily_min.resample(valid_time="1MS").mean() - 273.15
 
-        # Materialize
-        monthly_tmax = monthly_tmax.compute()
-        monthly_tmin = monthly_tmin.compute()
+        monthly_tmax = with_retry(
+            lambda da=monthly_tmax_lazy: da.compute(),
+            what=f"compute tmax {year}",
+        )
+        monthly_tmin = with_retry(
+            lambda da=monthly_tmin_lazy: da.compute(),
+            what=f"compute tmin {year}",
+        )
 
         n_months = monthly_tmax.sizes["valid_time"]
         if n_months != 12:
-            print(f"  WARNING: {year} has {n_months} months, expected 12 — skipping")
+            log(f"  SKIP {year}: got {n_months} months, expected 12")
             continue
 
-        # Name layers Jan..Dec, translate longitude back to -180..180 for GeoTIFF
-        def to_geotiff_raster(da, out_path):
-            da = da.rename({"valid_time": "band"})
-            da = da.assign_coords(band=MONTH_NAMES)
-            # Translate longitude back if needed
-            if float(da.longitude.max()) > 180:
-                new_lon = da.longitude.where(da.longitude <= 180, da.longitude - 360)
-                da = da.assign_coords(longitude=new_lon).sortby("longitude")
-            # rioxarray expects 'x' and 'y' dim names
-            da = da.rename({"longitude": "x", "latitude": "y"})
-            da.rio.write_crs("EPSG:4326", inplace=True)
-            da.rio.to_raster(out_path)
-            # Set per-band descriptions so terra::rast() picks up Jan..Dec names
-            # (required by cd_aggregate() for seasonal grouping)
-            with rasterio.open(out_path, "r+") as dst:
-                dst.descriptions = tuple(MONTH_NAMES)
-
-        import rioxarray  # noqa: F401 — registers `.rio` accessor
-
-        to_geotiff_raster(monthly_tmax, tmax_out)
-        to_geotiff_raster(monthly_tmin, tmin_out)
+        write_geotiff(monthly_tmax, tmax_out)
+        write_geotiff(monthly_tmin, tmin_out)
 
         elapsed = time.time() - t_year
-        print(f"  Wrote {tmax_out.name} and {tmin_out.name} in {elapsed:.1f}s")
+        log(f"  wrote {tmax_out.name} and {tmin_out.name} in {elapsed:.1f}s")
 
-    print(f"[{time.strftime('%H:%M:%S')}] DONE")
+    log("DONE")
 
 
 if __name__ == "__main__":

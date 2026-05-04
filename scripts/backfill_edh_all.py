@@ -41,16 +41,19 @@ Usage:
   uv run scripts/backfill_edh_all.py --year 2000  # single year test
 """
 import argparse
-import os
-import subprocess
-import sys
 import time
 from pathlib import Path
 
 import numpy as np
-import rasterio
-import rioxarray  # noqa: F401 — registers .rio accessor
 import xarray as xr
+
+from _lib import (
+    get_token,
+    log,
+    preflight_single_instance,
+    with_retry,
+    write_geotiff,
+)
 
 # -- Config --------------------------------------------------------------------
 LAT_N, LAT_S = 60.0, 48.0
@@ -61,72 +64,8 @@ YEARS_DEFAULT = range(1950, 2026)
 REPO_ROOT = Path(__file__).resolve().parent.parent
 MONTHLY_DIR = REPO_ROOT / "data" / "backfill" / "monthly"
 
-MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
-               "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-
 
 # -- Helpers -------------------------------------------------------------------
-def preflight_single_instance():
-    """Refuse to start if another backfill_edh_all.py is already running.
-
-    Protects against the CDS-era hammering incident where we had zombie
-    processes stacking up (see #33). Skipped on CI because each GHA run
-    is in a fresh container — no other instances are possible — and the
-    pgrep check has false positives there (uv wrapper, shell ancestors,
-    pgrep's own pre-exec cmdline) that are not worth chasing.
-    """
-    if os.environ.get("GITHUB_ACTIONS") == "true":
-        return
-
-    my_pid = os.getpid()
-    my_ppid = os.getppid()
-    try:
-        out = subprocess.run(
-            ["pgrep", "-f", "backfill_edh_all"],
-            capture_output=True, text=True, check=False,
-        )
-        pids = [int(p) for p in out.stdout.strip().splitlines()
-                if p.strip() and int(p) not in (my_pid, my_ppid)]
-    except (FileNotFoundError, ValueError):
-        pids = []
-    if pids:
-        sys.exit(f"ABORT: another backfill_edh_all is running (pids: {pids}). "
-                 f"Kill them first: kill {' '.join(str(p) for p in pids)}")
-
-
-def with_retry(fn, *, attempts: int = 4, initial_delay: float = 10.0,
-               what: str = "operation"):
-    """Run `fn()` with exponential backoff on transient errors.
-
-    EDH is chunk-based (no job queue), so network blips are the main failure
-    mode. Retry on OSError, ConnectionError, TimeoutError. Let other errors
-    (KeyError, ValueError etc) propagate — those are bugs, not transient.
-    """
-    delay = initial_delay
-    for i in range(1, attempts + 1):
-        try:
-            return fn()
-        except (OSError, ConnectionError, TimeoutError) as e:
-            if i == attempts:
-                raise
-            log(f"  {what} failed (attempt {i}/{attempts}): {type(e).__name__}: {e}. "
-                f"Retrying in {delay:.0f}s...")
-            time.sleep(delay)
-            delay *= 2
-
-
-def get_token() -> str:
-    token = os.environ.get("EDH_TOKEN")
-    if token:
-        return token
-    renviron = Path.home() / ".Renviron"
-    if renviron.exists():
-        for line in renviron.read_text().splitlines():
-            if line.strip().startswith("EDH_TOKEN="):
-                return line.strip().split("=", 1)[1]
-    sys.exit("EDH_TOKEN not found in env or ~/.Renviron")
-
-
 def open_zarr(url_path: str, token: str) -> xr.Dataset:
     url = f"https://edh:{token}@data.earthdatahub.destine.eu/{url_path}"
     return xr.open_dataset(url, chunks={}, engine="zarr")
@@ -148,38 +87,6 @@ def bc_slice(ds: xr.Dataset, start: str, end: str) -> dict:
 def tetens_es(t_c):
     """Saturation vapour pressure (hPa) given temperature in °C (Tetens)."""
     return 6.1078 * np.exp(17.27 * t_c / (t_c + 237.3))
-
-
-def write_geotiff(da: xr.DataArray, out_path: Path):
-    """Write an xarray DataArray with (valid_time, latitude, longitude) dims
-    as a multi-band EPSG:4326 GeoTIFF with Jan..Dec band descriptions.
-
-    Atomic: writes to a .tmp suffix then renames, so a killed run never
-    leaves a truncated file that passes the existence check on restart.
-    """
-    da = da.rename({"valid_time": "band"}).assign_coords(band=MONTH_NAMES)
-    # Translate longitude back to -180..180 if needed
-    if float(da.longitude.max()) > 180:
-        new_lon = da.longitude.where(da.longitude <= 180, da.longitude - 360)
-        da = da.assign_coords(longitude=new_lon).sortby("longitude")
-    da = da.rename({"longitude": "x", "latitude": "y"})
-    da.rio.write_crs("EPSG:4326", inplace=True)
-
-    tmp_path = out_path.with_suffix(out_path.suffix + ".tmp")
-    try:
-        da.rio.to_raster(tmp_path, driver="GTiff")
-        # Per-band descriptions so terra::rast() picks up Jan..Dec names
-        with rasterio.open(tmp_path, "r+") as dst:
-            dst.descriptions = tuple(MONTH_NAMES)
-        os.replace(tmp_path, out_path)
-    except Exception:
-        if tmp_path.exists():
-            tmp_path.unlink()
-        raise
-
-
-def log(msg: str):
-    print(f"[{time.strftime('%H:%M:%S')}] {msg}", flush=True)
 
 
 # -- Per-year processing -------------------------------------------------------
@@ -293,7 +200,7 @@ def process_year(year: int, hourly_ds: xr.Dataset, daily_ds: xr.Dataset):
 
 # -- Main ----------------------------------------------------------------------
 def main(years):
-    preflight_single_instance()
+    preflight_single_instance("backfill_edh_all")
     MONTHLY_DIR.mkdir(parents=True, exist_ok=True)
     token = get_token()
 
