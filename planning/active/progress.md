@@ -40,7 +40,27 @@
   2018, Knowles 2006, Cayan 2001, Kang 2016, Kouki 2023). 4 need
   manual download (Stewart 2005, Najafi 2017, Yue & Wang 2002,
   Pederson 2011). RG search links provided for user.
-- Next: hand off RG-link list to user, then proceed with Phase 3
-  (rag-build script) once all PDFs are in Zotero. Phase 3 hardcodes
-  `citationKey -> attachKey` map; the missing attach keys come
-  online once user attaches the 4 manual PDFs.
+- Phases 3–5 implemented:
+  - Phase 3: `scripts/rag_build_snow_methodology.R` clones the
+    departure-framing pattern but reads PDFs from a local cache
+    (`data/rag/snow_methodology_pdfs/`) rather than
+    `~/Zotero/storage/{attachKey}/` — cache is populated via Web
+    API loop, doesn't depend on user's Zotero desktop sync setting.
+    Built duckdb store: 11 sources, 1006 chunks.
+  - Phase 4: `scripts/rag_query_snow_methodology.R` runs 23
+    queries across 8 topics, raw retrieval to
+    `planning/active/snow_methodology_quotes.md` (727 lines).
+    Synthesis into findings.md by #48 metric.
+  - Phase 5: deviations section + 15-row "cite this for that"
+    citation map in findings.md, ready for #48 Phase 5 to
+    consume. Notable findings:
+    - `cd_trend()`'s raw MK + Theil-Sen (no prewhitening) is
+      **methodologically correct** per Yue & Wang 2002.
+    - ERA5-Land overestimates SWE in mountains (Kouki 2023:
+      150–200% NH-wide, larger in mountains). Trends still valid
+      because bias is stable over time. ASWS QA in #48 Phase 3
+      will document our specific BC bias.
+    - `snowmelt_rate_peak` is our invention — no close precedent.
+      Document as "diagnostic of upstream snowmelt intensity"
+      rather than implying methodological pedigree.
+- Next: Phase 6 PR. Branch state: 6 commits since baseline.

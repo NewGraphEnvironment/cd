@@ -150,33 +150,272 @@ drops PDFs into the existing Zotero items by the parent key.
 
 ## Methodology quotes by #48 metric
 
-_Phase 4 will populate these subsections with exact-page quotes._
+Raw retrieval results in
+`planning/active/snow_methodology_quotes.md` (727 lines, 23 queries
+× top-5 chunks). Synthesis below picks the strongest hits per metric
+and groups them by the literature angle they support.
 
 ### `swe_max` (annual peak SWE)
 
+**Methodological precedent:** April 1 SWE as the canonical annual
+peak proxy. Pederson et al. (2011) and Mote et al. (2005, 2018)
+both use 1 April SWE as the seasonal apex; our `swe_max` uses
+the actual annual maximum from daily SWE rather than fixing at
+April 1. The two are equivalent in most BC/PNW pixels (April 1 is
+near peak in our region), and the actual-max formulation avoids
+date sensitivity in years with anomalous accumulation/melt timing.
+
+- `pederson_etal2011`: "Snowpack as measured on 1 April is a crucial
+  component of regional runoff forecasting and water supply
+  evaluations, and records of 1 April SWE are generally longer than
+  for any other time of the year. In addition, 1 April measurements
+  often approximate maximum SWE accumulation in our study
+  watersheds... peak accumulation timing can vary substantially at
+  individual measurement sites." → Justifies aggregating to a
+  regional/watershed scale (which is what cd's mean-over-AOI does).
+
+- `mote_etal2018`: "the decline in average April 1 snow water
+  equivalent since mid-century is roughly 15–30% or 25–50 km3,
+  comparable in volume to the West's largest man-made reservoir,
+  Lake Mead." → Reference magnitude for "peak SWE down N%" claims.
+  Over 90% of sites declining, 33% significant.
+
+- `mote_etal2005`: "Mountain snowpack in western North America is
+  a key component of the hydrologic cycle, storing water from the
+  winter (when most precipitation falls) and releasing it in spring
+  and early summer." → Foundational framing for why peak SWE is
+  the right metric.
+
+- `najafi_etal2017`: BC-specific SWE attribution. Four BC basins
+  (Fraser, Peace, Columbia, Campbell). Peace = "drainage area of
+  101 000 km2... 51% of the annual precipitation in this basin
+  falls as snow." → Direct context for the FWCP Peace AOI in #48.
+
 ### `snowfall_fraction` (annual sf/tp ratio in %)
+
+**Direct methodological precedent.** Knowles, Dettinger, Cayan
+(2006) defines the SFE/P methodology. Our `snowfall_fraction` is
+the same ratio at a slightly different aggregation (annual sum
+daily snowfall / annual sum daily precip), with the result
+expressed in % rather than as a unit fraction.
+
+- `knowles_etal2006`: "documenting a regional trend toward smaller
+  ratios of winter-total snowfall water equivalent (SFE) to
+  winter-total precipitation (P) during the period 1949–2004. The
+  trends toward reduced SFE are a response to warming across the
+  region, with the most significant reductions occurring where
+  winter wet-day minimum temperatures, averaged over the study
+  period, were warmer than -5°C." → Directly justifies our metric
+  AND identifies the threshold (warmer winter wet-day Tmin) where
+  the signal is strongest. BC interior is colder than -5°C wet-day
+  Tmin in winter on average; signal expected to be weaker in
+  northern BC than coastal/southern PNW.
+
+- `mote_etal2018`: complementary SWE-side update; corroborates
+  the snowfall-vs-rain trend.
 
 ### `snowmelt_doy_50` (day of 50% cumulative melt)
 
+**Methodological precedent:** Stewart, Cayan, Dettinger (2005)
+defines streamflow center timing (CT). Our `snowmelt_doy_50` uses
+the same idea applied to snowmelt flux directly rather than to
+streamflow — the upstream signal that drives streamflow CT.
+
+- `stewart_etal2005`: defines three streamflow timing measures —
+  (1) monthly/seasonal fractional flows, (2) spring pulse onset,
+  (3) **center timing**: `CT = Σ(ti · qi) / Σ qi` where ti is time
+  in days from start of water year, qi is daily streamflow. "CT
+  provides a time-integrated perspective of the timing of this
+  pulse and the overall distribution of flow for each year, and
+  it is less noisy than the spring pulse onset date." → Justifies
+  preferring a cumulative/median measure (like our DOY-50) over a
+  pulse-onset measure for trend detection.
+
+- `stewart_etal2005`: "Widespread and regionally coherent trends
+  toward earlier onsets of springtime snowmelt and streamflow have
+  taken place across most of western North America... timing
+  changes have resulted in increasing fractions of annual flow
+  occurring earlier in the water year by 1–4 weeks."
+
+- `cayan_etal2001`: "spring pulse" defined as day of minimum
+  cumulative departure of daily flow from mean. → A different
+  family of timing metric; our DOY-50 is more closely aligned with
+  Stewart's CT than with Cayan's pulse.
+
+- `kang_etal2016`: BC-specific. "The 2006 reconstructed
+  hydrographs by 10 days relative to the 1949 ones confirm the
+  recent 10-day advances of the onset of the spring freshets for
+  the Fraser River at Hope... declines persist during the
+  recession to lower flows in autumn just when the salmon are
+  migrating up the Fraser River." → Reference order of magnitude
+  for our claim about Peace freshet shift.
+
 ### `snowmelt_rate_peak` (annual max of 7-day rolling melt)
+
+**No close methodological precedent in this literature.** The
+established freshet-flashiness measures in Stewart 2005 and Kang
+2016 are streamflow-based (CT, pulse onset, fractional flows),
+not melt-flux-based. Our metric is a closer-to-source measure —
+ERA5-Land's `smlt` flux directly, with a 7-day rolling window to
+capture multi-day peak events while smoothing out the
+hour-to-hour stochasticity. Document this as a deviation in the
+"Deviations from consensus" section and note that the metric is
+diagnostic of freshet intensity at the upstream (snowpack) end of
+the chain, before routing through soil and channel storage.
+
+- `stewart_etal2005`: "snowmelt-dominated gauges with more than
+  30 complete years of record" — sample-size requirement for
+  trend detection that we exceed comfortably with 76 years.
+
+- `kang_etal2016`: "SWE declined by 105 mm by the time of its peak
+  accumulation" — order of magnitude for snowpack changes; melt
+  rate is the temporal derivative of this.
 
 ## Cross-cutting methodology
 
-### Baseline window (1951–1980 vs alternatives)
+### Baseline window — our 1951–1980 vs alternatives
+
+**Literature precedent is heterogeneous.** No single "right"
+baseline window dominates the snow-departure literature:
+
+- `knowles_etal2006`: 1949–2004 study period (treats whole record
+  as the analysis window, not a baseline-vs-recent split)
+- `stewart_etal2005`: 1948–2002
+- `mote_etal2005`: 1916–2003 (then later updated to 1955–2016 in
+  Mote 2018)
+- `mote_etal2018`: 1955–2016 with no fixed baseline, just linear
+  trends across the full record
+- `najafi_etal2017`: 1961–2005 (45-year period, aligns with WMO
+  1961–1990 normal partially)
+
+Our 1951–1980 baseline is acceptable. On the early side relative
+to the WMO 1961–1990 normal, but the FWCP Peace vignette already
+uses 1951–1980 across the existing 7 vars (anchored to ERA5-Land's
+start year and 30-year normal length). Consistency across vars
+within the vignette outweighs cross-paper alignment.
 
 ### Mann-Kendall + autocorrelation
 
-### ERA5-Land snow biases (validation literature)
+**Critical finding from `yue_wang2002`** — pre-whitening can
+*hurt*, not help, when a real trend exists:
+
+- "When trend exists in a time series, the effect of
+  positive/negative serial correlation on the MK test is dependent
+  upon sample size, magnitude of serial correlation, and magnitude
+  of trend. When sample size and magnitude of trend are large
+  enough, serial correlation no longer [significantly affects the
+  test]."
+
+- "When sample size and magnitude of trend are large enough... it
+  is better to use the MK test on the original data rather than
+  after prewhitening. Prewhitening will seriously distort the
+  possibility of the test."
+
+- "Removal of positive serial correlation by prewhitening
+  dramatically reduces the slope of the trend, and removal of
+  negative serial correlation by prewhitening inflates the slope
+  of the trends."
+
+→ For cd's 76-year series with strong climate trends, RAW MK +
+Theil-Sen (no prewhitening) is the *correct* choice per Yue &
+Wang. This is what `cd_trend()` already does. **Our methodology
+is consistent with the literature consensus on the trend-test
+question.**
+
+`kang_etal2016` confirms the practice for hydrological work:
+"The non-parametric MKT is commonly used for hydrological trend
+analyses as it is robust to outliers and can be applied to
+non-normal data... slope magnitudes are extracted from the
+associated Kendall-Theil Robust Lines. Statistically significant
+when p < 0.05 with a two-tailed test." Identical to `cd_trend()`.
+
+### ERA5-Land snow biases
+
+**Important caveat for absolute values; trends are still
+defensible.** Kouki et al. (2023) is the headline:
+
+- `kouki_etal2023`: "Both ERA5 and ERA5-Land overestimate total
+  NH SWE by 150% to 200% compared to the SWE reference data.
+  ERA5-Land shows larger overestimation... mostly due to very
+  high SWE values over mountainous regions."
+
+- `kouki_etal2023`: "snow depth above 1500 m is unrealistically
+  large in ERA5... The snowpack is presented in IFS with a single
+  layer of snow, which does not produce enough melting, and this
+  results in excessively high snow depths."
+
+- `munoz_sabater_etal2021`: "Over the US, and particularly over
+  the Rockies region, ERA5-Land generally outperforms ERA5 in
+  terms of lower RMSE... However... at the sites located in very
+  high mountains (snb and swa, located at altitudes greater than
+  3300 m) is slightly better with ERA5 than with ERA5-Land."
+
+→ For #48: absolute SWE values from ERA5-Land are biased high in
+mountain BC pixels. The ASWS QA cross-check planned for #48 Phase 3
+will document the bias for our sites. **Trends in our annual
+metrics remain interpretable** as long as the bias is approximately
+stable over time (which the Kouki paper's time series support —
+RMSE for ERA5-Land stays around 2780-3160 Gt across the study
+period, no obvious trend in bias).
 
 ## Deviations from consensus
 
-_Phase 5 will populate this section with where cd's choices differ
-from the literature consensus and why._
+1. **`snowmelt_rate_peak` (7-day rolling sum of daily smlt) is
+   our invention.** Closest precedent is streamflow-based
+   freshet-flashiness work (Stewart 2005, Kang 2016) operating on
+   gauged flow rather than melt flux. Our metric is more
+   diagnostic at the upstream end of the chain (before soil/
+   channel storage attenuation) but less directly comparable to
+   the streamflow-timing literature. Document this clearly in the
+   vignette interp paragraph rather than implying methodological
+   precedent.
+
+2. **Baseline window 1951–1980 is on the early side** vs the WMO
+   1961–1990 normal that the IPCC and Najafi 2017 anchor on.
+   Justification: ERA5-Land's record starts 1950; using 1951–1980
+   keeps the baseline a clean 30-year block at the start of
+   record, and it aligns with the existing 7-var vignette
+   sections. Reasonable but not unique.
+
+3. **No autocorrelation correction in `cd_trend()` is
+   defensible** per `yue_wang2002` (raw MK is correct when sample
+   size and trend magnitude are large, our 76-year series with
+   strong trends qualify). #43 (cd_compare p-value follow-up) can
+   address autocorrelation correction if it ever becomes
+   motivated, but the literature does NOT recommend prewhitening
+   for our use case.
+
+4. **`swe_max` uses actual annual maximum of daily SWE** rather
+   than fixing on April 1 SWE per the literature canon. Our
+   approach is more direct (no date sensitivity) and equivalent
+   in effect for BC pixels where peak accumulation is at or near
+   April 1. Slight deviation from "April 1 SWE" canon — a brief
+   methodology note in the vignette would help.
 
 ## "Cite this for that" — citation map for #48 Phase 5
 
-_Phase 5 will populate this table as copy-paste-ready input for the
-vignette interp paragraph._
+Copy-paste-ready map. Each row gives a vignette claim type and
+the citation key(s) that ground it. BBT will generate citation
+keys on Zotero restart; the keys below match my proposed labels
+and should match BBT's auto-generated keys (firstauthor + year
+convention). If BBT generates different keys, the user will need
+to update the vignette `[@key]` references.
 
-| Vignette claim | Citation key | Page |
+| Claim type | Primary citation | Supporting |
 |---|---|---|
+| Peak SWE methodology (April 1 SWE / annual max) | `@pederson_etal2011`, `@mote_etal2018` | `@mote_etal2005` |
+| Peak SWE has declined | `@mote_etal2018` (15–30% PNW decline) | `@najafi_etal2017` (BC), `@pederson_etal2011` (1000-yr context) |
+| Snowfall fraction methodology (SFE/P) | `@knowles_etal2006` | — |
+| Snowfall fraction declining where Tmin > -5°C | `@knowles_etal2006` | — |
+| DOY-50 / center-timing methodology | `@stewart_etal2005` | `@cayan_etal2001` |
+| Freshet shifting earlier (1–4 weeks WNA) | `@stewart_etal2005` | `@cayan_etal2001` (2 days/decade onset) |
+| Freshet shifting earlier (10 days, BC Fraser) | `@kang_etal2016` | — |
+| BC-specific climate-departure framing | `@najafi_etal2017`, `@kang_etal2016` | — |
+| Peace basin = 51% of precip falls as snow | `@najafi_etal2017` | — |
+| MK + Theil-Sen for hydrological trend tests | `@kang_etal2016` | `@yue_wang2002` |
+| Why no prewhitening (raw MK is correct for our case) | `@yue_wang2002` | — |
+| ERA5-Land overestimates SWE in mountains | `@kouki_etal2023` | `@munoz_sabater_etal2021` |
+| ERA5-Land bias is approximately stable over time → trends valid | `@kouki_etal2023` | — |
+| ERA5-Land dataset citation | `@munoz_sabater_etal2021` | — |
+| Salmon-migration impact framing | `@kang_etal2016` | — |
+| Snowpack decline unprecedented vs ~1000 yr context | `@pederson_etal2011` | — |

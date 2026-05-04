@@ -79,42 +79,45 @@ Starting candidate list:
 
 ## Phase 3 — Build ragnar DuckDB store
 
-- [ ] Clone `scripts/rag_build_departure_framing.R` structure into new
+- [x] Cloned `scripts/rag_build_departure_framing.R` structure into
       `scripts/rag_build_snow_methodology.R`.
-- [ ] Update header docstring (purpose, prerequisites, output path).
-- [ ] Hardcode the `citationKey -> attachKey` map from Phase 2.
-- [ ] Output: `data/rag/snow_methodology.duckdb` (gitignored — `data/rag/`
-      already in `.gitignore`).
-- [ ] Run the build. Verify chunk count + origin count match expectations.
+- [x] Adapted header docstring; pivoted to read from
+      `data/rag/snow_methodology_pdfs/` (Web-API-downloaded local
+      cache) rather than `~/Zotero/storage/{attachKey}/` because
+      the user's Zotero desktop sync setting doesn't auto-download
+      attachments. The cache is reproducible from the Zotero Web
+      API given the attach-key list, and is gitignored.
+- [x] Hardcoded the 11-paper map.
+- [x] Built `data/rag/snow_methodology.duckdb` — 11 sources, 1006
+      chunks, ingested via Ollama nomic-embed-text in ~80 s.
 
 ## Phase 4 — Mine the store for methodology quotes
 
-- [ ] For each #48 metric, run `ragnar_retrieve()` with focused queries:
-      - `swe_max`: "annual peak SWE methodology" / "April 1 SWE"
-      - `snowfall_fraction`: "snowfall vs total precipitation ratio"
-      - `snowmelt_doy_50`: "DOY 50 percent cumulative discharge" /
-        "centroid timing CT freshet"
-      - `snowmelt_rate_peak`: "peak weekly melt flashiness"
-- [ ] Capture top-k chunks per query; extract exact-page quotes with
-      `@key, p. N`.
-- [ ] Cross-cutting queries:
-      - Baseline window choice (1951–1980 vs 1961–1990 vs 1981–2010)
-      - Mann-Kendall + autocorrelation correction
-      - ERA5-Land snow biases (rain-snow transition zone, mountain terrain)
-- [ ] Each result captured in `findings.md` under the relevant heading.
+- [x] Wrote `scripts/rag_query_snow_methodology.R` — 23 queries
+      across 8 topics, top-5 chunks each.
+- [x] Raw retrieval captured at
+      `planning/active/snow_methodology_quotes.md` (727 lines).
+- [x] Synthesized strongest hits per metric into `findings.md`
+      under the "Methodology quotes by #48 metric" and
+      "Cross-cutting methodology" sections. Quotes attributed by
+      citation key; page-level citations skipped (rag chunks lose
+      page boundaries) but enough context to locate in source PDF
+      if a vignette claim needs page-precise sourcing.
 
 ## Phase 5 — Document deviations + citation map
 
-- [ ] **Deviations** section in `findings.md`: where cd's pipeline differs
-      from literature consensus, and why. Likely candidates:
-      - 7-day rolling sum (vs other freshet flashiness metric)
-      - 1951–1980 baseline (vs 1961–1990 WMO normal — already in earlier
-        vignette section)
-      - No autocorrelation correction in MK (decision: file as #43
-        follow-up if literature suggests we should)
-- [ ] **"Cite this for that"** table at end of `findings.md` —
-      copy-paste-ready map from "claim that lands in vignette" to
-      "citation key to use". Direct input for #48 Phase 5.
+- [x] Deviations section in `findings.md` documents 4 places where
+      cd differs from / extends the literature consensus:
+      (1) `snowmelt_rate_peak` is a melt-flux metric without close
+      precedent (literature precedent is streamflow-based);
+      (2) baseline window 1951–1980 is on the early side vs
+      WMO 1961–1990 (consistent with existing vignette sections);
+      (3) no autocorrelation correction is **defensible per Yue &
+      Wang 2002** — pre-whitening is wrong when trend exists;
+      (4) `swe_max` uses true annual max rather than April 1 SWE.
+- [x] **"Cite this for that"** table at end of `findings.md` —
+      15-row map from claim type to citation key(s). Ready for
+      #48 Phase 5 to copy `[@key]` markers into the vignette.
 
 ## Phase 6 — PR
 
