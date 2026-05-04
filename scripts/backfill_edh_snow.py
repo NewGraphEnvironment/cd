@@ -19,7 +19,7 @@ EDH backfill for snow-related variables over BC (1950-2025).
 Produces two layers of outputs from a single hourly fetch per year:
 
 Monthly natives (`data/backfill/monthly/{var}_{year}.tif`, 12 bands):
-  snow_depth_YYYY.tif    mm SWE  monthly mean of daily sde * rsn
+  swe_YYYY.tif    mm SWE  monthly mean of daily sde * rsn
   snowfall_YYYY.tif      mm      monthly sum  of daily sf (accum-handled)
   snowmelt_YYYY.tif      mm      monthly sum  of daily smlt (accum-handled)
   snow_cover_YYYY.tif    %       monthly mean of daily snowc (native ERA5-Land percent)
@@ -81,7 +81,7 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 MONTHLY_DIR = REPO_ROOT / "data" / "backfill" / "monthly"
 ANNUAL_DIR = REPO_ROOT / "data" / "backfill" / "annual"
 
-MONTHLY_VARS = ("snow_depth", "snowfall", "snowmelt", "snow_cover")
+MONTHLY_VARS = ("swe", "snowfall", "snowmelt", "snow_cover")
 ANNUAL_VARS = ("swe_max", "snowfall_fraction", "snowmelt_doy_50",
                "snowmelt_rate_peak")
 
@@ -160,7 +160,7 @@ def process_year(year: int, hourly_ds: xr.Dataset, daily_ds: xr.Dataset) -> None
 
     # Which source variables do we need?
     needed_hourly = set()
-    if any(v in needed for v in ("snow_depth", "swe_max")):
+    if any(v in needed for v in ("swe", "swe_max")):
         needed_hourly.update({"sde", "rsn"})
     if any(v in needed for v in ("snowfall", "snowfall_fraction")):
         needed_hourly.add("sf")
@@ -205,15 +205,15 @@ def process_year(year: int, hourly_ds: xr.Dataset, daily_ds: xr.Dataset) -> None
             log(f"  WARN {v}: got {n_days} days, expected 365-366 (incomplete year?)")
 
     # ---------------- monthly natives ----------------
-    if "snow_depth" in needed:
+    if "swe" in needed:
         # SWE in mm: sde (m) * rsn (kg/m^3) = kg/m^2 = mm of water
         daily_swe = daily_vars["sde"] * daily_vars["rsn"]
         monthly = daily_swe.resample(valid_time="1MS").mean()
         if monthly.sizes["valid_time"] == 12:
-            write_geotiff(monthly, out["snow_depth"])
-            log(f"  wrote {out['snow_depth'].name}")
+            write_geotiff(monthly, out["swe"])
+            log(f"  wrote {out['swe'].name}")
         else:
-            log(f"  SKIP snow_depth: got {monthly.sizes['valid_time']} months")
+            log(f"  SKIP swe: got {monthly.sizes['valid_time']} months")
 
     if "snowfall" in needed:
         # daily sf in m water-equiv -> monthly sum * 1000 = mm/month

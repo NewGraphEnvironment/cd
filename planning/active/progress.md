@@ -31,5 +31,27 @@
   `snowfall_fraction` to also output percent for consistency. Both
   use `pct_point_diff` anomaly type. Re-ran snowfall_fraction
   output (61s, idempotent skip on the other 7).
-- Next: Phase 2 — full 76-year backfill, then Stage 3 R aggregation
-  and S3 push.
+- Phase 2 (full backfill) running in background as
+  `bpemvpjx6` → restarted as `bpemvpjx6` (third attempt — first two
+  aborted because the prior background task's wrapper shell hadn't
+  been fully reaped, the pgrep guard worked exactly as designed,
+  switched from `tee | log` to `> log 2>&1` to avoid the
+  wrapper-stays-alive race). At year 1974 of 76, ~2.4 hours
+  remaining.
+- Phase 4 implemented in parallel while Phase 2 runs:
+  - Renamed `snow_depth` → `swe` in registry and script. The value
+    is `sde × rsn` = mm SWE, not vertical snow depth; the original
+    name was a mismatch caught during registry design.
+  - `cd_variables()` now has 15 vars (7 existing + 8 new). New
+    `pct_point_diff` anomaly type for `snow_cover` and
+    `snowfall_fraction` (both already in % units, departure is in
+    percentage points).
+  - `cd_anomaly()` adds the `pct_point_diff` branch via `%in%`
+    combination with `absolute` (same formula, distinct unit
+    semantics for downstream display).
+  - Tests: 166 PASS, 0 FAIL. New cases for pct_point_diff
+    arithmetic and cap_pct non-application.
+  - Post-backfill: `mv snow_depth_*.tif → swe_*.tif` (~76 files).
+- Next: Phase 5 vignette extension (precompute snow time series for
+  Peace AOI, add Snowpack section). Can prep against the 4 already-
+  fetched sample years until the backfill completes.

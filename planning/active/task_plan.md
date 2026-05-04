@@ -96,19 +96,31 @@ Target release: **v0.2.0** (minor bump — new variables and a new
 
 ## Phase 4 — Consumer: registry + anomaly branch + tests
 
-- [ ] Add 8 rows to `cd_variables()`:
-      - `snow_depth`, `snowfall`, `snowmelt`: monthly, `pct_normal`
-      - `snow_cover`: monthly, **new** `pct_point_diff`
+- [x] Add 8 rows to `cd_variables()`:
+      - `swe`, `snowfall`, `snowmelt`: monthly, `pct_normal` (renamed
+        `snow_depth` → `swe` since the value is mm SWE, not vertical
+        snow depth — `sde × rsn` = kg/m² = mm of water)
+      - `snow_cover`: monthly, **new** `pct_point_diff` (already in %)
       - `swe_max`: annual, `absolute` (mm)
-      - `snowfall_fraction`: annual, `pct_point_diff`
-      - `snowmelt_doy_50`: annual, `absolute` (days)
-      - `snowmelt_rate_peak`: annual, `absolute` (mm/week)
-- [ ] Add `pct_point_diff` branch to `cd_anomaly()`'s `case_when`:
-      `(value - baseline_mean) * 100`. Document semantics in roxygen.
-- [ ] Update `test-cd_variables.R` count assertion 7 → 15.
-- [ ] Add `test-cd_anomaly.R` case verifying `pct_point_diff`
-      arithmetic on a synthetic two-year toy series.
-- [ ] `devtools::test()` clean.
+      - `snowfall_fraction`: annual, `pct_point_diff` (already in %)
+      - `snowmelt_doy_50`: annual, `absolute` (day)
+      - `snowmelt_rate_peak`: annual, `absolute` (mm/wk)
+- [x] Add `pct_point_diff` branch to `cd_anomaly()`'s `case_when`.
+      Formula identical to `absolute` (`value - baseline_mean`) — the
+      distinction is unit semantics for downstream display. Combined
+      with `absolute` via `%in%`. `cap_pct` does NOT apply to
+      `pct_point_diff` (covered by new test).
+- [x] Update `test-cd_variables.R` count assertion 7 → 15. Added two
+      new tests for `pct_point_diff` membership.
+- [x] Update `test-cd_fetch.R` pct_normal list — now includes
+      `swe`, `snowfall`, `snowmelt` alongside `prcp`, `soil_moisture`.
+- [x] Add two `test-cd_anomaly.R` cases: pct_point_diff arithmetic
+      and confirmation that `cap_pct` is NOT applied to
+      `pct_point_diff`.
+- [x] `devtools::test()` clean (166 PASS, 0 FAIL).
+- [ ] After backfill completes, `mv data/backfill/monthly/snow_depth_*.tif
+      data/backfill/monthly/swe_*.tif` (the running fetch is using
+      pre-rename code; reload is unnecessary, just rename outputs).
 
 ## Phase 5 — Vignette: new "Snowpack" section
 

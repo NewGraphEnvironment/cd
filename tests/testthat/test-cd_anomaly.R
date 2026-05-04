@@ -42,6 +42,38 @@ test_that("cd_anomaly caps pct_normal at +/- cap_pct", {
   expect_equal(ano$anomaly[2], -200)
 })
 
+test_that("cd_anomaly computes pct_point_diff anomalies", {
+  # snowfall_fraction is already in % so the anomaly is value - baseline
+  # interpreted as percentage points (not percent of normal).
+  ts <- tibble::tibble(
+    variable = rep("snowfall_fraction", 3),
+    period = rep("annual", 3),
+    year = 1951:1953,
+    value = c(30, 25, 20)
+  )
+  bl <- tibble::tibble(
+    variable = "snowfall_fraction", period = "annual", baseline_mean = 30
+  )
+  ano <- cd_anomaly(ts, bl)
+
+  expect_equal(ano$anomaly, c(0, -5, -10))
+  expect_equal(unique(ano$anomaly_type), "pct_point_diff")
+  expect_equal(unique(ano$unit), "%")
+})
+
+test_that("cd_anomaly does not apply cap_pct to pct_point_diff", {
+  # An extreme departure (e.g. snow_cover dropping from 80% to 5%) should
+  # show -75 percentage points, not get clamped at -200 like pct_normal.
+  ts <- tibble::tibble(
+    variable = "snow_cover", period = "annual", year = 2025, value = 5
+  )
+  bl <- tibble::tibble(
+    variable = "snow_cover", period = "annual", baseline_mean = 80
+  )
+  ano <- cd_anomaly(ts, bl, cap_pct = 50)
+  expect_equal(ano$anomaly, -75)
+})
+
 test_that("cd_anomaly handles multiple variables", {
   ts <- tibble::tibble(
     variable = c(rep("tmean", 3), rep("prcp", 3)),
