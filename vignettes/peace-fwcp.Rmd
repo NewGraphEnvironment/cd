@@ -3,6 +3,8 @@ title: "Climate Departure for the FWCP Peace Region"
 output:
   bookdown::html_document2:
     number_sections: false
+bibliography: references.bib
+link-citations: true
 vignette: >
   %\VignetteIndexEntry{Climate Departure for the FWCP Peace Region}
   %\VignetteEngine{knitr::rmarkdown}
@@ -283,6 +285,171 @@ ggplot(dtr, aes(x = year, y = dtr)) +
   theme_minimal(base_size = 12)
 ```
 
+## Snowpack
+
+Snowpack is the hinge of BC hydrology: winter precipitation falls as
+snow, accumulates on the ground, and releases as meltwater across
+spring and summer. That seasonal storage is the difference between a
+late-summer creek that still flows and one that doesn't. It also sets
+the timing of the spring freshet — the annual flood pulse that
+salmonids time their up-river migrations to. Cordillera-wide,
+snowpack has been declining for decades [@mote_etal2018Dramaticdeclines;
+@pederson_etal2011UnusualNature]. For four BC river basins (Fraser,
+Peace, Columbia, Campbell), Najafi et al. [-@najafi_etal2017AttributionObserved]
+attribute observed spring SWE decline to anthropogenic forcing using
+formal detection-attribution. For the Fraser specifically, Kang et al.
+[-@kang_etal2016ImpactsRapidly] document a ~10-day advance of the
+spring freshet over 1949-2006, with declining summer flows during the
+salmon migration window.
+
+**For the FWCP Peace Region, the snowpack signal in our data is
+unambiguous and concentrated in the warm shoulders of the year.**
+Annual snow water equivalent (SWE) declined ~10% (135 → 122 mm),
+but the seasonal breakdown is sharper: **summer SWE collapsed by
+75%** (21.5 → 5.3 mm) and **spring snowmelt rose 37%** (212 → 290 mm)
+as the freshet shifted earlier into the calendar. Total annual
+snowfall barely changed (-6%) — the SWE decline is mostly about
+warming removing snow earlier, not less snow falling.
+
+Two methodological notes for readers used to the snow-trend literature.
+ERA5-Land overestimates SWE in mountain terrain by 150-200%
+[@kouki_etal2023Evaluationsnow], so the absolute values below are biased
+high; the bias is approximately stable over time, so the trends are
+still defensible. The trend tests below use raw Mann-Kendall plus
+Theil-Sen — no pre-whitening — which is the methodologically correct
+choice for our 76-year series with strong climate trends per Yue and
+Wang [-@yue_wang2002Applicabilityprewhitening] (pre-whitening
+underestimates slope when a real trend exists).
+
+### Seasonal snowpack curve
+
+The four monthly-native snow variables — SWE, snowfall, snowmelt, and
+snow cover — show *when* snow accumulates and melts. Aggregated to
+the four standard meteorological seasons (DJF, MAM, JJA, SON), the
+table below compares the recent decade (2015-2025) against the
+pre-warming reference (1951-1980) directly. The headline numbers
+above (summer SWE collapse, spring snowmelt rise) are in the
+**summer** and **spring** rows.
+
+```{r snow-seasonal-table}
+snow_monthly <- c("swe", "snowfall", "snowmelt", "snow_cover")
+season_order <- c("winter", "spring", "summer", "fall")
+
+snow_seasonal <- cmp_pct[cmp_pct$variable %in% snow_monthly &
+                          cmp_pct$period %in% season_order, ]
+snow_seasonal$period <- factor(snow_seasonal$period, levels = season_order)
+snow_seasonal$variable <- factor(snow_seasonal$variable, levels = snow_monthly,
+                                  labels = c("SWE (mm)", "Snowfall (mm)",
+                                             "Snowmelt (mm)", "Snow cover (%)"))
+snow_seasonal <- snow_seasonal[order(snow_seasonal$variable, snow_seasonal$period), ]
+snow_seasonal$mean_a <- round(snow_seasonal$mean_a, 1)
+snow_seasonal$mean_b <- round(snow_seasonal$mean_b, 1)
+snow_seasonal$difference <- round(snow_seasonal$difference, 1)
+snow_seasonal <- snow_seasonal[, c("variable", "period", "mean_b",
+                                    "mean_a", "difference")]
+names(snow_seasonal) <- c("Variable", "Season",
+                          "Pre-warming (1951–1980)",
+                          "Recent (2015–2025)", "Δ %")
+
+kableExtra::kable_styling(
+  knitr::kable(snow_seasonal, label = NA,
+    caption = "Seasonal snowpack: recent decade compared to pre-warming reference for the FWCP Peace Region. Summer SWE collapse (-75%) and spring snowmelt rise (+37%) are the headline signals.",
+    row.names = FALSE),
+  bootstrap_options = c("striped", "hover", "condensed")
+)
+```
+
+<br>
+
+### Annual climate-departure signals
+
+Four derived annual scalars capture the climate-departure signals the
+literature treats as headline metrics for snow hydrology: peak
+snowpack [@mote_etal2018Dramaticdeclines; @mote_etal2005DECLININGMOUNTAIN],
+the date of melt midpoint
+[@stewart_etal2005ChangesEarlier; @cayan_etal2001ChangesOnset],
+freshet flashiness, and the
+fraction of precipitation falling as snow [@knowles_etal2006TrendsSnowfall].
+Two notes on our specific implementation. We use the actual annual
+maximum of daily SWE rather than the April-1 SWE canon
+[@pederson_etal2011UnusualNature] — equivalent in effect for BC
+pixels (peak is at or near April 1) but date-insensitive. And our
+freshet-flashiness metric (annual maximum of 7-day rolling daily
+snowmelt) is upstream of the streamflow-based flashiness measures in
+the literature [@stewart_etal2005ChangesEarlier;
+@kang_etal2016ImpactsRapidly] — diagnostic of snowpack-side intensity
+before routing through soil and channel storage.
+
+```{r snow-swe-max, fig.cap="Annual peak snow water equivalent (swe_max) for the FWCP Peace Region. ERA5-Land mm SWE (regional spatial mean)."}
+trn_swe_max <- cd_trend(
+  ano[ano$variable == "swe_max" & ano$period == "annual", ],
+  trend_start = c(1951, 1981)
+)
+cd_plot_timeseries(ano, variable = "swe_max", period = "annual",
+                   trend = trn_swe_max,
+                   title = "Annual peak SWE — Anomaly")
+```
+
+```{r snow-doy-50, fig.cap="Day of year when half the annual snowmelt has accumulated (snowmelt_doy_50). Earlier dates indicate an earlier freshet centroid."}
+trn_doy <- cd_trend(
+  ano[ano$variable == "snowmelt_doy_50" & ano$period == "annual", ],
+  trend_start = c(1951, 1981)
+)
+cd_plot_timeseries(ano, variable = "snowmelt_doy_50", period = "annual",
+                   trend = trn_doy,
+                   title = "Snowmelt 50% DOY — Anomaly")
+```
+
+```{r snow-rate-peak, fig.cap="Annual maximum of 7-day rolling daily snowmelt (snowmelt_rate_peak). Higher values indicate more concentrated freshet pulses."}
+trn_rate <- cd_trend(
+  ano[ano$variable == "snowmelt_rate_peak" & ano$period == "annual", ],
+  trend_start = c(1951, 1981)
+)
+cd_plot_timeseries(ano, variable = "snowmelt_rate_peak", period = "annual",
+                   trend = trn_rate,
+                   title = "Peak weekly melt rate — Anomaly")
+```
+
+```{r snow-fraction, fig.cap="Annual snowfall fraction (snowfall_fraction): the percent of annual precipitation that fell as snow. Anomaly is in percentage points."}
+trn_frac <- cd_trend(
+  ano[ano$variable == "snowfall_fraction" & ano$period == "annual", ],
+  trend_start = c(1951, 1981)
+)
+cd_plot_timeseries(ano, variable = "snowfall_fraction", period = "annual",
+                   trend = trn_frac,
+                   title = "Snowfall fraction — Anomaly")
+```
+
+### What this means for the FWCP Peace Region
+
+Three findings carry the snowpack story for the Peace.
+
+**Snow is leaving the region earlier each year, not falling
+less.** Total annual snowfall is roughly stable (-6%); the snowpack
+decline is dominated by *earlier* melt, not by *less* snow. The
+seasonal data make this concrete: spring snowmelt is up 37% while
+summer snowmelt is down 61% — same total melt, redistributed earlier
+into the year. This matches the broader Pacific-Northwest signal
+documented since Mote et al. [-@mote_etal2005DECLININGMOUNTAIN].
+
+**The freshet is shifting into spring.** Spring snowmelt up 37% is
+direct evidence of an earlier freshet centroid — consistent in
+direction and rough magnitude with Stewart et al.'s
+[-@stewart_etal2005ChangesEarlier] 1-4 week earlier streamflow
+timing across western North America, and with the 10-day Fraser
+freshet advance documented by Kang et al.
+[-@kang_etal2016ImpactsRapidly] for a basin whose southern boundary
+is just south of the FWCP Peace Region. For up-river salmon
+migrations, this means lower late-summer flows during the migration
+window — the same impact Kang et al. flag for the Fraser.
+
+**Summer is becoming snow-free.** Summer SWE has collapsed by 75%
+and summer snowmelt is down 61%. The high-elevation snowpack that
+historically lingered into summer no longer does in the recent
+decade. For aquatic ecosystems downstream, this is a loss of late-
+season cold-water input to streams during the warmest part of the
+year.
+
 ## Recent vs Pre-warming
 
 The table below compares two windows directly — the recent decade
@@ -308,10 +475,17 @@ trn_p <- trn[trn$trend_start == 1951, c("variable", "period", "mk_pvalue")]
 names(trn_p)[3] <- "trend_p"
 trn_p$trend_p <- round(trn_p$trend_p, 3)
 
+no_pct_vars <- c(
+  "tmean", "tmax", "tmin",
+  # snow_cover and snowfall_fraction are already in % (pct_point_diff
+  # anomaly type) — pct-of-baseline mixes units. snowmelt_doy_50 is a
+  # day-of-year — pct-change of a date is meaningless.
+  "snow_cover", "snowfall_fraction", "snowmelt_doy_50"
+)
 cmp_combined <- cmp |>
   dplyr::mutate(
     pct_change = ifelse(
-      variable %in% c("tmean", "tmax", "tmin"),
+      variable %in% no_pct_vars,
       NA_real_,
       round(100 * (mean_a - mean_b) / mean_b, 1)
     ),

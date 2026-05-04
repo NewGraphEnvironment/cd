@@ -76,3 +76,39 @@
 - Next: `/planning-init 53` to enter plan-mode for the lit review,
   parallel-track with #48 Phase 3 (ASWS QA cross-check) and Phase 5
   (vignette).
+
+## Session 2026-05-04 (afternoon, returning to #48 after #53/#54 release)
+
+- Merged main into `48-snow-vars` to pick up v0.1.6 (#52 bulk-fetch
+  safeguards) and v0.1.7 (#54 snow methodology lit review).
+  Clean merge — no conflicts. Got `scripts/_lib.py`,
+  `scripts/rag_*.R`, `planning/archive/2026-05-issue-53-snow-lit-review/`,
+  DESCRIPTION 0.1.7.
+- Phase 5 implemented:
+  - `data-raw/peace_fwcp_vignette_data.R` — extracted
+    `pct_normal_vars` list to include `swe`, `snowfall`, `snowmelt`.
+    Re-ran precompute → `peace_fwcp.rds` 270 KB with all 15 vars
+    flowing through cd_extract → cd_baseline → cd_anomaly →
+    cd_trend → cd_compare.
+  - Bibliography wired: `vignettes/references.bib` generated via
+    `rbbt::bbt_write_bib()` (22 KB, 11 entries from BBT). YAML adds
+    `bibliography: references.bib` + `link-citations: true`.
+  - New `## Snowpack` section in `vignettes/peace-fwcp.Rmd`:
+    intro paragraph with broad context (`mote_etal2018`,
+    `pederson_etal2011`); BC-specific anchors (`najafi_etal2017`,
+    `kang_etal2016`); methodology footnotes (`kouki_etal2023`,
+    `yue_wang2002`); seasonal-curve table; 4 annual time-series
+    plots (`swe_max`, `snowmelt_doy_50`, `snowmelt_rate_peak`,
+    `snowfall_fraction`); 3-finding interpretation paragraph.
+  - "Recent vs Pre-warming" table updated to NA-out Δ % for
+    `snow_cover`, `snowfall_fraction`, `snowmelt_doy_50`.
+  - Render time 8.7 s. 166 tests pass.
+  - Pivoted seasonal-curve from monthly-faceted plot to seasonal
+    table because monthly aggregations aren't on S3 (only annual
+    + 4 seasons are). Seasonal level still tells the story.
+- Headline numbers from precompute: SWE annual -10%, summer SWE
+  -75%, spring snowmelt +37% (freshet earlier), snowfall annual -6%
+  (so SWE decline is mostly warmth removing snow, not less snow
+  falling).
+- Next: Phase 3 ASWS QA cross-check OR Phase 6 GHA + README.
+  Phase 7 PR + v0.2.0 release after.

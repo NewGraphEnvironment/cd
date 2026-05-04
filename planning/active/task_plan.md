@@ -138,29 +138,38 @@ Target release: **v0.2.0** (minor bump — new variables and a new
 
 ## Phase 5 — Vignette: new "Snowpack" section
 
-- [ ] Extend `data-raw/peace_fwcp_vignette_data.R` to precompute
-      regional and per-ecoregion time series for all 8 new snow vars
-      (cd_extract → cd_baseline → cd_anomaly → cd_trend). Save into
-      `inst/vignette-data/peace_fwcp.rds`.
-- [ ] New `## Snowpack` section in `vignettes/peace-fwcp.Rmd` between
-      "Daytime Highs and Overnight Lows" and "Recent vs Pre-warming".
-      Two sub-stories:
-      - **The seasonal curve**: faceted monthly plot of `snow_depth`
-        / `snowfall` / `snowmelt` / `snow_cover` with baseline
-        (1951–1980 monthly mean) overlaid on recent decade
-        (2015–2025). `snow_cover` headline panel: fraction of
-        region with snow, by month.
-      - **The trends**: annual time series for `swe_max`,
-        `snowfall_fraction`, `snowmelt_doy_50`, `snowmelt_rate_peak`
-        with Theil-Sen lines.
-- [ ] Extend "Recent vs Pre-warming" table: parametrize the
-      pct-column logic so the two `pct_point_diff` vars (`snow_cover`,
-      `snowfall_fraction`) get a percentage-point delta column instead
-      of a pct-of-normal column. Include all 8 new vars in the table.
-- [ ] Plain-language interpretation paragraph: 3 findings (likely
-      shorter snow season, lower peak SWE, earlier melt) with
-      magnitudes and statistical significance.
-- [ ] Render local; confirm timing stays under ~30 s.
+- [x] Extended `data-raw/peace_fwcp_vignette_data.R` — extracted
+      `pct_normal_vars` list to include `swe`, `snowfall`, `snowmelt`
+      alongside `prcp`, `soil_moisture` for the regional and
+      per-ecoregion `cd_compare(method = "pct_change")` calls.
+      Re-ran precompute: `peace_fwcp.rds` is now 270 KB (was 160 KB)
+      with all 15 vars.
+- [x] Wired bibliography — added `bibliography: references.bib` and
+      `link-citations: true` to vignette YAML; generated
+      `vignettes/references.bib` (22 KB) via `rbbt::bbt_write_bib()`
+      from BBT keys for the 11 papers in the
+      `NewGraphEnvironment/hydrology` Zotero collection.
+- [x] New `## Snowpack` section in `vignettes/peace-fwcp.Rmd`
+      between "Daytime Highs and Overnight Lows" and "Recent vs
+      Pre-warming". Pivoted seasonal-curve sub-story to a SEASONAL
+      table (winter/spring/summer/fall) instead of a monthly faceted
+      plot — monthly aggregations aren't on S3 (the COG schema is
+      annual + 4 seasons), and the seasonal level still tells the
+      "when does snow accumulate / melt" story cleanly. Annual
+      derived sub-story = 4 `cd_plot_timeseries` panels for
+      `swe_max`, `snowmelt_doy_50`, `snowmelt_rate_peak`,
+      `snowfall_fraction`.
+- [x] Extended "Recent vs Pre-warming" table — added `no_pct_vars`
+      list (`snow_cover`, `snowfall_fraction`, `snowmelt_doy_50`)
+      to NA-out the Δ % column for vars where it's not meaningful.
+      All 8 new vars appear in the table with appropriate columns.
+- [x] Three-finding interpretation paragraph closes the Snowpack
+      section: snow leaving earlier (not falling less), freshet
+      shifting into spring, summers becoming snow-free. Each
+      finding ties to a specific cited paper from the citation
+      map in #53's findings.md.
+- [x] 11 citations resolve in the rendered References section.
+- [x] Render time 8.7 s (well under 30 s target). 166 tests pass.
 
 ## Phase 6 — Monthly GHA + docs
 

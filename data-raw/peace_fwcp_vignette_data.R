@@ -45,8 +45,12 @@ regional_trn <- cd_trend(regional_ano, trend_start = c(1951, 1981))
 regional_cmp <- cd_compare(regional_ts,
                            window_a = 2015:2025, window_b = 1951:1980,
                            method = "mean_diff")
+# pct_change for vars with pct_normal anomaly type (#48 added swe / snowfall /
+# snowmelt to this list; snow_cover and snowfall_fraction are pct_point_diff so
+# mean_diff is the right comparison method for those — already in regional_cmp).
+pct_normal_vars <- c("prcp", "soil_moisture", "swe", "snowfall", "snowmelt")
 regional_cmp_pct <- cd_compare(
-  regional_ts[regional_ts$variable %in% c("prcp", "soil_moisture"), ],
+  regional_ts[regional_ts$variable %in% pct_normal_vars, ],
   window_a = 2015:2025, window_b = 1951:1980, method = "pct_change"
 )
 
@@ -58,7 +62,7 @@ ecoregion_results <- lapply(seq_len(nrow(ecoregions)), function(i) {
   ano <- cd_anomaly(ts, cd_baseline(ts, baseline_years = 1951:1980))
   trn <- cd_trend(ano, trend_start = c(1951, 1981))
   cmp_pct <- cd_compare(
-    ts[ts$variable %in% c("prcp", "soil_moisture"), ],
+    ts[ts$variable %in% pct_normal_vars, ],
     window_a = 2015:2025, window_b = 1951:1980, method = "pct_change"
   )
   list(ts = ts, ano = ano, trn = trn, cmp_pct = cmp_pct)
