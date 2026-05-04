@@ -36,32 +36,38 @@ Target release: **v0.2.0** (minor bump — new variables and a new
 
 ## Phase 1 — Producer: snow backfill script with hourly accum handling
 
-- [ ] Implement hourly-to-daily accum reduction in
-      `scripts/backfill_edh_snow.py`: for each day,
-      `daily_sf = sf @ 00:00 UTC next day`; same for `smlt`. Document
-      the 00:00 UTC reset semantics in code comments referencing #36.
-- [ ] For `sde`, `rsn`, `snowc` (state / fraction vars): straightforward
+- [x] Implement hourly-to-daily accum reduction in
+      `scripts/backfill_edh_snow.py` via `hourly_accum_to_daily()`:
+      select 00:00 UTC values, shift time coord back 1 day so labels
+      match the day accumulated. Code comments reference #36.
+- [x] For `sde`, `rsn`, `snowc` (state / fraction vars):
       `.resample(valid_time="1D").mean()`.
-- [ ] **Monthly natives** to `data/backfill/monthly/{var}_{year}.tif` (12-band):
-      - `snow_depth_{year}.tif` — monthly mean of daily `sde × rsn` (kg/m²)
-      - `snowfall_{year}.tif` — monthly sum of daily `sf` (mm/month)
-      - `snowmelt_{year}.tif` — monthly sum of daily `smlt` (mm/month)
-      - `snow_cover_{year}.tif` — monthly mean of daily `snowc` (fraction 0–1)
-- [ ] **Annual derived** to `data/backfill/annual/{var}_{year}.tif` (1-band):
+- [x] **Monthly natives** to `data/backfill/monthly/{var}_{year}.tif` (12-band):
+      - `snow_depth_{year}.tif` — monthly mean of daily `sde × rsn` (mm SWE)
+      - `snowfall_{year}.tif` — monthly sum of daily `sf` × 1000 (mm/month)
+      - `snowmelt_{year}.tif` — monthly sum of daily `smlt` × 1000 (mm/month)
+      - `snow_cover_{year}.tif` — monthly mean of daily `snowc` (% — native
+        ERA5-Land unit; was originally documented as fraction 0–1, corrected
+        to match data)
+- [x] **Annual derived** to `data/backfill/annual/{var}_{year}.tif` (1-band):
       - `swe_max_{year}.tif` — annual max of daily `sde × rsn`
-      - `snowfall_fraction_{year}.tif` — annual sum daily `sf` / annual sum daily `tp`
-        (open daily product just for `tp`; wrap in `with_retry`)
+      - `snowfall_fraction_{year}.tif` — `100 * annual_sum_sf / annual_sum_tp`
+        (% — converted from fraction for consistency with `snow_cover`;
+        `tp` from daily product, `with_retry`-wrapped)
       - `snowmelt_doy_50_{year}.tif` — DOY when cumulative annual `smlt`
-        first crosses 50% of annual sum
+        first crosses 50% of annual sum (NaN where annual sum is zero)
       - `snowmelt_rate_peak_{year}.tif` — annual max of 7-day rolling sum
-        of daily `smlt`
-- [ ] Import `preflight_single_instance("backfill_edh_snow")`,
+        of daily `smlt` (mm/week)
+- [x] Import `preflight_single_instance("backfill_edh_snow")`,
       `with_retry`, `write_geotiff`, `log`, `get_token` from
       `scripts/_lib.py`.
-- [ ] One-year smoke test (`uv run scripts/backfill_edh_snow.py --year 2020`).
-      Verify outputs exist with expected band counts; spot-check spatial
-      pattern (more snow in mountains, less in valleys).
-- [ ] Benchmark single-year runtime; estimate full backfill duration.
+- [x] One-year smoke test (`uv run scripts/backfill_edh_snow.py --year 2020`).
+      All 8 outputs written; spatial sanity confirmed (median DOY-50 = 128
+      ≈ May 8 freshet; median snowfall_fraction = 27%; median peak SWE
+      = 276 mm; values span plausible BC ranges).
+- [x] Benchmark: 228 s/year first run, 61 s/year for incremental
+      single-output rerun (idempotent skip + dependency cache effects).
+      Full 76-year backfill estimate: ~4–5 hours fresh, faster on rerun.
 
 ## Phase 2 — Producer: full backfill + Stage 3 aggregation + S3 push
 
