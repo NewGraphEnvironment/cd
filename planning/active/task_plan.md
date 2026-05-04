@@ -19,16 +19,22 @@ Mirrors the existing `scripts/rag_build_departure_framing.R` pattern.
 
 ## Phase 1 — Targeted literature search
 
-- [ ] WebFetch DOI / publisher landing for each candidate; confirm OA
-      availability where possible.
-- [ ] Paywalled papers: flag for user (DOI → Europe PMC → SciELO →
-      ResearchGate flag, per CLAUDE.md PDF fallback chain).
-- [ ] Search for **BC/PNW ERA5-Land snow validation** specifically.
-      Add 1–2 if found.
-- [ ] Search for **autocorrelation correction in MK trend tests for
-      snowmelt time series** (Yue & Wang or Önöz & Bayazit).
-- [ ] Capture final 8–12 papers in `findings.md` with DOI + access
-      status per paper.
+- [x] WebSearched DOI / publisher landing for each candidate; all 11
+      papers confirmed with DOIs.
+- [x] Paywalled papers identified: `pederson_etal2011` (Science),
+      `yue_wang2002` (AGU). USGS / ResearchGate fallback paths
+      flagged in findings.md.
+- [x] Found **`kouki_etal2023`** for ERA5-Land snow validation
+      (Cryosphere, OA, CC-BY 4.0).
+- [x] Found **`yue_wang2002`** for MK + autocorrelation. Critical
+      finding: prewhitening fails when a trend exists — informs
+      whether cd should add autocorrelation correction (likely #43
+      follow-up).
+- [x] Found **`kang_etal2016`** — Fraser River Basin freshet-timing
+      paper, directly maps to our fish-passage reporting context.
+      Was not in original candidate list; added.
+- [x] Captured 11 papers in `findings.md` with DOI + access status +
+      coverage matrix mapping each #48 metric to its primary paper.
 
 Starting candidate list:
 

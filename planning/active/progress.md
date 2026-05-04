@@ -16,6 +16,21 @@
 - Phases approved by user.
 - Created branch `53-snow-lit-review` off main.
 - Scaffolded PWF baseline.
-- Next: start Phase 1 — WebFetch DOI / publisher landings for each
-  candidate; confirm OA availability; capture search log in
-  `findings.md`.
+- Phase 1 complete: 11 candidate papers identified with DOIs and
+  OA status confirmed. New additions to original candidate list:
+  - `kouki_etal2023` — ERA5-Land snow validation in The Cryosphere
+    (TC), CC-BY 4.0. Replaces "find an ERA5-Land snow validation
+    paper" placeholder.
+  - `kang_etal2016` — Fraser River Basin freshet-timing paper,
+    Scientific Reports, OA. Directly maps to fish-passage reporting
+    context (10-day advance, declining summer flows during salmon
+    migration). Wasn't on the original list — surfaced during the
+    BC-specific search.
+  - Dropped `curry_etal2014` from original list — `najafi_etal2017`
+    is the better BC-attribution paper.
+- 8 of 11 papers are OA (npj, Sci Rep, Cryosphere, ESSD, plus AMS
+  6-month embargo for the older AMS papers). 2 require manual
+  download from ResearchGate (`pederson_etal2011`, `yue_wang2002`).
+- Next: pause for user review of candidate list before Phase 2
+  Zotero adds (Zotero state is user-shared, modifications worth
+  explicit confirmation per auto-mode guidance).

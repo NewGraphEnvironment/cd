@@ -57,9 +57,53 @@ wire this up for the first time. This issue's deliverable is the
 4. **Mirror existing rag-build script structure** verbatim, just with a
    different citation-key map and output path.
 
-## Search log
+## Search log (Phase 1)
 
-_Phase 1 will populate this section with per-paper search results._
+Phase 1 ran web searches against publisher landings and DOI lookups
+on the candidate list. All 11 papers below have confirmed DOIs and
+identified PDF access. Citation keys follow the BBT
+`firstauthor_etal{year}` convention used in `rag_build_departure_framing.R`.
+
+### Final candidate list (11 papers)
+
+| Citation key | Title (truncated) | Journal / Year | DOI | OA? | Why |
+|---|---|---|---|---|---|
+| `mote_etal2005` | Declining mountain snowpack in western North America | BAMS 86 / 2005 | `10.1175/BAMS-86-1-39` | AMS — likely OA after embargo, check | Foundational PNW snowpack-decline methodology — referenced by many newer papers |
+| `stewart_etal2005` | Changes toward earlier streamflow timing across western North America | J Climate 18 / 2005 | `10.1175/JCLI3321.1` | AMS — likely OA | Defines centroid timing (CT) and DOY-based streamflow metrics — direct precedent for `snowmelt_doy_50` |
+| `knowles_etal2006` | Trends in snowfall versus rainfall in the western United States | J Climate 19 / 2006 | `10.1175/JCLI3850.1` | AMS / USGS preprint OA | Defines snowfall-fraction (SFE/P) methodology — direct precedent for `snowfall_fraction` |
+| `mote_etal2018` | Dramatic declines in snowpack in the western US | npj Clim Atmos Sci / 2018 | `10.1038/s41612-018-0012-1` | **OA** (npj) | Updated PNW summary, methodology continuity from 2005 paper, recent framing for "Δ peak SWE" interpretations |
+| `najafi_etal2017` | Attribution of the Observed Spring Snowpack Decline in British Columbia to Anthropogenic Climate Change | J Climate 30 / 2017 | `10.1175/JCLI-D-16-0189.1` | AMS — check | **BC-specific attribution paper.** Uses VIC + CMIP5 fingerprinting to attribute observed BC SWE decline to anthropogenic forcing — directly relevant to our reporting context. Lead author is at UNBC |
+| `cayan_etal2001` | Changes in the Onset of Spring in the Western United States | BAMS 82 / 2001 | `10.1175/1520-0477(2001)082<0399:CITOOS>2.3.CO;2` | AMS — likely OA | Spring-onset / first-pulse methodology origins; cross-validates `snowmelt_doy_50` and the broader earlier-spring framing |
+| `yue_wang2002` | Applicability of prewhitening to eliminate the influence of serial correlation on the Mann-Kendall test | Water Resour Res 38 / 2002 | `10.1029/2001WR000861` | AGU — paywalled but ResearchGate likely | Trend-test methodology. Critical finding: prewhitening **fails** when a trend exists; the trend-free pre-whitening (TFPW) procedure followed. Informs whether cd should add autocorrelation correction |
+| `pederson_etal2011` | The Unusual Nature of Recent Snowpack Declines in the North American Cordillera | Science 333 / 2011 | `10.1126/science.1201570` | Paywalled (Science) — USGS / RG preprint OA | Tree-ring + instrumental long-record context. Shows late-20th-century declines are unprecedented over ~1000 years — frames the "departure-from-historical" interpretation |
+| `kang_etal2016` | Impacts of a Rapidly Declining Mountain Snowpack on Streamflow Timing in Canada's Fraser River Basin | Sci Rep 6 / 2016 | `10.1038/srep19299` | **OA** (Scientific Reports) | **BC + freshet-timing + salmon-migration paper.** Documents 10-day advance of Fraser freshet 1949–2006, declining summer flows affecting up-river migrations. Maximally relevant to fish-passage reporting context |
+| `kouki_etal2023` | Evaluation of snow cover properties in ERA5 and ERA5-Land with several satellite-based datasets in the Northern Hemisphere in spring 1982–2018 | The Cryosphere 17 / 2023 | `10.5194/tc-17-5007-2023` | **OA** (TC, CC-BY 4.0) | **ERA5-Land snow-validation paper.** Documents that ERA5-Land overestimates SWE in mountain regions; ERA5-Land improves on ERA5 at mid-altitude mountains. Bounds the bias for our four metrics |
+| `munoz_sabater_etal2021` | ERA5-Land: a state-of-the-art global reanalysis dataset for land applications | ESSD / 2021 | (already in Zotero) | OA | ERA5-Land dataset paper — already in Zotero with attachKey `SUS5A57A` per `scripts/rag_build_departure_framing.R`. Reuse |
+
+### Topics-vs-papers coverage matrix
+
+| #48 metric / topic | Primary paper | Supporting paper(s) |
+|---|---|---|
+| `swe_max` (annual peak SWE) | `mote_etal2018` | `mote_etal2005`, `najafi_etal2017`, `pederson_etal2011` |
+| `snowfall_fraction` | `knowles_etal2006` | (none — it's the canonical methodology) |
+| `snowmelt_doy_50` | `stewart_etal2005` | `cayan_etal2001`, `kang_etal2016` |
+| `snowmelt_rate_peak` | (search may surface a freshet-flashiness paper during Phase 4) | `stewart_etal2005`, `kang_etal2016` |
+| Baseline window choice | (general — `mote_etal2005`, `najafi_etal2017` use 1916–2003 baseline; check during Phase 4) | |
+| MK + autocorrelation | `yue_wang2002` | (the TFPW follow-up Yue et al. 2002 ref to dig up if needed) |
+| ERA5-Land snow biases | `kouki_etal2023` | `munoz_sabater_etal2021` |
+| BC-specific context | `najafi_etal2017`, `kang_etal2016` | (Najafi attribution + Kang impacts, both Peace/Fraser-relevant) |
+
+### Notes on access strategy
+
+- **AMS journals (Mote 2005, Stewart 2005, Knowles 2006, Najafi 2017, Cayan 2001):** AMS has a 6-month embargo then OA. All target papers are >6 months old → should be freely available. Check publisher landing page during Phase 2 Zotero adds; fall back to USGS pubs preprints for any that are paywalled (Cayan, Stewart, Knowles all have `pubs.usgs.gov` mirrors per search results).
+- **`pederson_etal2011`:** Science is paywalled. USGS pub mirror at `pubs.usgs.gov/publication/70155831` per search results — check if direct PDF download is available; otherwise flag for user manual download from ResearchGate.
+- **`yue_wang2002`:** Wiley/AGU paywalled. ResearchGate has the PDF per search results — flag for user manual download.
+- **`mote_etal2018`, `kang_etal2016`, `kouki_etal2023`, `munoz_sabater_etal2021`:** all OA — direct fetch via web API S3 upload.
+
+### Out of search scope
+
+- Did NOT search for streamflow-modelling-specific or glacier-dynamics literature (per #53 out-of-scope list).
+- Did NOT search for very recent (2024–2026) papers — focus is on the established methodology canon. If something in Phase 4 mining points us at a critical recent paper, can add 1–2 more.
 
 ## Papers added to Zotero (`snowpack-departure-methodology` collection)
 
