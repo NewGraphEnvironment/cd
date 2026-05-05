@@ -76,49 +76,54 @@ Starting candidate list (will refine):
       count` in `findings.md`
 - [x] PDFs in `data/rag/precip_drying_methodology_pdfs/`,
       gitignored, text-layered, ready for Phase 3 ingestion
-- [ ] **User: restart Zotero desktop** so BBT generates citation
-      keys for the 7 new items (BBT 9.x already active from #58
-      compat fix; restart still needed per CLAUDE.md note that
-      Web-API-created items don't trigger BBT key gen on sync alone)
+- [x] **Auto-restarted Zotero** via osascript+open (~30 s wait); BBT
+      generated all 7 citation keys cleanly. Pattern documented and
+      added to soul#43 for the /lit-search + /zotero-api skills.
+      Final 7 BBT keys mapped in findings.md Phase 2 table
 
 ## Phase 3 — Build ragnar DuckDB store
 
-- [ ] Clone `scripts/rag_temp_methodology_build.R` →
-      `scripts/rag_precip_drying_methodology_build.R`. Adapt header
-      docstring + `pdf_specs` map
-- [ ] Run `Rscript scripts/rag_precip_drying_methodology_build.R` —
-      target ~600-1000 chunks across ~10 sources via Ollama
-      `nomic-embed-text`
-- [ ] Verify chunk count + source count via DBI queries
+- [x] Cloned `scripts/rag_temp_methodology_build.R` →
+      `scripts/rag_precip_drying_methodology_build.R`. Adapted
+      header docstring + 7-paper `pdf_specs` map
+- [x] Ran build — produced `data/rag/precip_drying_methodology.duckdb`
+      with **526 chunks across 7 sources** via Ollama
+      `nomic-embed-text` (~25 s)
+- [x] Verified retrieval distribution: all 7 papers contributing to
+      top-5 chunks across queries; Grossiord 2020 (long VPD review)
+      gets the most hits (33), Min 2011 the fewest (6 — single-topic
+      paper, expected)
 
 ## Phase 4 — Mine the store for methodology quotes
 
-- [ ] Write `scripts/rag_precip_drying_methodology_query.R` mirroring
-      the temp query script. Query topics:
-      - Precipitation trend methodology (long-record, homogenization)
-      - Heavy / extreme precipitation + anthropogenic attribution
-      - Orographic / mountain precipitation + rain-shadow gradients
-      - Vapor pressure deficit (VPD) trends + drivers
-      - Soil moisture as integrative drought signal
-      - ERA5-Land precip / soil-moisture validation / bias structure
-      - Drought-fish linkage — BC summer-flow + thermal habitat
-      - Trend test methodology cross-check (cross-rag with snow + temp)
-- [ ] Save raw retrieval to `planning/active/precip_drying_methodology_quotes.md`
-- [ ] Synthesize per-topic into `findings.md`
+- [x] Wrote `scripts/rag_precip_drying_methodology_query.R` mirroring
+      the temp query script. 8 topics × 3 queries × top-5 chunks =
+      120 candidate chunks total (note: orographic precip query
+      dropped from initial 8-topic plan since the precip+drying corpus
+      doesn't have a dedicated orographic paper — descriptive prose
+      grounded by `dierauer_etal2020` covers the BC ecoregion contrasts)
+- [x] Topics covered: precip trend methodology, anthropogenic precip-
+      extremes attribution, VPD continental-scale drying, VPD
+      ecosystem responses, drought attribution (NA megadrought),
+      drought framework, 20th-century hydroclimate pattern, BC/PNW
+      summer flow
+- [x] Raw retrieval saved to
+      `planning/active/precip_drying_methodology_quotes.md` (626 lines)
+- [x] Synthesized per-topic into `findings.md` (Phase 5)
 
 ## Phase 5 — Synthesis + citation map
 
-- [ ] In `findings.md`: methodology-quotes-by-topic section
-- [ ] Cross-cutting methodology section: baseline window (same as
-      snow + temp), trend test cross-checks, ERA5-Land precip +
-      soil-moisture validation gap (if any)
-- [ ] Deviations section — places where cd's precip/drying analysis
-      differs from the literature consensus
-- [ ] **"Cite this for that"** table — N-row map from vignette claim
-      type to BBT-auto-derived citation key(s). Framed as a menu, not
-      an order, per memory `feedback_vignette_citations_sparse.md`
-- [ ] Document existing items in `climate` collection + cross-rag
-      references from snow + temperature methodology stores
+- [x] In `findings.md`: methodology-quotes-by-topic section covering
+      all 8 topics with selected quotes per paper
+- [x] Cross-cutting methodology section: baseline window (same as
+      snow+temp), trend test (consistent with Vincent 2018, Mekis &
+      Vincent 2011, raw MK per Yue & Wang 02), ERA5-Land precip +
+      soil-moisture validation gap (noted; same caveat as #58)
+- [x] Deviations section — no new deviations beyond #58
+- [x] **"Cite this for that"** map — 15-row claim → citation lookup,
+      framed as a menu, not an order. BBT-auto-derived keys baked in
+- [x] Documented existing items in `climate` collection (5 reuse-
+      relevant) + cross-rag references from snow + temperature stores
 
 ## Phase 6 — PR + release
 

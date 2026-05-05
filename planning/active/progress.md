@@ -28,6 +28,21 @@
   (soul#43 + #58 lesson applied). All 7 items have ≥2 creators
 - **User action pending: restart Zotero desktop** so BBT generates
   citation keys for the 7 new items
-- Next (after Zotero restart): capture BBT keys via local sqlite,
-  bake into Phase 3 rag_precip_drying_methodology_build.R, run
-  ragnar build
+- Auto-restarted Zotero via osascript+open (verified, ~30s
+  sufficient); pattern documented in soul#43. All 7 BBT keys
+  captured cleanly
+- Phase 3 done: scripts/rag_precip_drying_methodology_build.R
+  cloned from temp build script with 7-paper pdf_specs map; built
+  data/rag/precip_drying_methodology.duckdb (526 chunks, 7 sources,
+  ~25 s)
+- Phase 4 done: scripts/rag_precip_drying_methodology_query.R
+  written; 24 queries × top-5 chunks = 120 candidates captured to
+  planning/active/precip_drying_methodology_quotes.md (626 lines).
+  Distribution healthy across all 7 papers
+- Phase 5 done: synthesis section in findings.md covers 8 topics
+  with selected quotes; 15-row "cite this for that" map with BBT
+  keys baked in. Trenberth 2014 → BBT key shows 2013 (CrossRef
+  issued date is 2013-12-17 online; print issue 2014) — leaving
+  as-is per auto-derived convention
+- Next: Phase 6 — /code-check, push branch, open PR (Fixes #61,
+  SRED tag in body), /planning-archive after merge, release v0.2.3
