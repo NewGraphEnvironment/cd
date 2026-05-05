@@ -160,10 +160,39 @@ Plus general framing items (use sparingly per philosophy):
 | ERA5-Land soil-moisture validation | (existing) `munoz-sabater_etal2021ERA5Landstateoftheart` | — |
 | Trend test methodology | (cross-rag) `vincent_etal2018ChangesCanadas`, `yue_wang2002Applicabilityprewhitening` | — |
 
-### PDF acquisition strategy
+### PDF acquisition outcome (Phase 2)
 
-- **OA / publicly hosted (auto-fetchable via curl):** Trenberth 2014 (UCAR OpenSky), Marvel 2019 (NASA GISS), Williams 2020 (escholarship), Mekis & Vincent 2011 (Canada.gov hosted), Grossiord 2020 (Sperry lab utah.edu).
-- **Paywalled — flag for user RG download:** Ficklin & Novick 2017, Min 2011 (also Edinburgh-hosted PDF available).
+4 of 7 fetched via curl: Williams 2020 (emnrd.nm.gov state-hosted),
+Grossiord 2020 (sperry.biology.utah.edu), Mekis & Vincent 2011
+(ec.gc.ca CDAS), Min 2011 (Edinburgh ghegerl PDF). 3 user-provided
+via ResearchGate: Ficklin & Novick 2017, Trenberth 2014, Marvel
+2019. Marvel needed OCR (LLNL preprint version, image-only scan;
+working title differs from published Nature title but same DOI).
+All 7 PDFs in `data/rag/precip_drying_methodology_pdfs/`,
+text-layered, gitignored.
+
+### Zotero adds (Phase 2 — completed)
+
+7 papers POSTed to `NewGraphEnvironment/climate` (key `8MH9LCC9`)
+via Web API with PDFs attached. CrossRef-driven metadata; tags
+`precip-drying-departure-methodology` + `cd-issue-61`. No `Citation
+Key:` overrides in `extra` (per soul#43 + #58 lesson). All 7 papers
+have at least 2 individual creators per CrossRef; no corporate-only
+authorship to PATCH around (cf Pepin 2015 in #58).
+
+| File label (local) | Parent itemKey | Attach itemKey | n creators | PDF outcome | BBT citation key (post-restart) |
+|---|---|---|---|---|---|
+| `williams_etal2020` | `5K2AAPFK` | `SBSHUENU` | 9 | uploaded | (pending) |
+| `ficklin_novick2017` | `TJI32FNS` | `XT4HG85Q` | 2 | uploaded | (pending) |
+| `grossiord_etal2020` | `28NGCT9C` | `SGEP5ZVA` | 8 | exists | (pending) |
+| `trenberth_etal2014` | `PFDER8KC` | `Z8PQRGCS` | 7 | exists | (pending) |
+| `min_etal2011` | `WEQJ4FB3` | `X9QN8MPI` | 4 | exists | (pending) |
+| `mekis_vincent2011` | `8UDFXV4M` | `89KJ9JEE` | 2 | exists | (pending) |
+| `marvel_etal2019` | `784SPD6T` | `9XCZKTWD` | 6 | uploaded | (pending) |
+
+3 fresh PDF uploads (Williams, Ficklin, Marvel), 4 md5-deduped via
+Zotero S3. **User action pending: restart Zotero** so BBT generates
+citation keys for the 7 Web-API-created items.
 
 ## Methodology quotes by topic (Phase 4 + 5)
 

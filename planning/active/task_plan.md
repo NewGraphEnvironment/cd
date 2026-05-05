@@ -60,23 +60,26 @@ Starting candidate list (will refine):
 
 ## Phase 2 — Add to NewGraphEnvironment/climate Zotero collection
 
-- [ ] For each non-already-present paper, fetch CrossRef metadata,
-      POST to Web API with `"collections": ["8MH9LCC9"]`. Tags:
-      `precip-drying-departure-methodology`, `cd-issue-61`. **Do NOT
-      set `Citation Key:` overrides** in `extra` — let BBT auto-derive
-      per NGE convention (soul#43). Verify each item creates with at
-      least one personal author so BBT doesn't fall back to title-key
-      (per Pepin 2015 lesson in #58 archive)
-- [ ] Auto-attach OA PDFs via 4-step S3 upload (see /zotero-api)
-- [ ] Flag paywalled papers for user manual ResearchGate download
-      (provide RG search links + parent itemKey for drag-drop)
-- [ ] OCR any image-only scans before attaching (per Karl 1993 +
-      Richter & Kolmes 2005 lesson in #58)
-- [ ] After Zotero restart + BBT key generation: capture per-paper
-      `BBT-citationKey + parent itemKey + attachment key` in
-      `findings.md`
-- [ ] Mirror PDFs into `data/rag/precip_drying_methodology_pdfs/`
-      for ragnar ingestion (gitignored)
+- [x] For each of 7 candidates: CrossRef metadata fetch → POST to
+      Web API with `"collections": ["8MH9LCC9"]`, tags
+      `precip-drying-departure-methodology` + `cd-issue-61`. No
+      `Citation Key:` override in `extra` (per soul#43 + #58 lesson).
+      All 7 items created with ≥2 individual creators (no Pepin-style
+      fallback risk)
+- [x] PDF acquisition: 4 fetched via curl (Williams emnrd.nm.gov,
+      Grossiord utah.edu, Mekis & Vincent ec.gc.ca, Min Edinburgh),
+      3 user-provided via ResearchGate (Ficklin, Trenberth, Marvel);
+      Marvel OCR'd (LLNL preprint image-only scan)
+- [x] Auto-attached all 7 PDFs via 4-step S3 upload (3 fresh, 4
+      deduped via md5)
+- [x] Captured per-paper `parent itemKey + attach itemKey + creator
+      count` in `findings.md`
+- [x] PDFs in `data/rag/precip_drying_methodology_pdfs/`,
+      gitignored, text-layered, ready for Phase 3 ingestion
+- [ ] **User: restart Zotero desktop** so BBT generates citation
+      keys for the 7 new items (BBT 9.x already active from #58
+      compat fix; restart still needed per CLAUDE.md note that
+      Web-API-created items don't trigger BBT key gen on sync alone)
 
 ## Phase 3 — Build ragnar DuckDB store
 
