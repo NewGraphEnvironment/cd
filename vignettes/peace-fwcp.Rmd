@@ -311,38 +311,60 @@ as the freshet shifted earlier into the calendar. Total annual
 snowfall barely changed (-6%) — the SWE decline is mostly about
 warming removing snow earlier, not less snow falling.
 
-Two methodological notes for readers used to the snow-trend literature.
-ERA5-Land mountain SWE bias is well-documented at the Northern
-Hemisphere scale [@kouki_etal2023Evaluationsnow]; for the FWCP Peace
-Region specifically, our QA cross-check against four BC ASWS automated
-snow-pillow stations spanning 1050-1565 m (95 paired site-years 1985-2025)
-shows the bias is *direction-variable* rather than uniformly high:
-ERA5-Land underestimates by 30-60% at high-snowpack
-Coast-Mountain-spillover sites (e.g., Pine Pass at 1400 m, observed
-1140 mm vs ERA5 439 mm) and overestimates by ~50% at drier interior
-sites (Aiken Lake at 1050 m). Crucially, the bias is *stable over time*
-at all four sites (regression of ERA5-minus-ASWS on year is
-non-significant, p > 0.2), which is what the trend-defensibility
-argument actually rests on. Absolute SWE values in the
-plots below should therefore be read as ERA5-Land's representation
-rather than as ground truth, but the trends remain interpretable. Full
-QA results: `planning/archive/.../qa_snow_validation_results.md`.
+A few notes on how to read the snow numbers below.
+
+ERA5-Land represents snow on a roughly 9 km grid — each grid cell is
+a single number summarizing snow averaged over about 80 km² of mixed
+terrain (saddles, slopes, valleys, forest, exposed alpine, all
+combined). When we compare the model against a snow station inside
+that cell, two distinct errors can stack: a **scale mismatch** (a
+single point measurement isn't the same thing as an 80 km² average,
+especially in mountain terrain where snow accumulation varies
+sharply over short distances), and a **cell-mean bias** that the
+model has at the Northern Hemisphere scale (ERA5-Land overestimates
+mountain SWE by 150-200% even when compared against area-averaged
+satellite estimates [@kouki_etal2023Evaluationsnow], traced to a
+simplified snow layer in the underlying atmospheric model).
+
+Our QA cross-check at four British Columbia automated snow stations
+inside the FWCP Peace Region (1985-2025, 95 paired station-years)
+sees both kinds of error stacked and cannot fully separate them. At
+Pine Pass — a Coast Mountain saddle that catches orographic precip
+from systems coming inland from the Pacific — the model is 61% too
+low at the station, likely mostly scale mismatch: the station sits
+at a high-snow microsite within an averaged cell. At Aiken Lake — a
+drier interior valley basin — the model is 54% too high, likely a
+mix of scale mismatch (averaging snowier surrounding terrain into
+the same cell) and the Kouki-style cell-mean bias for
+interior-continental cells.
+
+What does survive both kinds of error: **the gap between the model
+and the stations is the same size in 2020 as it was in 1990.** The
+bias is stable over time at every site (regression of
+model-minus-station on year is non-significant, p > 0.2). That means
+the *changes over time* shown below — peak snowpack dropping,
+freshet shifting earlier — are real even though the absolute mm
+numbers shouldn't be quoted as ground truth. For regional aggregates
+(the numbers in this section are spatial means over hundreds of
+cells), random point-vs-cell mismatches partially cancel, and stable
+cell-mean biases preserve the trend signal.
 
 The trend tests below use raw Mann-Kendall plus Theil-Sen — no
-pre-whitening — which is the methodologically correct choice for our
-76-year series with strong climate trends per Yue and Wang
-[-@yue_wang2002Applicabilityprewhitening] (pre-whitening underestimates
-slope when a real trend exists).
+pre-whitening — which is the right call for our 76-year series with
+strong climate trends per Yue and Wang
+[-@yue_wang2002Applicabilityprewhitening] (pre-whitening
+underestimates slope when a real trend exists).
 
 ### Seasonal snowpack curve
 
 The four monthly-native snow variables — SWE, snowfall, snowmelt, and
 snow cover — show *when* snow accumulates and melts. Aggregated to
-the four standard meteorological seasons (DJF, MAM, JJA, SON), the
-table below compares the recent decade (2015-2025) against the
-pre-warming reference (1951-1980) directly. The headline numbers
-above (summer SWE collapse, spring snowmelt rise) are in the
-**summer** and **spring** rows.
+the four standard meteorological seasons — winter (December–February),
+spring (March–May), summer (June–August), and fall
+(September–November) — the table below compares the recent decade
+(2015-2025) against the pre-warming reference (1951-1980) directly.
+The headline numbers above (summer SWE collapse, spring snowmelt rise)
+are in the **summer** and **spring** rows.
 
 ```{r snow-seasonal-table}
 snow_monthly <- c("swe", "snowfall", "snowmelt", "snow_cover")
@@ -452,9 +474,7 @@ direction and rough magnitude with Stewart et al.'s
 timing across western North America, and with the 10-day Fraser
 freshet advance documented by Kang et al.
 [-@kang_etal2016ImpactsRapidly] for a basin whose southern boundary
-is just south of the FWCP Peace Region. For up-river salmon
-migrations, this means lower late-summer flows during the migration
-window — the same impact Kang et al. flag for the Fraser.
+is just south of the FWCP Peace Region.
 
 **Summer is becoming snow-free.** Summer SWE has collapsed by 75%
 and summer snowmelt is down 61%. The high-elevation snowpack that
@@ -635,8 +655,10 @@ build_segments <- function(var) {
     )
   }))
 }
-trn_segs_tmean <- build_segments("tmean")
-trn_segs_prcp  <- build_segments("prcp")
+trn_segs_tmean   <- build_segments("tmean")
+trn_segs_prcp    <- build_segments("prcp")
+trn_segs_swe_max <- build_segments("swe_max")
+trn_segs_doy_50  <- build_segments("snowmelt_doy_50")
 ```
 
 ```{r facet-tmean, fig.cap="Annual mean temperature anomaly relative to the 1951-1980 baseline, by ecoregion. Dashed line is the 75-year Theil-Sen trend (1951-present); solid line is the 45-year trend (1981-present). A solid line steeper than the dashed line indicates accelerating warming.", fig.height=6}
@@ -669,6 +691,50 @@ ggplot(ano_all[ano_all$variable == "prcp" & ano_all$period == "annual", ],
   facet_wrap(~ ecoregion, ncol = 3,
              labeller = labeller(ecoregion = er_labels)) +
   labs(x = NULL, y = "Precipitation anomaly (% of baseline)") +
+  theme_minimal(base_size = 11) +
+  theme(legend.position = "bottom")
+```
+
+### Snow per ecoregion
+
+Two snow metrics are worth viewing per-ecoregion: peak snow water
+equivalent (annual snowpack magnitude) and DOY-50 (the day-of-year by
+which half the year's snowmelt has already happened — earlier values
+mean an earlier freshet). The two figures below show how each varies
+ecoregion to ecoregion. Pair them with the Watershed Groups Across
+Ecoregions section below to read each watershed group's dominant
+ecoregion's signal.
+
+```{r facet-swe-max, fig.cap="Annual peak snow water equivalent (SWE) anomaly by ecoregion, relative to the 1951-1980 baseline. Bars are mm of water-equivalent snowpack departure from baseline. Dashed line is the 75-year Theil-Sen trend (1951-present); solid line is the 45-year trend (1981-present).", fig.height=6}
+ggplot(ano_all[ano_all$variable == "swe_max" & ano_all$period == "annual", ],
+       aes(x = year, y = anomaly)) +
+  geom_col(aes(fill = anomaly >= 0), width = 0.85, show.legend = FALSE) +
+  geom_segment(data = trn_segs_swe_max,
+               aes(x = x_start, xend = x_end, y = y_start, yend = y_end,
+                   linetype = window),
+               inherit.aes = FALSE, color = "black", linewidth = 0.6) +
+  scale_fill_manual(values = c(`TRUE` = "#4575b4", `FALSE` = "#d73027")) +
+  scale_linetype_manual(values = c("dashed", "solid"), name = "Trend window") +
+  facet_wrap(~ ecoregion, ncol = 3,
+             labeller = labeller(ecoregion = er_labels)) +
+  labs(x = NULL, y = "Peak SWE anomaly (mm)") +
+  theme_minimal(base_size = 11) +
+  theme(legend.position = "bottom")
+```
+
+```{r facet-doy-50, fig.cap="Snowmelt 50% day-of-year (DOY-50) anomaly by ecoregion, relative to the 1951-1980 baseline. Negative values (red) mean the freshet midpoint shifted earlier in the year. Dashed line is the 75-year Theil-Sen trend; solid line is the 45-year trend.", fig.height=6}
+ggplot(ano_all[ano_all$variable == "snowmelt_doy_50" & ano_all$period == "annual", ],
+       aes(x = year, y = anomaly)) +
+  geom_col(aes(fill = anomaly >= 0), width = 0.85, show.legend = FALSE) +
+  geom_segment(data = trn_segs_doy_50,
+               aes(x = x_start, xend = x_end, y = y_start, yend = y_end,
+                   linetype = window),
+               inherit.aes = FALSE, color = "black", linewidth = 0.6) +
+  scale_fill_manual(values = c(`TRUE` = "#d73027", `FALSE` = "#4575b4")) +
+  scale_linetype_manual(values = c("dashed", "solid"), name = "Trend window") +
+  facet_wrap(~ ecoregion, ncol = 3,
+             labeller = labeller(ecoregion = er_labels)) +
+  labs(x = NULL, y = "DOY-50 anomaly (days; negative = earlier melt)") +
   theme_minimal(base_size = 11) +
   theme(legend.position = "bottom")
 ```
@@ -830,9 +896,45 @@ water back. This is the headline ecological finding for the region:
 water inputs may be rising in places, but soil and vegetation are
 not seeing more available moisture.
 
-For the cold-water salmonids the FWCP supports — bull trout, Arctic
-grayling, mountain whitefish, rainbow trout — these signals point in
-the same direction. Stream temperatures are likely rising in step with
-warmer ambient air temperatures, and the evapotranspiration imbalance
-means low-flow conditions in late summer are not being relieved by the
-precipitation increase that did occur.
+**Snow is leaving the region earlier, not falling less.** Annual
+snowfall across the FWCP Peace is essentially unchanged (-6%); the
+snowpack story is about *timing*, not *quantity*. Spring snowmelt
+rose 37% (212 → 290 mm) and summer snowmelt fell 61% (165 → 64 mm)
+— same total annual melt, redistributed earlier in the calendar.
+Annual peak snow water equivalent (SWE) is down about 10%
+(135 → 122 mm), and most strikingly, **summer SWE has collapsed by
+75%**: the high-elevation snowpack that historically lingered into
+June and July no longer does. This is the direct mechanism behind
+the freshet shift described in the snow-trend literature: warmer
+winters and springs do not stop snow from falling — they shorten
+how long it stays on the ground.
+
+The freshet-timing signal is *broadly uniform across the region* —
+DOY-50 (day-of-year by which half the year's snowmelt has happened)
+is shifting earlier at roughly 1 day per decade in every one of the
+five ecoregions, with Mann-Kendall p-values below 0.01 in each
+(median p ≈ 0.005). All sixteen FWCP Peace watershed groups,
+regardless of which ecoregion they sit in, are seeing the same
+order-of-magnitude earlier melt. The peak-SWE signal is noisier —
+small recent-decade declines show up in every ecoregion, but the
+year-to-year variability is large enough that the long-term Theil-Sen
+slopes do not reach statistical significance at the ecoregion scale.
+The 75% summer-SWE collapse is detectable in the regional aggregate
+because spatial averaging suppresses that variability.
+
+For the cold-water resident salmonids the FWCP Peace supports —
+bull trout, Arctic grayling, mountain whitefish, rainbow trout,
+kokanee — these signals compound. Stream temperatures are likely
+rising in step with warmer ambient air temperatures; the
+evapotranspiration imbalance means low-flow conditions in late
+summer are not being relieved by the precipitation increase that
+did occur; and the cold-water input that high-elevation snowpack
+provides to streams during the warmest, most thermally stressful
+weeks of summer is dropping in parallel with summer SWE. The
+spring freshet — the dominant high-flow event that shapes channel
+morphology, mobilizes spawning gravels, and refills off-channel
+rearing habitat — is shifting weeks earlier; the neighbouring
+Fraser Basin documents the same kind of freshet advance (Kang et
+al. 2016) at comparable magnitude.
+
+## References
