@@ -943,9 +943,11 @@ pre-computed result of exactly that call.</p>
 <h2 id="trends">Trends<a class="anchor" aria-label="anchor" href="#trends"></a>
 </h2>
 <p>Anomalies are computed against a pre-warming reference period —
-1951–1980, the three decades before climate change accelerated. Saying a
-year is “+1.5 °C” means it was 1.5 °C warmer than the average year
-between 1951 and 1980.</p>
+1951–1980, the three decades before climate change accelerated. This is
+the same base period <span class="citation">Hansen et al. (<a href="#ref-hansen_etal2012Perceptionclimate">2012</a>)</span> use to
+detect the emergence of 3-sigma summertime-temperature outliers
+globally. Saying a year is “+1.5 °C” means it was 1.5 °C warmer than the
+average year between 1951 and 1980.</p>
 <p>The trend table that follows has two rows per variable. We compute
 trends from two different start years:</p>
 <ul>
@@ -955,7 +957,8 @@ the full magnitude of warming since the pre-warming reference.</li>
 <li>
 <strong>1981–present (45 years)</strong> — starts at the beginning
 of the World Meteorological Organization’s most recent 30-year “climate
-normal” (1981–2010). This is the reference period used in most published
+normal” (1981–2010) <span class="citation">(<a href="#ref-arguez_vose2011DefinitionStandard">Arguez and Vose
+2011</a>)</span>. This is the reference period used in most published
 climate products, so it makes results easy to compare against
 Intergovernmental Panel on Climate Change reports and government climate
 summaries.</li>
@@ -3756,9 +3759,9 @@ Lake Region.
 (tmin) temperatures alongside the daily mean. They carry distinct
 information. Overnight minimums warming faster than daytime maximums —
 the “day-night asymmetry” — is one of the textbook fingerprints of
-greenhouse warming (Karl et al. 1993). Whether a watershed or region
-shows that signal depends on local geography (valley inversions, snow
-cover, slope-aspect mix).</p>
+greenhouse warming <span class="citation">(<a href="#ref-karl_etal1993NewPerspective">Karl et al. 1993</a>)</span>.
+Whether a watershed or region shows that signal depends on local
+geography (valley inversions, snow cover, slope-aspect mix).</p>
 <p>For the Kootenay Lake Region, <strong>overnight minimums are warming
 faster than daytime maximums</strong> — the textbook day-night
 asymmetry, though the gap here is smaller than at higher-latitude sites.
@@ -5727,10 +5730,12 @@ spatial pattern carries the rest of the story.</p>
 <p>Warming is not spatially uniform across the region. Total departures
 range from about +1.2 °C at the lowest-warming pixels to +2.2 °C at the
 highest, with a regional mean near +1.7 °C. Higher-elevation pixels tend
-to show stronger warming — the high-elevation amplification signal that
-shows up consistently at mid-latitude mountain sites — but the gradient
-is mixed enough that no single axis (north-south or east-west) carries
-the full pattern.</p>
+to show stronger warming — consistent with the elevation-dependent
+warming signal documented at mid-latitude mountain sites <span class="citation">(<a href="#ref-pepin_etal2015Elevationdependentwarming">Pepin et al.
+2015</a>)</span>, though not every mountain region shows the same
+pattern and the regional evidence base remains heterogeneous <span class="citation">(<a href="#ref-rangwala_miller2012Climatechange">Rangwala and Miller
+2012</a>)</span>. The gradient here is mixed enough that no single axis
+(north-south or east-west) carries the full pattern.</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Pre-computed by data-raw/kootenay_lake_vignette_data.R. Live equivalent:</span></span>
 <span><span class="co">#   r_tmean &lt;- cd_crop(catalog$href[catalog$variable == "tmean"</span></span>
@@ -6272,14 +6277,20 @@ group sees individually. All four watershed groups in the AOI are
 sitting in the same drying signal.</p>
 <p><strong>The atmosphere is drying.</strong> Vapour pressure deficit —
 the gap between how much water the air could hold and how much it
-actually does — is up significantly across the region. Combined with
-declining precipitation, this is a “double-dipping” signal: less water
-arriving as precipitation, <em>and</em> warmer air pulling more water
-out of soil and vegetation through evapotranspiration. Soil moisture is
-essentially flat despite the precipitation decline — the warmer
-atmosphere is drinking surface moisture at a rate that keeps the topsoil
-layer roughly even, but the resulting late-summer water deficit shows up
-in stream baseflow rather than in soil-moisture statistics.</p>
+actually does — is up significantly across the region, mirroring the
+continental-scale drying that <span class="citation">Ficklin and Novick
+(<a href="#ref-ficklin_novick2017Historicprojected">2017</a>)</span>
+documented for the United States as a whole, with the strongest
+historical VPD increases concentrated in the western and southern
+portions, driven by combined air-temperature increases and
+relative-humidity declines. Combined with declining precipitation, this
+is a “double-dipping” signal: less water arriving as precipitation,
+<em>and</em> warmer air pulling more water out of soil and vegetation
+through evapotranspiration. Soil moisture is essentially flat despite
+the precipitation decline — the warmer atmosphere is drinking surface
+moisture at a rate that keeps the topsoil layer roughly even, but the
+resulting late-summer water deficit shows up in stream baseflow rather
+than in soil-moisture statistics.</p>
 <p><strong>Snow is leaving <em>and</em> falling less.</strong> This is
 the second place the Kootenays diverge from the FWCP Peace pattern. The
 Peace’s snowpack decline was almost entirely about earlier melt on
@@ -6297,24 +6308,35 @@ concentrated in any one ecoregion.</p>
 <p>For the cold-water resident salmonids the Kootenay Lake region
 supports — bull trout, Gerrard rainbow trout, mountain whitefish,
 kokanee — these signals compound. Stream temperatures are likely rising
-in step with warmer ambient air temperatures; the evapotranspiration
-imbalance means low-flow conditions in late summer are not being
-relieved (precipitation is falling, not rising as in the Peace); the
-cold-water input that high-elevation snowpack provides to streams during
-the warmest, most thermally stressful weeks of summer is dropping in
-parallel with summer SWE; and the spring freshet — the dominant
-high-flow event that shapes channel morphology, mobilizes spawning
-gravels, and refills off-channel rearing habitat — is shifting weeks
-earlier. The neighbouring Fraser Basin documents the same kind of
-freshet advance (Kang et al. 2016) at comparable magnitude. Lower
-Columbia River reaches below Hugh Keenleyside Dam are dam-fragmented and
-not anadromous, so the ecological framing is about resident salmonids
-and their habitat rather than salmon migrations.</p>
+in step with warmer ambient air temperatures, and the combined effect of
+warming summer stream temperatures and altered low flows is expected to
+reduce thermally-suitable habitat for cold-water species <span class="citation">(<a href="#ref-mantua_etal2010Climatechange">Mantua et
+al. 2010</a>; <a href="#ref-eaton_scheller1996Effectsclimate">Eaton and
+Scheller 1996</a>)</span>. The evapotranspiration imbalance means
+low-flow conditions in late summer are not being relieved (precipitation
+is falling, not rising as in the Peace); the cold-water input that
+high-elevation snowpack provides to streams during the warmest, most
+thermally stressful weeks of summer is dropping in parallel with summer
+SWE; and the spring freshet — the dominant high-flow event that shapes
+channel morphology, mobilizes spawning gravels, and refills off-channel
+rearing habitat — is shifting weeks earlier. The neighbouring Fraser
+Basin documents the same kind of freshet advance <span class="citation">(<a href="#ref-kang_etal2016ImpactsRapidly">Kang et al.
+2016</a>)</span> at comparable magnitude. Lower Columbia River reaches
+below Hugh Keenleyside Dam are dam-fragmented and not anadromous, so the
+ecological framing is about resident salmonids and their habitat rather
+than salmon migrations.</p>
 </div>
 <div class="section level2 unnumbered">
 <h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
 <div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-arguez_vose2011DefinitionStandard" class="csl-entry">
+Arguez, Anthony, and Russell S. Vose. 2011. <span>“The
+<span>Definition</span> of the <span>Standard WMO Climate Normal</span>:
+<span>The Key</span> to <span>Deriving Alternative Climate
+Normals</span>.”</span> <em>Bulletin of the American Meteorological
+Society</em> 92 (6): 699–704. <a href="https://doi.org/10.1175/2010BAMS2955.1" class="external-link">https://doi.org/10.1175/2010BAMS2955.1</a>.
+</div>
 <div id="ref-cayan_etal2001ChangesOnset" class="csl-entry">
 Cayan, Daniel R., Michael D. Dettinger, Susan A. Kammerdiener, Joseph M.
 Caprio, and David H. Peterson. 2001. <span>“Changes in the
@@ -6322,12 +6344,37 @@ Caprio, and David H. Peterson. 2001. <span>“Changes in the
 States</span>.”</span> <em>Bulletin of the American Meteorological
 Society</em> 82 (3): 399–415. <a href="https://doi.org/10.1175/1520-0477(2001)082%3C0399:citoos%3E2.3.co;2" class="external-link">https://doi.org/10.1175/1520-0477(2001)082&lt;0399:citoos&gt;2.3.co;2</a>.
 </div>
+<div id="ref-eaton_scheller1996Effectsclimate" class="csl-entry">
+Eaton, John G., and Robert M. Scheller. 1996. <span>“Effects of Climate
+Warming on Fish Thermal Habitat in Streams of the <span>United
+States</span>.”</span> <em>Limnology and Oceanography</em> 41 (5):
+1109–15. <a href="https://doi.org/10.4319/lo.1996.41.5.1109" class="external-link">https://doi.org/10.4319/lo.1996.41.5.1109</a>.
+</div>
+<div id="ref-ficklin_novick2017Historicprojected" class="csl-entry">
+Ficklin, Darren L., and Kimberly A. Novick. 2017. <span>“Historic and
+Projected Changes in Vapor Pressure Deficit Suggest a Continental‐scale
+Drying of the <span>United States</span> Atmosphere.”</span> <em>Journal
+of Geophysical Research: Atmospheres</em> 122 (4): 2061–79. <a href="https://doi.org/10.1002/2016JD025855" class="external-link">https://doi.org/10.1002/2016JD025855</a>.
+</div>
+<div id="ref-hansen_etal2012Perceptionclimate" class="csl-entry">
+Hansen, James, Makiko Sato, and Reto Ruedy. 2012. <span>“Perception of
+Climate Change.”</span> <em>Proceedings of the National Academy of
+Sciences</em> 109 (37). <a href="https://doi.org/10.1073/pnas.1205276109" class="external-link">https://doi.org/10.1073/pnas.1205276109</a>.
+</div>
 <div id="ref-kang_etal2016ImpactsRapidly" class="csl-entry">
 Kang, Do Hyuk, Huilin Gao, Xiaogang Shi, Siraj ul Islam, and Stephen J.
 Déry. 2016. <span>“Impacts of a <span>Rapidly Declining Mountain
 Snowpack</span> on <span>Streamflow Timing</span> in
 <span>Canada</span>’s <span>Fraser River Basin</span>.”</span>
 <em>Scientific Reports</em> 6 (1). <a href="https://doi.org/10.1038/srep19299" class="external-link">https://doi.org/10.1038/srep19299</a>.
+</div>
+<div id="ref-karl_etal1993NewPerspective" class="csl-entry">
+Karl, Thomas R., Richard W. Knight, Kevin P. Gallo, et al. 1993.
+<span>“A <span>New Perspective</span> on <span>Recent Global
+Warming</span>: <span>Asymmetric Trends</span> of <span>Daily
+Maximum</span> and <span>Minimum Temperature</span>.”</span>
+<em>Bulletin of the American Meteorological Society</em> 74 (6):
+1007–23. <a href="https://doi.org/10.1175/1520-0477(1993)074%3C1007:ANPORG%3E2.0.CO;2" class="external-link">https://doi.org/10.1175/1520-0477(1993)074&lt;1007:ANPORG&gt;2.0.CO;2</a>.
 </div>
 <div id="ref-knowles_etal2006TrendsSnowfall" class="csl-entry">
 Knowles, Noah, Michael D. Dettinger, and Daniel R. Cayan. 2006.
@@ -6341,6 +6388,13 @@ Snow Cover Properties in <span>ERA5</span> and <span>ERA5-Land</span>
 with Several Satellite-Based Datasets in the <span>Northern
 Hemisphere</span> in Spring 1982–2018.”</span> <em>The Cryosphere</em>
 17 (12): 5007–26. <a href="https://doi.org/10.5194/tc-17-5007-2023" class="external-link">https://doi.org/10.5194/tc-17-5007-2023</a>.
+</div>
+<div id="ref-mantua_etal2010Climatechange" class="csl-entry">
+Mantua, Nathan, Ingrid Tohver, and Alan Hamlet. 2010. <span>“Climate
+Change Impacts on Streamflow Extremes and Summertime Stream Temperature
+and Their Possible Consequences for Freshwater Salmon Habitat in
+<span>Washington State</span>.”</span> <em>Climatic Change</em> 102
+(1–2): 187–223. <a href="https://doi.org/10.1007/s10584-010-9845-2" class="external-link">https://doi.org/10.1007/s10584-010-9845-2</a>.
 </div>
 <div id="ref-mote_etal2005DECLININGMOUNTAIN" class="csl-entry">
 Mote, Philip W., Alan F. Hamlet, Martyn P. Clark, and Dennis P.
@@ -6365,6 +6419,16 @@ Pederson, Gregory T., Stephen T. Gray, Connie A. Woodhouse, et al. 2011.
 <span>“The <span>Unusual Nature</span> of <span>Recent Snowpack
 Declines</span> in the <span>North American Cordillera</span>.”</span>
 <em>Science</em> 333 (6040): 332–35. <a href="https://doi.org/10.1126/science.1201570" class="external-link">https://doi.org/10.1126/science.1201570</a>.
+</div>
+<div id="ref-pepin_etal2015Elevationdependentwarming" class="csl-entry">
+Pepin, N., R. S. Bradley, H. F. Diaz, et al. 2015.
+<span>“Elevation-Dependent Warming in Mountain Regions of the
+World.”</span> <em>Nature Climate Change</em> 5 (5): 424–30. <a href="https://doi.org/10.1038/nclimate2563" class="external-link">https://doi.org/10.1038/nclimate2563</a>.
+</div>
+<div id="ref-rangwala_miller2012Climatechange" class="csl-entry">
+Rangwala, Imtiaz, and James R. Miller. 2012. <span>“Climate Change in
+Mountains: A Review of Elevation-Dependent Warming and Its Possible
+Causes.”</span> <em>Climatic Change</em> 114 (3–4): 527–47. <a href="https://doi.org/10.1007/s10584-012-0419-3" class="external-link">https://doi.org/10.1007/s10584-012-0419-3</a>.
 </div>
 <div id="ref-stewart_etal2005ChangesEarlier" class="csl-entry">
 Stewart, Iris T., Daniel R. Cayan, and Michael D. Dettinger. 2005.
