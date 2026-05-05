@@ -16,6 +16,9 @@ data/backfill/
 data/backfill_test/
 data/update/
 
+# Pipeline run logs (keep .gitkeep so the dir survives)
+logs/*.log
+
 # Exploratory rendered docs in dev/
 dev/*.html
 dev/*_files/
