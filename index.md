@@ -89,8 +89,11 @@ consumer function reads the catalog URL by default.
 
 - [Function
   reference](https://newgraphenvironment.github.io/cd/reference/)
-- [Vignette: Climate Departure for the FWCP Peace
-  Region](https://newgraphenvironment.github.io/cd/articles/peace-fwcp.html)
+- Vignettes:
+  - [Climate Departure for the FWCP Peace
+    Region](https://newgraphenvironment.github.io/cd/articles/peace-fwcp.html)
+  - [Climate Departure for the Kootenay Lake
+    Region](https://newgraphenvironment.github.io/cd/articles/kootenay-lake.html)
 
 ## Acknowledgements
 
