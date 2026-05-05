@@ -33,5 +33,14 @@
   Ficklin & Novick (paraphrase said "western US" but paper
   covers continental US with western-concentration in results) —
   fixed inline. No other edits / removals.
-- Next: Phase 4 — push branch, let CI pkgdown render verify all
-  `[@key]` markers resolve via rbbt::bbt_write_bib. Then PR.
+- Phase 4 done: regenerated `vignettes/references.bib` via
+  `rbbt::bbt_update_bib(path_rmd = "vignettes/kootenay-lake.Rmd",
+  path_bib = "vignettes/references.bib", overwrite = TRUE)`.
+  Now has 18 entries (was 11) — 8 new (arguez, eaton, ficklin,
+  hansen, karl, mantua, pepin, rangwala), 1 reuse (kang), 9 carried
+  forward from #54, 1 dropped (munoz-sabater wasn't actually cited
+  here). Spot-checked Karl 93 entry — full author list, DOI,
+  clean bibtex
+- Next: Phase 5 — push branch, open PR. Local render skipped
+  (data-raw precompute pattern + CI pkgdown will catch any cite
+  resolution issues; lighter than locally re-running the precompute)
