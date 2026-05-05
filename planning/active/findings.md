@@ -95,7 +95,75 @@ without re-adding)
 
 ## Search log (Phase 1)
 
-(Will populate during Phase 1 execution.)
+Phase 1 ran web searches against publisher landings + DOI lookups
+on the candidate list. 7 confirmed new papers (slimmer than #58's
+10-paper list since the precip+drying story relies more on existing
+collection items + cross-rag than #58 did).
+
+### Final candidate list — 7 new papers to add
+
+| # | Citation key (proposed) | Title (truncated) | Journal / Year | DOI | OA route |
+|---|---|---|---|---|---|
+| 1 | `williams_etal2020` | Large contribution from anthropogenic warming to an emerging North American megadrought | Science 368 / 2020 | `10.1126/science.aaz9600` | Paywalled, escholarship.org + emnrd.nm.gov host PDFs |
+| 2 | `ficklin_novick2017` | Historic and projected changes in vapor pressure deficit suggest a continental-scale drying of the United States atmosphere | J Geophys Res Atmos 122 / 2017 | `10.1002/2016JD025855` | AGU paywalled, RG |
+| 3 | `grossiord_etal2020` | Plant responses to rising vapor pressure deficit | New Phytologist 226 / 2020 | `10.1111/nph.16485` | Wiley paywalled, sperry.biology.utah.edu hosts PDF |
+| 4 | `trenberth_etal2014` | Global warming and changes in drought | Nat Clim Chg 4 / 2014 | `10.1038/nclimate2067` | Paywalled, OpenSky UCAR free |
+| 5 | `min_etal2011` | Human contribution to more-intense precipitation extremes | Nature 470 / 2011 | `10.1038/nature09763` | Paywalled, Edinburgh + RG host PDFs |
+| 6 | `mekis_vincent2011` | An Overview of the Second Generation Adjusted Daily Precipitation Dataset for Trend Analysis in Canada | Atmos-Ocean 49 / 2011 | `10.1080/07055900.2011.583910` | T&F (likely open via Canada.gov hosted PDF) |
+| 7 | `marvel_etal2019` | Twentieth-century hydroclimate changes consistent with human influence | Nature 569 / 2019 | `10.1038/s41586-019-1149-8` | Paywalled, NASA-GISS hosts free PDF |
+
+### Skipped from initial candidate list
+
+- **`donat_etal2013`** (HadEX2 dataset) — `min_etal2011` + `vincent_etal2018ChangesCanadas` cover the precip-extremes story sufficiently; HadEX2 would be supplementary data-paper grounding, not load-bearing for vignette claims.
+- **`mass_etal2002`** (PNW NWP QPF) — actual paper is more about NWP resolution than orographic processes per se. Generic "mountains create rain-shadows" claim in the Kootenay vignette doesn't need a load-bearing physics-of-orography paper; descriptive prose + the BC-specific Vincent 2018 / Mekis & Vincent 2011 trends suffice.
+- **`daly_etal2008`** (PRISM) — methodology paper for an alternative precip product; cd uses ERA5-Land directly, so PRISM is methodology-aside.
+- **`sheffield_wood2008`** (drought trends, J Climate) — superseded by `trenberth_etal2014` for the framework; would be supplementary.
+
+### Existing items in `climate` collection — reuse, do not re-add
+
+5 directly relevant existing items:
+
+| itemKey | BBT key | Year | Why relevant |
+|---|---|---|---|
+| `D9H2UQBZ` | `vincent_etal2018ChangesCanadas` | 2018 | Canada precip trends in same paper as temp |
+| `U2XJ5ENM` | `islam_etal2019Quantifyingprojected` | 2019 | Fraser flow regime change |
+| `G2H2KWQK` | `dierauer_etal2020Climatechange` | 2020 | BC ecoregion drought |
+| `T4V2VX25` | `warkentin_etal2022Lowsummer` | 2022 | BC summer flow + chinook |
+| `AIR5D4QW` | `munoz-sabater_etal2021ERA5Landstateoftheart` | 2021 | ERA5-Land soil-moisture validation |
+
+Plus general framing items (use sparingly per philosophy):
+`mora_etal2013projectedtiming`, `hersbach_etal2020ERA5global`,
+`moore_schindler2022Gettingahead`.
+
+### Cross-rag references — already in other rag stores
+
+- **`data/rag/snow_methodology.duckdb`:**
+  - `knowles_etal2006SnowfallVersus` — rain-vs-snow phase shift (precip phase change)
+  - `yue_wang2002Applicabilityprewhitening` — MK + autocorrelation (covers all variables)
+- **`data/rag/temp_methodology.duckdb`:**
+  - `vincent_etal2018ChangesCanadas` — Canadian temp + precip trends, Sen+MK methodology
+  - All 9 other temp-rag papers if needed for cross-cutting questions
+
+### Topics-vs-papers coverage matrix
+
+| Topic | Primary | Supporting |
+|---|---|---|
+| Precip trend methodology (Canadian / homogenized) | `mekis_vincent2011` | (existing) `vincent_etal2018ChangesCanadas` |
+| Anthropogenic precip-extremes attribution | `min_etal2011` | — |
+| Orographic / rain-shadow gradients | (descriptive prose; no load-bearing cite) | (existing) `dierauer_etal2020Climatechange` for BC ecoregion contrasts |
+| VPD trends + continental drying | `ficklin_novick2017` | (existing) `vincent_etal2018ChangesCanadas` |
+| VPD ecosystem/plant responses | `grossiord_etal2020` | — |
+| Drought attribution (NA megadrought) | `williams_etal2020` | `trenberth_etal2014` |
+| Drought framework / definition | `trenberth_etal2014` | — |
+| 20th-century hydroclimate "drying" pattern | `marvel_etal2019` | `williams_etal2020` |
+| BC / PNW summer-flow + thermal habitat | (existing) `warkentin_etal2022Lowsummer` | (existing) `islam_etal2019Quantifyingprojected` |
+| ERA5-Land soil-moisture validation | (existing) `munoz-sabater_etal2021ERA5Landstateoftheart` | — |
+| Trend test methodology | (cross-rag) `vincent_etal2018ChangesCanadas`, `yue_wang2002Applicabilityprewhitening` | — |
+
+### PDF acquisition strategy
+
+- **OA / publicly hosted (auto-fetchable via curl):** Trenberth 2014 (UCAR OpenSky), Marvel 2019 (NASA GISS), Williams 2020 (escholarship), Mekis & Vincent 2011 (Canada.gov hosted), Grossiord 2020 (Sperry lab utah.edu).
+- **Paywalled — flag for user RG download:** Ficklin & Novick 2017, Min 2011 (also Edinburgh-hosted PDF available).
 
 ## Methodology quotes by topic (Phase 4 + 5)
 

@@ -28,15 +28,19 @@ Mirrors the #58 / #54 / v0.1.7 pattern verbatim:
 
 ## Phase 1 — Targeted literature search
 
-- [ ] Web search candidate papers for DOI + access status; refine
-      candidate list to ~10 confirmed
-- [ ] Identify paywalled vs OA; ResearchGate fallback flagged for
-      user manual download
-- [ ] Cross-check existing 19 items in the `climate` collection +
-      the temp methodology rag's papers + the snow rag's papers to
-      avoid duplicate adds; capture existing item keys for reuse
-- [ ] Document final candidate list with citation key + DOI + access
-      status + topical coverage matrix in `findings.md`
+- [x] Web search candidate papers for DOI + access status; refined
+      candidate list to **7 confirmed new papers** (leaner than #58's
+      10 since precip+drying leans heavily on existing collection
+      items + cross-rag)
+- [x] Identified OA-fetchable: Trenberth 2014, Marvel 2019, Williams
+      2020, Mekis & Vincent 2011, Grossiord 2020. Paywalled needing
+      RG: Ficklin & Novick 2017, Min 2011
+- [x] Cross-checked existing 19 items in the `climate` collection
+      (5 reuse-relevant for #61) + temp/snow rag references for
+      cross-rag candidates (Knowles 2006, Vincent 2018, Yue & Wang
+      2002 — already-rag'd, no re-add)
+- [x] Documented final candidate list + 11-topic coverage matrix
+      in `findings.md` (Phase 1 search log section)
 
 Starting candidate list (will refine):
 

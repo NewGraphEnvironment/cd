@@ -17,5 +17,10 @@
   - OCR image-only scans before Zotero attach (Karl 93 + Richter
     & Kolmes 05 lesson)
   - `noun_verb` naming for new rag scripts
-- Next: Phase 1 — targeted lit search starting from the 11-paper
-  candidate list in task_plan
+- Phase 1 done: 7 new candidate papers identified (DOI + OA status
+  confirmed); 5 existing climate-collection items + cross-rag from
+  snow + temp flagged for reuse. 11-topic coverage matrix in
+  findings.md
+- Next: Phase 2 — fetch 7 PDFs (5 OA-fetchable, 2 RG-needed) →
+  add to NewGraphEnvironment/climate Zotero collection per
+  /lit-search policy (PDFs first)
