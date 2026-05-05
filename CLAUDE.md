@@ -104,8 +104,9 @@ Configurable via `cd_seasons()`. Default: standard meteorological (DJF, MAM, JJA
 - `scripts/qa_monthly.R` — month-end QA cross-check
 
 **Misc:**
-- `scripts/rag_build_snow_methodology.R` / `rag_query_snow_methodology.R` — ragnar lit review (#54)
-- `scripts/rag_build_departure_framing.R` — ragnar store for departure framing
+- `scripts/rag_snow_methodology_build.R` / `rag_snow_methodology_query.R` — ragnar lit review (#54)
+- `scripts/rag_departure_framing_build.R` — ragnar store for departure framing
+- Naming: `rag_<topic>_<verb>.R` (`noun_verb`, mirrors the `cd_*` function convention)
 - `data-raw/make_hexsticker.R` — hex sticker (reads from DESCRIPTION)
 - `data-raw/example_*.R` — bundled AOIs + context geodata for vignettes
 

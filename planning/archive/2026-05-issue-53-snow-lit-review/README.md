@@ -50,12 +50,14 @@ copy-paste exercise rather than a literature search.
 1. Download the 11 PDFs from Zotero Web API to
    `data/rag/snow_methodology_pdfs/` (one file per citation
    key, naming `{citationKey}.pdf`). The `attachKey` for each
-   paper is hardcoded in `scripts/rag_build_snow_methodology.R`.
+   paper is hardcoded in `scripts/rag_snow_methodology_build.R`
+   (renamed from `rag_build_snow_methodology.R` in #58 to match
+   the `noun_verb` convention).
 2. `ollama serve` + `ollama pull nomic-embed-text` (one-time).
-3. `Rscript scripts/rag_build_snow_methodology.R` — ~80 s,
+3. `Rscript scripts/rag_snow_methodology_build.R` — ~80 s,
    produces 1006 chunks across 11 sources.
 
-To re-mine: `Rscript scripts/rag_query_snow_methodology.R` →
+To re-mine: `Rscript scripts/rag_snow_methodology_query.R` →
 regenerates `snow_methodology_quotes.md` (raw retrieval, archived
 here at the time of merge).
 
