@@ -129,5 +129,15 @@
     `qa_snow_validation_scatter.png` — will move to archive on
     `/planning-archive`.
   - DESCRIPTION updated: `bcsnowdata` added to Suggests.
-- Next: Phase 6 (extend monthly GHA + README var inventory),
-  then Phase 7 (PR + v0.2.0 release).
+- Phase 6 implemented:
+  - Extended `scripts/pipeline_update_edh.R` (not the GHA YAML
+    itself — the workflow just calls the R script). Step 3 now
+    calls both `backfill_edh_all.py` AND `backfill_edh_snow.py`
+    per candidate year. Step 4 split into monthly path
+    (cd_aggregate) and annual path (read 1-band, stack). Refactored
+    the COG-append logic into `append_to_cog()` to avoid duplicating
+    the grid-alignment check.
+  - README: variable inventory now lists all 15 vars grouped as
+    core / snow monthly natives / snow annual derived.
+  - `parse()` clean on the R script. 166 tests pass.
+- Next: Phase 7 — final cleanup, PR, v0.2.0 release.

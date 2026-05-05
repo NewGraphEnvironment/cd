@@ -190,11 +190,29 @@ Target release: **v0.2.0** (minor bump — new variables and a new
 
 ## Phase 6 — Monthly GHA + docs
 
-- [ ] Extend `.github/workflows/climate-update.yml` to call
-      `backfill_edh_snow.py` after `backfill_edh_all.py`, OR add
-      sibling workflow `climate-update-snow.yml`. Decision based on
-      Stage 3 R aggregation shape.
-- [ ] README: add 8 new vars to the variable inventory section.
+- [x] Extended `scripts/pipeline_update_edh.R` (the script the GHA
+      calls) rather than touching the workflow YAML directly:
+      - Added `annual_dir` config alongside `monthly_dir`.
+      - Extended `agg_methods` with the 4 monthly snow natives
+        (matches `pipeline_stage3_edh.R`).
+      - Added `annual_vars` list for the 4 annual snow scalars.
+      - Step 3 now calls both `backfill_edh_all.py` AND
+        `backfill_edh_snow.py` for each candidate year, and
+        verifies all 15 outputs (7 core + 4 monthly snow + 4
+        annual snow) wrote.
+      - Step 4 split into a monthly path (cd_aggregate) and an
+        annual path (read 1-band annual TIFs, stack onto S3 COG).
+        Refactored the per-(var, period) append logic into an
+        `append_to_cog()` helper to avoid duplication between the
+        two paths.
+- [x] No changes needed to `.github/workflows/climate-update.yml` —
+      the workflow just calls `pipeline_update_edh.R`, all
+      snow-specific logic lives in the R script.
+- [x] README: variable inventory updated to list all 15 vars
+      grouped as core / snow monthly natives / snow annual derived,
+      with periods note clarifying that annual-derived vars only
+      have an "annual" period.
+- [x] `parse()` clean on `pipeline_update_edh.R`. 166 tests pass.
 
 ## Phase 7 — Release v0.2.0
 
