@@ -1,6 +1,6 @@
 Package: cd
 Title: Climate Departure Analysis from ERA5-Land Reanalysis
-Version: 0.2.2
+Version: 0.2.3
 Date: 2026-05-05
 Authors@R: c(
     person("Allan", "Irvine", , "al@newgraphenvironment.com", role = c("aut", "cre"),
