@@ -79,18 +79,25 @@ Starting candidate list (will refine):
 
 ## Phase 2 — Add to NewGraphEnvironment/climate Zotero collection
 
-- [ ] For each non-already-present paper, fetch CrossRef metadata,
-      POST to Web API with `"collections": ["8MH9LCC9"]`. Tags:
-      `temperature-departure-methodology`, `cd-issue-58`
-- [ ] Auto-attach OA PDFs via 4-step S3 upload (see /zotero-api)
-- [ ] Flag paywalled papers for user manual ResearchGate download
-      (provide RG search links + parent itemKey for drag-drop)
-- [ ] Verify all PDFs land in `~/Zotero/storage/{attachKey}/` after
-      Zotero sync; capture per-paper `citationKey + parent itemKey +
-      attachment key` in `findings.md`
-- [ ] Mirror PDFs into `data/rag/temp_methodology_pdfs/` for ragnar
-      ingestion (sidesteps Zotero "download files at sync"
-      dependency, mirrors snow recipe)
+- [x] For each of 10 candidates: CrossRef metadata fetch → POST to
+      Web API with `"collections": ["8MH9LCC9"]`, tags
+      `temperature-departure-methodology` + `cd-issue-58`
+- [x] PDF acquisition: 1 fetched via curl (Wang 12 from UAlberta),
+      9 user-provided via ResearchGate; 2 OCR'd (Karl 93, Richter &
+      Kolmes 05)
+- [x] Auto-attach all 10 PDFs via 4-step S3 upload (3 fresh uploads,
+      7 deduped via md5)
+- [x] PATCH all 10 items to clear `Citation Key: ...` override from
+      `extra` field — BBT auto-derives keys per NGE convention; soul#43
+      filed to update `/lit-search` + `/zotero-api` skills
+- [x] Captured per-paper `parent itemKey + attachment key` in
+      `findings.md`
+- [x] PDFs mirrored into `data/rag/temp_methodology_pdfs/` for
+      ragnar ingestion (gitignored)
+- [ ] **User: restart Zotero desktop** — BBT only generates citation
+      keys for Web-API-created items after a restart, not just sync.
+      Once restarted, the BBT keys can be captured into findings.md +
+      the rag script in Phase 3.
 
 ## Phase 3 — Build ragnar DuckDB store
 

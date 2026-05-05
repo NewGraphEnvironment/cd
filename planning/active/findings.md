@@ -170,16 +170,58 @@ optionally cross-query the snow rag for these:
 | Adaptation framing | (existing) `moore_schindler2022` | (Issue 3 will deepen) |
 | Trend test methodology | (cross-rag) `yue_wang2002` | (cross-rag) `najafi_etal2017` |
 
-### PDF acquisition strategy
+### PDF acquisition outcome (Phase 2)
 
-- **OA / publicly hosted (auto-fetchable via curl + Web API):**
-  `karl_etal1993` (UNL), `wang_etal2012` (AMS, post-embargo), and
-  `richter_kolmes2005` (NOAA-hosted PDF) — direct download.
-  `vincent_etal2018` likely fetchable from T&F open access landing.
-- **Paywalled — flag for user manual ResearchGate download:**
-  `easterling_etal1997`, `vose_etal2005`, `pepin_etal2015`,
-  `rangwala_miller2012`, `mantua_etal2010`, `eaton_scheller1996`.
-  All 6 have ResearchGate landings per Phase 1 search.
+Final PDF acquisition was almost entirely user-driven RG downloads —
+NOAA / UNL DigitalCommons / T&F all blocked curl with 403 / Cloudflare
+challenges. Only 1 of the 4 expected OA papers fetched cleanly via
+curl (Wang 2012 ClimateWNA from author's UAlberta page). User
+provided the other 9 via ResearchGate; 2 needed OCR (Karl 1993 image
+scan from 2000-era Acrobat 3.0 import; Richter & Kolmes 2005 27-page
+ProQuest scan). All 10 PDFs are text-layered, in
+`data/rag/temp_methodology_pdfs/`.
+
+### Zotero adds (Phase 2 — completed)
+
+10 papers POSTed to `NewGraphEnvironment/climate` (key `8MH9LCC9`)
+via Web API with PDFs attached. CrossRef-driven metadata; tags
+`temperature-departure-methodology` + `cd-issue-58`. Initial run
+mistakenly stuffed `Citation Key: <clean_key>` into the `extra`
+field; per NGE convention BBT keys are auto-derived not manually
+overridden, so all 10 items were PATCHed to clear the `extra` field
+override. **BBT will generate the actual citation keys after Zotero
+desktop restart** (sync alone doesn't trigger key generation for
+Web-API-created items per CLAUDE.md). soul#43 filed to update
+`/lit-search` + `/zotero-api` skills so future runs avoid the
+override pattern.
+
+| File label (local) | Parent itemKey | Attach itemKey | BBT citation key (post-restart) |
+|---|---|---|---|
+| `karl_etal1993` | `2FJQRX6N` | `X2UMWNUB` | (pending) |
+| `easterling_etal1997` | `E27RPMRD` | `MI3CH39H` | (pending) |
+| `vose_etal2005` | `94VFUHHZ` | `SIAFNGKV` | (pending) |
+| `vincent_etal2018` | `D9H2UQBZ` | `P7QHP3BJ` | (pending) |
+| `pepin_etal2015` | `GDFQS8ZB` | `UJVF9IFP` | (pending) |
+| `rangwala_miller2012` | `376MUXNQ` | `GR9S4I3F` | (pending) |
+| `wang_etal2012` | `NDTB37G6` | `5V7E4CWX` | (pending) |
+| `mantua_etal2010` | `T5Q9MD9E` | `E5DWJAGA` | (pending) |
+| `eaton_scheller1996` | `6VBSPJQN` | `72R34DQB` | (pending) |
+| `richter_kolmes2005` | `4ICU2XDB` | `RTU4TMRG` | (pending) |
+
+The "File label (local)" column doubles as the filename in
+`data/rag/temp_methodology_pdfs/<label>.pdf` and the script
+`pdf_specs` map's `label`. The actual BBT keys (which is what lands
+in the vignette's `[@key]` markers downstream) get captured into the
+table above once Zotero is restarted.
+
+### PDF dedup observation
+
+8 of 10 PDFs returned `{"exists": 1}` from Zotero's S3 — meaning
+Zotero already had identical bytes (md5 match) somewhere in the
+shared S3. Only `karl_etal1993`, `vose_etal2005`, and
+`richter_kolmes2005` were fresh uploads. This is global Zotero S3
+deduplication; each library still has its own attachment record
+pointing at the deduped file. No action required.
 
 ### Notes on access
 

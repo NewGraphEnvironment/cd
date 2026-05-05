@@ -16,5 +16,14 @@
   confirmed); 7 existing climate-collection items + 2 cross-rag from
   snow flagged for reuse without re-adding. Coverage matrix in
   findings.md spans all 12 topical threads
-- Next: Phase 2 — add 10 new papers to NewGraphEnvironment/climate
-  Zotero collection (PDFs first per /lit-search policy)
+- Phase 2 done: 10 papers POSTed to NewGraphEnvironment/climate via
+  Web API; PDFs attached via S3 (3 fresh uploads, 7 md5-deduped).
+  PATCH'd all 10 to clear manual Citation Key override per BBT-auto-
+  derived NGE convention (soul#43 filed to update lit-search +
+  zotero-api skills). 2 PDFs needed OCR (Karl 93, Richter 05).
+  Parent itemKey + attachKey table in findings.md
+- **User action pending: restart Zotero desktop** so BBT generates
+  citation keys for the 10 new items (sync alone doesn't trigger key
+  generation for Web-API-created items)
+- Next (after Zotero restart): capture BBT keys via local sqlite,
+  bake into Phase 3 rag_temp_methodology_build.R, run ragnar build
