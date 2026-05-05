@@ -110,5 +110,24 @@
   -75%, spring snowmelt +37% (freshet earlier), snowfall annual -6%
   (so SWE decline is mostly warmth removing snow, not less snow
   falling).
-- Next: Phase 3 ASWS QA cross-check OR Phase 6 GHA + README.
-  Phase 7 PR + v0.2.0 release after.
+- Phase 3 ASWS QA implemented and run:
+  - `data-raw/qa_snow_validation.R` pulls daily SWE for 4 active
+    ASWS sites in the FWCP Peace AOI via `bcgov/bcsnowdata`
+    (Pine Pass, Mount Sheba, Ware Upper, Aiken Lake) — 95 paired
+    site-years 1985-2025.
+  - Per-site bias is direction-variable: Pine Pass (1400 m)
+    underestimates by 61%, Aiken Lake (1050 m) overestimates by
+    54%. Ware Upper matches well. Pooled r=0.51.
+  - Critically, bias-trend regression is non-significant (p > 0.2)
+    at every site — bias is stable over time. Supports the
+    vignette's "trends still defensible" claim.
+  - Updated the vignette methodology footnote: replaced Kouki's
+    NH-wide 150-200% overestimate quote with our specific BC
+    findings (direction-variable, stable). Re-rendered: 9.2 s.
+  - QA result files saved at
+    `planning/active/qa_snow_validation_results.md` and
+    `qa_snow_validation_scatter.png` — will move to archive on
+    `/planning-archive`.
+  - DESCRIPTION updated: `bcsnowdata` added to Suggests.
+- Next: Phase 6 (extend monthly GHA + README var inventory),
+  then Phase 7 (PR + v0.2.0 release).

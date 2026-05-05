@@ -312,14 +312,27 @@ snowfall barely changed (-6%) — the SWE decline is mostly about
 warming removing snow earlier, not less snow falling.
 
 Two methodological notes for readers used to the snow-trend literature.
-ERA5-Land overestimates SWE in mountain terrain by 150-200%
-[@kouki_etal2023Evaluationsnow], so the absolute values below are biased
-high; the bias is approximately stable over time, so the trends are
-still defensible. The trend tests below use raw Mann-Kendall plus
-Theil-Sen — no pre-whitening — which is the methodologically correct
-choice for our 76-year series with strong climate trends per Yue and
-Wang [-@yue_wang2002Applicabilityprewhitening] (pre-whitening
-underestimates slope when a real trend exists).
+ERA5-Land mountain SWE bias is well-documented at the Northern
+Hemisphere scale [@kouki_etal2023Evaluationsnow]; for the FWCP Peace
+Region specifically, our QA cross-check against four BC ASWS automated
+snow-pillow stations spanning 1050-1565 m (95 paired site-years 1985-2025)
+shows the bias is *direction-variable* rather than uniformly high:
+ERA5-Land underestimates by 30-60% at high-snowpack
+Coast-Mountain-spillover sites (e.g., Pine Pass at 1400 m, observed
+1140 mm vs ERA5 439 mm) and overestimates by ~50% at drier interior
+sites (Aiken Lake at 1050 m). Crucially, the bias is *stable over time*
+at all four sites (regression of ERA5-minus-ASWS on year is
+non-significant, p > 0.2), which is what the trend-defensibility
+argument actually rests on. Absolute SWE values in the
+plots below should therefore be read as ERA5-Land's representation
+rather than as ground truth, but the trends remain interpretable. Full
+QA results: `planning/archive/.../qa_snow_validation_results.md`.
+
+The trend tests below use raw Mann-Kendall plus Theil-Sen — no
+pre-whitening — which is the methodologically correct choice for our
+76-year series with strong climate trends per Yue and Wang
+[-@yue_wang2002Applicabilityprewhitening] (pre-whitening underestimates
+slope when a real trend exists).
 
 ### Seasonal snowpack curve
 

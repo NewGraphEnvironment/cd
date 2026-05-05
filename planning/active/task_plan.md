@@ -96,17 +96,34 @@ Target release: **v0.2.0** (minor bump — new variables and a new
 
 ## Phase 3 — Producer-side QA cross-check vs ASWS / manual snow surveys
 
-- [ ] Add `bcgov/bcsnowdata` to Suggests (dev dep).
-- [ ] New `data-raw/qa_snow_validation.R`. Pull ASWS daily SWE for the
-      5 representative Peace-region sites: Fort St. John Airport
-      (4A25, 690 m), Summit Lake (4C02, 1280 m), Sikanni Lake (4C01,
-      1385 m), Fort St. James (1A07, 810 m), Kwadacha River (4A27,
-      1620 m).
-- [ ] Pull manual surveys as secondary cross-check.
-- [ ] Extract ERA5-Land `swe_max` at each site's lat/lon.
-- [ ] Scatter ERA5 vs ground truth; report correlation, mean bias,
-      bias trend over time. Document outcome in `findings.md`. If bias
-      is unstable, flag as caveat in vignette.
+- [x] Added `bcsnowdata` to Suggests in DESCRIPTION (also requires
+      `reshape` as a transitive dep, installed locally).
+- [x] New `data-raw/qa_snow_validation.R`. Site selection pivoted from
+      the explore-agent's original list (Fort St. John Airport et al.,
+      lat/lon coords were inaccurate) to active ASWS sites verified
+      via `bcsnowdata::snow_auto_location()` spatially intersected
+      with the FWCP Peace AOI: Ware Upper (4A03P, 1565 m), Mount
+      Sheba (4A18P, 1490 m), Pine Pass (4A02P, 1400 m), Aiken Lake
+      (4A30P, 1050 m), Germansen Landing (4A35P, 766 m). Germansen
+      ended up with no usable SWE record so the QA is on 4 sites,
+      95 paired site-years.
+- [x] Skipped manual-survey secondary cross-check — the ASWS bias
+      stability is clearly stable across all 4 sites with usable
+      records, so the secondary check isn't needed to support the
+      vignette claim. Documented as deferred in findings.md.
+- [x] Extracted ERA5-Land `swe_max` at each site's point lat/lon
+      via `terra::extract` on the 76-band annual COG from S3.
+- [x] Scatter, correlation, mean bias, bias-trend regression all
+      computed. Outputs at
+      `planning/active/qa_snow_validation_results.md` (text report)
+      and `qa_snow_validation_scatter.png` (plot).
+- [x] **Findings**: bias is direction-variable (Pine Pass −61%,
+      Aiken Lake +54%) rather than uniformly high as Kouki's NH
+      average suggests. **Bias is stable over time** at all 4 sites
+      (regression p > 0.2 everywhere), supporting the "trends still
+      defensible" vignette claim. Updated the vignette methodology
+      footnote with these specific BC numbers replacing the earlier
+      quote of Kouki's 150–200% NH-wide figure.
 
 ## Phase 4 — Consumer: registry + anomaly branch + tests
 
