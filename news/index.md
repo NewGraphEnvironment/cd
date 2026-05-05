@@ -1,5 +1,26 @@
 # Changelog
 
+## cd 0.2.1 (2026-05-04)
+
+- Adds a new `kootenay-lake` vignette covering the southern Kootenays —
+  KOTL + LARL + DUNC + SLOC, ~24,200 km². Reads stand-alone alongside
+  `peace-fwcp` and uses the v0.2.0 snow variables to tell a snow-pack
+  story for a region with a sharp east-west precipitation gradient
+  (Selkirks vs Purcells). Headline regional findings (2015-2025 vs
+  1951-1980): annual SWE -23%, annual snowfall -15%, freshet shift -12.6
+  days earlier, annual precipitation -7% (p = 0.02). Total annual
+  snowfall is dropping, not just melt timing shifting — consistent with
+  [Knowles et al. 2006](https://doi.org/10.1175/JCLI3850.1)’s threshold
+  finding that significant snowfall-fraction declines occur where winter
+  wet-day Tmin \> -5 °C. Adds a per-watershed-group facet view and
+  `data-raw/qa_snow_validation_kootenay_lake.R` ASWS cross-check (5
+  sites, 74 paired station-years, pooled r = 0.90, mean bias -54%,
+  bias-stable). New bundled assets:
+  `inst/extdata/example_aoi_kootenay_lake.gpkg`,
+  `inst/extdata/context_kootenay_lake.gpkg`,
+  `inst/vignette-data/kootenay_lake.rds`.
+  ([\#57](https://github.com/NewGraphEnvironment/cd/pull/57))
+
 ## cd 0.2.0 (2026-05-04)
 
 - Adds 8 snow-related variables for hydrology departure analysis. Four

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">cd</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,6 +36,10 @@
       <small>Source: <a href="https://github.com/NewGraphEnvironment/cd/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.2.1" id="cd-021-2026-05-04">cd 0.2.1 (2026-05-04)<a class="anchor" aria-label="anchor" href="#cd-021-2026-05-04"></a></h2>
+<ul><li>Adds a new <code>kootenay-lake</code> vignette covering the southern Kootenays — KOTL + LARL + DUNC + SLOC, ~24,200 km². Reads stand-alone alongside <code>peace-fwcp</code> and uses the v0.2.0 snow variables to tell a snow-pack story for a region with a sharp east-west precipitation gradient (Selkirks vs Purcells). Headline regional findings (2015-2025 vs 1951-1980): annual SWE -23%, annual snowfall -15%, freshet shift -12.6 days earlier, annual precipitation -7% (p = 0.02). Total annual snowfall is dropping, not just melt timing shifting — consistent with <a href="https://doi.org/10.1175/JCLI3850.1" class="external-link">Knowles et al. 2006</a>’s threshold finding that significant snowfall-fraction declines occur where winter wet-day Tmin &gt; -5 °C. Adds a per-watershed-group facet view and <code>data-raw/qa_snow_validation_kootenay_lake.R</code> ASWS cross-check (5 sites, 74 paired station-years, pooled r = 0.90, mean bias -54%, bias-stable). New bundled assets: <code>inst/extdata/example_aoi_kootenay_lake.gpkg</code>, <code>inst/extdata/context_kootenay_lake.gpkg</code>, <code>inst/vignette-data/kootenay_lake.rds</code>. (<a href="https://github.com/NewGraphEnvironment/cd/pull/57" class="external-link">#57</a>)</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.0" id="cd-020-2026-05-04">cd 0.2.0 (2026-05-04)<a class="anchor" aria-label="anchor" href="#cd-020-2026-05-04"></a></h2>
 <ul><li>Adds 8 snow-related variables for hydrology departure analysis. Four monthly natives (<code>swe</code>, <code>snowfall</code>, <code>snowmelt</code>, <code>snow_cover</code>) ship as 12-band/year COGs alongside the existing 7 climate variables; four annual derived scalars (<code>swe_max</code>, <code>snowfall_fraction</code>, <code>snowmelt_doy_50</code>, <code>snowmelt_rate_peak</code>) ship as 1-band/year COGs. New <code>pct_point_diff</code> anomaly type in <code><a href="../reference/cd_anomaly.html">cd_anomaly()</a></code> for <code>snow_cover</code> and <code>snowfall_fraction</code> (already-percentage variables). New “Snowpack” section in the FWCP Peace vignette with seasonal-curve table, four annual time-series plots, per-ecoregion view, and citation-grounded interpretation; ASWS QA cross-check at 4 BC stations confirms bias is stable over time even where absolute values are biased. Producer pipeline extends with <code>scripts/backfill_edh_snow.py</code> (first place ECMWF’s accumulation-reset trick lands in code). Also bug-fix in <code>cd_stac_item()</code> filename parsing (substring match was mis-routing variables whose names contain other variable names — <code>swe_max</code> was being filed under <code>swe</code>). Headline finding: regional summer SWE has collapsed by 75% over the record, freshet-timing shift is uniform across all 5 ecoregions at ~1 day/decade earlier melt. (<a href="https://github.com/NewGraphEnvironment/cd/pull/55" class="external-link">#55</a>)</li>
