@@ -18,4 +18,20 @@
     not Spatial Pattern (Peace's dominant warming gradient is E-W
     windward-of-Rockies, not pure elevation)
 - Scaffolded PWF baseline mirroring #65 structure
-- Next: Phase 1 — build citation_audit.md
+- Phase 1 done: planning/active/citation_audit.md built with 7
+  rows; per-AOI nuances vs #65 captured (VPD-drying stronger
+  here; EDW belongs at Interpretation not Spatial Pattern; DTR
+  asymmetry stronger here)
+- Phase 2 done: 7 insertions made into peace-fwcp.Rmd (+42/-30
+  lines)
+- Phase 3 done: Explore subagent verified all 7 rows. **All
+  passed.** No edits or removals required. Agent specifically
+  validated the per-AOI nuances (Ficklin's mechanism applies to
+  Peace's "VPD up despite precip up" framing; EDW cite at
+  Interpretation paragraph appropriate; Mantua's WA scope used
+  as regional reference, not BC-specific claim)
+- Phase 4 done: references.bib regen via rbbt::bbt_update_bib
+  produced no diff (peace-fwcp + kootenay-lake use the same 18
+  citation keys; bib already includes all). Local render of
+  peace-fwcp.Rmd produced 4.0 MB HTML — all cites resolve
+- Next: Phase 5 — push branch, open PR
