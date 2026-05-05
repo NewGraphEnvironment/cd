@@ -11,7 +11,7 @@ and ERA5-Land API variable names."><meta property="og:image" content="https://ne
 
     <a class="navbar-brand me-2" href="../index.html">cd</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.7</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -76,19 +76,30 @@ or NA for derived variables.</p></dd>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">cd_variables</span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 7 × 5</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   variable      long_name               unit  anomaly_type era5_name          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> tmean         Mean temperature        °C    absolute     2m_temperature     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> tmax          Maximum temperature     °C    absolute     <span style="color: #BB0000;">NA</span>                 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> tmin          Minimum temperature     °C    absolute     <span style="color: #BB0000;">NA</span>                 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> prcp          Precipitation           %     pct_normal   total_precipitation</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> vpd           Vapour pressure deficit Pa    absolute     <span style="color: #BB0000;">NA</span>                 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span> rh            Relative humidity       %     absolute     <span style="color: #BB0000;">NA</span>                 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">7</span> soil_moisture Soil moisture           %     pct_normal   <span style="color: #BB0000;">NA</span>                 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 15 × 5</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    variable           long_name                     unit  anomaly_type era5_name</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> tmean              Mean temperature              °C    absolute     2m_tempe…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> tmax               Maximum temperature           °C    absolute     <span style="color: #BB0000;">NA</span>       </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> tmin               Minimum temperature           °C    absolute     <span style="color: #BB0000;">NA</span>       </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> prcp               Precipitation                 %     pct_normal   total_pr…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> vpd                Vapour pressure deficit       Pa    absolute     <span style="color: #BB0000;">NA</span>       </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> rh                 Relative humidity             %     absolute     <span style="color: #BB0000;">NA</span>       </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> soil_moisture      Soil moisture                 %     pct_normal   <span style="color: #BB0000;">NA</span>       </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> swe                Snow water equivalent         %     pct_normal   <span style="color: #BB0000;">NA</span>       </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> snowfall           Snowfall                      %     pct_normal   <span style="color: #BB0000;">NA</span>       </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> snowmelt           Snowmelt                      %     pct_normal   <span style="color: #BB0000;">NA</span>       </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">11</span> snow_cover         Snow cover                    %     pct_point_d… <span style="color: #BB0000;">NA</span>       </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">12</span> swe_max            Annual peak snow water equiv… mm    absolute     <span style="color: #BB0000;">NA</span>       </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">13</span> snowfall_fraction  Snowfall fraction             %     pct_point_d… <span style="color: #BB0000;">NA</span>       </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">14</span> snowmelt_doy_50    Day of 50% melt               day   absolute     <span style="color: #BB0000;">NA</span>       </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">15</span> snowmelt_rate_peak Peak weekly melt rate         mm/wk absolute     <span style="color: #BB0000;">NA</span>       </span>
 <span class="r-in"><span><span class="fu">cd_variables</span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="va">variable</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "tmean"         "tmax"          "tmin"          "prcp"         </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [5] "vpd"           "rh"            "soil_moisture"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [1] "tmean"              "tmax"               "tmin"              </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [4] "prcp"               "vpd"                "rh"                </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [7] "soil_moisture"      "swe"                "snowfall"          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [10] "snowmelt"           "snow_cover"         "swe_max"           </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [13] "snowfall_fraction"  "snowmelt_doy_50"    "snowmelt_rate_peak"</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

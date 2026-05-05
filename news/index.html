@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">cd</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.7</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -35,6 +35,10 @@
       <small>Source: <a href="https://github.com/NewGraphEnvironment/cd/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.2.0" id="cd-020-2026-05-04">cd 0.2.0 (2026-05-04)<a class="anchor" aria-label="anchor" href="#cd-020-2026-05-04"></a></h2>
+<ul><li>Adds 8 snow-related variables for hydrology departure analysis. Four monthly natives (<code>swe</code>, <code>snowfall</code>, <code>snowmelt</code>, <code>snow_cover</code>) ship as 12-band/year COGs alongside the existing 7 climate variables; four annual derived scalars (<code>swe_max</code>, <code>snowfall_fraction</code>, <code>snowmelt_doy_50</code>, <code>snowmelt_rate_peak</code>) ship as 1-band/year COGs. New <code>pct_point_diff</code> anomaly type in <code><a href="../reference/cd_anomaly.html">cd_anomaly()</a></code> for <code>snow_cover</code> and <code>snowfall_fraction</code> (already-percentage variables). New “Snowpack” section in the FWCP Peace vignette with seasonal-curve table, four annual time-series plots, per-ecoregion view, and citation-grounded interpretation; ASWS QA cross-check at 4 BC stations confirms bias is stable over time even where absolute values are biased. Producer pipeline extends with <code>scripts/backfill_edh_snow.py</code> (first place ECMWF’s accumulation-reset trick lands in code). Also bug-fix in <code>cd_stac_item()</code> filename parsing (substring match was mis-routing variables whose names contain other variable names — <code>swe_max</code> was being filed under <code>swe</code>). Headline finding: regional summer SWE has collapsed by 75% over the record, freshet-timing shift is uniform across all 5 ecoregions at ~1 day/decade earlier melt. (<a href="https://github.com/NewGraphEnvironment/cd/pull/55" class="external-link">#55</a>)</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.7" id="cd-017-2026-05-04">cd 0.1.7 (2026-05-04)<a class="anchor" aria-label="anchor" href="#cd-017-2026-05-04"></a></h2>
 <ul><li>Snow-methodology literature review for the upcoming “Snowpack” vignette section. Adds <code>scripts/rag_build_snow_methodology.R</code> and <code>scripts/rag_query_snow_methodology.R</code>, builds a local ragnar DuckDB from 11 peer-reviewed papers (now in the <code>NewGraphEnvironment/hydrology</code> Zotero collection), and ships the methodology synthesis + 15-row “cite this for that” citation map at <code>planning/archive/2026-05-issue-53-snow-lit-review/findings.md</code>. Headline finding: <code><a href="../reference/cd_trend.html">cd_trend()</a></code>’s raw Mann-Kendall + Theil-Sen (no prewhitening) is methodologically correct for our 76-year series with strong trends per <a href="https://doi.org/10.1029/2001WR000861" class="external-link">Yue &amp; Wang 2002</a> — prewhitening would <em>underestimate</em> slope when a real trend exists. (<a href="https://github.com/NewGraphEnvironment/cd/pull/54" class="external-link">#54</a>)</li>

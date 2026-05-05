@@ -23,7 +23,7 @@
 
     <a class="navbar-brand me-2" href="index.html">cd</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.7</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -107,8 +107,17 @@
 <li>Catalog (JSON): <a href="https://stac-era5-land.s3.us-west-2.amazonaws.com/catalog.json" class="external-link uri">https://stac-era5-land.s3.us-west-2.amazonaws.com/catalog.json</a>
 </li>
 <li>Region: BC (~48–60° N, 114–140° W), 1950–2025, ~9 km native grid</li>
-<li>Variables: tmean, tmax, tmin, prcp, vpd, rh, soil_moisture</li>
-<li>Periods: monthly, seasonal (DJF/MAM/JJA/SON), annual</li>
+<li>Variables (15):
+<ul>
+<li>
+<strong>Core climate</strong> (7): tmean, tmax, tmin, prcp, vpd, rh, soil_moisture</li>
+<li>
+<strong>Snow monthly natives</strong> (4): swe, snowfall, snowmelt, snow_cover</li>
+<li>
+<strong>Snow annual derived</strong> (4): swe_max, snowfall_fraction, snowmelt_doy_50, snowmelt_rate_peak</li>
+</ul>
+</li>
+<li>Periods: seasonal (DJF/MAM/JJA/SON) and annual for monthly-native vars; annual only for snow_max / snowfall_fraction / snowmelt_doy_50 / snowmelt_rate_peak</li>
 </ul>
 <p>The catalog is consumable directly outside R — for example, in QGIS via the STAC plugin, in <code>gdalcubes</code>, or with any STAC-aware client. The <code><a href="reference/cd_catalog.html">cd_catalog()</a></code> consumer function reads the catalog URL by default.</p>
 </div>

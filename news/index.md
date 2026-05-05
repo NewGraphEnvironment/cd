@@ -1,5 +1,29 @@
 # Changelog
 
+## cd 0.2.0 (2026-05-04)
+
+- Adds 8 snow-related variables for hydrology departure analysis. Four
+  monthly natives (`swe`, `snowfall`, `snowmelt`, `snow_cover`) ship as
+  12-band/year COGs alongside the existing 7 climate variables; four
+  annual derived scalars (`swe_max`, `snowfall_fraction`,
+  `snowmelt_doy_50`, `snowmelt_rate_peak`) ship as 1-band/year COGs. New
+  `pct_point_diff` anomaly type in
+  [`cd_anomaly()`](https://newgraphenvironment.github.io/cd/reference/cd_anomaly.md)
+  for `snow_cover` and `snowfall_fraction` (already-percentage
+  variables). New “Snowpack” section in the FWCP Peace vignette with
+  seasonal-curve table, four annual time-series plots, per-ecoregion
+  view, and citation-grounded interpretation; ASWS QA cross-check at 4
+  BC stations confirms bias is stable over time even where absolute
+  values are biased. Producer pipeline extends with
+  `scripts/backfill_edh_snow.py` (first place ECMWF’s accumulation-reset
+  trick lands in code). Also bug-fix in `cd_stac_item()` filename
+  parsing (substring match was mis-routing variables whose names contain
+  other variable names — `swe_max` was being filed under `swe`).
+  Headline finding: regional summer SWE has collapsed by 75% over the
+  record, freshet-timing shift is uniform across all 5 ecoregions at ~1
+  day/decade earlier melt.
+  ([\#55](https://github.com/NewGraphEnvironment/cd/pull/55))
+
 ## cd 0.1.7 (2026-05-04)
 
 - Snow-methodology literature review for the upcoming “Snowpack”

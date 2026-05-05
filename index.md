@@ -70,8 +70,15 @@ public S3 bucket.
 - Catalog (JSON):
   <https://stac-era5-land.s3.us-west-2.amazonaws.com/catalog.json>
 - Region: BC (~48–60° N, 114–140° W), 1950–2025, ~9 km native grid
-- Variables: tmean, tmax, tmin, prcp, vpd, rh, soil_moisture
-- Periods: monthly, seasonal (DJF/MAM/JJA/SON), annual
+- Variables (15):
+  - **Core climate** (7): tmean, tmax, tmin, prcp, vpd, rh,
+    soil_moisture
+  - **Snow monthly natives** (4): swe, snowfall, snowmelt, snow_cover
+  - **Snow annual derived** (4): swe_max, snowfall_fraction,
+    snowmelt_doy_50, snowmelt_rate_peak
+- Periods: seasonal (DJF/MAM/JJA/SON) and annual for monthly-native
+  vars; annual only for snow_max / snowfall_fraction / snowmelt_doy_50 /
+  snowmelt_rate_peak
 
 The catalog is consumable directly outside R — for example, in QGIS via
 the STAC plugin, in `gdalcubes`, or with any STAC-aware client. The
