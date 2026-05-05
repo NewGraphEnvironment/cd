@@ -6,9 +6,14 @@
 # data/backfill/monthly/, aggregate to seasonal/annual COGs, write a STAC
 # catalog, and push everything to S3.
 #
-# Assumes Stage 2 (scripts/backfill_edh_all.py) has produced:
-#   data/backfill/monthly/{tmax,tmin,tmean,prcp,vpd,rh,soil_moisture}_YYYY.tif
-#   — 12 layers each (Jan..Dec), EPSG:4326, BC bbox.
+# Assumes Stage 2 has produced:
+#
+#   data/backfill/monthly/ — 12-band/year monthly natives
+#     {tmax,tmin,tmean,prcp,vpd,rh,soil_moisture}_YYYY.tif (from backfill_edh_all.py)
+#     {swe,snowfall,snowmelt,snow_cover}_YYYY.tif          (from backfill_edh_snow.py)
+#
+#   data/backfill/annual/ — 1-band/year annual-derived (snow only, #48)
+#     {swe_max,snowfall_fraction,snowmelt_doy_50,snowmelt_rate_peak}_YYYY.tif
 #
 # Usage:
 #   Rscript scripts/pipeline_stage3_edh.R
@@ -23,13 +28,22 @@ dry_run <- "--dry-run" %in% args
 # -- Config --------------------------------------------------------------------
 bucket <- "stac-era5-land"
 monthly_dir <- "data/backfill/monthly"
+annual_dir <- "data/backfill/annual"
 cog_dir <- "data/backfill/cogs"
 seasons <- cd_seasons()
 
 agg_methods <- c(
   tmean = "mean", tmax = "mean", tmin = "mean",
-  prcp = "sum", vpd = "mean", rh = "mean", soil_moisture = "mean"
+  prcp = "sum", vpd = "mean", rh = "mean", soil_moisture = "mean",
+  # Snow monthly natives (#48). swe is monthly mean SWE; snow_cover is monthly
+  # mean of fraction-cover. snowfall and snowmelt are monthly water-equivalent
+  # totals — annual aggregation is sum, not mean.
+  swe = "mean", snowfall = "sum", snowmelt = "sum", snow_cover = "mean"
 )
+
+# Annual-only derived vars (#48): no monthly schema; one band per year per file.
+annual_vars <- c("swe_max", "snowfall_fraction",
+                 "snowmelt_doy_50", "snowmelt_rate_peak")
 
 dir.create(cog_dir, recursive = TRUE, showWarnings = FALSE)
 
@@ -87,6 +101,48 @@ for (var in all_vars) {
     cd_cog_write(multi, cog_path, overwrite = TRUE)
     log_msg(sprintf("    wrote %s (%d years)", basename(cog_path), nlyr(multi)))
   }
+}
+
+# -- Step 1b: Stack annual-derived vars into multi-year COGs ------------------
+# These bypass cd_aggregate (no monthly input, no seasonal layer) and just
+# concatenate the per-year 1-band TIFs from data/backfill/annual/ into a
+# single multi-band COG, year-named, written as {var}_annual.tif.
+log_msg("=== STEP 1b: Stack annual-derived COGs (#48 snow scalars) ===")
+
+for (var in annual_vars) {
+  annual_files <- list.files(
+    annual_dir,
+    pattern = paste0("^", var, "_\\d{4}\\.tif$"),
+    full.names = TRUE
+  )
+  if (length(annual_files) == 0) {
+    log_msg("  ", var, ": no annual files, skipping")
+    next
+  }
+  years <- sort(as.integer(
+    sub(paste0(var, "_(\\d{4})\\.tif"), "\\1", basename(annual_files))
+  ))
+  log_msg(sprintf("  %s (annual-derived): %d years (%d-%d)",
+                  var, length(years), min(years), max(years)))
+
+  cog_path <- file.path(cog_dir, paste0(var, "_annual.tif"))
+  year_layers <- list()
+  for (yr in years) {
+    af <- file.path(annual_dir, paste0(var, "_", yr, ".tif"))
+    r <- rast(af)
+    if (nlyr(r) != 1) {
+      warning(sprintf("%s %d: has %d layers, expected 1, skipping",
+                      var, yr, nlyr(r)), call. = FALSE)
+      next
+    }
+    year_layers[[as.character(yr)]] <- r
+  }
+  if (length(year_layers) == 0) next
+
+  multi <- rast(year_layers)
+  names(multi) <- names(year_layers)
+  cd_cog_write(multi, cog_path, overwrite = TRUE)
+  log_msg(sprintf("    wrote %s (%d years)", basename(cog_path), nlyr(multi)))
 }
 
 # -- Step 2: STAC catalog ------------------------------------------------------
