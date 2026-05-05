@@ -226,7 +226,10 @@ First 10 rows of the extracted climate time series. {.table}
 ## Trends
 
 Anomalies are computed against a pre-warming reference period —
-1951–1980, the three decades before climate change accelerated. Saying a
+1951–1980, the three decades before climate change accelerated. This is
+the same base period Hansen et al.
+([2012](#ref-hansen_etal2012Perceptionclimate)) use to detect the
+emergence of 3-sigma summertime-temperature outliers globally. Saying a
 year is “+1.5 °C” means it was 1.5 °C warmer than the average year
 between 1951 and 1980.
 
@@ -237,10 +240,11 @@ trends from two different start years:
   magnitude of warming since the pre-warming reference.
 - **1981–present (45 years)** — starts at the beginning of the World
   Meteorological Organization’s most recent 30-year “climate normal”
-  (1981–2010). This is the reference period used in most published
-  climate products, so it makes results easy to compare against
-  Intergovernmental Panel on Climate Change reports and government
-  climate summaries.
+  (1981–2010) ([Arguez and Vose
+  2011](#ref-arguez_vose2011DefinitionStandard)). This is the reference
+  period used in most published climate products, so it makes results
+  easy to compare against Intergovernmental Panel on Climate Change
+  reports and government climate summaries.
 
 Comparing the two slopes is informative. If the 45-year slope is steeper
 than the 75-year slope, warming has accelerated — recent decades are
@@ -427,9 +431,9 @@ The cd package ships daytime maximum (tmax) and overnight minimum (tmin)
 temperatures alongside the daily mean. They carry distinct information.
 Overnight minimums warming faster than daytime maximums — the “day-night
 asymmetry” — is one of the textbook fingerprints of greenhouse warming
-(Karl et al. 1993). Whether a watershed or region shows that signal
-depends on local geography (valley inversions, snow cover, slope-aspect
-mix).
+([Karl et al. 1993](#ref-karl_etal1993NewPerspective)). Whether a
+watershed or region shows that signal depends on local geography (valley
+inversions, snow cover, slope-aspect mix).
 
 For the FWCP Peace Region, **overnight minimums are warming faster than
 daytime maximums** — the textbook day-night asymmetry. Daytime maximums
@@ -1274,8 +1278,12 @@ mean temperatures all tell the same story. There is no thermal hot spot.
 The whole region has moved together. A subtle gradient does emerge — the
 northern, higher-elevation ecoregions (Omineca Mountains, Boreal
 Mountains and Plateaus) warmed about 0.2 °C more than the southern
-Fraser Basin, consistent with the well-documented pattern of
-high-latitude and high-elevation amplification — but it is small
+Fraser Basin, consistent with the elevation-dependent warming signal
+documented at mid-latitude mountain sites ([Pepin et al.
+2015](#ref-pepin_etal2015Elevationdependentwarming)), though the
+regional evidence base remains heterogeneous and not every mountain
+region shows the same pattern ([Rangwala and Miller
+2012](#ref-rangwala_miller2012Climatechange)). The gradient is small
 relative to the regional signal.
 
 **Precipitation is increasing significantly only in the two northernmost
@@ -1301,10 +1309,14 @@ natural variability.
 **The atmosphere is drying despite, in places, more precipitation.**
 Vapour pressure deficit — the gap between how much water the air could
 hold and how much it actually does — rose significantly in every
-ecoregion (p \< 0.005 across all five). Warmer air holds more water
-before saturating, and that pulls moisture out of soil and vegetation
-through evaporation and transpiration. Soil moisture is essentially flat
-in every ecoregion — even where precipitation increased — because the
+ecoregion (p \< 0.005 across all five), mirroring the continental-scale
+drying that Ficklin and Novick
+([2017](#ref-ficklin_novick2017Historicprojected)) documented for the
+United States as a whole, driven by combined air-temperature increases
+and relative-humidity changes. Warmer air holds more water before
+saturating, and that pulls moisture out of soil and vegetation through
+evaporation and transpiration. Soil moisture is essentially flat in
+every ecoregion — even where precipitation increased — because the
 warmer atmosphere is drinking the extra water back. This is the headline
 ecological finding for the region: water inputs may be rising in places,
 but soil and vegetation are not seeing more available moisture.
@@ -1337,18 +1349,28 @@ suppresses that variability.
 For the cold-water resident salmonids the FWCP Peace supports — bull
 trout, Arctic grayling, mountain whitefish, rainbow trout, kokanee —
 these signals compound. Stream temperatures are likely rising in step
-with warmer ambient air temperatures; the evapotranspiration imbalance
-means low-flow conditions in late summer are not being relieved by the
-precipitation increase that did occur; and the cold-water input that
-high-elevation snowpack provides to streams during the warmest, most
-thermally stressful weeks of summer is dropping in parallel with summer
-SWE. The spring freshet — the dominant high-flow event that shapes
-channel morphology, mobilizes spawning gravels, and refills off-channel
-rearing habitat — is shifting weeks earlier; the neighbouring Fraser
-Basin documents the same kind of freshet advance (Kang et al. 2016) at
-comparable magnitude.
+with warmer ambient air temperatures, with the combined effects of
+warming summer stream temperatures and altered low flows likely reducing
+thermally-suitable habitat for cold-water species ([Mantua et al.
+2010](#ref-mantua_etal2010Climatechange); [Eaton and Scheller
+1996](#ref-eaton_scheller1996Effectsclimate)). The evapotranspiration
+imbalance means low-flow conditions in late summer are not being
+relieved by the precipitation increase that did occur; and the
+cold-water input that high-elevation snowpack provides to streams during
+the warmest, most thermally stressful weeks of summer is dropping in
+parallel with summer SWE. The spring freshet — the dominant high-flow
+event that shapes channel morphology, mobilizes spawning gravels, and
+refills off-channel rearing habitat — is shifting weeks earlier; the
+neighbouring Fraser Basin documents the same kind of freshet advance
+([Kang et al. 2016](#ref-kang_etal2016ImpactsRapidly)) at comparable
+magnitude.
 
 ## References
+
+Arguez, Anthony, and Russell S. Vose. 2011. “The Definition of the
+Standard WMO Climate Normal: The Key to Deriving Alternative Climate
+Normals.” *Bulletin of the American Meteorological Society* 92 (6):
+699–704. <https://doi.org/10.1175/2010BAMS2955.1>.
 
 Cayan, Daniel R., Michael D. Dettinger, Susan A. Kammerdiener, Joseph M.
 Caprio, and David H. Peterson. 2001. “Changes in the Onset of Spring in
@@ -1356,10 +1378,31 @@ the Western United States.” *Bulletin of the American Meteorological
 Society* 82 (3): 399–415.
 <https://doi.org/10.1175/1520-0477(2001)082%3C0399:citoos%3E2.3.co;2>.
 
+Eaton, John G., and Robert M. Scheller. 1996. “Effects of Climate
+Warming on Fish Thermal Habitat in Streams of the United States.”
+*Limnology and Oceanography* 41 (5): 1109–15.
+<https://doi.org/10.4319/lo.1996.41.5.1109>.
+
+Ficklin, Darren L., and Kimberly A. Novick. 2017. “Historic and
+Projected Changes in Vapor Pressure Deficit Suggest a Continental‐scale
+Drying of the United States Atmosphere.” *Journal of Geophysical
+Research: Atmospheres* 122 (4): 2061–79.
+<https://doi.org/10.1002/2016JD025855>.
+
+Hansen, James, Makiko Sato, and Reto Ruedy. 2012. “Perception of Climate
+Change.” *Proceedings of the National Academy of Sciences* 109 (37).
+<https://doi.org/10.1073/pnas.1205276109>.
+
 Kang, Do Hyuk, Huilin Gao, Xiaogang Shi, Siraj ul Islam, and Stephen J.
 Déry. 2016. “Impacts of a Rapidly Declining Mountain Snowpack on
 Streamflow Timing in Canada’s Fraser River Basin.” *Scientific Reports*
 6 (1). <https://doi.org/10.1038/srep19299>.
+
+Karl, Thomas R., Richard W. Knight, Kevin P. Gallo, et al. 1993. “A New
+Perspective on Recent Global Warming: Asymmetric Trends of Daily Maximum
+and Minimum Temperature.” *Bulletin of the American Meteorological
+Society* 74 (6): 1007–23.
+<https://doi.org/10.1175/1520-0477(1993)074%3C1007:ANPORG%3E2.0.CO;2>.
 
 Knowles, Noah, Michael D. Dettinger, and Daniel R. Cayan. 2006. “Trends
 in Snowfall Versus Rainfall in the Western United States.” *Journal of
@@ -1369,6 +1412,12 @@ Kouki, Kerttu, Kari Luojus, and Aku Riihelä. 2023. “Evaluation of Snow
 Cover Properties in ERA5 and ERA5-Land with Several Satellite-Based
 Datasets in the Northern Hemisphere in Spring 1982–2018.” *The
 Cryosphere* 17 (12): 5007–26. <https://doi.org/10.5194/tc-17-5007-2023>.
+
+Mantua, Nathan, Ingrid Tohver, and Alan Hamlet. 2010. “Climate Change
+Impacts on Streamflow Extremes and Summertime Stream Temperature and
+Their Possible Consequences for Freshwater Salmon Habitat in Washington
+State.” *Climatic Change* 102 (1–2): 187–223.
+<https://doi.org/10.1007/s10584-010-9845-2>.
 
 Mote, Philip W., Alan F. Hamlet, Martyn P. Clark, and Dennis P.
 Lettenmaier. 2005. “DECLINING MOUNTAIN SNOWPACK IN WESTERN NORTH
@@ -1389,6 +1438,15 @@ Pederson, Gregory T., Stephen T. Gray, Connie A. Woodhouse, et al. 2011.
 “The Unusual Nature of Recent Snowpack Declines in the North American
 Cordillera.” *Science* 333 (6040): 332–35.
 <https://doi.org/10.1126/science.1201570>.
+
+Pepin, N., R. S. Bradley, H. F. Diaz, et al. 2015. “Elevation-Dependent
+Warming in Mountain Regions of the World.” *Nature Climate Change* 5
+(5): 424–30. <https://doi.org/10.1038/nclimate2563>.
+
+Rangwala, Imtiaz, and James R. Miller. 2012. “Climate Change in
+Mountains: A Review of Elevation-Dependent Warming and Its Possible
+Causes.” *Climatic Change* 114 (3–4): 527–47.
+<https://doi.org/10.1007/s10584-012-0419-3>.
 
 Stewart, Iris T., Daniel R. Cayan, and Michael D. Dettinger. 2005.
 “Changes Toward Earlier Streamflow Timing Across Western North America.”
