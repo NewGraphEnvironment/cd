@@ -1,5 +1,38 @@
 # Changelog
 
+## cd 0.2.5 (2026-05-05)
+
+- Wires up `vignettes/kootenay-lake.Rmd` interpretation paragraphs with
+  citations from the climate-departure 3-split lit reviews
+  ([\#53](https://github.com/NewGraphEnvironment/cd/issues/53)/#58/#61/#63).
+  8 new BBT-keyed citations + 1 reuse, sparingly applied per the
+  plain-language vignette philosophy. Insertions span all four non-snow
+  interp themes: Trends/baseline-window ([Hansen et
+  al. 2012](https://doi.org/10.1073/pnas.1205276109), [Arguez & Vose
+  2011](https://doi.org/10.1175/2010BAMS2955.1)), DTR asymmetry ([Karl
+  et
+  al. 1993](https://doi.org/10.1175/1520-0477(1993)074%3C1007:ANPORG%3E2.0.CO;2)),
+  elevation-dependent warming ([Pepin et
+  al. 2015](https://doi.org/10.1038/nclimate2563); [Rangwala & Miller
+  2012](https://doi.org/10.1007/s10584-012-0419-3)), continental-scale
+  VPD drying ([Ficklin & Novick
+  2017](https://doi.org/10.1002/2016JD025855)), and the
+  climate→stream-temperature→fish thermal-habitat bridge ([Mantua et
+  al. 2010](https://doi.org/10.1007/s10584-010-9845-2); [Eaton &
+  Scheller 1996](https://doi.org/10.4319/lo.1996.41.5.1109)). Audit log
+  at
+  `planning/archive/2026-05-issue-65-kootenay-vignette-wireup/citation_audit.md`
+  records, per cite, the vignette excerpt, source quote, rag store +
+  topic where retrieved, and paraphrase as written — the “what is where
+  by who said what where” trail. An independent Explore subagent
+  verified each row against source quote archives and PDFs before merge;
+  one minor scope concern surfaced (Ficklin & Novick paraphrase narrowed
+  continental-US scope to “western US”) and was fixed inline.
+  `vignettes/references.bib` regenerated via `rbbt::bbt_update_bib()` —
+  now 18 entries (was 11). Snow-section citations from
+  [\#54](https://github.com/NewGraphEnvironment/cd/issues/54) untouched.
+  ([\#66](https://github.com/NewGraphEnvironment/cd/pull/66))
+
 ## cd 0.2.4 (2026-05-05)
 
 - Interpretation framing methodology literature review — wraps the

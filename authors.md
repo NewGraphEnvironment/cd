@@ -13,13 +13,13 @@ Source:
 [`DESCRIPTION`](https://github.com/NewGraphEnvironment/cd/blob/main/DESCRIPTION)
 
 Irvine A (2026). *cd: Climate Departure Analysis from ERA5-Land
-Reanalysis*. R package version 0.2.4,
+Reanalysis*. R package version 0.2.5,
 <https://github.com/NewGraphEnvironment/cd>.
 
     @Manual{,
       title = {cd: Climate Departure Analysis from ERA5-Land Reanalysis},
       author = {Allan Irvine},
       year = {2026},
-      note = {R package version 0.2.4},
+      note = {R package version 0.2.5},
       url = {https://github.com/NewGraphEnvironment/cd},
     }
