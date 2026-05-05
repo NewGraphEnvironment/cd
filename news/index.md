@@ -1,5 +1,37 @@
 # Changelog
 
+## cd 0.2.3 (2026-05-05)
+
+- Precipitation + drying methodology literature review (2/3 of the
+  climate-departure 3-split; temperature done in v0.2.2, interpretation
+  framing forthcoming). Adds
+  `scripts/rag_precip_drying_methodology_build.R` and
+  `scripts/rag_precip_drying_methodology_query.R`, builds a local ragnar
+  DuckDB from 7 peer-reviewed papers (now in the
+  `NewGraphEnvironment/climate` Zotero collection), and ships the
+  methodology synthesis + 15-row “cite this for that” citation map at
+  `planning/archive/2026-05-issue-61-precip-drying-lit-review/findings.md`.
+  Coverage spans anthropogenic precip-extremes attribution ([Min et
+  al. 2011](https://doi.org/10.1038/nature09763)), Canadian / BC
+  adjusted precip dataset methodology ([Mekis & Vincent
+  2011](https://doi.org/10.1080/07055900.2011.583910)), VPD
+  continental-scale drying ([Ficklin & Novick
+  2017](https://doi.org/10.1002/2016JD025855)), VPD ecosystem responses
+  ([Grossiord et al. 2020](https://doi.org/10.1111/nph.16485)), drought
+  attribution ([Williams et
+  al. 2020](https://doi.org/10.1126/science.aaz9600)), drought framework
+  ([Trenberth et al. 2014](https://doi.org/10.1038/nclimate2067)), and
+  20th-century hydroclimate signal ([Marvel et
+  al. 2019](https://doi.org/10.1038/s41586-019-1149-8)). Headline
+  finding: the v0.1.1 vignette claim that “soils dry from both ↓P and
+  ↑ET” is now backed by Ficklin & Novick (2017) rising-VPD continental
+  drying + Williams (2020) anthropogenic-warming attribution of NA
+  megadrought + Trenberth (2014) Penman-Monteith drought framework.
+  Macos Zotero auto-restart pattern (`osascript quit` + `open -a` + 30 s
+  wait) automated the BBT key generation step end-to-end (added to
+  `soul#43` for `/lit-search` + `/zotero-api`).
+  ([\#62](https://github.com/NewGraphEnvironment/cd/pull/62))
+
 ## cd 0.2.2 (2026-05-05)
 
 - Temperature-departure methodology literature review (1/3 of the
