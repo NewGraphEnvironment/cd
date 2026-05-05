@@ -1,5 +1,36 @@
 # Changelog
 
+## cd 0.2.4 (2026-05-05)
+
+- Interpretation framing methodology literature review — wraps the
+  climate-departure 3-split (snow done in v0.1.7, temperature in v0.2.2,
+  precip+drying in v0.2.3, **interpretation framing here**). Adds
+  `scripts/rag_interpretation_framing_build.R` and
+  `scripts/rag_interpretation_framing_query.R`, builds a local ragnar
+  DuckDB from 4 peer-reviewed papers (now in the
+  `NewGraphEnvironment/climate` Zotero collection), and ships the
+  methodology synthesis + 11-row “cite this for that” citation map at
+  `planning/archive/2026-05-issue-63-interpretation-framing-lit-review/findings.md`.
+  Coverage spans WMO climate normal definition + alternatives ([Arguez &
+  Vose 2011](https://doi.org/10.1175/2010BAMS2955.1)), estimating
+  normals when trends exist ([Livezey et
+  al. 2007](https://doi.org/10.1175/2007JAMC1666.1)), time of emergence
+  / signal-to-noise framing ([Hawkins & Sutton
+  2012](https://doi.org/10.1029/2011GL050087)), and cumulative-impact /
+  “loaded dice” framing ([Hansen et
+  al. 2012](https://doi.org/10.1073/pnas.1205276109)). Headline finding:
+  Hansen et al. (2012) explicitly use the **same 1951–1980 base period
+  that cd uses**, providing the strongest direct precedent for cd’s
+  baseline window choice across all three lit reviews; combined with
+  Arguez & Vose (2011)’s framework, cd’s choice is a defensible
+  “alternative climate normal” with cumulative-impact framing for FWCP
+  fish-passage planner reporting. After this release, the citation
+  backbone for the climate-departure 3-split is complete: 32
+  peer-reviewed papers across 4 ragnar stores, with cite-this-for-that
+  maps in 4 archived findings.md files ready for the downstream vignette
+  wire-up branch.
+  ([\#64](https://github.com/NewGraphEnvironment/cd/pull/64))
+
 ## cd 0.2.3 (2026-05-05)
 
 - Precipitation + drying methodology literature review (2/3 of the
