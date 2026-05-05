@@ -25,5 +25,10 @@
 - **User action pending: restart Zotero desktop** so BBT generates
   citation keys for the 10 new items (sync alone doesn't trigger key
   generation for Web-API-created items)
-- Next (after Zotero restart): capture BBT keys via local sqlite,
-  bake into Phase 3 rag_temp_methodology_build.R, run ragnar build
+- Phase 3 done: scripts/rag_temp_methodology_build.R cloned from
+  snow build script with 10-paper pdf_specs map; built
+  data/rag/temp_methodology.duckdb (677 chunks, 10 sources, ~28 s).
+  Sanity-tested retrieval on a DTR query — returns expected papers
+- Next: Phase 4 — write rag_temp_methodology_query.R, mine the
+  store across 8 query topics, capture raw retrieval to
+  planning/active/temp_methodology_quotes.md

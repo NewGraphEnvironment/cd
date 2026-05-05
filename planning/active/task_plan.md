@@ -101,13 +101,16 @@ Starting candidate list (will refine):
 
 ## Phase 3 — Build ragnar DuckDB store
 
-- [ ] Clone `scripts/rag_snow_methodology_build.R` (post-Phase-0
-      rename) → `scripts/rag_temp_methodology_build.R`. Adapt header
-      docstring + `pdf_specs` map
-- [ ] Run `Rscript scripts/rag_temp_methodology_build.R` — target
-      ~800-1200 chunks across ~10 sources via Ollama
-      `nomic-embed-text`
-- [ ] Verify chunk count + source count via DBI queries
+- [x] Cloned `scripts/rag_snow_methodology_build.R` →
+      `scripts/rag_temp_methodology_build.R`. Adapted header
+      docstring + 10-paper `pdf_specs` map
+- [x] Ran `Rscript scripts/rag_temp_methodology_build.R` — built
+      `data/rag/temp_methodology.duckdb` with **677 chunks across
+      10 sources** via Ollama `nomic-embed-text` (~28 s)
+- [x] Verified retrieval: query for "diurnal temperature range
+      minimum maximum asymmetry" returns sensible top-3 chunks
+      (Karl 93 abstract + DTR variable construction, Rangwala &
+      Miller 12 alpine trends, Vincent 18 nighttime asymmetry)
 
 ## Phase 4 — Mine the store for methodology quotes
 
