@@ -1,5 +1,31 @@
 # Changelog
 
+## cd 0.2.6 (2026-05-05)
+
+- Wires up `vignettes/peace-fwcp.Rmd` interpretation paragraphs with
+  citations from the climate-departure 3-split lit reviews — companion
+  to v0.2.5’s kootenay-lake wire-up. Same 7-insertion pattern (8 unique
+  new keys + 1 reuse), sparingly applied per the plain-language vignette
+  philosophy. Two AOI-specific tweaks vs the kootenay PR: the
+  `[@pepin_etal2015Elevationdependentwarming; `[`@rangwala_miller2012Climatechange`](https://github.com/rangwala_miller2012Climatechange)`]`
+  cite lands at the **Interpretation paragraph** rather than the Spatial
+  Pattern section (Peace’s dominant warming gradient is east-west /
+  windward-of-Rockies, not pure elevation), and the
+  \[@ficklin_novick2017Historicprojected\] VPD-drying cite is **stronger
+  here** than in Kootenay because Peace’s precipitation is *up* 3-4% in
+  2 ecoregions yet soil moisture is flat — pure VPD-driven
+  evaporative-demand effect. Audit log at
+  `planning/archive/2026-05-issue-67-peace-vignette-wireup/citation_audit.md`
+  records the per-cite source quote, paraphrase, and visible-in-vignette
+  warrant. An independent Explore subagent verified each row against
+  source quote archives + PDFs and signed off all 7 cites with zero
+  edits or removals required (stronger pass than the v0.2.5 review,
+  which caught one minor scope nit). `vignettes/references.bib` regen
+  produced no diff — both vignettes draw from the same 18-key union.
+  Snow-section citations from
+  [\#54](https://github.com/NewGraphEnvironment/cd/issues/54) untouched.
+  ([\#68](https://github.com/NewGraphEnvironment/cd/pull/68))
+
 ## cd 0.2.5 (2026-05-05)
 
 - Wires up `vignettes/kootenay-lake.Rmd` interpretation paragraphs with
