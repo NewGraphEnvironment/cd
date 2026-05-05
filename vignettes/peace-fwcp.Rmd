@@ -174,7 +174,9 @@ knitr::kable(head(ts, 10),
 ## Trends
 
 Anomalies are computed against a pre-warming reference period — 1951–1980,
-the three decades before climate change accelerated. Saying a year is
+the three decades before climate change accelerated. This is the same base
+period @hansen_etal2012Perceptionclimate use to detect the emergence of
+3-sigma summertime-temperature outliers globally. Saying a year is
 "+1.5 °C" means it was 1.5 °C warmer than the average year between 1951
 and 1980.
 
@@ -185,10 +187,10 @@ from two different start years:
   magnitude of warming since the pre-warming reference.
 - **1981–present (45 years)** — starts at the beginning of the World
   Meteorological Organization's most recent 30-year "climate normal"
-  (1981–2010). This is the reference period used in most published
-  climate products, so it makes results easy to compare against
-  Intergovernmental Panel on Climate Change reports and government
-  climate summaries.
+  (1981–2010) [@arguez_vose2011DefinitionStandard]. This is the
+  reference period used in most published climate products, so it
+  makes results easy to compare against Intergovernmental Panel on
+  Climate Change reports and government climate summaries.
 
 Comparing the two slopes is informative. If the 45-year slope is steeper
 than the 75-year slope, warming has accelerated — recent decades are
@@ -235,9 +237,9 @@ The cd package ships daytime maximum (tmax) and overnight minimum (tmin)
 temperatures alongside the daily mean. They carry distinct information.
 Overnight minimums warming faster than daytime maximums — the
 "day-night asymmetry" — is one of the textbook fingerprints of
-greenhouse warming (Karl et al. 1993). Whether a watershed or region
-shows that signal depends on local geography (valley inversions, snow
-cover, slope-aspect mix).
+greenhouse warming [@karl_etal1993NewPerspective]. Whether a
+watershed or region shows that signal depends on local geography
+(valley inversions, snow cover, slope-aspect mix).
 
 For the FWCP Peace Region, **overnight minimums are warming faster
 than daytime maximums** — the textbook day-night asymmetry. Daytime
@@ -859,9 +861,12 @@ mean temperatures all tell the same story. There is no thermal hot
 spot. The whole region has moved together. A subtle gradient does
 emerge — the northern, higher-elevation ecoregions (Omineca Mountains,
 Boreal Mountains and Plateaus) warmed about 0.2 °C more than the
-southern Fraser Basin, consistent with the well-documented pattern of
-high-latitude and high-elevation amplification — but it is small
-relative to the regional signal.
+southern Fraser Basin, consistent with the elevation-dependent
+warming signal documented at mid-latitude mountain sites
+[@pepin_etal2015Elevationdependentwarming], though the regional
+evidence base remains heterogeneous and not every mountain region
+shows the same pattern [@rangwala_miller2012Climatechange]. The
+gradient is small relative to the regional signal.
 
 **Precipitation is increasing significantly only in the two
 northernmost ecoregions.** Across the FWCP Peace as a whole, the
@@ -887,14 +892,17 @@ distinguishable from natural variability.
 **The atmosphere is drying despite, in places, more precipitation.**
 Vapour pressure deficit — the gap between how much water the air
 could hold and how much it actually does — rose significantly in
-every ecoregion (p < 0.005 across all five). Warmer air holds more
-water before saturating, and that pulls moisture out of soil and
-vegetation through evaporation and transpiration. Soil moisture is
-essentially flat in every ecoregion — even where precipitation
-increased — because the warmer atmosphere is drinking the extra
-water back. This is the headline ecological finding for the region:
-water inputs may be rising in places, but soil and vegetation are
-not seeing more available moisture.
+every ecoregion (p < 0.005 across all five), mirroring the
+continental-scale drying that @ficklin_novick2017Historicprojected
+documented for the United States as a whole, driven by combined
+air-temperature increases and relative-humidity changes. Warmer
+air holds more water before saturating, and that pulls moisture
+out of soil and vegetation through evaporation and transpiration.
+Soil moisture is essentially flat in every ecoregion — even where
+precipitation increased — because the warmer atmosphere is drinking
+the extra water back. This is the headline ecological finding for
+the region: water inputs may be rising in places, but soil and
+vegetation are not seeing more available moisture.
 
 **Snow is leaving the region earlier, not falling less.** Annual
 snowfall across the FWCP Peace is essentially unchanged (-6%); the
@@ -925,16 +933,20 @@ because spatial averaging suppresses that variability.
 For the cold-water resident salmonids the FWCP Peace supports —
 bull trout, Arctic grayling, mountain whitefish, rainbow trout,
 kokanee — these signals compound. Stream temperatures are likely
-rising in step with warmer ambient air temperatures; the
-evapotranspiration imbalance means low-flow conditions in late
-summer are not being relieved by the precipitation increase that
-did occur; and the cold-water input that high-elevation snowpack
-provides to streams during the warmest, most thermally stressful
-weeks of summer is dropping in parallel with summer SWE. The
-spring freshet — the dominant high-flow event that shapes channel
-morphology, mobilizes spawning gravels, and refills off-channel
-rearing habitat — is shifting weeks earlier; the neighbouring
-Fraser Basin documents the same kind of freshet advance (Kang et
-al. 2016) at comparable magnitude.
+rising in step with warmer ambient air temperatures, with the
+combined effects of warming summer stream temperatures and
+altered low flows likely reducing thermally-suitable habitat for
+cold-water species [@mantua_etal2010Climatechange;
+@eaton_scheller1996Effectsclimate]. The evapotranspiration
+imbalance means low-flow conditions in late summer are not being
+relieved by the precipitation increase that did occur; and the
+cold-water input that high-elevation snowpack provides to streams
+during the warmest, most thermally stressful weeks of summer is
+dropping in parallel with summer SWE. The spring freshet — the
+dominant high-flow event that shapes channel morphology,
+mobilizes spawning gravels, and refills off-channel rearing
+habitat — is shifting weeks earlier; the neighbouring Fraser
+Basin documents the same kind of freshet advance
+[@kang_etal2016ImpactsRapidly] at comparable magnitude.
 
 ## References
