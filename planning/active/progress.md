@@ -27,5 +27,21 @@
   + precip+drying stores cover the framing topics
 - 2 OA PDFs in cache (Hansen 2012, Livezey 2007); 2 RG-needed
   flagged for user (Arguez & Vose 2011, Hawkins & Sutton 2012)
-- Next: Phase 2 — fetch the 2 RG PDFs, then Zotero adds via Web
-  API + auto-restart for BBT key gen
+- Phase 2 done: 4 PDFs in cache (2 curl, 2 user-RG, no OCR
+  needed); 4 papers POSTed to NewGraphEnvironment/climate; auto-
+  restart fired and all 4 BBT keys captured cleanly
+- Phase 3 done: scripts/rag_interpretation_framing_build.R built
+  data/rag/interpretation_framing.duckdb (291 chunks, 4 sources,
+  ~10 s)
+- Phase 4 done: scripts/rag_interpretation_framing_query.R written;
+  16 queries × top-5 = 80 candidate chunks captured to
+  planning/active/interpretation_framing_quotes.md (373 lines).
+  All 4 papers contributing healthy share of hits
+- Phase 5 done: synthesis section in findings.md covers 6 topics;
+  11-row "cite this for that" map with BBT keys baked in.
+  Headline finding: Hansen 2012 uses the 1951–1980 base period —
+  same as cd — providing the strongest direct precedent for cd's
+  baseline choice across all three lit reviews
+- Next: Phase 6 — /code-check, push branch, open PR (Fixes #63,
+  SRED tag in body), /planning-archive after merge, release v0.2.4
+  → 3-split complete

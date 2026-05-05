@@ -56,66 +56,67 @@ Already in `climate` collection (no re-add): `mora_etal2013projectedtiming`,
 
 ## Phase 2 — Add to NewGraphEnvironment/climate Zotero collection
 
-- [ ] For each new paper: CrossRef metadata fetch → POST to Web API
-      with `"collections": ["8MH9LCC9"]`, tags
-      `interpretation-framing-methodology` + `cd-issue-63`. **No
-      `Citation Key:` overrides** (per soul#43 + #58 + #61 lesson).
-      Verify each item creates with at least one personal author so
-      BBT doesn't fall back to title-key (per Pepin 2015 lesson)
-- [ ] Auto-attach OA PDFs via 4-step S3 upload; flag paywalled for
-      user RG download
-- [ ] OCR any image-only scans before attaching (per Karl 1993 +
-      Richter & Kolmes 2005 + Marvel 2019 OCR lessons)
-- [ ] **Auto-restart Zotero** via `osascript -e 'tell application
-      "Zotero" to quit'; sleep 3; open -a Zotero; sleep 30` — per
-      soul#43, no need to ask the user manually
-- [ ] After BBT key generation: capture per-paper
-      `BBT-citationKey + parent itemKey + attachment key` in
-      `findings.md`
-- [ ] Mirror PDFs into `data/rag/interpretation_framing_pdfs/` for
-      ragnar ingestion (gitignored)
+- [x] For each of 4 candidates: CrossRef metadata fetch → POST to
+      Web API with `"collections": ["8MH9LCC9"]`, tags
+      `interpretation-framing-methodology` + `cd-issue-63`. No
+      `Citation Key:` override in `extra` (per soul#43 + #58/#61
+      lesson). All 4 items created with ≥2 individual creators
+- [x] PDF acquisition: 2 fetched via curl (Hansen 2012 harvard.edu,
+      Livezey 2007 meto.umd.edu), 2 user-provided via ResearchGate
+      (Arguez & Vose 2011, Hawkins & Sutton 2012); no OCR needed
+- [x] Auto-attached all 4 PDFs via 4-step S3 upload (2 fresh
+      uploads, 2 deduped via md5)
+- [x] Auto-restarted Zotero via osascript+open+30s — all 4 BBT keys
+      generated cleanly
+- [x] Captured per-paper `BBT-citationKey + parent itemKey +
+      attachment key` in `findings.md`
+- [x] PDFs in `data/rag/interpretation_framing_pdfs/`, gitignored,
+      text-layered, ready for Phase 3 ingestion
 
 ## Phase 3 — Build ragnar DuckDB store
 
-- [ ] Clone `scripts/rag_precip_drying_methodology_build.R` →
-      `scripts/rag_interpretation_framing_build.R`. Adapt header
-      docstring + `pdf_specs` map
-- [ ] Run `Rscript scripts/rag_interpretation_framing_build.R` —
-      target ~400-700 chunks across ~6 sources via Ollama
+- [x] Cloned `scripts/rag_precip_drying_methodology_build.R` →
+      `scripts/rag_interpretation_framing_build.R`. Adapted header
+      docstring + 4-paper `pdf_specs` map
+- [x] Ran build — produced `data/rag/interpretation_framing.duckdb`
+      with **291 chunks across 4 sources** via Ollama
       `nomic-embed-text`
-- [ ] Verify chunk count + source count via DBI queries
+- [x] Verified retrieval distribution: all 4 papers contributing
+      to top-5 chunks across queries (Arguez 26, Hansen 21,
+      Hawkins 18, Livezey 15 — all healthy)
 
 ## Phase 4 — Mine the store for methodology quotes
 
-- [ ] Write `scripts/rag_interpretation_framing_query.R` mirroring
-      the precip+drying query script. Query topics (5–6 — narrower
-      than #58/#61):
-      - Baseline window methodology (WMO 1961–1990 vs alternatives)
-      - Cumulative-impact vs per-decade-rate framing
-      - Departure from recent variability / time-of-emergence
-      - Shifting baseline syndrome
-      - Ecoregion as reporting unit
-- [ ] Save raw retrieval to
-      `planning/active/interpretation_framing_quotes.md`
-- [ ] Synthesize per-topic into `findings.md`
+- [x] Wrote `scripts/rag_interpretation_framing_query.R` mirroring
+      the precip+drying query script. 6 topics × 2-3 queries × top-5
+      chunks = 80 candidate chunks total (16 queries — narrower than
+      #58/#61's 24 queries; topics: baseline window methodology,
+      normals when trends exist, time of emergence, cumulative-
+      impact / loaded dice, shifting baseline climate, departure
+      from recent variability)
+- [x] Raw retrieval saved to
+      `planning/active/interpretation_framing_quotes.md` (373 lines)
+- [x] Synthesized per-topic into `findings.md` (Phase 5)
 
 ## Phase 5 — Synthesis + citation map
 
-- [ ] In `findings.md`: methodology-quotes-by-topic section
-- [ ] Cross-cutting methodology section: how framing choices
-      compose with the trend-test + baseline-window decisions from
-      #58/#61 (already settled — this issue just adds citation
-      backing for the framing choices, no new methodology)
-- [ ] Deviations section — places where cd's framing differs from
-      the literature consensus (likely: 1951–1980 vs 1961–1990; the
-      cumulative-impact framing is consistent with the literature)
-- [ ] **"Cite this for that"** table — N-row map from vignette
-      framing claim type to BBT-auto-derived citation key(s).
-      Framed as a menu, not an order, per memory
-      `feedback_vignette_citations_sparse.md`
-- [ ] **3-split scoreboard** in findings.md: pointer to the
-      three findings.md files (#58, #61, this) for downstream
-      vignette branch consumers
+- [x] In `findings.md`: methodology-quotes-by-topic section covering
+      6 topics with selected quotes per paper
+- [x] Cross-cutting methodology section — Hansen 2012's choice of
+      the 1951–1980 base period validates cd's choice for
+      cumulative-impact reporting (strongest defense across all
+      three lit reviews)
+- [x] Deviations section — 3 documented deviations: 1951–1980 vs
+      WMO 1961–1990 baseline (defensible per Arguez & Vose 2011 +
+      direct precedent in Hansen 2012), no AC correction (consistent
+      across all 3 lit reviews), time-of-emergence not quantified
+      per-AOI (cd uses cumulative-impact framing instead)
+- [x] **"Cite this for that"** map — 11-row claim → citation
+      lookup, framed as a menu not an order. BBT-auto-derived keys
+      baked in
+- [x] Documented existing items (6 reuse-relevant) + cross-rag
+      references from snow + temp + precip+drying stores
+- [x] 3-split scoreboard added to findings.md per task plan
 
 ## Phase 6 — PR + release
 

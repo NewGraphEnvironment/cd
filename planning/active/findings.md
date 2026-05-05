@@ -142,24 +142,168 @@ perception of cumulative change.
 - **Paywalled — flag for user RG download:** Arguez & Vose 2011
   (AMS Cloudflare blocks curl), Hawkins & Sutton 2012 (AGU paywalled).
 
-## Methodology quotes by topic (Phase 4 + 5)
+## Zotero adds (Phase 2 — completed)
 
-(Will populate during Phase 4 + 5 execution.)
+4 new papers POSTed to `NewGraphEnvironment/climate` (key
+`8MH9LCC9`) via Web API with PDFs attached. Tags
+`interpretation-framing-methodology` + `cd-issue-63`. No `Citation
+Key:` overrides in `extra` (per soul#43 + #58/#61 lessons). All 4
+items have ≥2 individual creators per CrossRef.
+
+| File label | Parent itemKey | Attach itemKey | n creators | PDF | BBT citation key |
+|---|---|---|---|---|---|
+| `arguez_vose2011` | `QP7CM985` | `PTQ9PAHZ` | 2 | uploaded | `arguez_vose2011DefinitionStandard` |
+| `livezey_etal2007` | `RTIBVA58` | `P6KFMRF9` | 5 | exists | `livezey_etal2007EstimationExtrapolation` |
+| `hawkins_sutton2012` | `HZNAB47T` | `NG4EZK8V` | 2 | uploaded | `hawkins_sutton2012Timeemergence` |
+| `hansen_etal2012` | `9ICS93S7` | `S7JUXCGB` | 3 | exists | `hansen_etal2012Perceptionclimate` |
+
+Auto-restart pattern (per soul#43) used for BBT key generation —
+worked first try, all 4 keys clean.
+
+## Methodology quotes by topic (Phases 4 + 5)
+
+Raw retrieval in `planning/active/interpretation_framing_quotes.md`
+(373 lines, 16 queries × top-5 chunks). 291 chunks across 4 sources.
+
+Top-5 hit count per paper:
+- `arguez_vose2011` — 26 (BAMS short-paper, dense on normals topic)
+- `hansen_etal2012` — 21
+- `hawkins_sutton2012` — 18
+- `livezey_etal2007` — 15
+
+### Baseline window methodology (WMO climate normal definition)
+
+`arguez_vose2011` is the canonical reference for what a "climate
+normal" is and why it's what it is. Five attributes define the
+standard WMO climate normal: averaging period, period start, period
+length, observing period, and update frequency. **Departure from
+any of these five = an "alternative" climate normal.**
+
+- `arguez_vose2011`: "We propose that any potential alternative
+  climate normal is the result of changing one or more of these five
+  attributes... [WMO normals are] more useful as a comparison metric
+  than as a predictor of expected future conditions in a changing
+  climate." → Direct grounding for cd's choice of 1951–1980
+  (departure on the period-start attribute) — defensible per Arguez
+  & Vose's framework as long as the choice is documented.
+- `livezey_etal2007`: "in a changing climate, traditional 30-year
+  averages are increasingly poor estimators of the current climate
+  state for variables with significant trends" — proposes
+  alternative trend-aware methods (hinge-fit). → Justifies why a
+  fixed-baseline-window choice (cd's 1951–1980) is a valid
+  reference state for *departure* analysis even though it would be
+  a poor *prediction* of current means.
+
+### Time of emergence / signal-to-noise
+
+`hawkins_sutton2012` is the foundational time-of-emergence paper.
+
+- `hawkins_sutton2012`: "Time of Emergence (ToE), defined as the
+  time at which the climate change signal emerges from the noise of
+  natural climate variability... ToE is a critical indicator for
+  understanding the urgency of climate adaptation." Maps ToE for
+  surface air temperature using CMIP3. → Frame for "the climate
+  signal at our BC AOIs has already emerged" claims; supports the
+  cd_compare framework (#20 + #43) by giving citation backing for
+  why a window-vs-window p-value matters.
+- (existing) `mora_etal2013projectedtiming`: extends ToE concept to
+  a *departure* index (year when projected mean climate moves
+  outside the historical envelope). Already in the climate
+  collection — direct continuation of Hawkins & Sutton 2012.
+
+### Cumulative-impact / "loaded dice" framing
+
+`hansen_etal2012` is the canonical "loaded dice" cumulative-impact
+paper.
+
+- `hansen_etal2012`: "the perceived shift of the climate is so large
+  that we should be able to detect it in the language of probability
+  loadings on a die... 3-sigma extreme outliers, which covered much
+  less than 1% of Earth's surface during the 1951–1980 base period,
+  now typically cover about 10% of the land area."
+  → **Authoritative grounding for cd's cumulative-impact framing**
+  ("regional summer Tmax has shifted N standard deviations"). Note
+  Hansen 2012 explicitly uses the 1951–1980 base period — same as
+  cd. This validates the choice of baseline window for
+  cumulative-impact reporting at FWCP fish-passage planner level.
+
+### Shifting baseline syndrome (existing references)
+
+- (existing) `pauly1995Anecdotesshifting`: foundational fisheries
+  paper introducing "shifting baseline syndrome" — generational
+  forgetting of historical reference states.
+- (existing) `rodrigues_etal2019Unshiftingbaseline`: framework for
+  documenting historical baselines explicitly to counter SBS.
+- (existing) `alleway_etal2023shiftingbaseline`: SBS as a connective
+  concept for environmental change.
+
+→ The fixed 1951–1980 baseline is itself an "anti-SBS" choice (it
+doesn't drift forward as time passes), aligning with the SBS
+literature's recommendation to anchor on documented historical
+reference states.
+
+### Departure from recent variability (existing reference)
+
+- (existing) `mora_etal2013projectedtiming`: "the year when the
+  projected mean climate of a given location moves to a state
+  continuously outside the bounds of historical variability."
+  → cd's `cd_compare` framework (per #20) is in this lineage.
+  Mora 2013 is the climate-departure framing anchor.
+
+### Trend-test methodology (cross-rag)
+
+- (cross-rag) `yue_wang2002Applicabilityprewhitening` (snow rag) —
+  raw MK is correct for our 76-year strong-trend series. Already
+  covered in #54 / #58 / #61 archives. No new content here.
 
 ## Cross-cutting methodology
 
-(Will populate during Phase 5 execution — likely the shortest of
-the three since trend-test + baseline-window are already settled
-in #58/#61; this issue just adds citation backing for the framing
-choices.)
+Shorter than #58 / #61 since the trend-test + baseline-window
+methodology is already settled in #58/#61 archives. The only
+cross-cutting addition: **Hansen 2012's choice of 1951–1980 base
+period validates cd's choice** for cumulative-impact ("loaded
+dice") reporting, even though the WMO standard is 1961–1990. This
+is the strongest defense of cd's baseline choice in the climate-
+departure 3-split lit reviews.
 
-## Deviations
+## Deviations from consensus
 
-(Will populate during Phase 5 execution.)
+1. **Baseline window 1951–1980 vs WMO 1961–1990.** cd uses
+   1951–1980. Per `arguez_vose2011`, this is an "alternative
+   climate normal" — defensible if documented. Hansen 2012 uses
+   the same window for explicit cumulative-impact framing, which
+   provides direct precedent. Trade-off: cd's window is on the
+   early side relative to WMO, but it cleanly anchors the
+   ERA5-Land record (1950–) and aligns with the cumulative-impact
+   framing the vignettes adopt.
+2. **No autocorrelation correction** (per Yue & Wang 2002,
+   cross-rag) — consistent across all three lit reviews.
+3. **Time-of-emergence framing isn't quantified per-AOI** in cd
+   — we report departure as a magnitude vs the 1951–1980 baseline
+   rather than as a year-of-emergence per Hawkins & Sutton 2012.
+   Either framing is defensible; cd's chosen framing is more
+   accessible to FWCP planners ("2 °C warmer over the record")
+   than ToE ("emerged from variability in year X").
 
-## "Cite this for that" map
+## "Cite this for that" — citation map for downstream vignette wiring
 
-(Will populate during Phase 5 execution.)
+Same philosophy preface applies (this is a library, not a
+prescription; downstream cites authorities sparingly for findings
+visible in AOI plots/tables). 11-row menu:
+
+| Claim type | Primary citation | Supporting |
+|---|---|---|
+| Climate-normal definition (5 attributes) | `@arguez_vose2011DefinitionStandard` | — |
+| Why cd's 1951–1980 baseline is acceptable | `@arguez_vose2011DefinitionStandard` | `@hansen_etal2012Perceptionclimate` |
+| Why fixed-baseline reference outperforms drift in changing climate | `@livezey_etal2007EstimationExtrapolation` | (existing) `@pauly1995Anecdotesshifting` |
+| Time-of-emergence / signal-to-noise framing | `@hawkins_sutton2012Timeemergence` | (existing) `@mora_etal2013projectedtiming` |
+| Cumulative-impact ("loaded dice") framing | `@hansen_etal2012Perceptionclimate` | — |
+| 3-sigma extreme outliers / probability shift | `@hansen_etal2012Perceptionclimate` | — |
+| Climate-departure index methodology | (existing) `@mora_etal2013projectedtiming` | `@hawkins_sutton2012Timeemergence` |
+| Shifting baseline syndrome | (existing) `@pauly1995Anecdotesshifting` | (existing) `@rodrigues_etal2019Unshiftingbaseline`, `@alleway_etal2023shiftingbaseline` |
+| Anti-SBS justification for fixed historical baseline | (existing) `@rodrigues_etal2019Unshiftingbaseline` | (existing) `@pauly1995Anecdotesshifting` |
+| IPCC-level framing for FWCP-context interpretation | (existing) `@calvin_etal2023IPCCSummary` | (existing) `@intergovernmentalpanelonclimatechangeipcc2023ClimateChange` |
+| Trend test methodology (raw MK is correct for trended series) | (cross-rag) `@yue_wang2002Applicabilityprewhitening` | — |
 
 ## 3-split scoreboard (downstream consumer pointer)
 
