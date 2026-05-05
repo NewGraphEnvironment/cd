@@ -43,8 +43,8 @@ pattern verbatim:
 
 ### Existing rag-build pattern
 
-`scripts/rag_build_snow_methodology.R` is the template to mirror
-(getting renamed to `rag_snow_methodology_build.R` in Phase 0):
+`scripts/rag_snow_methodology_build.R` (renamed in this branch's
+Phase 0 from `rag_build_snow_methodology.R`) is the template to mirror:
 - Hardcoded `citationKey -> attachKey` map
 - Reads PDFs from `data/rag/<topic>_pdfs/` (Web-API-downloaded local
   cache, not `~/Zotero/storage/{attachKey}/` — sidesteps the "download

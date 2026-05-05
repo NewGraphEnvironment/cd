@@ -1,6 +1,6 @@
 #!/usr/bin/env Rscript
 #
-# rag_build_snow_methodology.R
+# rag_snow_methodology_build.R
 #
 # Build a ragnar DuckDB store from Zotero PDFs for researching
 # snowpack-departure methodology — the citation backbone for #48
@@ -27,7 +27,7 @@
 #     Zotero desktop "download files at sync time" being enabled.
 #
 # Usage:
-#   Rscript scripts/rag_build_snow_methodology.R
+#   Rscript scripts/rag_snow_methodology_build.R
 #
 # Output:
 #   data/rag/snow_methodology.duckdb   (gitignored)
@@ -39,7 +39,7 @@ pdf_dir    <- here::here("data", "rag", "snow_methodology_pdfs")
 store_path <- here::here("data", "rag", "snow_methodology.duckdb")
 
 # Citation labels follow the BBT firstauthor[_etal]year convention used in
-# rag_build_departure_framing.R. The Zotero attachKey is documented for
+# rag_departure_framing_build.R. The Zotero attachKey is documented for
 # downstream auditing; the script reads PDFs by `<label>.pdf` filename out
 # of pdf_dir.
 pdf_specs <- list(

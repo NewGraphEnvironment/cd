@@ -8,4 +8,8 @@
   rename added as Phase 0 prep
 - Created branch `58-temperature-lit-review` off main
 - Scaffolded PWF baseline from issue #58 with approved phases
-- Next: Phase 0 — rename rag scripts to `noun_verb` convention
+- Phase 0 done: renamed `rag_build_*.R` / `rag_query_*.R` →
+  `rag_*_build.R` / `rag_*_query.R` (3 scripts); updated docstrings,
+  CLAUDE.md, snow archive README. Left NEWS.md + archive
+  task_plan/findings/progress untouched as historical records
+- Next: Phase 1 — targeted lit search

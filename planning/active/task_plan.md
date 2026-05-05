@@ -34,13 +34,14 @@ after the 3-split.
 Mechanical `git mv` to switch existing rag scripts to `noun_verb`
 order so the directory reads cleanly. One atomic commit, easy review.
 
-- [ ] `git mv scripts/rag_build_snow_methodology.R scripts/rag_snow_methodology_build.R`
-- [ ] `git mv scripts/rag_query_snow_methodology.R scripts/rag_snow_methodology_query.R`
-- [ ] `git mv scripts/rag_build_departure_framing.R scripts/rag_departure_framing_build.R`
-- [ ] Update internal docstring usage examples in each renamed script
-- [ ] Update CLAUDE.md script references
-- [ ] Update archived references (`planning/archive/2026-05-issue-53-snow-lit-review/`)
-- [ ] Atomic commit: "Rename rag scripts to noun_verb convention"
+- [x] `git mv scripts/rag_build_snow_methodology.R scripts/rag_snow_methodology_build.R`
+- [x] `git mv scripts/rag_query_snow_methodology.R scripts/rag_snow_methodology_query.R`
+- [x] `git mv scripts/rag_build_departure_framing.R scripts/rag_departure_framing_build.R`
+- [x] Update internal docstring usage examples in each renamed script
+- [x] Update CLAUDE.md script references
+- [x] Update archived references (`planning/archive/2026-05-issue-53-snow-lit-review/README.md`
+      — left task_plan/findings/progress as-is since they're historical records)
+- [x] Atomic commit: "Rename rag scripts to noun_verb convention"
 
 ## Phase 1 — Targeted literature search
 

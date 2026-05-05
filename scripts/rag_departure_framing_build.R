@@ -1,6 +1,6 @@
 #!/usr/bin/env Rscript
 #
-# rag_build_departure_framing.R
+# rag_departure_framing_build.R
 #
 # Build a ragnar DuckDB store from Zotero PDFs for researching how climate
 # departure studies frame baseline comparisons and communicate cumulative change.
@@ -15,7 +15,7 @@
 #   - Zotero with PDFs attached to references
 #
 # Usage:
-#   Rscript scripts/rag_build_departure_framing.R
+#   Rscript scripts/rag_departure_framing_build.R
 #
 # Output:
 #   data/rag/departure_framing.duckdb   (gitignored)

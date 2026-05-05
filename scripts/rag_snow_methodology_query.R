@@ -1,6 +1,6 @@
 #!/usr/bin/env Rscript
 #
-# rag_query_snow_methodology.R
+# rag_snow_methodology_query.R
 #
 # Mine the snow_methodology.duckdb store for methodology quotes
 # indexed by #48 metric. Outputs findings/snow_methodology_quotes.md
@@ -8,7 +8,7 @@
 #
 # Filed against #53 — feeds #48 Phase 5 vignette interp.
 #
-# Usage: Rscript scripts/rag_query_snow_methodology.R
+# Usage: Rscript scripts/rag_snow_methodology_query.R
 #
 # Output: planning/active/snow_methodology_quotes.md
 
