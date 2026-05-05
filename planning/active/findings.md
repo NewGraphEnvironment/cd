@@ -195,18 +195,37 @@ Web-API-created items per CLAUDE.md). soul#43 filed to update
 `/lit-search` + `/zotero-api` skills so future runs avoid the
 override pattern.
 
-| File label (local) | Parent itemKey | Attach itemKey | BBT citation key (post-restart) |
+| File label (local) | Parent itemKey | Attach itemKey | BBT citation key |
 |---|---|---|---|
-| `karl_etal1993` | `2FJQRX6N` | `X2UMWNUB` | (pending) |
-| `easterling_etal1997` | `E27RPMRD` | `MI3CH39H` | (pending) |
-| `vose_etal2005` | `94VFUHHZ` | `SIAFNGKV` | (pending) |
-| `vincent_etal2018` | `D9H2UQBZ` | `P7QHP3BJ` | (pending) |
-| `pepin_etal2015` | `GDFQS8ZB` | `UJVF9IFP` | (pending) |
-| `rangwala_miller2012` | `376MUXNQ` | `GR9S4I3F` | (pending) |
-| `wang_etal2012` | `NDTB37G6` | `5V7E4CWX` | (pending) |
-| `mantua_etal2010` | `T5Q9MD9E` | `E5DWJAGA` | (pending) |
-| `eaton_scheller1996` | `6VBSPJQN` | `72R34DQB` | (pending) |
-| `richter_kolmes2005` | `4ICU2XDB` | `RTU4TMRG` | (pending) |
+| `karl_etal1993` | `2FJQRX6N` | `X2UMWNUB` | `karl_etal1993NewPerspective` |
+| `easterling_etal1997` | `E27RPMRD` | `MI3CH39H` | `easterling_etal1997MaximumMinimum` |
+| `vose_etal2005` | `94VFUHHZ` | `SIAFNGKV` | `vose_etal2005Maximumminimum` |
+| `vincent_etal2018` | `D9H2UQBZ` | `P7QHP3BJ` | `vincent_etal2018ChangesCanadas` |
+| `pepin_etal2015` | `GDFQS8ZB` | `UJVF9IFP` | `pepin_etal2015Elevationdependentwarming` |
+| `rangwala_miller2012` | `376MUXNQ` | `GR9S4I3F` | `rangwala_miller2012Climatechange` |
+| `wang_etal2012` | `NDTB37G6` | `5V7E4CWX` | `wang_etal2012ClimateWNAHighb` |
+| `mantua_etal2010` | `T5Q9MD9E` | `E5DWJAGA` | `mantua_etal2010Climatechange` |
+| `eaton_scheller1996` | `6VBSPJQN` | `72R34DQB` | `eaton_scheller1996Effectsclimate` |
+| `richter_kolmes2005` | `4ICU2XDB` | `RTU4TMRG` | `richter_kolmes2005MaximumTemperaturea` |
+
+**Pepin 2015 caveat captured:** CrossRef returned only the corporate
+author "Mountain Research Initiative EDW Working Group" — no
+individuals — so initial Web API POST landed with empty creators and
+BBT generated `Elevationdependentwarmingmountainregionsworld2015`
+(title-derived). PATCH'd the item to add the 21 individual working-
+group members from the paper's roster (N. Pepin, R. S. Bradley, H. F.
+Diaz, M. Baraer, E. B. Caceres, N. Forsythe, H. Fowler, G. Greenwood,
+M. Z. Hashmi, X. D. Liu, J. R. Miller, L. Ning, A. Ohmura, E. Palazzi,
+I. Rangwala, W. Schöner, I. Severskiy, M. Shahgedanova, M. B. Wang,
+S. N. Williamson, D. Q. Yang). BBT then regenerated to
+`pepin_etal2015Elevationdependentwarming` matching convention.
+
+**BBT plugin compat note:** During Phase 2 a BBT 8.x → BBT 9.x update
+was needed because Zotero (now on Z9) had auto-disabled BBT 8.0.25 as
+incompatible. BBT 9.x line supports Zotero 8/9. After update + Pepin
+authors PATCH, all 10 keys regenerated cleanly. soul#43 is the
+already-filed convention issue; consider folding a "if BBT is disabled,
+re-install matching version" note there too.
 
 The "File label (local)" column doubles as the filename in
 `data/rag/temp_methodology_pdfs/<label>.pdf` and the script
@@ -550,11 +569,8 @@ vignette branch draws sparingly:
 ## "Cite this for that" — citation map for downstream vignette wiring
 
 Copy-paste-ready map. Each row gives a vignette claim type and the
-citation key(s) that ground it. **Citation keys here are local
-labels; the actual BBT-auto-derived Zotero keys get filled in
-(replacing the labels) once Zotero is restarted and the keys are
-captured into the Phase 2 Zotero-adds table.** Cross-rag references
-(snow rag) noted explicitly.
+BBT-auto-derived Zotero citation key(s) that ground it. Cross-rag
+references (snow rag) noted explicitly.
 
 The downstream branch will use only a small subset of these rows —
 whichever map onto findings actually visible in the AOI's
@@ -562,21 +578,21 @@ plots/tables. The map below is a menu, not an order.
 
 | Claim type | Primary citation | Supporting |
 |---|---|---|
-| DTR asymmetry methodology + 3:1 min:max ratio | `@karl_etal1993` | `@vose_etal2005`, `@easterling_etal1997` |
-| Updated 1950–2004 trends (0.141 / 0.204 / -0.066 °C/dec) | `@vose_etal2005` | `@karl_etal1993` |
-| Canada warming 1.7°C 1948–2012 + BC sub-region indices | `@vincent_etal2018` | — |
-| Sen + Kendall's τ for Canadian temp trends | `@vincent_etal2018` | (cross-rag) `@yue_wang2002` |
-| Mountain elevation-dependent warming exists | `@pepin_etal2015` | `@rangwala_miller2012` |
-| EDW mechanisms (snow-albedo, water vapour, etc.) | `@pepin_etal2015` | `@rangwala_miller2012` (Table 2) |
-| Caveat: EDW is heterogeneous, not universal | `@rangwala_miller2012` | `@pepin_etal2015` |
-| Air-T → stream-T → salmon thermal stress (continental) | `@eaton_scheller1996` | `@mantua_etal2010` |
-| PNW salmon climate-stress framing | `@mantua_etal2010` | (existing) `@isaak_etal2017`, (existing) `@warkentin_etal2022` |
-| Salmonid maximum-temperature criteria PNW | `@richter_kolmes2005` | `@eaton_scheller1996` |
-| ClimateWNA / ClimateNA reference (BC downscaling alternative) | `@wang_etal2012` | — |
-| Climate-departure framing (cumulative-impact, recent-variability) | (existing) `@mora_etal2013` | (Issue 3 framing review) |
-| ERA5 / ERA5-Land dataset citations | (existing) `@munoz-sabater_etal2021` | (existing) `@hersbach_etal2020` |
-| BC ecoregion / drought patterns | (existing) `@dierauer_etal2020` | — |
-| BC summer flow + chinook empirical link | (existing) `@warkentin_etal2022` | — |
-| Climate adaptation salmon framing | (existing) `@moore_schindler2022` | — |
-| BC SWE attribution (cross-reference) | (cross-rag) `@najafi_etal2017` | — |
-| Why no prewhitening (raw MK is correct) | (cross-rag) `@yue_wang2002` | — |
+| DTR asymmetry methodology + 3:1 min:max ratio | `@karl_etal1993NewPerspective` | `@vose_etal2005Maximumminimum`, `@easterling_etal1997MaximumMinimum` |
+| Updated 1950–2004 trends (0.141 / 0.204 / -0.066 °C/dec) | `@vose_etal2005Maximumminimum` | `@karl_etal1993NewPerspective` |
+| Canada warming 1.7°C 1948–2012 + BC sub-region indices | `@vincent_etal2018ChangesCanadas` | — |
+| Sen + Kendall's τ for Canadian temp trends | `@vincent_etal2018ChangesCanadas` | (cross-rag) `@yue_wang2002Applicabilityprewhitening` |
+| Mountain elevation-dependent warming exists | `@pepin_etal2015Elevationdependentwarming` | `@rangwala_miller2012Climatechange` |
+| EDW mechanisms (snow-albedo, water vapour, etc.) | `@pepin_etal2015Elevationdependentwarming` | `@rangwala_miller2012Climatechange` (Table 2) |
+| Caveat: EDW is heterogeneous, not universal | `@rangwala_miller2012Climatechange` | `@pepin_etal2015Elevationdependentwarming` |
+| Air-T → stream-T → salmon thermal stress (continental) | `@eaton_scheller1996Effectsclimate` | `@mantua_etal2010Climatechange` |
+| PNW salmon climate-stress framing | `@mantua_etal2010Climatechange` | (existing) `@isaak_etal2017NorWeSTSummer`, (existing) `@warkentin_etal2022Lowsummer` |
+| Salmonid maximum-temperature criteria PNW | `@richter_kolmes2005MaximumTemperaturea` | `@eaton_scheller1996Effectsclimate` |
+| ClimateWNA / ClimateNA reference (BC downscaling alternative) | `@wang_etal2012ClimateWNAHighb` | — |
+| Climate-departure framing (cumulative-impact, recent-variability) | (existing) `@mora_etal2013projectedtiming` | (Issue 3 framing review) |
+| ERA5 / ERA5-Land dataset citations | (existing) `@munoz-sabater_etal2021ERA5Landstateoftheart` | (existing) `@hersbach_etal2020ERA5global` |
+| BC ecoregion / drought patterns | (existing) `@dierauer_etal2020Climatechange` | — |
+| BC summer flow + chinook empirical link | (existing) `@warkentin_etal2022Lowsummer` | — |
+| Climate adaptation salmon framing | (existing) `@moore_schindler2022Gettingahead` | — |
+| BC SWE attribution (cross-reference) | (cross-rag) `@najafi_etal2017AttributionObserved` | — |
+| Why no prewhitening (raw MK is correct) | (cross-rag) `@yue_wang2002Applicabilityprewhitening` | — |

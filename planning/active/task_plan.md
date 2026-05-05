@@ -94,10 +94,11 @@ Starting candidate list (will refine):
       `findings.md`
 - [x] PDFs mirrored into `data/rag/temp_methodology_pdfs/` for
       ragnar ingestion (gitignored)
-- [ ] **User: restart Zotero desktop** — BBT only generates citation
-      keys for Web-API-created items after a restart, not just sync.
-      Once restarted, the BBT keys can be captured into findings.md +
-      the rag script in Phase 3.
+- [x] **Captured all 10 BBT-auto citation keys** after Zotero restart
+      + BBT plugin update from 8.0.25 to 9.x (Z8/9 line); Pepin 2015
+      required a creators-PATCH to seed the working-group authors
+      since CrossRef returned only the corporate name. Final keys
+      mapped in findings.md Phase 2 table
 
 ## Phase 3 — Build ragnar DuckDB store
 

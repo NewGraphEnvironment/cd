@@ -38,6 +38,13 @@
   user feedback (vignette uses citations sparingly for findings
   visible in graphs/tables; library not prescription). Memory
   saved: feedback_vignette_citations_sparse.md
-- Next: Phase 6 — code-check, PR, archive, release v0.2.2.
-  Pending user action: restart Zotero so BBT computes citation
-  keys for the 10 new items; capture into findings.md before PR
+- BBT keys captured for all 10 new items after Zotero restart +
+  BBT plugin update (8.0.25 → 9.x; Z8/9 line). Pepin 2015 needed
+  authors-PATCH first because CrossRef returned only the corporate
+  Mountain Research Initiative EDW Working Group name with no
+  individuals; added the 21 working-group members so BBT could
+  generate the conventional pepin_etal2015* key. findings.md
+  Phase 2 table + cite-this-for-that map updated to use the
+  full BBT keys
+- Next: Phase 6 — /code-check, push branch, open PR (Fixes #58,
+  SRED tag in body), /planning-archive after merge, release v0.2.2
