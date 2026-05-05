@@ -12,25 +12,33 @@ and trend statistics.
 
 ## Repository Context
 
-**Primary Language:** R **Framework:** R package (devtools, testthat 3e,
-pkgdown) **Spatial:** `terra`, `sf` **Data:** ERA5-Land via CDS API
-(`ecmwfr`), served as COGs on S3 via STAC **S3 Bucket:**
-`stac-era5-land` (us-west-2) **pkgdown:** `newgraphenvironment.com/cd/`
+**Primary Language:** R (consumer-side) + Python (producer-side, EDH
+backfillers) **Framework:** R package (devtools, testthat 3e, pkgdown)
+**Spatial:** `terra`, `sf` **Data:** ERA5-Land via [DestinE Earth Data
+Hub (Zarr)](https://earthdatahub.destine.eu/), served as COGs on S3 via
+STAC **S3 Bucket:** `stac-era5-land` (us-west-2) **pkgdown:**
+`newgraphenvironment.com/cd/`
 
 ## Architecture
 
-**Producer** (GitHub Action, monthly):
-[`cd_fetch()`](https://newgraphenvironment.github.io/cd/reference/cd_fetch.md)
-→
-[`cd_derive()`](https://newgraphenvironment.github.io/cd/reference/cd_derive.md)
-→
-[`cd_aggregate()`](https://newgraphenvironment.github.io/cd/reference/cd_aggregate.md)
-→
+**Producer** (GitHub Action, monthly): Python backfillers fetch hourly
+Zarr from EDH, aggregate, derive (VPD/RH/soil); R stage 3 writes COGs
+and pushes the STAC catalog: `scripts/backfill_edh_*.py` →
+`scripts/pipeline_stage3_edh.R` → `scripts/pipeline_update_edh.R` (the
+GH Action’s monthly entry point) →
 [`cd_cog_write()`](https://newgraphenvironment.github.io/cd/reference/cd_cog_write.md)
 →
 [`cd_stac_catalog()`](https://newgraphenvironment.github.io/cd/reference/cd_stac_catalog.md)
 →
 [`cd_s3_push()`](https://newgraphenvironment.github.io/cd/reference/cd_s3_push.md)
+
+The historical
+[`cd_fetch()`](https://newgraphenvironment.github.io/cd/reference/cd_fetch.md)
+/
+[`cd_derive()`](https://newgraphenvironment.github.io/cd/reference/cd_derive.md)
+R-side producer functions still ship (with tests) for users who want a
+CDS-based fallback, but are not what runs in CI. See v0.1.0 / \#36 for
+the migration history.
 
 **Consumer** (user-facing, local R):
 [`cd_catalog()`](https://newgraphenvironment.github.io/cd/reference/cd_catalog.md)
@@ -58,30 +66,57 @@ maximum flexibility over reference periods and comparison windows.
 All functions use `cd_*` prefix. Naming convention: `noun_verb` (e.g.,
 `cd_cog_write` not `cd_write_cog`).
 
-## CDS API
+## EDH (DestinE Earth Data Hub)
 
-Two products: - `reanalysis-era5-land-monthly-means` — tmean, prcp,
-dewpoint, soil moisture (returns zip→GRIB) -
-`derived-era5-land-daily-statistics` — tmax, tmin (returns NetCDF, needs
-`day` + `time_zone` params)
+Producer pulls hourly ERA5-Land Zarr from EDH for the BC bbox (~48-60°
+N, 114-140° W) and aggregates to monthly / seasonal / annual on a single
+EPSG:4326 grid. Python only on the producer side (Zarr ecosystem
+maturity); R consumer-side reads the COGs over `/vsicurl/`.
+
+Token lookup order: `EDH_TOKEN` env var, then `~/.Renviron`. Configured
+in CI via secret.
 
 Key gotchas: - Temperature in Kelvin (subtract 273.15) - Precipitation
-in m/day (× 1000 × days_in_month → mm/month) - GRIB metadata lies about
-units (says °C, values are K) - `retry = 120` avoids rate limiting
-(default 5 is too aggressive) - `wf_request_batch()` for parallel
-requests (up to 20 workers)
+in m/day (× 1000 × days_in_month → mm/month) - Snow accumulation
+variables (`snowfall`, `snowmelt`) reset at 06:00 UTC each day —
+diff-and-clamp logic lives in `scripts/backfill_edh_snow.py` (#48) -
+tmax/tmin daily aggregation currently uses UTC-day boundaries, not
+local-time — known limitation tracked at \#37
 
-## Climate Variables
+## Climate Variables (15 total since v0.2.0)
 
-| Variable      | Source                       | Units | Anomaly Type |
-|---------------|------------------------------|-------|--------------|
-| tmean         | CDS monthly means            | °C    | absolute     |
-| tmax          | CDS daily stats              | °C    | absolute     |
-| tmin          | CDS daily stats              | °C    | absolute     |
-| prcp          | CDS monthly means            | mm    | pct_normal   |
-| vpd           | Derived (Tetens)             | hPa   | absolute     |
-| rh            | Derived (temp+dewpoint)      | %     | absolute     |
-| soil_moisture | CDS monthly means (4 layers) | m³/m³ | pct_normal   |
+**Core climate (7):** all monthly natives, also seasonal + annual
+
+| Variable      | Units                     | Anomaly Type |
+|---------------|---------------------------|--------------|
+| tmean         | °C                        | absolute     |
+| tmax          | °C                        | absolute     |
+| tmin          | °C                        | absolute     |
+| prcp          | mm                        | pct_normal   |
+| vpd           | hPa (Tetens-derived)      | absolute     |
+| rh            | % (temp+dewpoint-derived) | absolute     |
+| soil_moisture | m³/m³ (4-layer mean)      | pct_normal   |
+
+**Snow monthly natives (4):** also seasonal + annual
+
+| Variable   | Units   | Anomaly Type   |
+|------------|---------|----------------|
+| swe        | mm      | pct_normal     |
+| snowfall   | mm w.e. | pct_normal     |
+| snowmelt   | mm w.e. | pct_normal     |
+| snow_cover | %       | pct_point_diff |
+
+**Snow annual derived (4):** annual only
+
+| Variable           | Units       | Anomaly Type   |
+|--------------------|-------------|----------------|
+| swe_max            | mm          | pct_normal     |
+| snowfall_fraction  | %           | pct_point_diff |
+| snowmelt_doy_50    | day-of-year | absolute       |
+| snowmelt_rate_peak | mm/day      | absolute       |
+
+The `pct_point_diff` anomaly type is for already-percentage variables
+(treats anomaly as percentage-point difference, not relative percent).
 
 ## Season Definitions
 
@@ -92,30 +127,73 @@ custom seasons (e.g., wet/dry, growing season).
 
 ## Development Workflow
 
-1.  Branch per issue (or group): `N-description`
-2.  Create `planning/active/` files: task_plan.md, progress.md,
-    findings.md
-3.  Build → test → `/code-check` → commit with `Fixes #N` (update pwf
-    checkboxes)
-4.  PR with `Relates to NewGraphEnvironment/sred-2025-2026#23`
-5.  Merge → archive planning files to `planning/completed/`
+1.  Branch per issue (or group): `N-description` (use
+    `/planning-init <N>`)
+2.  PWF baseline (task_plan.md / findings.md / progress.md) committed
+    first
+3.  Build → test → `/code-check` → atomic commits with `Fixes #N` (each
+    commit updates the matching task_plan checkbox)
+4.  PR (`/gh-pr-push`) — SRED tag
+    (`Relates to NewGraphEnvironment/sred-2025-2026#23`) goes in the PR
+    body, not on issues
+5.  Merge + release (`/gh-pr-merge`) — bumps DESCRIPTION + NEWS, tags,
+    watches CI
+6.  Archive — `planning/active/` →
+    `planning/archive/<YYYY-MM-issue-N-slug>/` with a one-paragraph
+    README per directory
 
-## Scripts
+## Scripts (current)
 
-- `scripts/pipeline_backfill.R` — overnight backfill (1950-2025, all
-  variables)
-- `scripts/pipeline_e2e_test.R` — end-to-end pipeline test
-- `scripts/rag_build_departure_framing.R` — ragnar store for literature
-  review
-- `data-raw/example_climate_tmean.R` — generate shipped test data
-- `data-raw/make_hexsticker.R` — hex sticker (generic, reads from
-  DESCRIPTION)
+**Producer (EDH):** - `scripts/backfill_edh_all.py` — all 7 core climate
+variables (tmean, tmax, tmin, prcp, dewpoint→VPD/RH, soil moisture) -
+`scripts/backfill_edh_tmax_tmin.py` — separate tmax/tmin path (hourly →
+UTC-day max/min); see \#37 - `scripts/backfill_edh_snow.py` — 4 snow
+natives + 4 derived (#48); handles ECMWF accumulation reset -
+`scripts/_lib.py` — shared safeguards (single-instance pgrep guard,
+exponential backoff, atomic write, timestamped logging, EDH token
+loader) - `scripts/pipeline_stage3_edh.R` — monthly TIFs → COGs + STAC +
+S3 push - `scripts/pipeline_update_edh.R` — monthly GH Action entry
+point (incremental) - `scripts/qa_monthly.R` — month-end QA cross-check
+
+**Misc:** - `scripts/rag_build_snow_methodology.R` /
+`rag_query_snow_methodology.R` — ragnar lit review (#54) -
+`scripts/rag_build_departure_framing.R` — ragnar store for departure
+framing - `data-raw/make_hexsticker.R` — hex sticker (reads from
+DESCRIPTION) - `data-raw/example_*.R` — bundled AOIs + context geodata
+for vignettes
+
+## Vignettes
+
+Two regional reporting vignettes in `vignettes/`: - `peace-fwcp.Rmd` —
+FWCP Peace Region (~73,000 km², 16 WSGs across 5 ecoregions) -
+`kootenay-lake.Rmd` — southern Kootenays (~24,200 km², 4 WSGs across 4
+ecoregions; sharp east-west precip gradient)
+
+Both share the same structure (Area of Interest → Trends → Snowpack →
+Spatial Pattern → Per-Ecoregion → WSGs Across Ecoregions →
+Interpretation). Heavy data is precomputed by
+`data-raw/<vignette>_vignette_data.R` into
+`inst/vignette-data/<vignette>.{rds,tif}` so pkgdown CI doesn’t re-fetch
+from S3 on every render. ASWS QA cross-checks are in
+`data-raw/qa_snow_validation*.R` — run locally only, results land in
+`planning/archive/<issue>/`.
+
+The two-vignette template is the foundation for additional regional
+reporting appendices (cf \#47) — port directly to a
+`fish_passage_<region>_<year>` reporting context.
 
 ## Data Directories (gitignored)
 
 - `data/backfill/` — overnight backfill working data
-- `data/test_cds/` — CDS API test downloads
 - `data/rag/` — ragnar DuckDB stores
+
+## CI considerations
+
+- `data-raw/*.R` runs **locally only** — never on CI. Outputs land in
+  `inst/extdata/` or `inst/vignette-data/` and are committed.
+- `bcsnowdata` (used by ASWS QA scripts) is GitHub-only — **never** add
+  it to DESCRIPTION Suggests; pak can’t resolve it on the pkgdown
+  runner. Same for any other GitHub-only package.
 
 # Code Check Conventions
 

@@ -52,11 +52,12 @@
 </ul></div>
 <div class="section level2">
 <h2 id="repository-context">Repository Context<a class="anchor" aria-label="anchor" href="#repository-context"></a></h2>
-<p><strong>Primary Language:</strong> R <strong>Framework:</strong> R package (devtools, testthat 3e, pkgdown) <strong>Spatial:</strong> <code>terra</code>, <code>sf</code> <strong>Data:</strong> ERA5-Land via CDS API (<code>ecmwfr</code>), served as COGs on S3 via STAC <strong>S3 Bucket:</strong> <code>stac-era5-land</code> (us-west-2) <strong>pkgdown:</strong> <code>newgraphenvironment.com/cd/</code></p>
+<p><strong>Primary Language:</strong> R (consumer-side) + Python (producer-side, EDH backfillers) <strong>Framework:</strong> R package (devtools, testthat 3e, pkgdown) <strong>Spatial:</strong> <code>terra</code>, <code>sf</code> <strong>Data:</strong> ERA5-Land via <a href="https://earthdatahub.destine.eu/" class="external-link">DestinE Earth Data Hub (Zarr)</a>, served as COGs on S3 via STAC <strong>S3 Bucket:</strong> <code>stac-era5-land</code> (us-west-2) <strong>pkgdown:</strong> <code>newgraphenvironment.com/cd/</code></p>
 </div>
 <div class="section level2">
 <h2 id="architecture">Architecture<a class="anchor" aria-label="anchor" href="#architecture"></a></h2>
-<p><strong>Producer</strong> (GitHub Action, monthly): <code><a href="reference/cd_fetch.html">cd_fetch()</a></code> → <code><a href="reference/cd_derive.html">cd_derive()</a></code> → <code><a href="reference/cd_aggregate.html">cd_aggregate()</a></code> → <code><a href="reference/cd_cog_write.html">cd_cog_write()</a></code> → <code><a href="reference/cd_stac_catalog.html">cd_stac_catalog()</a></code> → <code><a href="reference/cd_s3_push.html">cd_s3_push()</a></code></p>
+<p><strong>Producer</strong> (GitHub Action, monthly): Python backfillers fetch hourly Zarr from EDH, aggregate, derive (VPD/RH/soil); R stage 3 writes COGs and pushes the STAC catalog: <code>scripts/backfill_edh_*.py</code> → <code>scripts/pipeline_stage3_edh.R</code> → <code>scripts/pipeline_update_edh.R</code> (the GH Action’s monthly entry point) → <code><a href="reference/cd_cog_write.html">cd_cog_write()</a></code> → <code><a href="reference/cd_stac_catalog.html">cd_stac_catalog()</a></code> → <code><a href="reference/cd_s3_push.html">cd_s3_push()</a></code></p>
+<p>The historical <code><a href="reference/cd_fetch.html">cd_fetch()</a></code> / <code><a href="reference/cd_derive.html">cd_derive()</a></code> R-side producer functions still ship (with tests) for users who want a CDS-based fallback, but are not what runs in CI. See v0.1.0 / #36 for the migration history.</p>
 <p><strong>Consumer</strong> (user-facing, local R): <code><a href="reference/cd_catalog.html">cd_catalog()</a></code> → <code><a href="reference/cd_crop.html">cd_crop()</a></code> → <code><a href="reference/cd_extract.html">cd_extract()</a></code> → <code><a href="reference/cd_baseline.html">cd_baseline()</a></code> / <code><a href="reference/cd_anomaly.html">cd_anomaly()</a></code> / <code><a href="reference/cd_compare.html">cd_compare()</a></code> → <code><a href="reference/cd_trend.html">cd_trend()</a></code> → <code><a href="reference/cd_summary.html">cd_summary()</a></code></p>
 <p><strong>Key design decision:</strong> Raw climate values on STAC (not pre-computed anomalies). All baseline/anomaly/trend computation consumer-side for maximum flexibility over reference periods and comparison windows.</p>
 </div>
@@ -65,81 +66,109 @@
 <p>All functions use <code>cd_*</code> prefix. Naming convention: <code>noun_verb</code> (e.g., <code>cd_cog_write</code> not <code>cd_write_cog</code>).</p>
 </div>
 <div class="section level2">
-<h2 id="cds-api">CDS API<a class="anchor" aria-label="anchor" href="#cds-api"></a></h2>
-<p>Two products: - <code>reanalysis-era5-land-monthly-means</code> — tmean, prcp, dewpoint, soil moisture (returns zip→GRIB) - <code>derived-era5-land-daily-statistics</code> — tmax, tmin (returns NetCDF, needs <code>day</code> + <code>time_zone</code> params)</p>
-<p>Key gotchas: - Temperature in Kelvin (subtract 273.15) - Precipitation in m/day (× 1000 × days_in_month → mm/month) - GRIB metadata lies about units (says °C, values are K) - <code>retry = 120</code> avoids rate limiting (default 5 is too aggressive) - <code>wf_request_batch()</code> for parallel requests (up to 20 workers)</p>
+<h2 id="edh-destine-earth-data-hub">EDH (DestinE Earth Data Hub)<a class="anchor" aria-label="anchor" href="#edh-destine-earth-data-hub"></a></h2>
+<p>Producer pulls hourly ERA5-Land Zarr from EDH for the BC bbox (~48-60° N, 114-140° W) and aggregates to monthly / seasonal / annual on a single EPSG:4326 grid. Python only on the producer side (Zarr ecosystem maturity); R consumer-side reads the COGs over <code>/vsicurl/</code>.</p>
+<p>Token lookup order: <code>EDH_TOKEN</code> env var, then <code>~/.Renviron</code>. Configured in CI via secret.</p>
+<p>Key gotchas: - Temperature in Kelvin (subtract 273.15) - Precipitation in m/day (× 1000 × days_in_month → mm/month) - Snow accumulation variables (<code>snowfall</code>, <code>snowmelt</code>) reset at 06:00 UTC each day — diff-and-clamp logic lives in <code>scripts/backfill_edh_snow.py</code> (#48) - tmax/tmin daily aggregation currently uses UTC-day boundaries, not local-time — known limitation tracked at #37</p>
 </div>
 <div class="section level2">
-<h2 id="climate-variables">Climate Variables<a class="anchor" aria-label="anchor" href="#climate-variables"></a></h2>
+<h2 id="climate-variables-15-total-since-v020">Climate Variables (15 total since v0.2.0)<a class="anchor" aria-label="anchor" href="#climate-variables-15-total-since-v020"></a></h2>
+<p><strong>Core climate (7):</strong> all monthly natives, also seasonal + annual</p>
 <table class="table"><thead><tr><th>Variable</th>
-<th>Source</th>
 <th>Units</th>
 <th>Anomaly Type</th>
 </tr></thead><tbody><tr><td>tmean</td>
-<td>CDS monthly means</td>
 <td>°C</td>
 <td>absolute</td>
 </tr><tr><td>tmax</td>
-<td>CDS daily stats</td>
 <td>°C</td>
 <td>absolute</td>
 </tr><tr><td>tmin</td>
-<td>CDS daily stats</td>
 <td>°C</td>
 <td>absolute</td>
 </tr><tr><td>prcp</td>
-<td>CDS monthly means</td>
 <td>mm</td>
 <td>pct_normal</td>
 </tr><tr><td>vpd</td>
-<td>Derived (Tetens)</td>
-<td>hPa</td>
+<td>hPa (Tetens-derived)</td>
 <td>absolute</td>
 </tr><tr><td>rh</td>
-<td>Derived (temp+dewpoint)</td>
-<td>%</td>
+<td>% (temp+dewpoint-derived)</td>
 <td>absolute</td>
 </tr><tr><td>soil_moisture</td>
-<td>CDS monthly means (4 layers)</td>
-<td>m³/m³</td>
+<td>m³/m³ (4-layer mean)</td>
 <td>pct_normal</td>
-</tr></tbody></table></div>
+</tr></tbody></table><p><strong>Snow monthly natives (4):</strong> also seasonal + annual</p>
+<table class="table"><thead><tr><th>Variable</th>
+<th>Units</th>
+<th>Anomaly Type</th>
+</tr></thead><tbody><tr><td>swe</td>
+<td>mm</td>
+<td>pct_normal</td>
+</tr><tr><td>snowfall</td>
+<td>mm w.e.</td>
+<td>pct_normal</td>
+</tr><tr><td>snowmelt</td>
+<td>mm w.e.</td>
+<td>pct_normal</td>
+</tr><tr><td>snow_cover</td>
+<td>%</td>
+<td>pct_point_diff</td>
+</tr></tbody></table><p><strong>Snow annual derived (4):</strong> annual only</p>
+<table class="table"><thead><tr><th>Variable</th>
+<th>Units</th>
+<th>Anomaly Type</th>
+</tr></thead><tbody><tr><td>swe_max</td>
+<td>mm</td>
+<td>pct_normal</td>
+</tr><tr><td>snowfall_fraction</td>
+<td>%</td>
+<td>pct_point_diff</td>
+</tr><tr><td>snowmelt_doy_50</td>
+<td>day-of-year</td>
+<td>absolute</td>
+</tr><tr><td>snowmelt_rate_peak</td>
+<td>mm/day</td>
+<td>absolute</td>
+</tr></tbody></table><p>The <code>pct_point_diff</code> anomaly type is for already-percentage variables (treats anomaly as percentage-point difference, not relative percent).</p>
+</div>
 <div class="section level2">
 <h2 id="season-definitions">Season Definitions<a class="anchor" aria-label="anchor" href="#season-definitions"></a></h2>
 <p>Configurable via <code><a href="reference/cd_seasons.html">cd_seasons()</a></code>. Default: standard meteorological (DJF, MAM, JJA, SON). Override for custom seasons (e.g., wet/dry, growing season).</p>
 </div>
 <div class="section level2">
 <h2 id="development-workflow">Development Workflow<a class="anchor" aria-label="anchor" href="#development-workflow"></a></h2>
-<ol style="list-style-type: decimal"><li>Branch per issue (or group): <code>N-description</code>
-</li>
-<li>Create <code>planning/active/</code> files: task_plan.md, progress.md, findings.md</li>
-<li>Build → test → <code>/code-check</code> → commit with <code>Fixes #N</code> (update pwf checkboxes)</li>
-<li>PR with <code>Relates to NewGraphEnvironment/sred-2025-2026#23</code>
-</li>
-<li>Merge → archive planning files to <code>planning/completed/</code>
-</li>
+<ol style="list-style-type: decimal"><li>Branch per issue (or group): <code>N-description</code> (use <code>/planning-init &lt;N&gt;</code>)</li>
+<li>PWF baseline (task_plan.md / findings.md / progress.md) committed first</li>
+<li>Build → test → <code>/code-check</code> → atomic commits with <code>Fixes #N</code> (each commit updates the matching task_plan checkbox)</li>
+<li>PR (<code>/gh-pr-push</code>) — SRED tag (<code>Relates to NewGraphEnvironment/sred-2025-2026#23</code>) goes in the PR body, not on issues</li>
+<li>Merge + release (<code>/gh-pr-merge</code>) — bumps DESCRIPTION + NEWS, tags, watches CI</li>
+<li>Archive — <code>planning/active/</code> → <code>planning/archive/&lt;YYYY-MM-issue-N-slug&gt;/</code> with a one-paragraph README per directory</li>
 </ol></div>
 <div class="section level2">
-<h2 id="scripts">Scripts<a class="anchor" aria-label="anchor" href="#scripts"></a></h2>
-<ul><li>
-<code>scripts/pipeline_backfill.R</code> — overnight backfill (1950-2025, all variables)</li>
-<li>
-<code>scripts/pipeline_e2e_test.R</code> — end-to-end pipeline test</li>
-<li>
-<code>scripts/rag_build_departure_framing.R</code> — ragnar store for literature review</li>
-<li>
-<code>data-raw/example_climate_tmean.R</code> — generate shipped test data</li>
-<li>
-<code>data-raw/make_hexsticker.R</code> — hex sticker (generic, reads from DESCRIPTION)</li>
-</ul></div>
+<h2 id="scripts-current">Scripts (current)<a class="anchor" aria-label="anchor" href="#scripts-current"></a></h2>
+<p><strong>Producer (EDH):</strong> - <code>scripts/backfill_edh_all.py</code> — all 7 core climate variables (tmean, tmax, tmin, prcp, dewpoint→VPD/RH, soil moisture) - <code>scripts/backfill_edh_tmax_tmin.py</code> — separate tmax/tmin path (hourly → UTC-day max/min); see #37 - <code>scripts/backfill_edh_snow.py</code> — 4 snow natives + 4 derived (#48); handles ECMWF accumulation reset - <code>scripts/_lib.py</code> — shared safeguards (single-instance pgrep guard, exponential backoff, atomic write, timestamped logging, EDH token loader) - <code>scripts/pipeline_stage3_edh.R</code> — monthly TIFs → COGs + STAC + S3 push - <code>scripts/pipeline_update_edh.R</code> — monthly GH Action entry point (incremental) - <code>scripts/qa_monthly.R</code> — month-end QA cross-check</p>
+<p><strong>Misc:</strong> - <code>scripts/rag_build_snow_methodology.R</code> / <code>rag_query_snow_methodology.R</code> — ragnar lit review (#54) - <code>scripts/rag_build_departure_framing.R</code> — ragnar store for departure framing - <code>data-raw/make_hexsticker.R</code> — hex sticker (reads from DESCRIPTION) - <code>data-raw/example_*.R</code> — bundled AOIs + context geodata for vignettes</p>
+</div>
+<div class="section level2">
+<h2 id="vignettes">Vignettes<a class="anchor" aria-label="anchor" href="#vignettes"></a></h2>
+<p>Two regional reporting vignettes in <code>vignettes/</code>: - <code>peace-fwcp.Rmd</code> — FWCP Peace Region (~73,000 km², 16 WSGs across 5 ecoregions) - <code>kootenay-lake.Rmd</code> — southern Kootenays (~24,200 km², 4 WSGs across 4 ecoregions; sharp east-west precip gradient)</p>
+<p>Both share the same structure (Area of Interest → Trends → Snowpack → Spatial Pattern → Per-Ecoregion → WSGs Across Ecoregions → Interpretation). Heavy data is precomputed by <code>data-raw/&lt;vignette&gt;_vignette_data.R</code> into <code>inst/vignette-data/&lt;vignette&gt;.{rds,tif}</code> so pkgdown CI doesn’t re-fetch from S3 on every render. ASWS QA cross-checks are in <code>data-raw/qa_snow_validation*.R</code> — run locally only, results land in <code>planning/archive/&lt;issue&gt;/</code>.</p>
+<p>The two-vignette template is the foundation for additional regional reporting appendices (cf #47) — port directly to a <code>fish_passage_&lt;region&gt;_&lt;year&gt;</code> reporting context.</p>
+</div>
 <div class="section level2">
 <h2 id="data-directories-gitignored">Data Directories (gitignored)<a class="anchor" aria-label="anchor" href="#data-directories-gitignored"></a></h2>
 <ul><li>
 <code>data/backfill/</code> — overnight backfill working data</li>
 <li>
-<code>data/test_cds/</code> — CDS API test downloads</li>
-<li>
 <code>data/rag/</code> — ragnar DuckDB stores</li>
+</ul></div>
+<div class="section level2">
+<h2 id="ci-considerations">CI considerations<a class="anchor" aria-label="anchor" href="#ci-considerations"></a></h2>
+<ul><li>
+<code>data-raw/*.R</code> runs <strong>locally only</strong> — never on CI. Outputs land in <code>inst/extdata/</code> or <code>inst/vignette-data/</code> and are committed.</li>
+<li>
+<code>bcsnowdata</code> (used by ASWS QA scripts) is GitHub-only — <strong>never</strong> add it to DESCRIPTION Suggests; pak can’t resolve it on the pkgdown runner. Same for any other GitHub-only package.</li>
 </ul><!-- BEGIN SOUL CONVENTIONS — DO NOT EDIT BELOW THIS LINE --></div>
 </div>
 <div class="section level1">
@@ -463,7 +492,7 @@
 <p>Examples are how users discover what a function does. They must: - <strong>Actually run</strong> — no <code>\dontrun{}</code> unless external resources are required - <strong>Use bundled test data</strong> via <code><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file()</a></code> so they work for anyone - <strong>Show why the function is useful</strong> — not just that it runs, but what it produces and why you’d use it - <strong>Use qualified names</strong> for non-exported dependencies (<code><a href="https://rspatial.github.io/terra/reference/rast.html" class="external-link">terra::rast()</a></code>, <code><a href="https://r-spatial.github.io/sf/reference/st_read.html" class="external-link">sf::st_read()</a></code>) since examples run in the user’s environment</p>
 </div>
 <div class="section level3">
-<h3 id="vignettes">Vignettes<a class="anchor" aria-label="anchor" href="#vignettes"></a></h3>
+<h3 id="vignettes-1">Vignettes<a class="anchor" aria-label="anchor" href="#vignettes-1"></a></h3>
 <p>At least one vignette showing the full pipeline on real data: - Demonstrates the package solving an actual problem end-to-end - Uses bundled test data (committed to <code>inst/testdata/</code>) - Hosted on pkgdown so users can read it without installing</p>
 <p><strong>Output format:</strong> Use <code><a href="https://pkgs.rstudio.com/bookdown/reference/html_document2.html" class="external-link">bookdown::html_vignette2</a></code> (not <code><a href="https://pkgs.rstudio.com/rmarkdown/reference/html_vignette.html" class="external-link">rmarkdown::html_vignette</a></code>) for figure numbering and cross-references. Requires <code>bookdown</code> in Suggests and chunks must have <code>fig.cap</code> for numbered figures. Cross-reference with <code>Figure \@ref(fig:chunk-name)</code>.</p>
 <p><strong>Vignettes that need external resources (DB, API, STAC):</strong> Do NOT use the <code>.Rmd.orig</code> pre-knit pattern — it breaks <code>bookdown</code> figure numbering because knitr evaluates chunks during pre-knit and emits <code>![](path)</code> markdown that bookdown can’t number.</p>
