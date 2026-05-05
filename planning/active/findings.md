@@ -97,7 +97,102 @@ downstream branch wires the markers in.
 
 ## Search log (Phase 1)
 
-(Will populate during Phase 1 execution.)
+Phase 1 ran web searches against publisher landings + DOI lookups
+on the candidate list, plus a deep screen of the 19 existing items
+in the `NewGraphEnvironment/climate` collection (key `8MH9LCC9`).
+All 10 new papers below have confirmed DOIs and identified PDF
+access. Citation keys follow the BBT `firstauthor_etal{year}`
+convention used in the snow lit review (#54).
+
+### Final candidate list — 10 new papers to add
+
+| # | Citation key | Title (truncated) | Journal / Year | DOI | OA route |
+|---|---|---|---|---|---|
+| 1 | `karl_etal1993` | A New Perspective on Recent Global Warming: Asymmetric Trends of Daily Maximum and Minimum Temperature | BAMS 74 / 1993 | `10.1175/1520-0477(1993)074<1007:ANPORG>2.0.CO;2` | UNL DigitalCommons OA |
+| 2 | `easterling_etal1997` | Maximum and Minimum Temperature Trends for the Globe | Science 277 / 1997 | `10.1126/science.277.5324.364` | Paywalled, RG |
+| 3 | `vose_etal2005` | Maximum and minimum temperature trends for the globe: An update through 2004 | GRL 32 / 2005 | `10.1029/2005GL024379` | AGU paywalled, RG |
+| 4 | `vincent_etal2018` | Changes in Canada's Climate: Trends in Indices Based on Daily Temperature and Precipitation Data | Atmos-Ocean 56 / 2018 | `10.1080/07055900.2018.1514579` | T&F open + Canada.gov hosted |
+| 5 | `pepin_etal2015` | Elevation-dependent warming in mountain regions of the world | Nat Clim Chg 5 / 2015 | `10.1038/nclimate2563` | Paywalled, RG |
+| 6 | `rangwala_miller2012` | Climate change in mountains: a review of elevation-dependent warming and its possible causes | Clim Change 114 / 2012 | `10.1007/s10584-012-0419-3` | Springer paywalled, RG |
+| 7 | `wang_etal2012` | ClimateWNA — High-Resolution Spatial Climate Data for Western North America | JAMC 51 / 2012 | `10.1175/JAMC-D-11-043.1` | AMS OA after embargo |
+| 8 | `mantua_etal2010` | Climate change impacts on streamflow extremes and summertime stream temperature… freshwater salmon habitat in Washington State | Clim Change 102 / 2010 | `10.1007/s10584-010-9845-2` | Springer paywalled, RG + UW CIG host |
+| 9 | `eaton_scheller1996` | Effects of climate warming on fish thermal habitat in streams of the United States | L&O 41 / 1996 | `10.4319/lo.1996.41.5.1109` | Wiley paywalled, RG |
+| 10 | `richter_kolmes2005` | Maximum Temperature Limits for Chinook, Coho, and Chum Salmon, and Steelhead Trout in the Pacific Northwest | Rev Fish Sci 13 / 2005 | `10.1080/10641260590885861` | T&F paywalled, **NOAA hosts free PDF** |
+
+### Existing items in `climate` collection — reuse, do not re-add
+
+7 directly relevant existing items (BBT-generated long citation keys
+shown; we may PATCH cleaner overrides via Zotero `extra` field as a
+follow-up cleanup):
+
+| itemKey | BBT key | Year | Why relevant |
+|---|---|---|---|
+| `CPJDEZE6` | `mora_etal2013projectedtiming` | 2013 | Climate-departure framing (Nature) |
+| `NXHY5NRA` | `hersbach_etal2020ERA5global` | 2020 | ERA5 dataset paper |
+| `AIR5D4QW` | `munoz-sabater_etal2021ERA5Landstateoftheart` | 2021 | ERA5-Land dataset paper |
+| `LQUDWBT7` | `isaak_etal2017NorWeSTSummer` | 2017 | NorWeST stream-temp model |
+| `G2H2KWQK` | `dierauer_etal2020Climatechange` | 2020 | BC ecoregion drought |
+| `T4V2VX25` | `warkentin_etal2022Lowsummer` | 2022 | BC summer flow + chinook |
+| `KNFBUI5T` | `moore_schindler2022Gettingahead` | 2022 | Climate adaptation salmon |
+
+Other items in collection screened and judged out-of-scope for #58
+(better fits for Issue 2 precip+drying or Issue 3 framing): IPCC AR6
+WGI/SYR (general framing), Pauly/Rodrigues/Alleway shifting-baselines
+(Issue 3 framing), Yokohata 2019 climate-risk viz (peripheral), HYDAT
+(data source not lit), ECCC 2016 climate scenarios report (technical),
+Carbon Credits 2023 (irrelevant), Islam 2019 Fraser flow regimes
+(Issue 2).
+
+### Cross-rag references — already in `data/rag/snow_methodology.duckdb`
+
+These don't need re-adding; the temperature rag's query script can
+optionally cross-query the snow rag for these:
+
+| Citation key | Why relevant for #58 |
+|---|---|
+| `najafi_etal2017` | BC attribution methodology — covers temperature as well as snow |
+| `yue_wang2002` | MK + autocorrelation methodology — applies to all variables, not just snow |
+
+### Topics-vs-papers coverage matrix
+
+| Topic | Primary | Supporting |
+|---|---|---|
+| DTR / day-night asymmetry methodology | `karl_etal1993` | `easterling_etal1997`, `vose_etal2005` |
+| Tmax vs tmin trends globally | `easterling_etal1997` | `vose_etal2005`, `karl_etal1993` |
+| Canadian / BC temperature trends | `vincent_etal2018` | (cross-rag) `najafi_etal2017` |
+| BC-specific climate downscaling | `wang_etal2012` (ClimateWNA) | `vincent_etal2018` |
+| Elevation-dependent warming | `pepin_etal2015` | `rangwala_miller2012` |
+| Climate-departure framing | (existing) `mora_etal2013` | (Issue 3 will deepen) |
+| ERA5 / ERA5-Land grounding | (existing) `munoz-sabater_etal2021` | (existing) `hersbach_etal2020` |
+| Climate→stream-temp bridge | `mantua_etal2010` | (existing) `isaak_etal2017`, (existing) `warkentin_etal2022` |
+| Salmonid thermal envelope | `richter_kolmes2005` | `eaton_scheller1996`, `mantua_etal2010` |
+| BC ecoregion warming patterns | (existing) `dierauer_etal2020` | (Issue 2 will deepen) |
+| Adaptation framing | (existing) `moore_schindler2022` | (Issue 3 will deepen) |
+| Trend test methodology | (cross-rag) `yue_wang2002` | (cross-rag) `najafi_etal2017` |
+
+### PDF acquisition strategy
+
+- **OA / publicly hosted (auto-fetchable via curl + Web API):**
+  `karl_etal1993` (UNL), `wang_etal2012` (AMS, post-embargo), and
+  `richter_kolmes2005` (NOAA-hosted PDF) — direct download.
+  `vincent_etal2018` likely fetchable from T&F open access landing.
+- **Paywalled — flag for user manual ResearchGate download:**
+  `easterling_etal1997`, `vose_etal2005`, `pepin_etal2015`,
+  `rangwala_miller2012`, `mantua_etal2010`, `eaton_scheller1996`.
+  All 6 have ResearchGate landings per Phase 1 search.
+
+### Notes on access
+
+- **AMS journals** (`karl_etal1993`, `wang_etal2012`): 6-month embargo
+  then OA. Both are >>6 months old → freely available via journal
+  landing or DigitalCommons mirrors.
+- **`richter_kolmes2005`:** NOAA hosts a free PDF at
+  `https://www.noaa.gov/sites/default/files/legacy/document/2020/Oct/07354626288.pdf` —
+  prefer this over the T&F paywalled landing.
+- **`mantua_etal2010`:** UW Climate Impacts Group hosts a copy
+  alongside the Springer landing.
+- **`vincent_etal2018`:** ECCC / Canada.gov links directly to the T&F
+  full article — likely free access, will verify in Phase 2.
 
 ## Methodology quotes by topic (Phase 4)
 

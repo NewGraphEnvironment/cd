@@ -45,13 +45,18 @@ order so the directory reads cleanly. One atomic commit, easy review.
 
 ## Phase 1 — Targeted literature search
 
-- [ ] Web search candidate papers for DOI + access status; refine
-      candidate list from ~13 starters down to ~10 confirmed
-- [ ] Identify paywalled vs OA; ResearchGate fallback flagged for
-      user manual download
-- [ ] Cross-check existing 19 items in the `climate` Zotero collection
-      to avoid duplicate adds; capture existing item keys for reuse
-- [ ] Document final candidate list with citation key + DOI + access
+- [x] Web search candidate papers for DOI + access status; refined
+      candidate list to **10 confirmed new papers**
+- [x] Identified paywalled vs OA: 4 OA-fetchable (Karl 93, Wang 12
+      ClimateWNA, Vincent 18, Richter & Kolmes 05 via NOAA), 6 require
+      user RG download (Easterling 97, Vose 05, Pepin 15, Rangwala 12,
+      Mantua 10, Eaton & Scheller 96)
+- [x] Cross-checked existing 19 items in the `climate` Zotero
+      collection: 7 reuse-relevant for #58 (`mora_etal2013`, ERA5/
+      ERA5-Land, NorWeST, Dierauer 20 BC ecoregions, Warkentin 22,
+      Moore 22), 2 cross-rag references from snow rag (`najafi_etal2017`,
+      `yue_wang2002`); rest screened out as Issue 2/3 fits or peripheral
+- [x] Documented final candidate list with citation key + DOI + access
       status + topical coverage matrix in `findings.md`
 
 Starting candidate list (will refine):

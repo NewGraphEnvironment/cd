@@ -12,4 +12,9 @@
   `rag_*_build.R` / `rag_*_query.R` (3 scripts); updated docstrings,
   CLAUDE.md, snow archive README. Left NEWS.md + archive
   task_plan/findings/progress untouched as historical records
-- Next: Phase 1 — targeted lit search
+- Phase 1 done: 10 new candidate papers identified (DOI + OA status
+  confirmed); 7 existing climate-collection items + 2 cross-rag from
+  snow flagged for reuse without re-adding. Coverage matrix in
+  findings.md spans all 12 topical threads
+- Next: Phase 2 — add 10 new papers to NewGraphEnvironment/climate
+  Zotero collection (PDFs first per /lit-search policy)
