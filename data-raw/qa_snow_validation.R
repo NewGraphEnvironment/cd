@@ -17,7 +17,10 @@
 # Filed against #48 Phase 3.
 #
 # Prerequisites:
-#   - bcgov/bcsnowdata (in DESCRIPTION Suggests)
+#   - bcgov/bcsnowdata installed locally (not in DESCRIPTION; data-raw
+#     scripts manage their own deps per the cd convention). Install with:
+#       pak::pak("bcgov/bcsnowdata")
+#     (also requires `reshape` as a transitive dep)
 #   - cd package installed (or devtools::load_all())
 #   - Network access for ASWS / manual data + S3 reads
 #
