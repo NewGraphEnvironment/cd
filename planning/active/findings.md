@@ -82,7 +82,65 @@ canonical) is the template. Reads PDFs from
 
 ## Search log (Phase 1)
 
-(Will populate during Phase 1 execution.)
+Phase 1 confirmed 4 new candidate papers via web search. Wiken 1986
+(Canadian terrestrial ecozones) + Demarchi 2011 (BC ecoregions)
+dropped from formal scope — the BC-ecoregion-as-reporting-unit
+grounding is established convention in BC fisheries / ecology and
+can be described in vignette prose without a heavy `[@key]` cite.
+The 4 selected papers cover the load-bearing framing topics:
+baseline window, time-of-emergence, alternative normals, public
+perception of cumulative change.
+
+### Final candidate list — 4 new papers to add
+
+| # | Citation key (proposed) | Title (truncated) | Journal / Year | DOI | OA route |
+|---|---|---|---|---|---|
+| 1 | `arguez_vose2011` | The Definition of the Standard WMO Climate Normal: The Key to Deriving Alternative Climate Normals | BAMS 92 / 2011 | `10.1175/2010BAMS2955.1` | AMS Cloudflare-blocked, RG |
+| 2 | `livezey_etal2007` | Estimation and Extrapolation of Climate Normals and Climatic Trends | JAMC 46 / 2007 | `10.1175/2007JAMC1666.1` | meto.umd.edu hosts free PDF |
+| 3 | `hawkins_sutton2012` | Time of emergence of climate signals | GRL 39 / 2012 | `10.1029/2011GL050087` | AGU paywalled, RG |
+| 4 | `hansen_etal2012` | Perception of climate change | PNAS 109 / 2012 | `10.1073/pnas.1205276109` | harvard.edu hosts free PDF |
+
+### Existing items in `climate` collection — reuse, do not re-add
+
+6 directly relevant existing items (BBT keys captured during #58/#61):
+
+| BBT key | Year | Why relevant |
+|---|---|---|
+| `mora_etal2013projectedtiming` | 2013 | Climate-departure framing anchor (Nature) |
+| `pauly1995Anecdotesshifting` | 1995 | Shifting baselines foundational |
+| `rodrigues_etal2019Unshiftingbaseline` | 2019 | Documenting historical baselines |
+| `alleway_etal2023shiftingbaseline` | 2023 | SBS as connective concept |
+| `intergovernmentalpanelonclimatechangeipcc2023ClimateChange` | 2023 | IPCC AR6 WGI |
+| `calvin_etal2023IPCCSummary` | 2023 | IPCC AR6 SYR |
+
+### Cross-rag references (already in other rag stores; query without re-adding)
+
+- `data/rag/snow_methodology.duckdb`:
+  - `yue_wang2002Applicabilityprewhitening` — trend-test methodology
+- `data/rag/temp_methodology.duckdb`:
+  - `vincent_etal2018ChangesCanadas` — Canadian climate-normal practice
+- `data/rag/precip_drying_methodology.duckdb`:
+  - `trenberth_etal2014Globalwarming`, `marvel_etal2019Twentiethcenturyhydroclimate`,
+    `williams_etal2020Largecontribution` — drying-side framing references
+
+### Topics-vs-papers coverage matrix
+
+| Topic | Primary | Supporting |
+|---|---|---|
+| WMO climate normal definition + alternatives | `arguez_vose2011` | `livezey_etal2007` |
+| Computing climate normals when trends exist (cd's situation) | `livezey_etal2007` | (cross-rag) `vincent_etal2018ChangesCanadas` |
+| Time of emergence / signal-to-noise framing | `hawkins_sutton2012` | (existing) `mora_etal2013projectedtiming` |
+| Climate-departure framing (recent variability) | (existing) `mora_etal2013projectedtiming` | `hawkins_sutton2012` |
+| Cumulative-impact / "loaded dice" framing | `hansen_etal2012` | — |
+| Shifting baseline syndrome | (existing) `pauly1995Anecdotesshifting` | (existing) `rodrigues_etal2019Unshiftingbaseline`, `alleway_etal2023shiftingbaseline` |
+| IPCC framing for FWCP context | (existing) `calvin_etal2023IPCCSummary` | (existing) `intergovernmentalpanelonclimatechangeipcc2023ClimateChange` |
+
+### PDF acquisition strategy
+
+- **OA / publicly hosted (auto-fetchable via curl):** Hansen 2012
+  (harvard.edu seas), Livezey 2007 (meto.umd.edu kostya).
+- **Paywalled — flag for user RG download:** Arguez & Vose 2011
+  (AMS Cloudflare blocks curl), Hawkins & Sutton 2012 (AGU paywalled).
 
 ## Methodology quotes by topic (Phase 4 + 5)
 

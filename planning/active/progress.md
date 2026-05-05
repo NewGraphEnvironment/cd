@@ -20,5 +20,12 @@
   5. `noun_verb` naming for new rag scripts
   6. Auto-restart Zotero via osascript+open+30s for BBT key gen,
      no manual prompt needed (#61 lesson, in soul#43)
-- Next: Phase 1 — targeted lit search starting from the 6-paper
-  candidate list in task_plan
+- Phase 1 done: 4 new candidate papers confirmed (DOI + OA);
+  Wiken/Demarchi BC-ecoregion gov refs dropped from formal scope
+  (well-established convention, vignette can describe in prose).
+  6 existing climate-collection items + cross-rag from snow + temp
+  + precip+drying stores cover the framing topics
+- 2 OA PDFs in cache (Hansen 2012, Livezey 2007); 2 RG-needed
+  flagged for user (Arguez & Vose 2011, Hawkins & Sutton 2012)
+- Next: Phase 2 — fetch the 2 RG PDFs, then Zotero adds via Web
+  API + auto-restart for BBT key gen

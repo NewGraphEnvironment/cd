@@ -25,16 +25,19 @@ the cite-this-for-that maps from all three findings.md files.
 
 ## Phase 1 — Targeted literature search
 
-- [ ] Web search candidate papers for DOI + access status; confirm
-      ~6 new papers (lighter than #58/#61 since framing leans on
-      existing collection items + cross-rag)
-- [ ] Identify paywalled vs OA; ResearchGate fallback flagged for
-      user manual download
-- [ ] Cross-check existing 19 items in the `climate` collection +
-      the temp + precip+drying + snow rags' papers to avoid duplicate
-      adds; capture existing item keys for reuse
-- [ ] Document final candidate list with citation key + DOI + access
-      status + topical coverage matrix in `findings.md`
+- [x] Web search candidate papers for DOI + access status; refined
+      to **4 confirmed new papers** (leaner than initial 6-paper
+      plan since Wiken 1986 + Demarchi 2011 BC ecoregion gov refs
+      dropped — well-established convention, doesn't need a heavy
+      cite)
+- [x] Identified OA-fetchable: Hansen 2012 (harvard.edu),
+      Livezey 2007 (meto.umd.edu). Paywalled needing RG: Arguez &
+      Vose 2011, Hawkins & Sutton 2012
+- [x] Cross-checked existing 19 items in the `climate` collection
+      (6 reuse-relevant) + cross-rag references from snow + temp +
+      precip+drying stores
+- [x] Documented final candidate list + 7-topic coverage matrix
+      in `findings.md` (Phase 1 search log section)
 
 Starting candidate list (will refine):
 
