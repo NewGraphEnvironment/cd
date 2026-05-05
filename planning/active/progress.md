@@ -23,6 +23,15 @@
 - Scaffolded PWF baseline mirroring earlier issues' structure but
   with consumer-side phases (audit log, agent review, render
   check)
-- Next: Phase 1 — build citation_audit.md with one row per
-  proposed `[@key]` insertion (vignette excerpt, source quote,
-  rag store, my paraphrase, justification)
+- Phase 1 done: planning/active/citation_audit.md built with 7
+  proposed insertion rows (8 unique new keys + 1 reuse of
+  kang_etal2016)
+- Phase 2 done: 7 insertions made into kootenay-lake.Rmd
+  (+38/-26 lines, light prose smoothing)
+- Phase 3 done: Explore subagent ran independent verification on
+  all 7 audit rows. **All passed.** One minor scope fix on
+  Ficklin & Novick (paraphrase said "western US" but paper
+  covers continental US with western-concentration in results) —
+  fixed inline. No other edits / removals.
+- Next: Phase 4 — push branch, let CI pkgdown render verify all
+  `[@key]` markers resolve via rbbt::bbt_write_bib. Then PR.

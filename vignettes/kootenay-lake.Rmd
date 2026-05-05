@@ -990,8 +990,10 @@ signal.
 between how much water the air could hold and how much it actually
 does — is up significantly across the region, mirroring the
 continental-scale drying that @ficklin_novick2017Historicprojected
-documented across the western United States, driven by combined
-air-temperature increases and relative-humidity declines. Combined
+documented for the United States as a whole, with the strongest
+historical VPD increases concentrated in the western and southern
+portions, driven by combined air-temperature increases and
+relative-humidity declines. Combined
 with declining precipitation, this is a "double-dipping" signal:
 less water arriving as precipitation, *and* warmer air pulling more
 water out of soil and vegetation through evapotranspiration. Soil

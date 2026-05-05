@@ -293,3 +293,25 @@ The Phase 3 review agent should verify, for each row above:
    but not shown)
 4. No BS — if a citation looks like decoration rather than
    load-bearing, flag it for removal
+
+## Phase 3 — Review agent sign-off (2026-05-05)
+
+Spawned an Explore subagent to verify each row. **All 7 rows
+passed** scientific-integrity review: no hallucinated quotes,
+paraphrases faithful, warrants visible in plots/tables, all cites
+load-bearing. Agent flagged one minor scope concern:
+
+- **Row 5 (Ficklin & Novick 2017):** initial paraphrase said
+  "documented across the western United States" but the paper
+  covers the entire continental US (1979–2013), with the
+  strongest historical VPD increases concentrated in the
+  western/southern portions. **Fixed in vignette** —
+  "documented for the United States as a whole, with the
+  strongest historical VPD increases concentrated in the western
+  and southern portions, driven by combined air-temperature
+  increases and relative-humidity declines." Now accurate to the
+  paper's full scope.
+
+No other edits or removals required. Agent's overall
+recommendation: **keep all 7 cites as-is** (with the Ficklin
+fix applied).
