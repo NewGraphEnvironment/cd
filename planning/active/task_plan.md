@@ -114,33 +114,37 @@ Starting candidate list (will refine):
 
 ## Phase 4 — Mine the store for methodology quotes
 
-- [ ] Write `scripts/rag_temp_methodology_query.R` mirroring the
-      snow query script. Query topics:
-      - Trend test methodology (MK, Theil-Sen) — cross-references
-        with snow rag for Yue & Wang
-      - DTR / day-night asymmetry methodology + interpretation
-      - Tmax vs tmin asymmetry — when does it appear, when doesn't
-      - Climate→stream-temp bridge — air-temp departure to fish
-        thermal stress
-      - Elevation-dependent warming (mountain vs valley)
-      - ERA5-Land 2m temperature validation / bias structure
-      - BC / PNW-specific warming patterns
-      - Salmonid thermal envelopes + critical thresholds
-- [ ] Save raw retrieval to `planning/active/temp_methodology_quotes.md`
-- [ ] Synthesize per-topic into `findings.md`
+- [x] Wrote `scripts/rag_temp_methodology_query.R` mirroring the
+      snow query script. 8 topics × 3 queries × top-5 chunks =
+      120 candidate chunks total
+- [x] Topics covered: DTR asymmetry, Tmax/Tmin globe, Canadian/BC
+      trends, BC downscaling, EDW, climate-stream-temp bridge,
+      salmonid thermal envelope, trend methodology
+- [x] Raw retrieval saved to `planning/active/temp_methodology_quotes.md`
+      (637 lines)
+- [x] Synthesized per-topic into `findings.md` (Phase 5)
 
 ## Phase 5 — Synthesis + citation map
 
-- [ ] In `findings.md`: methodology-quotes-by-topic section
-- [ ] Deviations section — places where cd's temperature analysis
-      differs from / extends the literature consensus (e.g., UTC-day
-      tmax/tmin vs local-time per #37; Theil-Sen slope rather than
-      OLS; cumulative-impact framing rather than per-decade rate)
-- [ ] **"Cite this for that"** table — N-row map from vignette
-      claim type to citation key(s). Ready for downstream consumer
-      branch to copy `[@key]` markers verbatim
-- [ ] Document existing items in `climate` collection that became
-      candidates after closer review
+- [x] In `findings.md`: methodology-quotes-by-topic section covering
+      all 8 topics with selected quotes per paper
+- [x] Cross-cutting methodology section: baseline window (same as
+      snow), trend test (Vincent 18's AC-iterative vs cd's raw MK,
+      Yue & Wang 02 supports our approach), ERA5-Land 2m T validation
+      (gap noted, alternatives proposed)
+- [x] Deviations section — 4 documented deviations: UTC-day tmax/tmin
+      (#37), raw MK vs Vincent 18's AC-iterative, no direct ERA5-Land
+      2m T validation paper, regional DTR-asymmetry magnitude may
+      not match global ratio
+- [x] **"Cite this for that"** map — 18-row claim → citation
+      lookup, framed as a menu not an order. Downstream branch picks
+      sparingly per the plain-language philosophy (memory:
+      `feedback_vignette_citations_sparse.md`)
+- [x] Documented existing items in `climate` collection (7 reuse-
+      relevant) + 2 cross-rag references from snow rag
+- [x] Philosophy preface added to findings.md: this is a library
+      not a prescription; downstream cites authorities sparingly
+      for findings visible in AOI graphs/tables
 
 ## Phase 6 — PR + release
 

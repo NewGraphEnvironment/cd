@@ -29,6 +29,15 @@
   snow build script with 10-paper pdf_specs map; built
   data/rag/temp_methodology.duckdb (677 chunks, 10 sources, ~28 s).
   Sanity-tested retrieval on a DTR query — returns expected papers
-- Next: Phase 4 — write rag_temp_methodology_query.R, mine the
-  store across 8 query topics, capture raw retrieval to
-  planning/active/temp_methodology_quotes.md
+- Phase 4 done: scripts/rag_temp_methodology_query.R written; 24
+  queries × top-5 chunks = 120 candidates captured to
+  planning/active/temp_methodology_quotes.md (637 lines)
+- Phase 5 done: synthesis section in findings.md covers 8 topics
+  with selected quotes; cross-cutting methodology + 4 deviations
+  + 18-row "cite this for that" map. Philosophy preface added per
+  user feedback (vignette uses citations sparingly for findings
+  visible in graphs/tables; library not prescription). Memory
+  saved: feedback_vignette_citations_sparse.md
+- Next: Phase 6 — code-check, PR, archive, release v0.2.2.
+  Pending user action: restart Zotero so BBT computes citation
+  keys for the 10 new items; capture into findings.md before PR

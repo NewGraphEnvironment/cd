@@ -236,18 +236,347 @@ pointing at the deduped file. No action required.
 - **`vincent_etal2018`:** ECCC / Canada.gov links directly to the T&F
   full article — likely free access, will verify in Phase 2.
 
-## Methodology quotes by topic (Phase 4)
+## Methodology quotes by topic (Phase 4 + 5)
 
-(Will populate during Phase 4 execution.)
+Raw retrieval results in `planning/active/temp_methodology_quotes.md`
+(637 lines, 24 queries × top-5 chunks). Synthesis below picks the
+strongest hits per topic and groups them by the literature angle they
+support. Citation labels match the rag-script `pdf_specs` map; the
+actual BBT-auto-derived Zotero keys (which is what lands in vignette
+`[@key]` markers downstream) get captured in the Zotero-adds table
+above once Zotero is restarted.
+
+### DTR / day-night asymmetry (foundational + BC context)
+
+**Methodological precedent.** Karl et al. (1993) is the foundational
+DTR-asymmetry paper; Easterling et al. (1997) and Vose et al. (2005)
+extend the analysis through 2004 with broader land coverage. Vincent
+et al. (2018) confirms the asymmetry holds in Canada specifically.
+
+- `karl_etal1993` (abstract): "the rise of the minimum temperature
+  has occurred at a rate three times that of the maximum temperature
+  during the period 1951–90 (0.84°C versus 0.28°C). The decrease of
+  the diurnal temperature range is approximately equal to the
+  increase of mean temperature. The asymmetry is detectable in all
+  seasons and in most of the regions studied." → Canonical
+  3:1 min:max ratio quote for cd vignette interpretation.
+- `vose_etal2005`: "From 1950–2004, the maximum temperature trend is
+  0.141°C dec−1, the minimum temperature trend is 0.204°C dec−1, and
+  the DTR trend is −0.066°C dec−1." 71% of global land area covered.
+  → Updated trend numbers, methodology continuity from Karl 1993.
+- `vincent_etal2018`: "nighttime very warm and very cold temperatures
+  have warmed more than daytime very warm and very cold temperatures,
+  both in the cold and warm seasons. This result is consistent with
+  greater warming observed at nighttime than during daytime." Canada,
+  1948–2016. → Confirms the asymmetry in our regional context (BC is
+  a Vincent 18 sub-region).
+- `karl_etal1993` (mechanism): cloud cover increases partially
+  explain DTR decrease; sulfate aerosol forcing is "primarily Northern
+  Hemisphere... too uncertain to estimate" relative role; soil
+  moisture, snow cover, RH all modulate DTR. → Mechanism caveats
+  for "why DTR is shrinking" claim.
+- `pepin_etal2015`: "snow–albedo mechanism has a stronger influence
+  on maximum than minimum temperatures because of the increase in
+  absorbed solar radiation"; soil-moisture modulates whether warmth
+  goes to Tmax (sensible-heat partitioning) or Tmin (latent-heat
+  feedback). → Adds mountain-region nuance to the simple DTR story.
+- `rangwala_miller2012` (Table 2): a comprehensive driver-by-driver
+  table summarizing how each climate driver (snow, clouds, humidity,
+  aerosols) shifts Tmax vs Tmin. → Useful reference for vignette
+  interp paragraph that notes "our AOI does/doesn't show the
+  textbook DTR asymmetry."
+
+### Tmax / Tmin trends — global benchmark
+
+- `vose_etal2005`: "minimum temperature increased more rapidly than
+  maximum temperature (0.204 vs 0.141°C dec−1) from 1950–2004,
+  resulting in a significant DTR decrease (−0.066°C dec−1)." Trends
+  larger in NH (greater warming in boreal winter and spring); little
+  Southern Hemisphere seasonality. → Reference rates against which
+  cd's BC AOI rates can be compared.
+- `karl_etal1993` (Table 1): per-country tables of MAX, MIN, DTR
+  trends 1951-1990 for Canada (0.9 / 1.5 / 0.6 °C/100yr annual) and
+  USA (-0.6 / 1.0 / -1.5). → Direct Canada-1990 baseline numbers.
+
+### Canadian / BC temperature trends — direct regional anchor
+
+`vincent_etal2018` is the closest paper in our corpus to cd's BC AOIs
+— it's an ECCC homogenized-data study with explicit BC sub-regional
+results.
+
+- `vincent_etal2018`: "Canada is becoming warmer. The annual mean
+  temperature averaged over land has increased by 1.7°C from 1948
+  to 2012 (Vincent et al., 2015)... summer 95th percentile of tmax
+  has increased by 0.9°C for the 1948–2016 period, whereas the
+  summer 95th percentile of tmin has increased by 1.3°C." → Direct
+  Canadian context for "BC is warming" framing in the vignette
+  interpretation.
+- `vincent_etal2018` (Table 3): provides BC-specific regional trends
+  for ~21 indices (summer days, hot days, hot nights, summer 95th
+  perc. tmax/tmin, frost days, growing season, growing degree-days).
+  → If the vignette wants to compare cd's AOI numbers against a
+  province-wide Vincent 18 benchmark, Table 3 has the values.
+- `vincent_etal2018` (Methods): "The trend calculation followed the
+  methodology presented in Zhang, Vincent, Hogg, and Niitsoo (2000).
+  The estimated magnitude of the trend is based on the slope
+  estimator of Sen (1968), and the statistical significance of the
+  trend is based on the nonparametric Kendall's τ-test (Kendall,
+  1955). Because serial correlation is occasionally present in the
+  climatological time series, the method also uses an iterative
+  procedure to account for the lag-1 autocorrelation of the time
+  series (Wang & Swail, 2001)." → **`cd_trend()` uses identical
+  Sen+MK slope+significance**; only difference is cd's raw form
+  doesn't apply iterative AC handling. See Deviations.
+
+### BC-specific climate downscaling — context
+
+- `wang_etal2012` ClimateWNA: "20 000 surfaces of monthly, seasonal,
+  and annual climate variables from 1901 to 2009; several climate
+  normal periods; and multimodel climate projections for the 2020s,
+  2050s, and 2080s." UBC Forest Conservation Genetics, U Alberta,
+  PCIC. → Contextualizes cd's ERA5-Land approach against the
+  ClimateWNA downscaled-station alternative used by ecosystem
+  classification work in BC. Useful to note the difference: cd
+  reads native-grid ERA5-Land (~9 km, internally consistent across
+  variables) versus ClimateWNA's PRISM-anchored interpolated station
+  product (~800 m, denser station network in populated valleys).
+
+### Elevation-dependent warming (EDW) — mountain context
+
+`pepin_etal2015` and `rangwala_miller2012` both review EDW evidence
+across mountain regions. cd's BC AOIs span 800–3500 m elevation.
+
+- `pepin_etal2015` (abstract): "growing evidence that the rate of
+  warming is amplified with elevation, such that high-mountain
+  environments experience more rapid changes in temperature than
+  environments at lower elevations. Elevation-dependent warming
+  (EDW) can accelerate the rate of change in mountain ecosystems,
+  cryospheric systems, hydrological regimes and biodiversity."
+  → Justifies why cd's per-ecoregion view (which spans elevation
+  bands within an AOI) matters.
+- `pepin_etal2015` (mechanisms): "snow albedo and surface-based
+  feedbacks; water vapour changes and latent heat release; surface
+  water vapour and radiative flux changes; surface heat loss and
+  temperature change; and aerosols. All lead to enhanced warming
+  with elevation (or at a critical elevation)." → Lists the
+  mechanisms that we don't quantify directly but should mention
+  briefly in interp.
+- `rangwala_miller2012` Swiss Alps (Ceppi et al. 2010): "high
+  warming rates during summer (0.46°C/decade) and winter (0.40°C/
+  decade)." Colorado Rockies: "0.5–1°C/decade during the last three
+  decades, but particularly since the mid-1990s." → Reference
+  magnitudes for "BC mountain AOI warmed by X" comparisons.
+- `rangwala_miller2012` (caveat): "it is still uncertain whether
+  mountainous regions generally are warming at a different rate
+  than the rest of the global land surface, or whether
+  elevation-based sensitivities in warming rates are prevalent
+  within mountains." → **Strong caveat** for any "mountains warm
+  faster" claim in the vignette — it's a per-region pattern, not
+  a global rule.
+
+### Climate → stream-temperature → fish thermal stress bridge
+
+This is the citation backbone for the v0.1.1 vignette claim that
+"summer daytime maximum is the temperature envelope for salmonid
+thermal stress in tributaries." Three papers anchor it.
+
+- `eaton_scheller1996` (foundational): "The effects of climate
+  warming on the thermal habitat of 57 species of fish of the U.S.
+  were estimated using results for a doubling of atmospheric carbon
+  dioxide that were predicted by the Canadian Climate Center general
+  circulation model... cold-water and cool-water species are
+  predicted to lose substantially more thermal habitat than
+  warm-water species." → Establishes air-T → stream-T → fish-thermal
+  -habitat chain at continental scale.
+- `mantua_etal2010`: "Simulations predict rising water temperatures
+  will thermally stress salmon throughout Washington's watersheds,
+  becoming increasingly severe later in the twenty-first century...
+  basins strongly influenced by transient runoff (a mix of direct
+  runoff from cool-season rainfall and springtime snowmelt) are most
+  sensitive to climate change... combined effects of warming
+  summertime stream temperatures and altered streamflows will likely
+  reduce the reproductive success for many Washington salmon
+  populations." → PNW-specific bridge, exactly the salmonid
+  thermal-stress framing for FWCP fish-passage reporting.
+- (existing) `isaak_etal2017` (NorWeST): regional stream-temperature
+  model for the western US, predicts broad climate-warming-driven
+  stream-temperature increases. Already in the climate collection;
+  doesn't need adding.
+- (existing) `warkentin_etal2022`: BC-specific chinook-and-summer-
+  flow study — empirical evidence that low summer flows (which
+  warm faster) reduce salmon productivity. Already in collection.
+
+### Salmonid thermal envelope — direct PNW thresholds
+
+- `richter_kolmes2005`: "Maximum Temperature Limits for Chinook,
+  Coho, and Chum Salmon, and Steelhead Trout in the Pacific
+  Northwest... reviews the literature for chinook, coho, chum, and
+  steelhead, which are currently listed in the Columbia River Basin
+  under the Endangered Species Act. Describes specific numeric
+  maximum temperature criteria that can be integrated into a broader
+  recovery planning process for sensitive life stages of three
+  species of Pacific Northwest salmon and steelhead."
+  → **Direct citation for "salmonid thermal envelope" in the cd
+  vignette interp.** PNW species overlap with FWCP Peace + Kootenay
+  AOIs (chinook, coho, steelhead are all present; chum is
+  PNW-coastal not BC-interior).
+- `eaton_scheller1996`: 57 US species, methodology for relating
+  air-T to stream-thermal-habitat for cold/cool/warm-water
+  classifications. → Methodological complement to Richter & Kolmes
+  for cd's "thermal habitat" framing.
+- `mantua_etal2010`: PNW scenarios connect projected warming to
+  specific threshold crossings — basins "transitioning toward more
+  rain-dominant runoff regimes" lose snow-melt thermal buffering.
+
+### Trend methodology (cross-reference with snow rag)
+
+- `vincent_etal2018`: explicit Sen slope + Kendall's τ + lag-1 AC
+  iterative procedure (Wang & Swail 2001) — methodology reference
+  for trend tests on Canadian climate time series. → cd uses raw
+  MK + Theil-Sen (no AC correction); the Vincent 18 procedure adds
+  iterative AC handling. See Deviations.
+- (cross-rag from `data/rag/snow_methodology.duckdb`)
+  `yue_wang2002`: prewhitening fails when a real trend exists
+  (Monte Carlo result); raw MK is the correct call for our 76-year
+  series with strong trends. → Already covered in #54 findings.md.
+  Cross-rag query: "When trend exists in a time series, the effect
+  of positive/negative serial correlation on the MK test is
+  dependent upon sample size, magnitude of serial correlation, and
+  magnitude of trend."
 
 ## Cross-cutting methodology
 
-(Will populate during Phase 5 execution.)
+### Baseline window — same as snow
 
-## Deviations
+Same conclusion as #54 findings.md: cd's 1951–1980 baseline is
+acceptable for temperature, on the early side relative to the WMO
+1961–1990 normal. The Vincent 18 trend table uses 1948–2016 (no
+fixed baseline, full-record trend). Karl 93 uses 1951–1990. Vose 05
+uses 1950–2004. Pepin 15 / Rangwala 12 don't fix on a single
+baseline. **Heterogeneous in the literature** — our choice is
+defensible and aligns with the snow-side analysis in cd.
 
-(Will populate during Phase 5 execution.)
+### Trend test — raw MK + Theil-Sen vs Vincent 18's AC-iterative form
 
-## "Cite this for that" map
+Vincent 18 explicitly applies iterative lag-1 autocorrelation
+handling (Wang & Swail 2001) on top of Sen slope + Kendall's τ.
+`cd_trend()` does not. Yue & Wang (2002, snow rag) demonstrates
+that **prewhitening hurts when a real trend exists** — for cd's
+76-year series with strong climate trends, raw MK is correct.
+Whether the iterative-AC procedure differs meaningfully from
+prewhitening (i.e., is Vincent's procedure trend-aware?) is a
+secondary methodology question, possibly motivating #43 if it
+becomes important. For now, raw MK + Theil-Sen is the right call
+and Vincent 18's results are still directly comparable since their
+AC correction effect is small for shorter records (their statement:
+"serial correlation is *occasionally* present").
 
-(Will populate during Phase 5 execution.)
+### ERA5-Land 2m temperature validation
+
+**No paper in our 10-paper corpus directly validates ERA5-Land
+2m temperature against in-situ observations for cd's BC AOIs.**
+This is a notable gap. Available alternatives:
+
+- (existing) `munoz_sabater_etal2021`: ERA5-Land dataset paper
+  validates ERA5-Land vs ground truth at limited "fluxnet" sites
+  for various land-surface variables; 2m T is a forcing, not the
+  focus.
+- `karl_etal1993` + `vose_etal2005` + `vincent_etal2018` provide
+  station-based trend benchmarks against which cd's ERA5-Land
+  trends can be qualitatively cross-checked. We can claim
+  consistency if our BC-mean trends fall within the bands
+  reported by Vincent 18 for the BC sub-region.
+- `kouki_etal2023` (snow rag) validates SWE; suggests bias is
+  approximately stable over time. By extension (not directly
+  established), cd's temperature trends are likely interpretable
+  even if absolute biases exist.
+
+**Recommendation for the vignette interp:** note this as a
+known caveat. A targeted ERA5-Land 2m T validation against ECCC
+homogenized stations (Vincent 18's source dataset) would
+strengthen the methodology — possible follow-up issue if
+reviewers push back.
+
+## Deviations from consensus
+
+1. **UTC-day vs local-day tmax/tmin (issue #37).** cd's tmax/tmin
+   currently uses UTC-day boundaries on hourly ERA5-Land. Vincent
+   18 + Karl 93 use station-day (local time). For BC longitudes
+   (UTC-7 to UTC-8), the UTC-day boundary cuts mid-afternoon local
+   — almost certainly biases tmax low (since the warmest local
+   afternoon may be split across two UTC days). #37 tracks the fix.
+   Document briefly in vignette interp; flag the magnitude as
+   pending #37 quantification.
+
+2. **Raw MK + Theil-Sen vs Vincent 18's AC-iterative procedure.**
+   Yue & Wang 2002 (snow rag) supports raw MK for our case
+   (76-year strong-trend series). Vincent 18's AC-iterative is more
+   conservative; potentially flagged in #43 if a window-vs-window
+   p-value motivates revisiting the trend test. Defensible as-is.
+
+3. **No direct ERA5-Land 2m T validation paper for BC.** Cross-
+   referenced via Vincent 18 / Karl 93 / Vose 05 trend benchmarks
+   instead. Document as a known caveat in interp; possible follow-up
+   issue.
+
+4. **DTR asymmetry magnitude in cd's BC AOIs may not match the
+   global 3:1 (Karl 93) or 1.45:1 (Vose 05).** Mountain regions
+   (Pepin 15, Rangwala 12) show heterogeneous Tmin/Tmax response
+   depending on snow-albedo / soil-moisture state. cd's per-AOI
+   results may not show the textbook signal — that's interpretable
+   given the AOI-specific climate state, not a methodology problem.
+   This is the v0.1.1 honest framing: "the textbook day-night
+   asymmetry doesn't show at Kootenay Lake — the dominant signal is
+   summer daytime maximum."
+
+## Philosophy for downstream wire-up (read this first)
+
+This findings.md is a **library**, not a prescription. The downstream
+vignette branch draws sparingly:
+
+- Cite an authority only when the finding actually surfaces in the
+  AOI's graphs/tables. Don't decorate prose with concepts that
+  don't appear in the data.
+- Plain language. Spell out acronyms on first use (DTR = diurnal
+  temperature range; EDW = elevation-dependent warming; FWCP = Fish
+  and Wildlife Compensation Program).
+- The vignette interpretation educates a fish-passage planner on the
+  state of science — it doesn't read like a peer-reviewed paper.
+- Cross-region anomalies worth mentioning are ones a reviewer would
+  push back on if they weren't acknowledged. Otherwise leave them out.
+- Cross-region comparisons go in PR descriptions, not vignette prose
+  — vignettes are stand-alone (per memory).
+
+## "Cite this for that" — citation map for downstream vignette wiring
+
+Copy-paste-ready map. Each row gives a vignette claim type and the
+citation key(s) that ground it. **Citation keys here are local
+labels; the actual BBT-auto-derived Zotero keys get filled in
+(replacing the labels) once Zotero is restarted and the keys are
+captured into the Phase 2 Zotero-adds table.** Cross-rag references
+(snow rag) noted explicitly.
+
+The downstream branch will use only a small subset of these rows —
+whichever map onto findings actually visible in the AOI's
+plots/tables. The map below is a menu, not an order.
+
+| Claim type | Primary citation | Supporting |
+|---|---|---|
+| DTR asymmetry methodology + 3:1 min:max ratio | `@karl_etal1993` | `@vose_etal2005`, `@easterling_etal1997` |
+| Updated 1950–2004 trends (0.141 / 0.204 / -0.066 °C/dec) | `@vose_etal2005` | `@karl_etal1993` |
+| Canada warming 1.7°C 1948–2012 + BC sub-region indices | `@vincent_etal2018` | — |
+| Sen + Kendall's τ for Canadian temp trends | `@vincent_etal2018` | (cross-rag) `@yue_wang2002` |
+| Mountain elevation-dependent warming exists | `@pepin_etal2015` | `@rangwala_miller2012` |
+| EDW mechanisms (snow-albedo, water vapour, etc.) | `@pepin_etal2015` | `@rangwala_miller2012` (Table 2) |
+| Caveat: EDW is heterogeneous, not universal | `@rangwala_miller2012` | `@pepin_etal2015` |
+| Air-T → stream-T → salmon thermal stress (continental) | `@eaton_scheller1996` | `@mantua_etal2010` |
+| PNW salmon climate-stress framing | `@mantua_etal2010` | (existing) `@isaak_etal2017`, (existing) `@warkentin_etal2022` |
+| Salmonid maximum-temperature criteria PNW | `@richter_kolmes2005` | `@eaton_scheller1996` |
+| ClimateWNA / ClimateNA reference (BC downscaling alternative) | `@wang_etal2012` | — |
+| Climate-departure framing (cumulative-impact, recent-variability) | (existing) `@mora_etal2013` | (Issue 3 framing review) |
+| ERA5 / ERA5-Land dataset citations | (existing) `@munoz-sabater_etal2021` | (existing) `@hersbach_etal2020` |
+| BC ecoregion / drought patterns | (existing) `@dierauer_etal2020` | — |
+| BC summer flow + chinook empirical link | (existing) `@warkentin_etal2022` | — |
+| Climate adaptation salmon framing | (existing) `@moore_schindler2022` | — |
+| BC SWE attribution (cross-reference) | (cross-rag) `@najafi_etal2017` | — |
+| Why no prewhitening (raw MK is correct) | (cross-rag) `@yue_wang2002` | — |
