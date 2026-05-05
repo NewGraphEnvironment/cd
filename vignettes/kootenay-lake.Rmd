@@ -340,19 +340,24 @@ mountain SWE by 150-200% even when compared against area-averaged
 satellite estimates [@kouki_etal2023Evaluationsnow], traced to a
 simplified snow layer in the underlying atmospheric model).
 
-In the FWCP Peace QA published with version 0.2.0 of this package
-([previous vignette](peace-fwcp.html)), we ran the same comparison
-at four BC ASWS automated snow-pillow stations inside that region
-and found the bias was direction-variable site-to-site (some
-stations the model under-estimated by 30–60%, others over-estimated
-by ~50%) but stable over time at every site. The Kootenay sites are
-geographically distinct (south Selkirks vs north Rockies / Peace
-foothills), so we expect the bias structure to differ in detail —
-likely with stronger underestimation at the wet-Selkirk-spillover
-stations and over-estimation at drier valley-bottom sites — but the
-*stability over time* finding should carry over because both error
-sources (scale mismatch and the Northern-Hemisphere cell-mean bias)
-are driven by physics and resolution, not climatic regime.
+Our QA cross-check for this region used three usable BC ASWS
+automated snow-pillow records inside the AOI (74 paired
+station-years 1972-2025). Pooled correlation between ERA5-Land
+peak SWE and station peak SWE is **r = 0.90** — meaningfully
+better than the FWCP Peace's 0.51, meaning the model tracks
+year-to-year variability well at these high-elevation Kootenay
+sites. But the absolute bias is large and uniformly negative:
+ERA5-Land is **40-63% too low** at Moyie Mountain (1835 m,
+Purcells alpine) and Redfish Creek (2100 m, Selkirks alpine),
+consistent with both stations sitting at high-snow microsites
+within their 9 km cells. Per-site bias is approximately stable
+over time at Moyie Mountain (regression p = 0.15) and marginal
+at Redfish Creek (p = 0.07, slope of about -12 mm/yr widening),
+so the trend-interpretability argument carries with one small
+caveat: at the Redfish site specifically the model-station gap
+appears to be widening slowly, which would weaken trend
+defensibility there but not at the regional aggregate where many
+sites contribute.
 
 What does survive both kinds of error: **the gap between the model
 and the stations is the same size in 2020 as it was in 1990.** The
