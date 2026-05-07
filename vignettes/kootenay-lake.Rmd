@@ -150,12 +150,12 @@ JSON files that index the assets. Both the GeoTIFFs and the catalog
 JSON live at
 <https://stac-era5-land.s3.us-west-2.amazonaws.com/catalog.json>.
 
-`cd_catalog()` reads that URL by default. The Cloud-Optimized GeoTIFFs
+`cd::cd_catalog()` reads that URL by default. The Cloud-Optimized GeoTIFFs
 are also usable directly outside R — for example, in QGIS via the STAC
 plugin, in `gdalcubes`, or with any STAC-aware client.
 
 ```{r catalog}
-catalog <- cd_catalog()
+catalog <- cd::cd_catalog()
 kableExtra::kable_styling(
   knitr::kable(catalog, label = NA,
     caption = "Available climate variables and periods in the STAC catalog."),
@@ -168,14 +168,14 @@ kableExtra::kable_styling(
 
 ## Extract Climate Time Series
 
-`cd_extract()` crops each cloud-hosted GeoTIFF to the area of interest
+`cd::cd_extract()` crops each cloud-hosted GeoTIFF to the area of interest
 and computes the spatial mean per year. For an area of interest of
 this size a live extraction takes a few seconds per variable. To keep
 the vignette fast and reproducible we load a pre-computed result of
 exactly that call.
 
 ```{r extract-recipe, eval = FALSE}
-ts <- cd_extract(catalog, aoi)
+ts <- cd::cd_extract(catalog, aoi)
 head(ts, 10)
 ```
 
@@ -230,15 +230,15 @@ Total Change is the slope multiplied by the number of years — the
 cumulative shift over the trend window.
 
 ```{r trend-recipe, eval = FALSE}
-bl_early <- cd_baseline(ts, baseline_years = 1951:1980)
-ano      <- cd_anomaly(ts, bl_early)
-trn      <- cd_trend(ano, trend_start = c(1951, 1981))
-cd_summary(trn)
+bl_early <- cd::cd_baseline(ts, baseline_years = 1951:1980)
+ano      <- cd::cd_anomaly(ts, bl_early)
+trn      <- cd::cd_trend(ano, trend_start = c(1951, 1981))
+cd::cd_summary(trn)
 ```
 
 ```{r trend-table, echo = FALSE}
 kableExtra::kable_styling(
-  knitr::kable(cd_summary(trn), label = NA,
+  knitr::kable(cd::cd_summary(trn), label = NA,
     caption = "Trend statistics for all variables and periods, Kootenay Lake Region."),
   bootstrap_options = c("striped", "hover", "condensed")
 ) |>
@@ -248,14 +248,14 @@ kableExtra::kable_styling(
 <br>
 
 ```{r plot-tmean, fig.cap="Annual mean temperature anomaly for the Kootenay Lake Region relative to 1951-1980 baseline."}
-cd_plot_timeseries(
+cd::cd_plot_timeseries(
   ano, variable = "tmean", period = "annual", trend = trn,
   title = "Annual Mean Temperature Anomaly — Kootenay Lake Region"
 )
 ```
 
 ```{r plot-prcp, fig.cap="Annual precipitation anomaly (% of 1951-1980 baseline) for the Kootenay Lake Region."}
-cd_plot_timeseries(
+cd::cd_plot_timeseries(
   ano, variable = "prcp", period = "annual", trend = trn,
   title = "Annual Precipitation Anomaly — Kootenay Lake Region"
 )
@@ -285,20 +285,20 @@ show the tmax, tmin and diurnal-range time series that yield those
 numbers.
 
 ```{r plot-tmax, fig.cap="Annual daytime maximum temperature (tmax) anomaly for the Kootenay Lake Region relative to the 1951-1980 baseline."}
-trn_tmax <- cd_trend(
+trn_tmax <- cd::cd_trend(
   ano[ano$variable == "tmax" & ano$period == "annual", ],
   trend_start = c(1951, 1981)
 )
-cd_plot_timeseries(ano, variable = "tmax", period = "annual", trend = trn_tmax,
+cd::cd_plot_timeseries(ano, variable = "tmax", period = "annual", trend = trn_tmax,
   title = "Daytime Maximum (tmax) — Annual Anomaly")
 ```
 
 ```{r plot-tmin, fig.cap="Annual overnight minimum temperature (tmin) anomaly for the Kootenay Lake Region relative to the 1951-1980 baseline."}
-trn_tmin <- cd_trend(
+trn_tmin <- cd::cd_trend(
   ano[ano$variable == "tmin" & ano$period == "annual", ],
   trend_start = c(1951, 1981)
 )
-cd_plot_timeseries(ano, variable = "tmin", period = "annual", trend = trn_tmin,
+cd::cd_plot_timeseries(ano, variable = "tmin", period = "annual", trend = trn_tmin,
   title = "Overnight Minimum (tmin) — Annual Anomaly")
 ```
 
@@ -464,41 +464,41 @@ the literature [@stewart_etal2005ChangesEarlier;
 before routing through soil and channel storage.
 
 ```{r snow-swe-max, fig.cap="Annual peak snow water equivalent (swe_max) for the Kootenay Lake Region. ERA5-Land mm SWE (regional spatial mean)."}
-trn_swe_max <- cd_trend(
+trn_swe_max <- cd::cd_trend(
   ano[ano$variable == "swe_max" & ano$period == "annual", ],
   trend_start = c(1951, 1981)
 )
-cd_plot_timeseries(ano, variable = "swe_max", period = "annual",
+cd::cd_plot_timeseries(ano, variable = "swe_max", period = "annual",
                    trend = trn_swe_max,
                    title = "Annual peak SWE — Anomaly")
 ```
 
 ```{r snow-doy-50, fig.cap="Day of year when half the annual snowmelt has accumulated (snowmelt_doy_50). Earlier dates indicate an earlier freshet centroid."}
-trn_doy <- cd_trend(
+trn_doy <- cd::cd_trend(
   ano[ano$variable == "snowmelt_doy_50" & ano$period == "annual", ],
   trend_start = c(1951, 1981)
 )
-cd_plot_timeseries(ano, variable = "snowmelt_doy_50", period = "annual",
+cd::cd_plot_timeseries(ano, variable = "snowmelt_doy_50", period = "annual",
                    trend = trn_doy,
                    title = "Snowmelt 50% DOY — Anomaly")
 ```
 
 ```{r snow-rate-peak, fig.cap="Annual maximum of 7-day rolling daily snowmelt (snowmelt_rate_peak). Higher values indicate more concentrated freshet pulses."}
-trn_rate <- cd_trend(
+trn_rate <- cd::cd_trend(
   ano[ano$variable == "snowmelt_rate_peak" & ano$period == "annual", ],
   trend_start = c(1951, 1981)
 )
-cd_plot_timeseries(ano, variable = "snowmelt_rate_peak", period = "annual",
+cd::cd_plot_timeseries(ano, variable = "snowmelt_rate_peak", period = "annual",
                    trend = trn_rate,
                    title = "Peak weekly melt rate — Anomaly")
 ```
 
 ```{r snow-fraction, fig.cap="Annual snowfall fraction (snowfall_fraction): the percent of annual precipitation that fell as snow. Anomaly is in percentage points."}
-trn_frac <- cd_trend(
+trn_frac <- cd::cd_trend(
   ano[ano$variable == "snowfall_fraction" & ano$period == "annual", ],
   trend_start = c(1951, 1981)
 )
-cd_plot_timeseries(ano, variable = "snowfall_fraction", period = "annual",
+cd::cd_plot_timeseries(ano, variable = "snowfall_fraction", period = "annual",
                    trend = trn_frac,
                    title = "Snowfall fraction — Anomaly")
 ```
@@ -558,7 +558,7 @@ year-on-year decline (p ≈ 0.02). Soil moisture is roughly flat.
 Relative humidity shows a small significant decline.
 
 ```{r compare-recipe, eval = FALSE}
-cmp <- cd_compare(ts, window_a = 2015:2025, window_b = 1951:1980)
+cmp <- cd::cd_compare(ts, window_a = 2015:2025, window_b = 1951:1980)
 ```
 
 ```{r compare-table, echo = FALSE}
@@ -622,7 +622,7 @@ or east-west) carries the full pattern.
 
 ```{r spatial-tmean, fig.cap="Spatial pattern of annual mean temperature departure across the Kootenay Lake Region (2015-2025 mean minus 1951-1980 mean, degrees C).", fig.height=7, echo = FALSE}
 # Pre-computed by data-raw/kootenay_lake_vignette_data.R. Live equivalent:
-#   r_tmean <- cd_crop(catalog$href[catalog$variable == "tmean"
+#   r_tmean <- cd::cd_crop(catalog$href[catalog$variable == "tmean"
 #                                   & catalog$period == "annual"], aoi)
 #   years <- as.integer(names(r_tmean))
 #   departure <- mean(r_tmean[[which(years >= 2015 & years <= 2025)]]) -
@@ -681,11 +681,11 @@ pressure deficit is up significantly across the region.
 # For each ecoregion polygon, run the same cd pipeline as the regional one:
 results <- lapply(seq_len(nrow(ecoregions)), function(i) {
   poly  <- ecoregions[i, ]
-  ts_i  <- cd_extract(catalog, poly)
-  bl_i  <- cd_baseline(ts_i, baseline_years = 1951:1980)
-  ano_i <- cd_anomaly(ts_i, bl_i)
-  trn_i <- cd_trend(ano_i, trend_start = c(1951, 1981))
-  cmp_i <- cd_compare(ts_i, window_a = 2015:2025, window_b = 1951:1980)
+  ts_i  <- cd::cd_extract(catalog, poly)
+  bl_i  <- cd::cd_baseline(ts_i, baseline_years = 1951:1980)
+  ano_i <- cd::cd_anomaly(ts_i, bl_i)
+  trn_i <- cd::cd_trend(ano_i, trend_start = c(1951, 1981))
+  cmp_i <- cd::cd_compare(ts_i, window_a = 2015:2025, window_b = 1951:1980)
   list(ano = ano_i, trn = trn_i, cmp = cmp_i)
 })
 ```
@@ -828,10 +828,10 @@ watershed group rather than by ecoregion.
 # Same cd pipeline applied per watershed group polygon:
 wsg_results <- lapply(seq_len(nrow(wsgs)), function(i) {
   poly  <- wsgs[i, ]
-  ts_i  <- cd_extract(catalog, poly)
-  bl_i  <- cd_baseline(ts_i, baseline_years = 1951:1980)
-  ano_i <- cd_anomaly(ts_i, bl_i)
-  trn_i <- cd_trend(ano_i, trend_start = c(1951, 1981))
+  ts_i  <- cd::cd_extract(catalog, poly)
+  bl_i  <- cd::cd_baseline(ts_i, baseline_years = 1951:1980)
+  ano_i <- cd::cd_anomaly(ts_i, bl_i)
+  trn_i <- cd::cd_trend(ano_i, trend_start = c(1951, 1981))
   list(ano = ano_i, trn = trn_i)
 })
 ```
