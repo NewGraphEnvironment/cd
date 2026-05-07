@@ -100,55 +100,11 @@ Ecoregions partition the province into broad climate-physiography zones
 based on latitude, elevation, and dominant vegetation. Climate departure
 can vary across them in ways the regional average hides, and we use them
 later as the sub-region for the per-ecoregion breakdown.</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/NewGraphEnvironment/cd" class="external-link">cd</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/" class="external-link">sf</a></span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">aoi</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html" class="external-link">st_read</a></span><span class="op">(</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"example_aoi_fwcp_peace.gpkg"</span>, package <span class="op">=</span> <span class="st">"cd"</span><span class="op">)</span>,</span>
-<span>  quiet <span class="op">=</span> <span class="cn">TRUE</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">area_km2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_measures.html" class="external-link">st_area</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_transform.html" class="external-link">st_transform</a></span><span class="op">(</span><span class="va">aoi</span>, <span class="fl">3005</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">/</span> <span class="fl">1e6</span></span></code></pre></div>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">aoi_bb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_bbox.html" class="external-link">st_bbox</a></span><span class="op">(</span><span class="va">aoi</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu">ggplot</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">geom_sf</span><span class="op">(</span>data <span class="op">=</span> <span class="va">ecoregions</span>, <span class="fu">aes</span><span class="op">(</span>fill <span class="op">=</span> <span class="va">name_tc</span><span class="op">)</span>, color <span class="op">=</span> <span class="st">"grey45"</span>,</span>
-<span>          linewidth <span class="op">=</span> <span class="fl">0.3</span>, alpha <span class="op">=</span> <span class="fl">0.45</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">geom_sf</span><span class="op">(</span>data <span class="op">=</span> <span class="va">aoi</span>, fill <span class="op">=</span> <span class="cn">NA</span>, color <span class="op">=</span> <span class="st">"#2166ac"</span>, linewidth <span class="op">=</span> <span class="fl">0.8</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">geom_sf</span><span class="op">(</span>data <span class="op">=</span> <span class="va">lakes</span>, fill <span class="op">=</span> <span class="st">"#a6bddb"</span>, color <span class="op">=</span> <span class="st">"#74a9cf"</span>, linewidth <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">geom_sf</span><span class="op">(</span>data <span class="op">=</span> <span class="va">rivers</span>, fill <span class="op">=</span> <span class="st">"#a6bddb"</span>, color <span class="op">=</span> <span class="st">"#74a9cf"</span>, linewidth <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">geom_sf</span><span class="op">(</span>data <span class="op">=</span> <span class="va">streams</span>, color <span class="op">=</span> <span class="st">"#74a9cf"</span>, linewidth <span class="op">=</span> <span class="fl">0.3</span>, alpha <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">geom_sf</span><span class="op">(</span>data <span class="op">=</span> <span class="va">highways</span>, color <span class="op">=</span> <span class="st">"#333333"</span>, linewidth <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">geom_sf</span><span class="op">(</span>data <span class="op">=</span> <span class="va">towns</span>, color <span class="op">=</span> <span class="st">"black"</span>, size <span class="op">=</span> <span class="fl">2.5</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">ggrepel</span><span class="fu">::</span><span class="fu"><a href="https://ggrepel.slowkow.com/reference/geom_text_repel.html" class="external-link">geom_label_repel</a></span><span class="op">(</span></span>
-<span>    data <span class="op">=</span> <span class="va">towns</span>,</span>
-<span>    <span class="fu">aes</span><span class="op">(</span>label <span class="op">=</span> <span class="va">name</span>, geometry <span class="op">=</span> <span class="va">geom</span><span class="op">)</span>,</span>
-<span>    stat <span class="op">=</span> <span class="st">"sf_coordinates"</span>,</span>
-<span>    size <span class="op">=</span> <span class="fl">3.2</span>, fill <span class="op">=</span> <span class="st">"white"</span>, alpha <span class="op">=</span> <span class="fl">0.85</span>,</span>
-<span>    label.padding <span class="op">=</span> <span class="fu">unit</span><span class="op">(</span><span class="fl">0.2</span>, <span class="st">"lines"</span><span class="op">)</span>,</span>
-<span>    min.segment.length <span class="op">=</span> <span class="fl">0</span></span>
-<span>  <span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">scale_fill_brewer</span><span class="op">(</span>palette <span class="op">=</span> <span class="st">"Set3"</span>, name <span class="op">=</span> <span class="st">"Ecoregion"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">guides</span><span class="op">(</span>fill <span class="op">=</span> <span class="fu">guide_legend</span><span class="op">(</span>nrow <span class="op">=</span> <span class="fl">2</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">coord_sf</span><span class="op">(</span></span>
-<span>    xlim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">aoi_bb</span><span class="op">[</span><span class="st">"xmin"</span><span class="op">]</span> <span class="op">-</span> <span class="fl">0.4</span>, <span class="va">aoi_bb</span><span class="op">[</span><span class="st">"xmax"</span><span class="op">]</span> <span class="op">+</span> <span class="fl">0.4</span><span class="op">)</span>,</span>
-<span>    ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">aoi_bb</span><span class="op">[</span><span class="st">"ymin"</span><span class="op">]</span> <span class="op">-</span> <span class="fl">0.5</span>, <span class="va">aoi_bb</span><span class="op">[</span><span class="st">"ymax"</span><span class="op">]</span> <span class="op">+</span> <span class="fl">0.3</span><span class="op">)</span></span>
-<span>  <span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">labs</span><span class="op">(</span>title <span class="op">=</span> <span class="st">"FWCP Peace Region"</span>,</span>
-<span>       subtitle <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">area_km2</span><span class="op">)</span>, <span class="st">" km^2 — "</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">ecoregions</span><span class="op">)</span>, <span class="st">" ecoregions"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">theme_minimal</span><span class="op">(</span>base_size <span class="op">=</span> <span class="fl">12</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">theme</span><span class="op">(</span>axis.title <span class="op">=</span> <span class="fu">element_blank</span><span class="op">(</span><span class="op">)</span>,</span>
-<span>        legend.position <span class="op">=</span> <span class="st">"bottom"</span>,</span>
-<span>        legend.text <span class="op">=</span> <span class="fu">element_text</span><span class="op">(</span>size <span class="op">=</span> <span class="fl">8</span><span class="op">)</span>,</span>
-<span>        legend.title <span class="op">=</span> <span class="fu">element_text</span><span class="op">(</span>size <span class="op">=</span> <span class="fl">9</span><span class="op">)</span>,</span>
-<span>        legend.key.size <span class="op">=</span> <span class="fu">unit</span><span class="op">(</span><span class="fl">0.4</span>, <span class="st">"cm"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
-<img src="peace-fwcp_files/figure-html/map-location-1.png" class="r-plt" alt="FWCP Peace Region area of interest (~73,000 km^2) in northeastern British Columbia, coloured by ecoregion. Williston Reservoir dominates the basin." width="768"><p class="caption">
-FWCP Peace Region area of interest (~73,000 km^2) in northeastern
-British Columbia, coloured by ecoregion. Williston Reservoir dominates
-the basin.
+<img src="peace-fwcp_files/figure-html/map-location-1.png" class="r-plt" alt="FWCP Peace Region area of interest (~73,000 km²) in northeastern British Columbia, coloured by ecoregion. Williston Reservoir dominates the basin." width="768"><p class="caption">
+FWCP Peace Region area of interest (~73,000 km²) in northeastern British
+Columbia, coloured by ecoregion. Williston Reservoir dominates the
+basin.
 </p>
 </div>
 </div>
@@ -161,12 +117,12 @@ humidity, soil moisture), aggregates to monthly / seasonal / annual, and
 writes Cloud-Optimized GeoTIFFs to S3. Alongside the GeoTIFFs we publish
 a static SpatioTemporal Asset Catalog (STAC) — a small set of JSON files
 that index the assets. Both the GeoTIFFs and the catalog JSON live at <a href="https://stac-era5-land.s3.us-west-2.amazonaws.com/catalog.json" class="external-link uri">https://stac-era5-land.s3.us-west-2.amazonaws.com/catalog.json</a>.</p>
-<p><code><a href="../reference/cd_catalog.html">cd_catalog()</a></code> reads that URL by default. The
+<p><code><a href="../reference/cd_catalog.html">cd::cd_catalog()</a></code> reads that URL by default. The
 Cloud-Optimized GeoTIFFs are also usable directly outside R — for
 example, in QGIS via the STAC plugin, in <code>gdalcubes</code>, or with
 any STAC-aware client.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">catalog</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cd_catalog.html">cd_catalog</a></span><span class="op">(</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">catalog</span> <span class="op">&lt;-</span> <span class="fu">cd</span><span class="fu">::</span><span class="fu"><a href="../reference/cd_catalog.html">cd_catalog</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu">kableExtra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/kableExtra/man/kable_styling.html" class="external-link">kable_styling</a></span><span class="op">(</span></span>
 <span>  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">catalog</span>, label <span class="op">=</span> <span class="cn">NA</span>,</span>
 <span>    caption <span class="op">=</span> <span class="st">"Available climate variables and periods in the STAC catalog."</span><span class="op">)</span>,</span>
@@ -847,29 +803,14 @@ winter
 <div class="section level2">
 <h2 id="extract-climate-time-series">Extract Climate Time Series<a class="anchor" aria-label="anchor" href="#extract-climate-time-series"></a>
 </h2>
-<p><code><a href="../reference/cd_extract.html">cd_extract()</a></code> crops each cloud-hosted GeoTIFF to the area
-of interest and computes the spatial mean per year. For an area of
+<p><code><a href="../reference/cd_extract.html">cd::cd_extract()</a></code> crops each cloud-hosted GeoTIFF to the
+area of interest and computes the spatial mean per year. For an area of
 interest of this size a live extraction takes a few seconds per
 variable. To keep the vignette fast and reproducible we load a
 pre-computed result of exactly that call.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># In a fresh interactive session, you would compute this with:</span></span>
-<span><span class="co">#   ts &lt;- cd_extract(catalog, aoi)</span></span>
-<span><span class="co"># Below we load the pre-computed equivalent so the vignette renders</span></span>
-<span><span class="co"># without hitting the network. ts is the time series tibble; bl_early,</span></span>
-<span><span class="co"># ano, trn, cmp, and cmp_pct are the downstream products.</span></span>
-<span><span class="va">vignette_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span></span>
-<span>  <span class="st">"vignette-data"</span>, <span class="st">"peace_fwcp.rds"</span>, package <span class="op">=</span> <span class="st">"cd"</span></span>
-<span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">ts</span>       <span class="op">&lt;-</span> <span class="va">vignette_data</span><span class="op">$</span><span class="va">regional</span><span class="op">$</span><span class="va">ts</span></span>
-<span><span class="va">bl_early</span> <span class="op">&lt;-</span> <span class="va">vignette_data</span><span class="op">$</span><span class="va">regional</span><span class="op">$</span><span class="va">bl</span></span>
-<span><span class="va">ano</span>      <span class="op">&lt;-</span> <span class="va">vignette_data</span><span class="op">$</span><span class="va">regional</span><span class="op">$</span><span class="va">ano</span></span>
-<span><span class="va">trn</span>      <span class="op">&lt;-</span> <span class="va">vignette_data</span><span class="op">$</span><span class="va">regional</span><span class="op">$</span><span class="va">trn</span></span>
-<span><span class="va">cmp</span>      <span class="op">&lt;-</span> <span class="va">vignette_data</span><span class="op">$</span><span class="va">regional</span><span class="op">$</span><span class="va">cmp</span></span>
-<span><span class="va">cmp_pct</span>  <span class="op">&lt;-</span> <span class="va">vignette_data</span><span class="op">$</span><span class="va">regional</span><span class="op">$</span><span class="va">cmp_pct</span></span>
-<span></span>
-<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">ts</span>, <span class="fl">10</span><span class="op">)</span>,</span>
-<span>  caption <span class="op">=</span> <span class="st">"First 10 rows of the extracted climate time series."</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">ts</span> <span class="op">&lt;-</span> <span class="fu">cd</span><span class="fu">::</span><span class="fu"><a href="../reference/cd_extract.html">cd_extract</a></span><span class="op">(</span><span class="va">catalog</span>, <span class="va">aoi</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">ts</span>, <span class="fl">10</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <caption>First 10 rows of the extracted climate time series.</caption>
 <thead><tr class="header">
@@ -960,8 +901,7 @@ the full magnitude of warming since the pre-warming reference.</li>
 <li>
 <strong>1981–present (45 years)</strong> — starts at the beginning
 of the World Meteorological Organization’s most recent 30-year “climate
-normal” (1981–2010) <span class="citation">(<a href="#ref-arguez_vose2011DefinitionStandard">Arguez and Vose
-2011</a>)</span>. This is the reference period used in most published
+normal” (1981–2010). This is the reference period used in most published
 climate products, so it makes results easy to compare against
 Intergovernmental Panel on Climate Change reports and government climate
 summaries.</li>
@@ -974,17 +914,11 @@ shallower, warming has slowed (though “slower” almost never means
 roughly steady across the full record.</p>
 <p>Total Change is the slope multiplied by the number of years — the
 cumulative shift over the trend window.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Equivalent to:</span></span>
-<span><span class="co">#   bl_early &lt;- cd_baseline(ts, baseline_years = 1951:1980)</span></span>
-<span><span class="co">#   ano &lt;- cd_anomaly(ts, bl_early)</span></span>
-<span><span class="co">#   trn &lt;- cd_trend(ano, trend_start = c(1951, 1981))</span></span>
-<span><span class="fu">kableExtra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/kableExtra/man/kable_styling.html" class="external-link">kable_styling</a></span><span class="op">(</span></span>
-<span>  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="fu"><a href="../reference/cd_summary.html">cd_summary</a></span><span class="op">(</span><span class="va">trn</span><span class="op">)</span>, label <span class="op">=</span> <span class="cn">NA</span>,</span>
-<span>    caption <span class="op">=</span> <span class="st">"Trend statistics for all variables and periods, FWCP Peace Region."</span><span class="op">)</span>,</span>
-<span>  bootstrap_options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"striped"</span>, <span class="st">"hover"</span>, <span class="st">"condensed"</span><span class="op">)</span></span>
-<span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">kableExtra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/kableExtra/man/scroll_box.html" class="external-link">scroll_box</a></span><span class="op">(</span>height <span class="op">=</span> <span class="st">"320px"</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">bl_early</span> <span class="op">&lt;-</span> <span class="fu">cd</span><span class="fu">::</span><span class="fu"><a href="../reference/cd_baseline.html">cd_baseline</a></span><span class="op">(</span><span class="va">ts</span>, baseline_years <span class="op">=</span> <span class="fl">1951</span><span class="op">:</span><span class="fl">1980</span><span class="op">)</span></span>
+<span><span class="va">ano</span>      <span class="op">&lt;-</span> <span class="fu">cd</span><span class="fu">::</span><span class="fu"><a href="../reference/cd_anomaly.html">cd_anomaly</a></span><span class="op">(</span><span class="va">ts</span>, <span class="va">bl_early</span><span class="op">)</span></span>
+<span><span class="va">trn</span>      <span class="op">&lt;-</span> <span class="fu">cd</span><span class="fu">::</span><span class="fu"><a href="../reference/cd_trend.html">cd_trend</a></span><span class="op">(</span><span class="va">ano</span>, trend_start <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1951</span>, <span class="fl">1981</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu">cd</span><span class="fu">::</span><span class="fu"><a href="../reference/cd_summary.html">cd_summary</a></span><span class="op">(</span><span class="va">trn</span><span class="op">)</span></span></code></pre></div>
 <div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:320px; ">
 <table class="table table table-striped table-hover table-condensed" style="margin-left: auto; margin-right: auto;">
 <caption>
@@ -3732,8 +3666,8 @@ Pa
 </table>
 </div>
 <p><br></p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/cd_plot_timeseries.html">cd_plot_timeseries</a></span><span class="op">(</span></span>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">cd</span><span class="fu">::</span><span class="fu"><a href="../reference/cd_plot_timeseries.html">cd_plot_timeseries</a></span><span class="op">(</span></span>
 <span>  <span class="va">ano</span>, variable <span class="op">=</span> <span class="st">"tmean"</span>, period <span class="op">=</span> <span class="st">"annual"</span>, trend <span class="op">=</span> <span class="va">trn</span>,</span>
 <span>  title <span class="op">=</span> <span class="st">"Annual Mean Temperature Anomaly — FWCP Peace Region"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -3743,8 +3677,8 @@ Annual mean temperature anomaly for the FWCP Peace Region relative to
 1951-1980 baseline.
 </p>
 </div>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/cd_plot_timeseries.html">cd_plot_timeseries</a></span><span class="op">(</span></span>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">cd</span><span class="fu">::</span><span class="fu"><a href="../reference/cd_plot_timeseries.html">cd_plot_timeseries</a></span><span class="op">(</span></span>
 <span>  <span class="va">ano</span>, variable <span class="op">=</span> <span class="st">"prcp"</span>, period <span class="op">=</span> <span class="st">"annual"</span>, trend <span class="op">=</span> <span class="va">trn</span>,</span>
 <span>  title <span class="op">=</span> <span class="st">"Annual Precipitation Anomaly — FWCP Peace Region"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -3762,9 +3696,11 @@ Peace Region.
 (tmin) temperatures alongside the daily mean. They carry distinct
 information. Overnight minimums warming faster than daytime maximums —
 the “day-night asymmetry” — is one of the textbook fingerprints of
-greenhouse warming <span class="citation">(<a href="#ref-karl_etal1993NewPerspective">Karl et al. 1993</a>)</span>.
-Whether a watershed or region shows that signal depends on local
-geography (valley inversions, snow cover, slope-aspect mix).</p>
+greenhouse warming. <span class="citation">Karl et al. (<a href="#ref-karl_etal1993NewPerspective">1993</a>)</span> documented this
+first at the global scale, finding overnight minimums rose at roughly
+three times the rate of daytime maximums between 1951 and 1990 (0.84 vs
+0.28 °C). Whether a watershed or region shows that signal depends on
+local geography (valley inversions, snow cover, slope-aspect mix).</p>
 <p>For the FWCP Peace Region, <strong>overnight minimums are warming
 faster than daytime maximums</strong> — the textbook day-night
 asymmetry. Daytime maximums warmed about +0.027 °C per year since 1951
@@ -3773,12 +3709,12 @@ per year (+2.4 °C cumulative). The overnight side warmed roughly 0.4 °C
 more than the daytime side over the full record, narrowing the diurnal
 temperature range by the same amount. The three figures below show the
 tmax, tmin and diurnal-range time series that yield those numbers.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">trn_tmax</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cd_trend.html">cd_trend</a></span><span class="op">(</span></span>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">trn_tmax</span> <span class="op">&lt;-</span> <span class="fu">cd</span><span class="fu">::</span><span class="fu"><a href="../reference/cd_trend.html">cd_trend</a></span><span class="op">(</span></span>
 <span>  <span class="va">ano</span><span class="op">[</span><span class="va">ano</span><span class="op">$</span><span class="va">variable</span> <span class="op">==</span> <span class="st">"tmax"</span> <span class="op">&amp;</span> <span class="va">ano</span><span class="op">$</span><span class="va">period</span> <span class="op">==</span> <span class="st">"annual"</span>, <span class="op">]</span>,</span>
 <span>  trend_start <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1951</span>, <span class="fl">1981</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/cd_plot_timeseries.html">cd_plot_timeseries</a></span><span class="op">(</span><span class="va">ano</span>, variable <span class="op">=</span> <span class="st">"tmax"</span>, period <span class="op">=</span> <span class="st">"annual"</span>, trend <span class="op">=</span> <span class="va">trn_tmax</span>,</span>
+<span><span class="fu">cd</span><span class="fu">::</span><span class="fu"><a href="../reference/cd_plot_timeseries.html">cd_plot_timeseries</a></span><span class="op">(</span><span class="va">ano</span>, variable <span class="op">=</span> <span class="st">"tmax"</span>, period <span class="op">=</span> <span class="st">"annual"</span>, trend <span class="op">=</span> <span class="va">trn_tmax</span>,</span>
 <span>  title <span class="op">=</span> <span class="st">"Daytime Maximum (tmax) — Annual Anomaly"</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
 <img src="peace-fwcp_files/figure-html/plot-tmax-1.png" class="r-plt" alt="Annual daytime maximum temperature (tmax) anomaly for the FWCP Peace Region relative to the 1951-1980 baseline." width="768"><p class="caption">
@@ -3786,12 +3722,12 @@ Annual daytime maximum temperature (tmax) anomaly for the FWCP Peace
 Region relative to the 1951-1980 baseline.
 </p>
 </div>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">trn_tmin</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cd_trend.html">cd_trend</a></span><span class="op">(</span></span>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">trn_tmin</span> <span class="op">&lt;-</span> <span class="fu">cd</span><span class="fu">::</span><span class="fu"><a href="../reference/cd_trend.html">cd_trend</a></span><span class="op">(</span></span>
 <span>  <span class="va">ano</span><span class="op">[</span><span class="va">ano</span><span class="op">$</span><span class="va">variable</span> <span class="op">==</span> <span class="st">"tmin"</span> <span class="op">&amp;</span> <span class="va">ano</span><span class="op">$</span><span class="va">period</span> <span class="op">==</span> <span class="st">"annual"</span>, <span class="op">]</span>,</span>
 <span>  trend_start <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1951</span>, <span class="fl">1981</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/cd_plot_timeseries.html">cd_plot_timeseries</a></span><span class="op">(</span><span class="va">ano</span>, variable <span class="op">=</span> <span class="st">"tmin"</span>, period <span class="op">=</span> <span class="st">"annual"</span>, trend <span class="op">=</span> <span class="va">trn_tmin</span>,</span>
+<span><span class="fu">cd</span><span class="fu">::</span><span class="fu"><a href="../reference/cd_plot_timeseries.html">cd_plot_timeseries</a></span><span class="op">(</span><span class="va">ano</span>, variable <span class="op">=</span> <span class="st">"tmin"</span>, period <span class="op">=</span> <span class="st">"annual"</span>, trend <span class="op">=</span> <span class="va">trn_tmin</span>,</span>
 <span>  title <span class="op">=</span> <span class="st">"Overnight Minimum (tmin) — Annual Anomaly"</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
 <img src="peace-fwcp_files/figure-html/plot-tmin-1.png" class="r-plt" alt="Annual overnight minimum temperature (tmin) anomaly for the FWCP Peace Region relative to the 1951-1980 baseline." width="768"><p class="caption">
@@ -3799,22 +3735,6 @@ Annual overnight minimum temperature (tmin) anomaly for the FWCP Peace
 Region relative to the 1951-1980 baseline.
 </p>
 </div>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">tmax_ts</span> <span class="op">&lt;-</span> <span class="va">ts</span><span class="op">[</span><span class="va">ts</span><span class="op">$</span><span class="va">variable</span> <span class="op">==</span> <span class="st">"tmax"</span> <span class="op">&amp;</span> <span class="va">ts</span><span class="op">$</span><span class="va">period</span> <span class="op">==</span> <span class="st">"annual"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"year"</span>, <span class="st">"value"</span><span class="op">)</span><span class="op">]</span></span>
-<span><span class="va">tmin_ts</span> <span class="op">&lt;-</span> <span class="va">ts</span><span class="op">[</span><span class="va">ts</span><span class="op">$</span><span class="va">variable</span> <span class="op">==</span> <span class="st">"tmin"</span> <span class="op">&amp;</span> <span class="va">ts</span><span class="op">$</span><span class="va">period</span> <span class="op">==</span> <span class="st">"annual"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"year"</span>, <span class="st">"value"</span><span class="op">)</span><span class="op">]</span></span>
-<span><span class="va">dtr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/merge.html" class="external-link">merge</a></span><span class="op">(</span><span class="va">tmax_ts</span>, <span class="va">tmin_ts</span>, by <span class="op">=</span> <span class="st">"year"</span>, suffixes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"_max"</span>, <span class="st">"_min"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">dtr</span><span class="op">$</span><span class="va">dtr</span> <span class="op">&lt;-</span> <span class="va">dtr</span><span class="op">$</span><span class="va">value_max</span> <span class="op">-</span> <span class="va">dtr</span><span class="op">$</span><span class="va">value_min</span></span>
-<span></span>
-<span><span class="fu">ggplot</span><span class="op">(</span><span class="va">dtr</span>, <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">year</span>, y <span class="op">=</span> <span class="va">dtr</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">geom_line</span><span class="op">(</span>color <span class="op">=</span> <span class="st">"grey50"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">geom_point</span><span class="op">(</span>color <span class="op">=</span> <span class="st">"grey30"</span>, size <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">geom_smooth</span><span class="op">(</span>method <span class="op">=</span> <span class="st">"lm"</span>, se <span class="op">=</span> <span class="cn">FALSE</span>, color <span class="op">=</span> <span class="st">"#b2182b"</span>, linewidth <span class="op">=</span> <span class="fl">0.8</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">labs</span><span class="op">(</span></span>
-<span>    title <span class="op">=</span> <span class="st">"Diurnal Temperature Range — FWCP Peace Region"</span>,</span>
-<span>    x <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>    y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="st">"Daytime maximum minus overnight minimum ("</span> <span class="op">*</span> <span class="va">degree</span> <span class="op">*</span> <span class="st">"C)"</span><span class="op">)</span></span>
-<span>  <span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">theme_minimal</span><span class="op">(</span>base_size <span class="op">=</span> <span class="fl">12</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
 <img src="peace-fwcp_files/figure-html/plot-dtr-1.png" class="r-plt" alt="Diurnal temperature range (daytime maximum minus overnight minimum) annual mean for the FWCP Peace Region. The downward trend indicates overnight lows are warming faster than daytime highs — the textbook day-night asymmetry shows up here." width="768"><p class="caption">
 Diurnal temperature range (daytime maximum minus overnight minimum)
@@ -3899,32 +3819,6 @@ to the four standard meteorological seasons — winter
 (2015-2025) against the pre-warming reference (1951-1980) directly. The
 headline numbers above (summer SWE collapse, spring snowmelt rise) are
 in the <strong>summer</strong> and <strong>spring</strong> rows.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">snow_monthly</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"swe"</span>, <span class="st">"snowfall"</span>, <span class="st">"snowmelt"</span>, <span class="st">"snow_cover"</span><span class="op">)</span></span>
-<span><span class="va">season_order</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"winter"</span>, <span class="st">"spring"</span>, <span class="st">"summer"</span>, <span class="st">"fall"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">snow_seasonal</span> <span class="op">&lt;-</span> <span class="va">cmp_pct</span><span class="op">[</span><span class="va">cmp_pct</span><span class="op">$</span><span class="va">variable</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">snow_monthly</span> <span class="op">&amp;</span></span>
-<span>                          <span class="va">cmp_pct</span><span class="op">$</span><span class="va">period</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">season_order</span>, <span class="op">]</span></span>
-<span><span class="va">snow_seasonal</span><span class="op">$</span><span class="va">period</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">snow_seasonal</span><span class="op">$</span><span class="va">period</span>, levels <span class="op">=</span> <span class="va">season_order</span><span class="op">)</span></span>
-<span><span class="va">snow_seasonal</span><span class="op">$</span><span class="va">variable</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">snow_seasonal</span><span class="op">$</span><span class="va">variable</span>, levels <span class="op">=</span> <span class="va">snow_monthly</span>,</span>
-<span>                                  labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SWE (mm)"</span>, <span class="st">"Snowfall (mm)"</span>,</span>
-<span>                                             <span class="st">"Snowmelt (mm)"</span>, <span class="st">"Snow cover (%)"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">snow_seasonal</span> <span class="op">&lt;-</span> <span class="va">snow_seasonal</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="va">snow_seasonal</span><span class="op">$</span><span class="va">variable</span>, <span class="va">snow_seasonal</span><span class="op">$</span><span class="va">period</span><span class="op">)</span>, <span class="op">]</span></span>
-<span><span class="va">snow_seasonal</span><span class="op">$</span><span class="va">mean_a</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">snow_seasonal</span><span class="op">$</span><span class="va">mean_a</span>, <span class="fl">1</span><span class="op">)</span></span>
-<span><span class="va">snow_seasonal</span><span class="op">$</span><span class="va">mean_b</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">snow_seasonal</span><span class="op">$</span><span class="va">mean_b</span>, <span class="fl">1</span><span class="op">)</span></span>
-<span><span class="va">snow_seasonal</span><span class="op">$</span><span class="va">difference</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">snow_seasonal</span><span class="op">$</span><span class="va">difference</span>, <span class="fl">1</span><span class="op">)</span></span>
-<span><span class="va">snow_seasonal</span> <span class="op">&lt;-</span> <span class="va">snow_seasonal</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"variable"</span>, <span class="st">"period"</span>, <span class="st">"mean_b"</span>,</span>
-<span>                                    <span class="st">"mean_a"</span>, <span class="st">"difference"</span><span class="op">)</span><span class="op">]</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">snow_seasonal</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Variable"</span>, <span class="st">"Season"</span>,</span>
-<span>                          <span class="st">"Pre-warming (1951–1980)"</span>,</span>
-<span>                          <span class="st">"Recent (2015–2025)"</span>, <span class="st">"Δ %"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu">kableExtra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/kableExtra/man/kable_styling.html" class="external-link">kable_styling</a></span><span class="op">(</span></span>
-<span>  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">snow_seasonal</span>, label <span class="op">=</span> <span class="cn">NA</span>,</span>
-<span>    caption <span class="op">=</span> <span class="st">"Seasonal snowpack: recent decade compared to pre-warming reference for the FWCP Peace Region. Summer SWE collapse (-75%) and spring snowmelt rise (+37%) are the headline signals."</span>,</span>
-<span>    row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>,</span>
-<span>  bootstrap_options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"striped"</span>, <span class="st">"hover"</span>, <span class="st">"condensed"</span><span class="op">)</span></span>
-<span><span class="op">)</span></span></code></pre></div>
 <table class="table table table-striped table-hover table-condensed" style="margin-left: auto; margin-right: auto;">
 <caption>
 Seasonal snowpack: recent decade compared to pre-warming reference for
@@ -4176,12 +4070,12 @@ streamflow-based flashiness measures in the literature <span class="citation">(<
 et al. 2005</a>; <a href="#ref-kang_etal2016ImpactsRapidly">Kang et al.
 2016</a>)</span> — diagnostic of snowpack-side intensity before routing
 through soil and channel storage.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">trn_swe_max</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cd_trend.html">cd_trend</a></span><span class="op">(</span></span>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">trn_swe_max</span> <span class="op">&lt;-</span> <span class="fu">cd</span><span class="fu">::</span><span class="fu"><a href="../reference/cd_trend.html">cd_trend</a></span><span class="op">(</span></span>
 <span>  <span class="va">ano</span><span class="op">[</span><span class="va">ano</span><span class="op">$</span><span class="va">variable</span> <span class="op">==</span> <span class="st">"swe_max"</span> <span class="op">&amp;</span> <span class="va">ano</span><span class="op">$</span><span class="va">period</span> <span class="op">==</span> <span class="st">"annual"</span>, <span class="op">]</span>,</span>
 <span>  trend_start <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1951</span>, <span class="fl">1981</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/cd_plot_timeseries.html">cd_plot_timeseries</a></span><span class="op">(</span><span class="va">ano</span>, variable <span class="op">=</span> <span class="st">"swe_max"</span>, period <span class="op">=</span> <span class="st">"annual"</span>,</span>
+<span><span class="fu">cd</span><span class="fu">::</span><span class="fu"><a href="../reference/cd_plot_timeseries.html">cd_plot_timeseries</a></span><span class="op">(</span><span class="va">ano</span>, variable <span class="op">=</span> <span class="st">"swe_max"</span>, period <span class="op">=</span> <span class="st">"annual"</span>,</span>
 <span>                   trend <span class="op">=</span> <span class="va">trn_swe_max</span>,</span>
 <span>                   title <span class="op">=</span> <span class="st">"Annual peak SWE — Anomaly"</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
@@ -4190,12 +4084,12 @@ Annual peak snow water equivalent (swe_max) for the FWCP Peace Region.
 ERA5-Land mm SWE (regional spatial mean).
 </p>
 </div>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">trn_doy</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cd_trend.html">cd_trend</a></span><span class="op">(</span></span>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">trn_doy</span> <span class="op">&lt;-</span> <span class="fu">cd</span><span class="fu">::</span><span class="fu"><a href="../reference/cd_trend.html">cd_trend</a></span><span class="op">(</span></span>
 <span>  <span class="va">ano</span><span class="op">[</span><span class="va">ano</span><span class="op">$</span><span class="va">variable</span> <span class="op">==</span> <span class="st">"snowmelt_doy_50"</span> <span class="op">&amp;</span> <span class="va">ano</span><span class="op">$</span><span class="va">period</span> <span class="op">==</span> <span class="st">"annual"</span>, <span class="op">]</span>,</span>
 <span>  trend_start <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1951</span>, <span class="fl">1981</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/cd_plot_timeseries.html">cd_plot_timeseries</a></span><span class="op">(</span><span class="va">ano</span>, variable <span class="op">=</span> <span class="st">"snowmelt_doy_50"</span>, period <span class="op">=</span> <span class="st">"annual"</span>,</span>
+<span><span class="fu">cd</span><span class="fu">::</span><span class="fu"><a href="../reference/cd_plot_timeseries.html">cd_plot_timeseries</a></span><span class="op">(</span><span class="va">ano</span>, variable <span class="op">=</span> <span class="st">"snowmelt_doy_50"</span>, period <span class="op">=</span> <span class="st">"annual"</span>,</span>
 <span>                   trend <span class="op">=</span> <span class="va">trn_doy</span>,</span>
 <span>                   title <span class="op">=</span> <span class="st">"Snowmelt 50% DOY — Anomaly"</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
@@ -4204,12 +4098,12 @@ Day of year when half the annual snowmelt has accumulated
 (snowmelt_doy_50). Earlier dates indicate an earlier freshet centroid.
 </p>
 </div>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">trn_rate</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cd_trend.html">cd_trend</a></span><span class="op">(</span></span>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">trn_rate</span> <span class="op">&lt;-</span> <span class="fu">cd</span><span class="fu">::</span><span class="fu"><a href="../reference/cd_trend.html">cd_trend</a></span><span class="op">(</span></span>
 <span>  <span class="va">ano</span><span class="op">[</span><span class="va">ano</span><span class="op">$</span><span class="va">variable</span> <span class="op">==</span> <span class="st">"snowmelt_rate_peak"</span> <span class="op">&amp;</span> <span class="va">ano</span><span class="op">$</span><span class="va">period</span> <span class="op">==</span> <span class="st">"annual"</span>, <span class="op">]</span>,</span>
 <span>  trend_start <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1951</span>, <span class="fl">1981</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/cd_plot_timeseries.html">cd_plot_timeseries</a></span><span class="op">(</span><span class="va">ano</span>, variable <span class="op">=</span> <span class="st">"snowmelt_rate_peak"</span>, period <span class="op">=</span> <span class="st">"annual"</span>,</span>
+<span><span class="fu">cd</span><span class="fu">::</span><span class="fu"><a href="../reference/cd_plot_timeseries.html">cd_plot_timeseries</a></span><span class="op">(</span><span class="va">ano</span>, variable <span class="op">=</span> <span class="st">"snowmelt_rate_peak"</span>, period <span class="op">=</span> <span class="st">"annual"</span>,</span>
 <span>                   trend <span class="op">=</span> <span class="va">trn_rate</span>,</span>
 <span>                   title <span class="op">=</span> <span class="st">"Peak weekly melt rate — Anomaly"</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
@@ -4218,12 +4112,12 @@ Annual maximum of 7-day rolling daily snowmelt (snowmelt_rate_peak).
 Higher values indicate more concentrated freshet pulses.
 </p>
 </div>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">trn_frac</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cd_trend.html">cd_trend</a></span><span class="op">(</span></span>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">trn_frac</span> <span class="op">&lt;-</span> <span class="fu">cd</span><span class="fu">::</span><span class="fu"><a href="../reference/cd_trend.html">cd_trend</a></span><span class="op">(</span></span>
 <span>  <span class="va">ano</span><span class="op">[</span><span class="va">ano</span><span class="op">$</span><span class="va">variable</span> <span class="op">==</span> <span class="st">"snowfall_fraction"</span> <span class="op">&amp;</span> <span class="va">ano</span><span class="op">$</span><span class="va">period</span> <span class="op">==</span> <span class="st">"annual"</span>, <span class="op">]</span>,</span>
 <span>  trend_start <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1951</span>, <span class="fl">1981</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/cd_plot_timeseries.html">cd_plot_timeseries</a></span><span class="op">(</span><span class="va">ano</span>, variable <span class="op">=</span> <span class="st">"snowfall_fraction"</span>, period <span class="op">=</span> <span class="st">"annual"</span>,</span>
+<span><span class="fu">cd</span><span class="fu">::</span><span class="fu"><a href="../reference/cd_plot_timeseries.html">cd_plot_timeseries</a></span><span class="op">(</span><span class="va">ano</span>, variable <span class="op">=</span> <span class="st">"snowfall_fraction"</span>, period <span class="op">=</span> <span class="st">"annual"</span>,</span>
 <span>                   trend <span class="op">=</span> <span class="va">trn_frac</span>,</span>
 <span>                   title <span class="op">=</span> <span class="st">"Snowfall fraction — Anomaly"</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
@@ -4277,45 +4171,8 @@ significantly. Annual precipitation was about 3 to 4 % higher in the
 recent decade; the long-term trend test does not confirm a steady
 year-on-year ramp (p ≈ 0.20). Soil moisture and relative humidity show
 no meaningful change.</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">trn_p</span> <span class="op">&lt;-</span> <span class="va">trn</span><span class="op">[</span><span class="va">trn</span><span class="op">$</span><span class="va">trend_start</span> <span class="op">==</span> <span class="fl">1951</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"variable"</span>, <span class="st">"period"</span>, <span class="st">"mk_pvalue"</span><span class="op">)</span><span class="op">]</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">trn_p</span><span class="op">)</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="st">"trend_p"</span></span>
-<span><span class="va">trn_p</span><span class="op">$</span><span class="va">trend_p</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">trn_p</span><span class="op">$</span><span class="va">trend_p</span>, <span class="fl">3</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">no_pct_vars</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
-<span>  <span class="st">"tmean"</span>, <span class="st">"tmax"</span>, <span class="st">"tmin"</span>,</span>
-<span>  <span class="co"># snow_cover and snowfall_fraction are already in % (pct_point_diff</span></span>
-<span>  <span class="co"># anomaly type) — pct-of-baseline mixes units. snowmelt_doy_50 is a</span></span>
-<span>  <span class="co"># day-of-year — pct-change of a date is meaningless.</span></span>
-<span>  <span class="st">"snow_cover"</span>, <span class="st">"snowfall_fraction"</span>, <span class="st">"snowmelt_doy_50"</span></span>
-<span><span class="op">)</span></span>
-<span><span class="va">cmp_combined</span> <span class="op">&lt;-</span> <span class="va">cmp</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
-<span>    pct_change <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span></span>
-<span>      <span class="va">variable</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">no_pct_vars</span>,</span>
-<span>      <span class="cn">NA_real_</span>,</span>
-<span>      <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fl">100</span> <span class="op">*</span> <span class="op">(</span><span class="va">mean_a</span> <span class="op">-</span> <span class="va">mean_b</span><span class="op">)</span> <span class="op">/</span> <span class="va">mean_b</span>, <span class="fl">1</span><span class="op">)</span></span>
-<span>    <span class="op">)</span>,</span>
-<span>    mean_a   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">mean_a</span>, <span class="fl">2</span><span class="op">)</span>,</span>
-<span>    mean_b   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">mean_b</span>, <span class="fl">2</span><span class="op">)</span>,</span>
-<span>    abs_diff <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">difference</span>, <span class="fl">2</span><span class="op">)</span></span>
-<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">variable</span>, <span class="va">period</span>, <span class="va">mean_a</span>, <span class="va">mean_b</span>, <span class="va">abs_diff</span>, <span class="va">pct_change</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/merge.html" class="external-link">merge</a></span><span class="op">(</span><span class="va">trn_p</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"variable"</span>, <span class="st">"period"</span><span class="op">)</span>, all.x <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">cmp_combined</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
-<span>  <span class="st">"Variable"</span>, <span class="st">"Period"</span>,</span>
-<span>  <span class="st">"Recent (2015–2025)"</span>, <span class="st">"Pre-warming (1951–1980)"</span>,</span>
-<span>  <span class="st">"Δ absolute"</span>, <span class="st">"Δ %"</span>, <span class="st">"Trend p (75-yr)"</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu">kableExtra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/kableExtra/man/kable_styling.html" class="external-link">kable_styling</a></span><span class="op">(</span></span>
-<span>  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">cmp_combined</span>, label <span class="op">=</span> <span class="cn">NA</span>,</span>
-<span>    caption <span class="op">=</span> <span class="st">"Recent decade (2015-2025 mean) compared to pre-warming reference (1951-1980 mean) for the FWCP Peace Region."</span>,</span>
-<span>    row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>,</span>
-<span>  bootstrap_options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"striped"</span>, <span class="st">"hover"</span>, <span class="st">"condensed"</span><span class="op">)</span></span>
-<span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">kableExtra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/kableExtra/man/scroll_box.html" class="external-link">scroll_box</a></span><span class="op">(</span>height <span class="op">=</span> <span class="st">"360px"</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">cmp</span> <span class="op">&lt;-</span> <span class="fu">cd</span><span class="fu">::</span><span class="fu"><a href="../reference/cd_compare.html">cd_compare</a></span><span class="op">(</span><span class="va">ts</span>, window_a <span class="op">=</span> <span class="fl">2015</span><span class="op">:</span><span class="fl">2025</span>, window_b <span class="op">=</span> <span class="fl">1951</span><span class="op">:</span><span class="fl">1980</span><span class="op">)</span></span></code></pre></div>
 <div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:360px; ">
 <table class="table table table-striped table-hover table-condensed" style="margin-left: auto; margin-right: auto;">
 <caption>
@@ -5720,42 +5577,6 @@ averages roughly 0.2 °C more warming than the eastern half — with a
 smaller south-to-north component. The west-of-Rockies pattern is
 consistent with windward-slope amplification along the Continental
 Divide.</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Pre-computed by data-raw/peace_fwcp_vignette_data.R. Live equivalent:</span></span>
-<span><span class="co">#   r_tmean &lt;- cd_crop(catalog$href[catalog$variable == "tmean"</span></span>
-<span><span class="co">#                                   &amp; catalog$period == "annual"], aoi)</span></span>
-<span><span class="co">#   years &lt;- as.integer(names(r_tmean))</span></span>
-<span><span class="co">#   departure &lt;- mean(r_tmean[[which(years &gt;= 2015 &amp; years &lt;= 2025)]]) -</span></span>
-<span><span class="co">#                mean(r_tmean[[which(years &gt;= 1951 &amp; years &lt;= 1980)]])</span></span>
-<span><span class="co">#   departure &lt;- terra::mask(departure, aoi)</span></span>
-<span><span class="va">departure</span> <span class="op">&lt;-</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/rast.html" class="external-link">rast</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span></span>
-<span>  <span class="st">"vignette-data"</span>, <span class="st">"peace_fwcp_departure_tmean.tif"</span>, package <span class="op">=</span> <span class="st">"cd"</span></span>
-<span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">departure</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="st">"Temperature departure"</span></span>
-<span></span>
-<span><span class="fu">ggplot</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">geom_spatraster</span><span class="op">(</span>data <span class="op">=</span> <span class="va">departure</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">geom_sf</span><span class="op">(</span>data <span class="op">=</span> <span class="va">ecoregions</span>, fill <span class="op">=</span> <span class="cn">NA</span>, color <span class="op">=</span> <span class="st">"grey25"</span>,</span>
-<span>          linewidth <span class="op">=</span> <span class="fl">0.4</span>, linetype <span class="op">=</span> <span class="st">"dashed"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">geom_sf</span><span class="op">(</span>data <span class="op">=</span> <span class="va">aoi</span>, fill <span class="op">=</span> <span class="cn">NA</span>, color <span class="op">=</span> <span class="st">"black"</span>, linewidth <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">geom_sf</span><span class="op">(</span>data <span class="op">=</span> <span class="va">lakes</span>, fill <span class="op">=</span> <span class="cn">NA</span>, color <span class="op">=</span> <span class="st">"grey40"</span>, linewidth <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">geom_sf</span><span class="op">(</span>data <span class="op">=</span> <span class="va">highways</span>, color <span class="op">=</span> <span class="st">"#333333"</span>, linewidth <span class="op">=</span> <span class="fl">0.4</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">geom_sf</span><span class="op">(</span>data <span class="op">=</span> <span class="va">towns</span>, color <span class="op">=</span> <span class="st">"black"</span>, size <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">ggrepel</span><span class="fu">::</span><span class="fu"><a href="https://ggrepel.slowkow.com/reference/geom_text_repel.html" class="external-link">geom_label_repel</a></span><span class="op">(</span></span>
-<span>    data <span class="op">=</span> <span class="va">towns</span>, <span class="fu">aes</span><span class="op">(</span>label <span class="op">=</span> <span class="va">name</span>, geometry <span class="op">=</span> <span class="va">geom</span><span class="op">)</span>,</span>
-<span>    stat <span class="op">=</span> <span class="st">"sf_coordinates"</span>, size <span class="op">=</span> <span class="fl">3</span>, fill <span class="op">=</span> <span class="st">"white"</span>, alpha <span class="op">=</span> <span class="fl">0.8</span></span>
-<span>  <span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">scale_fill_distiller</span><span class="op">(</span></span>
-<span>    palette <span class="op">=</span> <span class="st">"RdBu"</span>, direction <span class="op">=</span> <span class="op">-</span><span class="fl">1</span>,</span>
-<span>    name <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="va">Delta</span> <span class="op">*</span> <span class="va">degree</span> <span class="op">*</span> <span class="va">C</span><span class="op">)</span></span>
-<span>  <span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">coord_sf</span><span class="op">(</span></span>
-<span>    xlim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">aoi_bb</span><span class="op">[</span><span class="st">"xmin"</span><span class="op">]</span>, <span class="va">aoi_bb</span><span class="op">[</span><span class="st">"xmax"</span><span class="op">]</span><span class="op">)</span>,</span>
-<span>    ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">aoi_bb</span><span class="op">[</span><span class="st">"ymin"</span><span class="op">]</span>, <span class="va">aoi_bb</span><span class="op">[</span><span class="st">"ymax"</span><span class="op">]</span><span class="op">)</span></span>
-<span>  <span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">labs</span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Temperature Departure (2015-2025 vs 1951-1980)"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">theme_minimal</span><span class="op">(</span>base_size <span class="op">=</span> <span class="fl">12</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">theme</span><span class="op">(</span>axis.title <span class="op">=</span> <span class="fu">element_blank</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
 <img src="peace-fwcp_files/figure-html/spatial-tmean-1.png" class="r-plt" alt="Spatial pattern of annual mean temperature departure across the FWCP Peace Region (2015-2025 mean minus 1951-1980 mean, degrees C)." width="768"><p class="caption">
 Spatial pattern of annual mean temperature departure across the FWCP
@@ -5777,21 +5598,17 @@ ecoregions (Boreal Mountains and Plateaus, Northern Canadian Rocky
 Mountains) show statistically significant precipitation increases, while
 the southern and central ecoregions do not. Vapour pressure deficit is
 up significantly in all five.</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span><span class="va">ano_all</span><span class="op">[</span><span class="va">ano_all</span><span class="op">$</span><span class="va">variable</span> <span class="op">==</span> <span class="st">"tmean"</span> <span class="op">&amp;</span> <span class="va">ano_all</span><span class="op">$</span><span class="va">period</span> <span class="op">==</span> <span class="st">"annual"</span>, <span class="op">]</span>,</span>
-<span>       <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">year</span>, y <span class="op">=</span> <span class="va">anomaly</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">geom_col</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>fill <span class="op">=</span> <span class="va">anomaly</span> <span class="op">&gt;=</span> <span class="fl">0</span><span class="op">)</span>, width <span class="op">=</span> <span class="fl">0.85</span>, show.legend <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">geom_segment</span><span class="op">(</span>data <span class="op">=</span> <span class="va">trn_segs_tmean</span>,</span>
-<span>               <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">x_start</span>, xend <span class="op">=</span> <span class="va">x_end</span>, y <span class="op">=</span> <span class="va">y_start</span>, yend <span class="op">=</span> <span class="va">y_end</span>,</span>
-<span>                   linetype <span class="op">=</span> <span class="va">window</span><span class="op">)</span>,</span>
-<span>               inherit.aes <span class="op">=</span> <span class="cn">FALSE</span>, color <span class="op">=</span> <span class="st">"black"</span>, linewidth <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">scale_fill_manual</span><span class="op">(</span>values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>`TRUE` <span class="op">=</span> <span class="st">"#d73027"</span>, `FALSE` <span class="op">=</span> <span class="st">"#4575b4"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">scale_linetype_manual</span><span class="op">(</span>values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"dashed"</span>, <span class="st">"solid"</span><span class="op">)</span>, name <span class="op">=</span> <span class="st">"Trend window"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">facet_wrap</span><span class="op">(</span><span class="op">~</span> <span class="va">ecoregion</span>, ncol <span class="op">=</span> <span class="fl">3</span>,</span>
-<span>             labeller <span class="op">=</span> <span class="fu">labeller</span><span class="op">(</span>ecoregion <span class="op">=</span> <span class="va">er_labels</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">labs</span><span class="op">(</span>x <span class="op">=</span> <span class="cn">NULL</span>, y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="st">"Mean temperature anomaly ("</span> <span class="op">*</span> <span class="va">degree</span> <span class="op">*</span> <span class="va">C</span> <span class="op">*</span> <span class="st">")"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">theme_minimal</span><span class="op">(</span>base_size <span class="op">=</span> <span class="fl">11</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">theme</span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># For each ecoregion polygon, run the same cd pipeline as the regional one:</span></span>
+<span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">ecoregions</span><span class="op">)</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">poly</span>  <span class="op">&lt;-</span> <span class="va">ecoregions</span><span class="op">[</span><span class="va">i</span>, <span class="op">]</span></span>
+<span>  <span class="va">ts_i</span>  <span class="op">&lt;-</span> <span class="fu">cd</span><span class="fu">::</span><span class="fu"><a href="../reference/cd_extract.html">cd_extract</a></span><span class="op">(</span><span class="va">catalog</span>, <span class="va">poly</span><span class="op">)</span></span>
+<span>  <span class="va">bl_i</span>  <span class="op">&lt;-</span> <span class="fu">cd</span><span class="fu">::</span><span class="fu"><a href="../reference/cd_baseline.html">cd_baseline</a></span><span class="op">(</span><span class="va">ts_i</span>, baseline_years <span class="op">=</span> <span class="fl">1951</span><span class="op">:</span><span class="fl">1980</span><span class="op">)</span></span>
+<span>  <span class="va">ano_i</span> <span class="op">&lt;-</span> <span class="fu">cd</span><span class="fu">::</span><span class="fu"><a href="../reference/cd_anomaly.html">cd_anomaly</a></span><span class="op">(</span><span class="va">ts_i</span>, <span class="va">bl_i</span><span class="op">)</span></span>
+<span>  <span class="va">trn_i</span> <span class="op">&lt;-</span> <span class="fu">cd</span><span class="fu">::</span><span class="fu"><a href="../reference/cd_trend.html">cd_trend</a></span><span class="op">(</span><span class="va">ano_i</span>, trend_start <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1951</span>, <span class="fl">1981</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="va">cmp_i</span> <span class="op">&lt;-</span> <span class="fu">cd</span><span class="fu">::</span><span class="fu"><a href="../reference/cd_compare.html">cd_compare</a></span><span class="op">(</span><span class="va">ts_i</span>, window_a <span class="op">=</span> <span class="fl">2015</span><span class="op">:</span><span class="fl">2025</span>, window_b <span class="op">=</span> <span class="fl">1951</span><span class="op">:</span><span class="fl">1980</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>ano <span class="op">=</span> <span class="va">ano_i</span>, trn <span class="op">=</span> <span class="va">trn_i</span>, cmp <span class="op">=</span> <span class="va">cmp_i</span><span class="op">)</span></span>
+<span><span class="op">}</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
 <img src="peace-fwcp_files/figure-html/facet-tmean-1.png" class="r-plt" alt="Annual mean temperature anomaly relative to the 1951-1980 baseline, by ecoregion. Dashed line is the 75-year Theil-Sen trend (1951-present); solid line is the 45-year trend (1981-present). A solid line steeper than the dashed line indicates accelerating warming." width="768"><p class="caption">
 Annual mean temperature anomaly relative to the 1951-1980 baseline, by
@@ -5800,21 +5617,6 @@ solid line is the 45-year trend (1981-present). A solid line steeper
 than the dashed line indicates accelerating warming.
 </p>
 </div>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span><span class="va">ano_all</span><span class="op">[</span><span class="va">ano_all</span><span class="op">$</span><span class="va">variable</span> <span class="op">==</span> <span class="st">"prcp"</span> <span class="op">&amp;</span> <span class="va">ano_all</span><span class="op">$</span><span class="va">period</span> <span class="op">==</span> <span class="st">"annual"</span>, <span class="op">]</span>,</span>
-<span>       <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">year</span>, y <span class="op">=</span> <span class="va">anomaly</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">geom_col</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>fill <span class="op">=</span> <span class="va">anomaly</span> <span class="op">&gt;=</span> <span class="fl">0</span><span class="op">)</span>, width <span class="op">=</span> <span class="fl">0.85</span>, show.legend <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">geom_segment</span><span class="op">(</span>data <span class="op">=</span> <span class="va">trn_segs_prcp</span>,</span>
-<span>               <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">x_start</span>, xend <span class="op">=</span> <span class="va">x_end</span>, y <span class="op">=</span> <span class="va">y_start</span>, yend <span class="op">=</span> <span class="va">y_end</span>,</span>
-<span>                   linetype <span class="op">=</span> <span class="va">window</span><span class="op">)</span>,</span>
-<span>               inherit.aes <span class="op">=</span> <span class="cn">FALSE</span>, color <span class="op">=</span> <span class="st">"black"</span>, linewidth <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">scale_fill_manual</span><span class="op">(</span>values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>`TRUE` <span class="op">=</span> <span class="st">"#4575b4"</span>, `FALSE` <span class="op">=</span> <span class="st">"#d73027"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">scale_linetype_manual</span><span class="op">(</span>values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"dashed"</span>, <span class="st">"solid"</span><span class="op">)</span>, name <span class="op">=</span> <span class="st">"Trend window"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">facet_wrap</span><span class="op">(</span><span class="op">~</span> <span class="va">ecoregion</span>, ncol <span class="op">=</span> <span class="fl">3</span>,</span>
-<span>             labeller <span class="op">=</span> <span class="fu">labeller</span><span class="op">(</span>ecoregion <span class="op">=</span> <span class="va">er_labels</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">labs</span><span class="op">(</span>x <span class="op">=</span> <span class="cn">NULL</span>, y <span class="op">=</span> <span class="st">"Precipitation anomaly (% of baseline)"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">theme_minimal</span><span class="op">(</span>base_size <span class="op">=</span> <span class="fl">11</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">theme</span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
 <img src="peace-fwcp_files/figure-html/facet-prcp-1.png" class="r-plt" alt="Annual precipitation anomaly (% of the 1951-1980 baseline) by ecoregion. Dashed line is the 75-year trend (1951-present); solid line is the 45-year trend (1981-present). The two northernmost ecoregions (BMP, NRM) show statistically significant precipitation increases over the full record; the others do not." width="768"><p class="caption">
 Annual precipitation anomaly (% of the 1951-1980 baseline) by ecoregion.
@@ -5834,21 +5636,6 @@ mean an earlier freshet). The two figures below show how each varies
 ecoregion to ecoregion. Pair them with the Watershed Groups Across
 Ecoregions section below to read each watershed group’s dominant
 ecoregion’s signal.</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span><span class="va">ano_all</span><span class="op">[</span><span class="va">ano_all</span><span class="op">$</span><span class="va">variable</span> <span class="op">==</span> <span class="st">"swe_max"</span> <span class="op">&amp;</span> <span class="va">ano_all</span><span class="op">$</span><span class="va">period</span> <span class="op">==</span> <span class="st">"annual"</span>, <span class="op">]</span>,</span>
-<span>       <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">year</span>, y <span class="op">=</span> <span class="va">anomaly</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">geom_col</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>fill <span class="op">=</span> <span class="va">anomaly</span> <span class="op">&gt;=</span> <span class="fl">0</span><span class="op">)</span>, width <span class="op">=</span> <span class="fl">0.85</span>, show.legend <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">geom_segment</span><span class="op">(</span>data <span class="op">=</span> <span class="va">trn_segs_swe_max</span>,</span>
-<span>               <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">x_start</span>, xend <span class="op">=</span> <span class="va">x_end</span>, y <span class="op">=</span> <span class="va">y_start</span>, yend <span class="op">=</span> <span class="va">y_end</span>,</span>
-<span>                   linetype <span class="op">=</span> <span class="va">window</span><span class="op">)</span>,</span>
-<span>               inherit.aes <span class="op">=</span> <span class="cn">FALSE</span>, color <span class="op">=</span> <span class="st">"black"</span>, linewidth <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">scale_fill_manual</span><span class="op">(</span>values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>`TRUE` <span class="op">=</span> <span class="st">"#4575b4"</span>, `FALSE` <span class="op">=</span> <span class="st">"#d73027"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">scale_linetype_manual</span><span class="op">(</span>values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"dashed"</span>, <span class="st">"solid"</span><span class="op">)</span>, name <span class="op">=</span> <span class="st">"Trend window"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">facet_wrap</span><span class="op">(</span><span class="op">~</span> <span class="va">ecoregion</span>, ncol <span class="op">=</span> <span class="fl">3</span>,</span>
-<span>             labeller <span class="op">=</span> <span class="fu">labeller</span><span class="op">(</span>ecoregion <span class="op">=</span> <span class="va">er_labels</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">labs</span><span class="op">(</span>x <span class="op">=</span> <span class="cn">NULL</span>, y <span class="op">=</span> <span class="st">"Peak SWE anomaly (mm)"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">theme_minimal</span><span class="op">(</span>base_size <span class="op">=</span> <span class="fl">11</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">theme</span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
 <img src="peace-fwcp_files/figure-html/facet-swe-max-1.png" class="r-plt" alt="Annual peak snow water equivalent (SWE) anomaly by ecoregion, relative to the 1951-1980 baseline. Bars are mm of water-equivalent snowpack departure from baseline. Dashed line is the 75-year Theil-Sen trend (1951-present); solid line is the 45-year trend (1981-present)." width="768"><p class="caption">
 Annual peak snow water equivalent (SWE) anomaly by ecoregion, relative
@@ -5857,21 +5644,6 @@ departure from baseline. Dashed line is the 75-year Theil-Sen trend
 (1951-present); solid line is the 45-year trend (1981-present).
 </p>
 </div>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span><span class="va">ano_all</span><span class="op">[</span><span class="va">ano_all</span><span class="op">$</span><span class="va">variable</span> <span class="op">==</span> <span class="st">"snowmelt_doy_50"</span> <span class="op">&amp;</span> <span class="va">ano_all</span><span class="op">$</span><span class="va">period</span> <span class="op">==</span> <span class="st">"annual"</span>, <span class="op">]</span>,</span>
-<span>       <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">year</span>, y <span class="op">=</span> <span class="va">anomaly</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">geom_col</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>fill <span class="op">=</span> <span class="va">anomaly</span> <span class="op">&gt;=</span> <span class="fl">0</span><span class="op">)</span>, width <span class="op">=</span> <span class="fl">0.85</span>, show.legend <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">geom_segment</span><span class="op">(</span>data <span class="op">=</span> <span class="va">trn_segs_doy_50</span>,</span>
-<span>               <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">x_start</span>, xend <span class="op">=</span> <span class="va">x_end</span>, y <span class="op">=</span> <span class="va">y_start</span>, yend <span class="op">=</span> <span class="va">y_end</span>,</span>
-<span>                   linetype <span class="op">=</span> <span class="va">window</span><span class="op">)</span>,</span>
-<span>               inherit.aes <span class="op">=</span> <span class="cn">FALSE</span>, color <span class="op">=</span> <span class="st">"black"</span>, linewidth <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">scale_fill_manual</span><span class="op">(</span>values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>`TRUE` <span class="op">=</span> <span class="st">"#d73027"</span>, `FALSE` <span class="op">=</span> <span class="st">"#4575b4"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">scale_linetype_manual</span><span class="op">(</span>values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"dashed"</span>, <span class="st">"solid"</span><span class="op">)</span>, name <span class="op">=</span> <span class="st">"Trend window"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">facet_wrap</span><span class="op">(</span><span class="op">~</span> <span class="va">ecoregion</span>, ncol <span class="op">=</span> <span class="fl">3</span>,</span>
-<span>             labeller <span class="op">=</span> <span class="fu">labeller</span><span class="op">(</span>ecoregion <span class="op">=</span> <span class="va">er_labels</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">labs</span><span class="op">(</span>x <span class="op">=</span> <span class="cn">NULL</span>, y <span class="op">=</span> <span class="st">"DOY-50 anomaly (days; negative = earlier melt)"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">theme_minimal</span><span class="op">(</span>base_size <span class="op">=</span> <span class="fl">11</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">theme</span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
 <img src="peace-fwcp_files/figure-html/facet-doy-50-1.png" class="r-plt" alt="Snowmelt 50% day-of-year (DOY-50) anomaly by ecoregion, relative to the 1951-1980 baseline. Negative values (red) mean the freshet midpoint shifted earlier in the year. Dashed line is the 75-year Theil-Sen trend; solid line is the 45-year trend." width="768"><p class="caption">
 Snowmelt 50% day-of-year (DOY-50) anomaly by ecoregion, relative to the
@@ -5880,38 +5652,6 @@ shifted earlier in the year. Dashed line is the 75-year Theil-Sen trend;
 solid line is the 45-year trend.
 </p>
 </div>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">get_75</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">trn</span>, <span class="va">var</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="va">trn</span><span class="op">[</span><span class="va">trn</span><span class="op">$</span><span class="va">variable</span> <span class="op">==</span> <span class="va">var</span> <span class="op">&amp;</span> <span class="va">trn</span><span class="op">$</span><span class="va">period</span> <span class="op">==</span> <span class="st">"annual"</span> <span class="op">&amp;</span> <span class="va">trn</span><span class="op">$</span><span class="va">trend_start</span> <span class="op">==</span> <span class="fl">1951</span>, <span class="op">]</span></span>
-<span><span class="op">}</span></span>
-<span><span class="va">rollup</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">results</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="va">res</span> <span class="op">&lt;-</span> <span class="va">results</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span></span>
-<span>  <span class="va">cmp</span> <span class="op">&lt;-</span> <span class="va">res</span><span class="op">$</span><span class="va">cmp</span></span>
-<span>  <span class="va">tmean</span> <span class="op">&lt;-</span> <span class="fu">get_75</span><span class="op">(</span><span class="va">res</span><span class="op">$</span><span class="va">trn</span>, <span class="st">"tmean"</span><span class="op">)</span></span>
-<span>  <span class="va">tmax</span>  <span class="op">&lt;-</span> <span class="fu">get_75</span><span class="op">(</span><span class="va">res</span><span class="op">$</span><span class="va">trn</span>, <span class="st">"tmax"</span><span class="op">)</span></span>
-<span>  <span class="va">tmin</span>  <span class="op">&lt;-</span> <span class="fu">get_75</span><span class="op">(</span><span class="va">res</span><span class="op">$</span><span class="va">trn</span>, <span class="st">"tmin"</span><span class="op">)</span></span>
-<span>  <span class="va">prcp</span>  <span class="op">&lt;-</span> <span class="fu">get_75</span><span class="op">(</span><span class="va">res</span><span class="op">$</span><span class="va">trn</span>, <span class="st">"prcp"</span><span class="op">)</span></span>
-<span>  <span class="va">vpd</span>   <span class="op">&lt;-</span> <span class="fu">get_75</span><span class="op">(</span><span class="va">res</span><span class="op">$</span><span class="va">trn</span>, <span class="st">"vpd"</span><span class="op">)</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
-<span>    Ecoregion <span class="op">=</span> <span class="va">ecoregions</span><span class="op">$</span><span class="va">code</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>,</span>
-<span>    `tmean degC/dec` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fl">10</span> <span class="op">*</span> <span class="va">tmean</span><span class="op">$</span><span class="va">slope</span>, <span class="fl">2</span><span class="op">)</span>,</span>
-<span>    `tmax degC/dec`  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fl">10</span> <span class="op">*</span> <span class="va">tmax</span><span class="op">$</span><span class="va">slope</span>, <span class="fl">2</span><span class="op">)</span>,</span>
-<span>    `tmin degC/dec`  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fl">10</span> <span class="op">*</span> <span class="va">tmin</span><span class="op">$</span><span class="va">slope</span>, <span class="fl">2</span><span class="op">)</span>,</span>
-<span>    `prcp mm/yr` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">prcp</span><span class="op">$</span><span class="va">slope</span>, <span class="fl">3</span><span class="op">)</span>,</span>
-<span>    `prcp p` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">prcp</span><span class="op">$</span><span class="va">mk_pvalue</span>, <span class="fl">3</span><span class="op">)</span>,</span>
-<span>    `vpd hPa/dec` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fl">10</span> <span class="op">*</span> <span class="va">vpd</span><span class="op">$</span><span class="va">slope</span>, <span class="fl">3</span><span class="op">)</span>,</span>
-<span>    `vpd p` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">vpd</span><span class="op">$</span><span class="va">mk_pvalue</span>, <span class="fl">3</span><span class="op">)</span>,</span>
-<span>    `prcp pct change` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span></span>
-<span>      <span class="va">cmp</span><span class="op">$</span><span class="va">difference</span><span class="op">[</span><span class="va">cmp</span><span class="op">$</span><span class="va">variable</span> <span class="op">==</span> <span class="st">"prcp"</span> <span class="op">&amp;</span> <span class="va">cmp</span><span class="op">$</span><span class="va">period</span> <span class="op">==</span> <span class="st">"annual"</span><span class="op">]</span>, <span class="fl">1</span></span>
-<span>    <span class="op">)</span>,</span>
-<span>    `soil moisture pct change` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span></span>
-<span>      <span class="va">cmp</span><span class="op">$</span><span class="va">difference</span><span class="op">[</span><span class="va">cmp</span><span class="op">$</span><span class="va">variable</span> <span class="op">==</span> <span class="st">"soil_moisture"</span> <span class="op">&amp;</span> <span class="va">cmp</span><span class="op">$</span><span class="va">period</span> <span class="op">==</span> <span class="st">"annual"</span><span class="op">]</span>, <span class="fl">1</span></span>
-<span>    <span class="op">)</span>,</span>
-<span>    check.names <span class="op">=</span> <span class="cn">FALSE</span></span>
-<span>  <span class="op">)</span></span>
-<span><span class="op">}</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">rollup</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  caption <span class="op">=</span> <span class="st">"Per-ecoregion roll-up over the 75-year window (1951-present): annual mean, daytime maximum, and overnight minimum temperature trends (degrees C per decade); annual precipitation trend (mm per year) and Mann-Kendall p-value; annual vapour pressure deficit trend (hPa per decade) and p-value; and recent (2015-2025) vs pre-warming (1951-1980) percent change for precipitation and soil moisture. All temperature p-values are below 0.001. A tmin slope greater than the tmax slope indicates the textbook day-night asymmetry."</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <caption>Per-ecoregion roll-up over the 75-year window (1951-present):
 annual mean, daytime maximum, and overnight minimum temperature trends
@@ -6030,37 +5770,6 @@ of its area falling in each ecoregion.</p>
 boundary, but only at its upstream end — its main drainage runs east
 beyond the region, so it is excluded here to keep the reporting unit
 clean.</p>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">wsgs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html" class="external-link">st_read</a></span><span class="op">(</span><span class="va">ctx</span>, layer <span class="op">=</span> <span class="st">"wsgs"</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">wsg_centroids</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/warning.html" class="external-link">suppressWarnings</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_unary.html" class="external-link">st_centroid</a></span><span class="op">(</span><span class="va">wsgs</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu">ggplot</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">geom_sf</span><span class="op">(</span>data <span class="op">=</span> <span class="va">ecoregions</span>, <span class="fu">aes</span><span class="op">(</span>fill <span class="op">=</span> <span class="va">name_tc</span><span class="op">)</span>, color <span class="op">=</span> <span class="st">"grey45"</span>,</span>
-<span>          linewidth <span class="op">=</span> <span class="fl">0.3</span>, alpha <span class="op">=</span> <span class="fl">0.45</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">geom_sf</span><span class="op">(</span>data <span class="op">=</span> <span class="va">aoi</span>, fill <span class="op">=</span> <span class="cn">NA</span>, color <span class="op">=</span> <span class="st">"#2166ac"</span>, linewidth <span class="op">=</span> <span class="fl">0.8</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">geom_sf</span><span class="op">(</span>data <span class="op">=</span> <span class="va">wsgs</span>, fill <span class="op">=</span> <span class="cn">NA</span>, color <span class="op">=</span> <span class="st">"grey25"</span>, linewidth <span class="op">=</span> <span class="fl">0.4</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">ggrepel</span><span class="fu">::</span><span class="fu"><a href="https://ggrepel.slowkow.com/reference/geom_text_repel.html" class="external-link">geom_label_repel</a></span><span class="op">(</span></span>
-<span>    data <span class="op">=</span> <span class="va">wsg_centroids</span>,</span>
-<span>    <span class="fu">aes</span><span class="op">(</span>label <span class="op">=</span> <span class="va">code</span>, geometry <span class="op">=</span> <span class="va">geom</span><span class="op">)</span>,</span>
-<span>    stat <span class="op">=</span> <span class="st">"sf_coordinates"</span>,</span>
-<span>    size <span class="op">=</span> <span class="fl">2.6</span>, fill <span class="op">=</span> <span class="st">"white"</span>, alpha <span class="op">=</span> <span class="fl">0.85</span>,</span>
-<span>    label.padding <span class="op">=</span> <span class="fu">unit</span><span class="op">(</span><span class="fl">0.15</span>, <span class="st">"lines"</span><span class="op">)</span>,</span>
-<span>    min.segment.length <span class="op">=</span> <span class="fl">0</span></span>
-<span>  <span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">scale_fill_brewer</span><span class="op">(</span>palette <span class="op">=</span> <span class="st">"Set3"</span>, name <span class="op">=</span> <span class="st">"Ecoregion"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">guides</span><span class="op">(</span>fill <span class="op">=</span> <span class="fu">guide_legend</span><span class="op">(</span>nrow <span class="op">=</span> <span class="fl">2</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">coord_sf</span><span class="op">(</span></span>
-<span>    xlim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">aoi_bb</span><span class="op">[</span><span class="st">"xmin"</span><span class="op">]</span> <span class="op">-</span> <span class="fl">0.4</span>, <span class="va">aoi_bb</span><span class="op">[</span><span class="st">"xmax"</span><span class="op">]</span> <span class="op">+</span> <span class="fl">0.4</span><span class="op">)</span>,</span>
-<span>    ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">aoi_bb</span><span class="op">[</span><span class="st">"ymin"</span><span class="op">]</span> <span class="op">-</span> <span class="fl">0.5</span>, <span class="va">aoi_bb</span><span class="op">[</span><span class="st">"ymax"</span><span class="op">]</span> <span class="op">+</span> <span class="fl">0.3</span><span class="op">)</span></span>
-<span>  <span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">labs</span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Watershed Groups on Ecoregion Backdrop"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">theme_minimal</span><span class="op">(</span>base_size <span class="op">=</span> <span class="fl">12</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu">theme</span><span class="op">(</span>axis.title <span class="op">=</span> <span class="fu">element_blank</span><span class="op">(</span><span class="op">)</span>,</span>
-<span>        legend.position <span class="op">=</span> <span class="st">"bottom"</span>,</span>
-<span>        legend.text <span class="op">=</span> <span class="fu">element_text</span><span class="op">(</span>size <span class="op">=</span> <span class="fl">8</span><span class="op">)</span>,</span>
-<span>        legend.title <span class="op">=</span> <span class="fu">element_text</span><span class="op">(</span>size <span class="op">=</span> <span class="fl">9</span><span class="op">)</span>,</span>
-<span>        legend.key.size <span class="op">=</span> <span class="fu">unit</span><span class="op">(</span><span class="fl">0.4</span>, <span class="st">"cm"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
 <img src="peace-fwcp_files/figure-html/map-wsgs-1.png" class="r-plt" alt="Watershed groups intersecting the FWCP Peace Region (full extent, including the parts spilling outside the FWCP boundary), labelled with their codes, on top of ecoregion fills. The Fraser Basin, Central Canadian Rockies, and Omineca Mountains ecoregions occupy the southern and central portions; Boreal Mountains and Plateaus and Northern Canadian Rocky Mountains sit in the north." width="768"><p class="caption">
 Watershed groups intersecting the FWCP Peace Region (full extent,
@@ -6071,21 +5780,6 @@ and central portions; Boreal Mountains and Plateaus and Northern
 Canadian Rocky Mountains sit in the north.
 </p>
 </div>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">wsg_xref</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"peace_wsg_ecoregion_commentary.csv"</span>, package <span class="op">=</span> <span class="st">"cd"</span><span class="op">)</span>,</span>
-<span>  check.names <span class="op">=</span> <span class="cn">FALSE</span></span>
-<span><span class="op">)</span></span>
-<span><span class="va">wsg_xref</span><span class="op">$</span><span class="va">commentary</span> <span class="op">&lt;-</span> <span class="cn">NULL</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">wsg_xref</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Code"</span>, <span class="st">"Name"</span>, <span class="st">"km² in FWCP"</span>,</span>
-<span>                     <span class="st">"FAB %"</span>, <span class="st">"CRM %"</span>, <span class="st">"OMM %"</span>, <span class="st">"BMP %"</span>, <span class="st">"NRM %"</span><span class="op">)</span></span>
-<span><span class="fu">kableExtra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/kableExtra/man/kable_styling.html" class="external-link">kable_styling</a></span><span class="op">(</span></span>
-<span>  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">wsg_xref</span>, label <span class="op">=</span> <span class="cn">NA</span>,</span>
-<span>    caption <span class="op">=</span> <span class="st">"Watershed groups in the FWCP Peace Region with the percent of each group's area falling in each of the five ecoregions. Rows where one ecoregion is at or near 100 percent indicate watershed groups contained within a single climatic-physiographic zone; rows split across two or more ecoregions indicate watershed groups whose climate departure can pull from more than one regional pattern. Codes match those in earlier figures. Source: data-raw/peace_wsg_ecoregion_commentary.R."</span>,</span>
-<span>    row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>,</span>
-<span>  bootstrap_options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"striped"</span>, <span class="st">"hover"</span>, <span class="st">"condensed"</span><span class="op">)</span></span>
-<span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">kableExtra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/kableExtra/man/scroll_box.html" class="external-link">scroll_box</a></span><span class="op">(</span>height <span class="op">=</span> <span class="st">"420px"</span><span class="op">)</span></span></code></pre></div>
 <div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:420px; ">
 <table class="table table table-striped table-hover table-condensed" style="margin-left: auto; margin-right: auto;">
 <caption>
@@ -6624,32 +6318,31 @@ averaging suppresses that variability.</p>
 <p>For the cold-water resident salmonids the FWCP Peace supports — bull
 trout, Arctic grayling, mountain whitefish, rainbow trout, kokanee —
 these signals compound. Stream temperatures are likely rising in step
-with warmer ambient air temperatures, with the combined effects of
-warming summer stream temperatures and altered low flows likely reducing
-thermally-suitable habitat for cold-water species <span class="citation">(<a href="#ref-mantua_etal2010Climatechange">Mantua et
-al. 2010</a>; <a href="#ref-eaton_scheller1996Effectsclimate">Eaton and
-Scheller 1996</a>)</span>. The evapotranspiration imbalance means
-low-flow conditions in late summer are not being relieved by the
-precipitation increase that did occur; and the cold-water input that
-high-elevation snowpack provides to streams during the warmest, most
-thermally stressful weeks of summer is dropping in parallel with summer
-SWE. The spring freshet — the dominant high-flow event that shapes
-channel morphology, mobilizes spawning gravels, and refills off-channel
-rearing habitat — is shifting weeks earlier; the neighbouring Fraser
-Basin documents the same kind of freshet advance <span class="citation">(<a href="#ref-kang_etal2016ImpactsRapidly">Kang et al.
-2016</a>)</span> at comparable magnitude.</p>
+with warmer ambient air temperatures. <span class="citation">Mantua et
+al. (<a href="#ref-mantua_etal2010Climatechange">2010</a>)</span>
+modelled this for Washington State watersheds and found that warming
+summer stream temperatures combined with altered low flows would reduce
+reproductive success for many salmon populations, and <span class="citation">Eaton and Scheller (<a href="#ref-eaton_scheller1996Effectsclimate">1996</a>)</span> showed
+across 57 US fish species that cold- and cool-water species lose
+substantially more thermal habitat than warm-water species under the
+same forcing. Both findings carry directly into the BC interior
+cold-water cohort the FWCP Peace supports. The evapotranspiration
+imbalance means low-flow conditions in late summer are not being
+relieved by the precipitation increase that did occur; and the
+cold-water input that high-elevation snowpack provides to streams during
+the warmest, most thermally stressful weeks of summer is dropping in
+parallel with summer SWE. The spring freshet — the dominant high-flow
+event that shapes channel morphology, mobilizes spawning gravels, and
+refills off-channel rearing habitat — is shifting weeks earlier; the
+neighbouring Fraser Basin shows the same shift — <span class="citation">Kang et al. (<a href="#ref-kang_etal2016ImpactsRapidly">2016</a>)</span> documented a
+~10-day advance in the spring freshet at Hope between 1949 and 2006,
+with persistent declines through autumn recession just when salmon are
+migrating up the Fraser.</p>
 </div>
 <div class="section level2 unnumbered">
 <h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
 <div id="refs" class="references csl-bib-body hanging-indent">
-<div id="ref-arguez_vose2011DefinitionStandard" class="csl-entry">
-Arguez, Anthony, and Russell S. Vose. 2011. <span>“The
-<span>Definition</span> of the <span>Standard WMO Climate Normal</span>:
-<span>The Key</span> to <span>Deriving Alternative Climate
-Normals</span>.”</span> <em>Bulletin of the American Meteorological
-Society</em> 92 (6): 699–704. <a href="https://doi.org/10.1175/2010BAMS2955.1" class="external-link">https://doi.org/10.1175/2010BAMS2955.1</a>.
-</div>
 <div id="ref-cayan_etal2001ChangesOnset" class="csl-entry">
 Cayan, Daniel R., Michael D. Dettinger, Susan A. Kammerdiener, Joseph M.
 Caprio, and David H. Peterson. 2001. <span>“Changes in the

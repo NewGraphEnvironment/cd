@@ -36,14 +36,14 @@ aoi <- sf::st_read(
 )
 r <- cd_crop(href, aoi)
 r
-#> class       : SpatRaster 
+#> class       : SpatRaster
 #> size        : 4, 5, 10  (nrow, ncol, nlyr)
 #> resolution  : 0.25, 0.25  (x, y)
 #> extent      : -126.875, -125.625, 53.875, 54.875  (xmin, xmax, ymin, ymax)
-#> coord. ref. : lon/lat WGS 84 (EPSG:4326) 
+#> coord. ref. : lon/lat WGS 84 (EPSG:4326)
 #> source(s)   : memory
-#> varname     : example_climate 
-#> names       :      1951,      1952,       1953,        1954,      1955,      1956, ... 
-#> min values  : -3.026460, -2.066120, -1.0476445, -0.33427483, -1.447783, -2.927964, ... 
-#> max values  : -2.723417, -1.877674, -0.7369902, -0.09393072, -1.106457, -2.837888, ... 
+#> varname     : example_climate
+#> names       :      1951,      1952,      1953,      1954,      1955,      1956, ...
+#> min values  :  -3.02646,  -2.06612, -1.047644, -0.334275, -1.447783, -2.927964, ...
+#> max values  : -2.723417, -1.877674,  -0.73699, -0.093931, -1.106457, -2.837888, ...
 ```

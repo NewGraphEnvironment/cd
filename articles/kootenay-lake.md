@@ -32,65 +32,14 @@ based on latitude, elevation, and dominant vegetation. Climate departure
 can vary across them in ways the regional average hides, and we use them
 later as the sub-region for the per-ecoregion breakdown.
 
-``` r
-
-library(cd)
-library(sf)
-
-aoi <- st_read(
-  system.file("extdata", "example_aoi_kootenay_lake.gpkg", package = "cd"),
-  quiet = TRUE
-)
-
-area_km2 <- as.numeric(sum(st_area(st_transform(aoi, 3005)))) / 1e6
-```
-
-``` r
-
-aoi_bb <- st_bbox(aoi)
-
-ggplot() +
-  geom_sf(data = ecoregions, aes(fill = name_tc), color = "grey45",
-          linewidth = 0.3, alpha = 0.45) +
-  geom_sf(data = aoi, fill = NA, color = "#2166ac", linewidth = 0.8) +
-  geom_sf(data = lakes, fill = "#a6bddb", color = "#74a9cf", linewidth = 0.2) +
-  geom_sf(data = rivers, fill = "#a6bddb", color = "#74a9cf", linewidth = 0.2) +
-  geom_sf(data = streams, color = "#74a9cf", linewidth = 0.3, alpha = 0.6) +
-  geom_sf(data = highways, color = "#333333", linewidth = 0.5) +
-  geom_sf(data = towns, color = "black", size = 2.5) +
-  ggrepel::geom_label_repel(
-    data = towns,
-    aes(label = name, geometry = geom),
-    stat = "sf_coordinates",
-    size = 3.2, fill = "white", alpha = 0.85,
-    label.padding = unit(0.2, "lines"),
-    min.segment.length = 0
-  ) +
-  scale_fill_brewer(palette = "Set3", name = "Ecoregion") +
-  guides(fill = guide_legend(nrow = 2, byrow = TRUE)) +
-  coord_sf(
-    xlim = c(aoi_bb["xmin"] - 0.4, aoi_bb["xmax"] + 0.4),
-    ylim = c(aoi_bb["ymin"] - 0.5, aoi_bb["ymax"] + 0.3)
-  ) +
-  labs(title = "Kootenay Lake Region",
-       subtitle = paste0(round(area_km2), " km^2 — ", nrow(ecoregions), " ecoregions")) +
-  theme_minimal(base_size = 12) +
-  theme(axis.title = element_blank(),
-        legend.position = "bottom",
-        legend.text = element_text(size = 8),
-        legend.title = element_text(size = 9),
-        legend.key.size = unit(0.4, "cm"))
-```
-
-![Kootenay Lake Region area of interest (~24,000 km^2) in southern
+![Kootenay Lake Region area of interest (~24,000 km²) in southern
 interior British Columbia, coloured by ecoregion. Kootenay Lake
 dominates the basin; Lower Arrow Lake and the Slocan are visible to the
 west.](kootenay-lake_files/figure-html/map-location-1.png)
 
-Kootenay Lake Region area of interest (~24,000 km^2) in southern
-interior British Columbia, coloured by ecoregion. Kootenay Lake
-dominates the basin; Lower Arrow Lake and the Slocan are visible to the
-west.
+Kootenay Lake Region area of interest (~24,000 km²) in southern interior
+British Columbia, coloured by ecoregion. Kootenay Lake dominates the
+basin; Lower Arrow Lake and the Slocan are visible to the west.
 
 ## Connect to the Data Catalog
 
@@ -102,14 +51,14 @@ a static SpatioTemporal Asset Catalog (STAC) — a small set of JSON files
 that index the assets. Both the GeoTIFFs and the catalog JSON live at
 <https://stac-era5-land.s3.us-west-2.amazonaws.com/catalog.json>.
 
-[`cd_catalog()`](https://newgraphenvironment.github.io/cd/reference/cd_catalog.md)
+[`cd::cd_catalog()`](https://newgraphenvironment.github.io/cd/reference/cd_catalog.md)
 reads that URL by default. The Cloud-Optimized GeoTIFFs are also usable
 directly outside R — for example, in QGIS via the STAC plugin, in
 `gdalcubes`, or with any STAC-aware client.
 
 ``` r
 
-catalog <- cd_catalog()
+catalog <- cd::cd_catalog()
 kableExtra::kable_styling(
   knitr::kable(catalog, label = NA,
     caption = "Available climate variables and periods in the STAC catalog."),
@@ -188,7 +137,7 @@ style="margin-left: auto; margin-right: auto;"}
 
 ## Extract Climate Time Series
 
-[`cd_extract()`](https://newgraphenvironment.github.io/cd/reference/cd_extract.md)
+[`cd::cd_extract()`](https://newgraphenvironment.github.io/cd/reference/cd_extract.md)
 crops each cloud-hosted GeoTIFF to the area of interest and computes the
 spatial mean per year. For an area of interest of this size a live
 extraction takes a few seconds per variable. To keep the vignette fast
@@ -196,23 +145,8 @@ and reproducible we load a pre-computed result of exactly that call.
 
 ``` r
 
-# In a fresh interactive session, you would compute this with:
-#   ts <- cd_extract(catalog, aoi)
-# Below we load the pre-computed equivalent so the vignette renders
-# without hitting the network. ts is the time series tibble; bl_early,
-# ano, trn, cmp, and cmp_pct are the downstream products.
-vignette_data <- readRDS(system.file(
-  "vignette-data", "kootenay_lake.rds", package = "cd"
-))
-ts       <- vignette_data$regional$ts
-bl_early <- vignette_data$regional$bl
-ano      <- vignette_data$regional$ano
-trn      <- vignette_data$regional$trn
-cmp      <- vignette_data$regional$cmp
-cmp_pct  <- vignette_data$regional$cmp_pct
-
-knitr::kable(head(ts, 10),
-  caption = "First 10 rows of the extracted climate time series.")
+ts <- cd::cd_extract(catalog, aoi)
+head(ts, 10)
 ```
 
 | variable | period | year |     value |
@@ -247,11 +181,10 @@ trends from two different start years:
   magnitude of warming since the pre-warming reference.
 - **1981–present (45 years)** — starts at the beginning of the World
   Meteorological Organization’s most recent 30-year “climate normal”
-  (1981–2010) ([Arguez and Vose
-  2011](#ref-arguez_vose2011DefinitionStandard)). This is the reference
-  period used in most published climate products, so it makes results
-  easy to compare against Intergovernmental Panel on Climate Change
-  reports and government climate summaries.
+  (1981–2010). This is the reference period used in most published
+  climate products, so it makes results easy to compare against
+  Intergovernmental Panel on Climate Change reports and government
+  climate summaries.
 
 Comparing the two slopes is informative. If the 45-year slope is steeper
 than the 75-year slope, warming has accelerated — recent decades are
@@ -265,16 +198,10 @@ cumulative shift over the trend window.
 
 ``` r
 
-# Equivalent to:
-#   bl_early <- cd_baseline(ts, baseline_years = 1951:1980)
-#   ano <- cd_anomaly(ts, bl_early)
-#   trn <- cd_trend(ano, trend_start = c(1951, 1981))
-kableExtra::kable_styling(
-  knitr::kable(cd_summary(trn), label = NA,
-    caption = "Trend statistics for all variables and periods, Kootenay Lake Region."),
-  bootstrap_options = c("striped", "hover", "condensed")
-) |>
-  kableExtra::scroll_box(height = "320px")
+bl_early <- cd::cd_baseline(ts, baseline_years = 1951:1980)
+ano      <- cd::cd_anomaly(ts, bl_early)
+trn      <- cd::cd_trend(ano, trend_start = c(1951, 1981))
+cd::cd_summary(trn)
 ```
 
 | Parameter | Period | Slope | Years | Total Change | Unit | p-value |
@@ -406,7 +333,7 @@ style="margin-left: auto; margin-right: auto;"}
 
 ``` r
 
-cd_plot_timeseries(
+cd::cd_plot_timeseries(
   ano, variable = "tmean", period = "annual", trend = trn,
   title = "Annual Mean Temperature Anomaly — Kootenay Lake Region"
 )
@@ -421,7 +348,7 @@ Annual mean temperature anomaly for the Kootenay Lake Region relative to
 
 ``` r
 
-cd_plot_timeseries(
+cd::cd_plot_timeseries(
   ano, variable = "prcp", period = "annual", trend = trn,
   title = "Annual Precipitation Anomaly — Kootenay Lake Region"
 )
@@ -438,10 +365,12 @@ Lake Region.
 The cd package ships daytime maximum (tmax) and overnight minimum (tmin)
 temperatures alongside the daily mean. They carry distinct information.
 Overnight minimums warming faster than daytime maximums — the “day-night
-asymmetry” — is one of the textbook fingerprints of greenhouse warming
-([Karl et al. 1993](#ref-karl_etal1993NewPerspective)). Whether a
-watershed or region shows that signal depends on local geography (valley
-inversions, snow cover, slope-aspect mix).
+asymmetry” — is one of the textbook fingerprints of greenhouse warming.
+Karl et al. ([1993](#ref-karl_etal1993NewPerspective)) documented this
+first at the global scale, finding overnight minimums rose at roughly
+three times the rate of daytime maximums between 1951 and 1990 (0.84 vs
+0.28 °C). Whether a watershed or region shows that signal depends on
+local geography (valley inversions, snow cover, slope-aspect mix).
 
 For the Kootenay Lake Region, **overnight minimums are warming faster
 than daytime maximums** — the textbook day-night asymmetry, though the
@@ -454,11 +383,11 @@ diurnal-range time series that yield those numbers.
 
 ``` r
 
-trn_tmax <- cd_trend(
+trn_tmax <- cd::cd_trend(
   ano[ano$variable == "tmax" & ano$period == "annual", ],
   trend_start = c(1951, 1981)
 )
-cd_plot_timeseries(ano, variable = "tmax", period = "annual", trend = trn_tmax,
+cd::cd_plot_timeseries(ano, variable = "tmax", period = "annual", trend = trn_tmax,
   title = "Daytime Maximum (tmax) — Annual Anomaly")
 ```
 
@@ -471,11 +400,11 @@ Region relative to the 1951-1980 baseline.
 
 ``` r
 
-trn_tmin <- cd_trend(
+trn_tmin <- cd::cd_trend(
   ano[ano$variable == "tmin" & ano$period == "annual", ],
   trend_start = c(1951, 1981)
 )
-cd_plot_timeseries(ano, variable = "tmin", period = "annual", trend = trn_tmin,
+cd::cd_plot_timeseries(ano, variable = "tmin", period = "annual", trend = trn_tmin,
   title = "Overnight Minimum (tmin) — Annual Anomaly")
 ```
 
@@ -485,25 +414,6 @@ baseline.](kootenay-lake_files/figure-html/plot-tmin-1.png)
 
 Annual overnight minimum temperature (tmin) anomaly for the Kootenay
 Lake Region relative to the 1951-1980 baseline.
-
-``` r
-
-tmax_ts <- ts[ts$variable == "tmax" & ts$period == "annual", c("year", "value")]
-tmin_ts <- ts[ts$variable == "tmin" & ts$period == "annual", c("year", "value")]
-dtr <- merge(tmax_ts, tmin_ts, by = "year", suffixes = c("_max", "_min"))
-dtr$dtr <- dtr$value_max - dtr$value_min
-
-ggplot(dtr, aes(x = year, y = dtr)) +
-  geom_line(color = "grey50") +
-  geom_point(color = "grey30", size = 1) +
-  geom_smooth(method = "lm", se = FALSE, color = "#b2182b", linewidth = 0.8) +
-  labs(
-    title = "Diurnal Temperature Range — Kootenay Lake Region",
-    x = NULL,
-    y = expression("Daytime maximum minus overnight minimum (" * degree * "C)")
-  ) +
-  theme_minimal(base_size = 12)
-```
 
 ![Diurnal temperature range (daytime maximum minus overnight minimum)
 annual mean for the Kootenay Lake Region. The downward trend indicates
@@ -607,35 +517,6 @@ pre-warming reference (1951-1980) directly. The headline numbers above
 (summer SWE collapse, spring snowmelt rise) are in the **summer** and
 **spring** rows.
 
-``` r
-
-snow_monthly <- c("swe", "snowfall", "snowmelt", "snow_cover")
-season_order <- c("winter", "spring", "summer", "fall")
-
-snow_seasonal <- cmp_pct[cmp_pct$variable %in% snow_monthly &
-                          cmp_pct$period %in% season_order, ]
-snow_seasonal$period <- factor(snow_seasonal$period, levels = season_order)
-snow_seasonal$variable <- factor(snow_seasonal$variable, levels = snow_monthly,
-                                  labels = c("SWE (mm)", "Snowfall (mm)",
-                                             "Snowmelt (mm)", "Snow cover (%)"))
-snow_seasonal <- snow_seasonal[order(snow_seasonal$variable, snow_seasonal$period), ]
-snow_seasonal$mean_a <- round(snow_seasonal$mean_a, 1)
-snow_seasonal$mean_b <- round(snow_seasonal$mean_b, 1)
-snow_seasonal$difference <- round(snow_seasonal$difference, 1)
-snow_seasonal <- snow_seasonal[, c("variable", "period", "mean_b",
-                                    "mean_a", "difference")]
-names(snow_seasonal) <- c("Variable", "Season",
-                          "Pre-warming (1951–1980)",
-                          "Recent (2015–2025)", "Δ %")
-
-kableExtra::kable_styling(
-  knitr::kable(snow_seasonal, label = NA,
-    caption = "Seasonal snowpack: recent decade compared to pre-warming reference for the Kootenay Lake Region. Summer SWE collapse (-75%) and spring snowmelt rise (+37%) are the headline signals.",
-    row.names = FALSE),
-  bootstrap_options = c("striped", "hover", "condensed")
-)
-```
-
 | Variable      | Season | Pre-warming (1951–1980) | Recent (2015–2025) |   Δ % |
 |:--------------|:-------|------------------------:|-------------------:|------:|
 | SWE (mm)      | winter |                   296.5 |              247.8 | -16.4 |
@@ -681,11 +562,11 @@ snowpack-side intensity before routing through soil and channel storage.
 
 ``` r
 
-trn_swe_max <- cd_trend(
+trn_swe_max <- cd::cd_trend(
   ano[ano$variable == "swe_max" & ano$period == "annual", ],
   trend_start = c(1951, 1981)
 )
-cd_plot_timeseries(ano, variable = "swe_max", period = "annual",
+cd::cd_plot_timeseries(ano, variable = "swe_max", period = "annual",
                    trend = trn_swe_max,
                    title = "Annual peak SWE — Anomaly")
 ```
@@ -699,11 +580,11 @@ Region. ERA5-Land mm SWE (regional spatial mean).
 
 ``` r
 
-trn_doy <- cd_trend(
+trn_doy <- cd::cd_trend(
   ano[ano$variable == "snowmelt_doy_50" & ano$period == "annual", ],
   trend_start = c(1951, 1981)
 )
-cd_plot_timeseries(ano, variable = "snowmelt_doy_50", period = "annual",
+cd::cd_plot_timeseries(ano, variable = "snowmelt_doy_50", period = "annual",
                    trend = trn_doy,
                    title = "Snowmelt 50% DOY — Anomaly")
 ```
@@ -717,11 +598,11 @@ Day of year when half the annual snowmelt has accumulated
 
 ``` r
 
-trn_rate <- cd_trend(
+trn_rate <- cd::cd_trend(
   ano[ano$variable == "snowmelt_rate_peak" & ano$period == "annual", ],
   trend_start = c(1951, 1981)
 )
-cd_plot_timeseries(ano, variable = "snowmelt_rate_peak", period = "annual",
+cd::cd_plot_timeseries(ano, variable = "snowmelt_rate_peak", period = "annual",
                    trend = trn_rate,
                    title = "Peak weekly melt rate — Anomaly")
 ```
@@ -735,11 +616,11 @@ Higher values indicate more concentrated freshet pulses.
 
 ``` r
 
-trn_frac <- cd_trend(
+trn_frac <- cd::cd_trend(
   ano[ano$variable == "snowfall_fraction" & ano$period == "annual", ],
   trend_start = c(1951, 1981)
 )
-cd_plot_timeseries(ano, variable = "snowfall_fraction", period = "annual",
+cd::cd_plot_timeseries(ano, variable = "snowfall_fraction", period = "annual",
                    trend = trn_frac,
                    title = "Snowfall fraction — Anomaly")
 ```
@@ -806,44 +687,7 @@ shows a small significant decline.
 
 ``` r
 
-trn_p <- trn[trn$trend_start == 1951, c("variable", "period", "mk_pvalue")]
-names(trn_p)[3] <- "trend_p"
-trn_p$trend_p <- round(trn_p$trend_p, 3)
-
-no_pct_vars <- c(
-  "tmean", "tmax", "tmin",
-  # snow_cover and snowfall_fraction are already in % (pct_point_diff
-  # anomaly type) — pct-of-baseline mixes units. snowmelt_doy_50 is a
-  # day-of-year — pct-change of a date is meaningless.
-  "snow_cover", "snowfall_fraction", "snowmelt_doy_50"
-)
-cmp_combined <- cmp |>
-  dplyr::mutate(
-    pct_change = ifelse(
-      variable %in% no_pct_vars,
-      NA_real_,
-      round(100 * (mean_a - mean_b) / mean_b, 1)
-    ),
-    mean_a   = round(mean_a, 2),
-    mean_b   = round(mean_b, 2),
-    abs_diff = round(difference, 2)
-  ) |>
-  dplyr::select(variable, period, mean_a, mean_b, abs_diff, pct_change) |>
-  merge(trn_p, by = c("variable", "period"), all.x = TRUE)
-
-names(cmp_combined) <- c(
-  "Variable", "Period",
-  "Recent (2015–2025)", "Pre-warming (1951–1980)",
-  "Δ absolute", "Δ %", "Trend p (75-yr)"
-)
-
-kableExtra::kable_styling(
-  knitr::kable(cmp_combined, label = NA,
-    caption = "Recent decade (2015-2025 mean) compared to pre-warming reference (1951-1980 mean) for the Kootenay Lake Region.",
-    row.names = FALSE),
-  bootstrap_options = c("striped", "hover", "condensed")
-) |>
-  kableExtra::scroll_box(height = "360px")
+cmp <- cd::cd_compare(ts, window_a = 2015:2025, window_b = 1951:1980)
 ```
 
 | Variable | Period | Recent (2015–2025) | Pre-warming (1951–1980) | Δ absolute | Δ % | Trend p (75-yr) |
@@ -932,45 +776,6 @@ remains heterogeneous ([Rangwala and Miller
 mixed enough that no single axis (north-south or east-west) carries the
 full pattern.
 
-``` r
-
-# Pre-computed by data-raw/kootenay_lake_vignette_data.R. Live equivalent:
-#   r_tmean <- cd_crop(catalog$href[catalog$variable == "tmean"
-#                                   & catalog$period == "annual"], aoi)
-#   years <- as.integer(names(r_tmean))
-#   departure <- mean(r_tmean[[which(years >= 2015 & years <= 2025)]]) -
-#                mean(r_tmean[[which(years >= 1951 & years <= 1980)]])
-#   departure <- terra::mask(departure, aoi)
-departure <- terra::rast(system.file(
-  "vignette-data", "kootenay_lake_departure_tmean.tif", package = "cd"
-))
-names(departure) <- "Temperature departure"
-
-ggplot() +
-  geom_spatraster(data = departure) +
-  geom_sf(data = ecoregions, fill = NA, color = "grey25",
-          linewidth = 0.4, linetype = "dashed") +
-  geom_sf(data = aoi, fill = NA, color = "black", linewidth = 0.6) +
-  geom_sf(data = lakes, fill = NA, color = "grey40", linewidth = 0.2) +
-  geom_sf(data = highways, color = "#333333", linewidth = 0.4) +
-  geom_sf(data = towns, color = "black", size = 2) +
-  ggrepel::geom_label_repel(
-    data = towns, aes(label = name, geometry = geom),
-    stat = "sf_coordinates", size = 3, fill = "white", alpha = 0.8
-  ) +
-  scale_fill_distiller(
-    palette = "RdBu", direction = -1,
-    name = expression(Delta * degree * C)
-  ) +
-  coord_sf(
-    xlim = c(aoi_bb["xmin"], aoi_bb["xmax"]),
-    ylim = c(aoi_bb["ymin"], aoi_bb["ymax"])
-  ) +
-  labs(title = "Temperature Departure (2015-2025 vs 1951-1980)") +
-  theme_minimal(base_size = 12) +
-  theme(axis.title = element_blank())
-```
-
 ![Spatial pattern of annual mean temperature departure across the
 Kootenay Lake Region (2015-2025 mean minus 1951-1980 mean, degrees
 C).](kootenay-lake_files/figure-html/spatial-tmean-1.png)
@@ -997,20 +802,16 @@ significantly across the region.
 
 ``` r
 
-ggplot(ano_all[ano_all$variable == "tmean" & ano_all$period == "annual", ],
-       aes(x = year, y = anomaly)) +
-  geom_col(aes(fill = anomaly >= 0), width = 0.85, show.legend = FALSE) +
-  geom_segment(data = trn_segs_tmean,
-               aes(x = x_start, xend = x_end, y = y_start, yend = y_end,
-                   linetype = window),
-               inherit.aes = FALSE, color = "black", linewidth = 0.6) +
-  scale_fill_manual(values = c(`TRUE` = "#d73027", `FALSE` = "#4575b4")) +
-  scale_linetype_manual(values = c("dashed", "solid"), name = "Trend window") +
-  facet_wrap(~ ecoregion, ncol = 3,
-             labeller = labeller(ecoregion = er_labels)) +
-  labs(x = NULL, y = expression("Mean temperature anomaly (" * degree * C * ")")) +
-  theme_minimal(base_size = 11) +
-  theme(legend.position = "bottom")
+# For each ecoregion polygon, run the same cd pipeline as the regional one:
+results <- lapply(seq_len(nrow(ecoregions)), function(i) {
+  poly  <- ecoregions[i, ]
+  ts_i  <- cd::cd_extract(catalog, poly)
+  bl_i  <- cd::cd_baseline(ts_i, baseline_years = 1951:1980)
+  ano_i <- cd::cd_anomaly(ts_i, bl_i)
+  trn_i <- cd::cd_trend(ano_i, trend_start = c(1951, 1981))
+  cmp_i <- cd::cd_compare(ts_i, window_a = 2015:2025, window_b = 1951:1980)
+  list(ano = ano_i, trn = trn_i, cmp = cmp_i)
+})
 ```
 
 ![Annual mean temperature anomaly relative to the 1951-1980 baseline, by
@@ -1023,24 +824,6 @@ Annual mean temperature anomaly relative to the 1951-1980 baseline, by
 ecoregion. Dashed line is the 75-year Theil-Sen trend (1951-present);
 solid line is the 45-year trend (1981-present). A solid line steeper
 than the dashed line indicates accelerating warming.
-
-``` r
-
-ggplot(ano_all[ano_all$variable == "prcp" & ano_all$period == "annual", ],
-       aes(x = year, y = anomaly)) +
-  geom_col(aes(fill = anomaly >= 0), width = 0.85, show.legend = FALSE) +
-  geom_segment(data = trn_segs_prcp,
-               aes(x = x_start, xend = x_end, y = y_start, yend = y_end,
-                   linetype = window),
-               inherit.aes = FALSE, color = "black", linewidth = 0.6) +
-  scale_fill_manual(values = c(`TRUE` = "#4575b4", `FALSE` = "#d73027")) +
-  scale_linetype_manual(values = c("dashed", "solid"), name = "Trend window") +
-  facet_wrap(~ ecoregion, ncol = 3,
-             labeller = labeller(ecoregion = er_labels)) +
-  labs(x = NULL, y = "Precipitation anomaly (% of baseline)") +
-  theme_minimal(base_size = 11) +
-  theme(legend.position = "bottom")
-```
 
 ![Annual precipitation anomaly (% of the 1951-1980 baseline) by
 ecoregion. Dashed line is the 75-year trend (1951-present); solid line
@@ -1065,24 +848,6 @@ ecoregion to ecoregion. Pair them with the Watershed Groups Across
 Ecoregions section below to read each watershed group’s dominant
 ecoregion’s signal.
 
-``` r
-
-ggplot(ano_all[ano_all$variable == "swe_max" & ano_all$period == "annual", ],
-       aes(x = year, y = anomaly)) +
-  geom_col(aes(fill = anomaly >= 0), width = 0.85, show.legend = FALSE) +
-  geom_segment(data = trn_segs_swe_max,
-               aes(x = x_start, xend = x_end, y = y_start, yend = y_end,
-                   linetype = window),
-               inherit.aes = FALSE, color = "black", linewidth = 0.6) +
-  scale_fill_manual(values = c(`TRUE` = "#4575b4", `FALSE` = "#d73027")) +
-  scale_linetype_manual(values = c("dashed", "solid"), name = "Trend window") +
-  facet_wrap(~ ecoregion, ncol = 3,
-             labeller = labeller(ecoregion = er_labels)) +
-  labs(x = NULL, y = "Peak SWE anomaly (mm)") +
-  theme_minimal(base_size = 11) +
-  theme(legend.position = "bottom")
-```
-
 ![Annual peak snow water equivalent (SWE) anomaly by ecoregion, relative
 to the 1951-1980 baseline. Bars are mm of water-equivalent snowpack
 departure from baseline. Dashed line is the 75-year Theil-Sen trend
@@ -1093,24 +858,6 @@ Annual peak snow water equivalent (SWE) anomaly by ecoregion, relative
 to the 1951-1980 baseline. Bars are mm of water-equivalent snowpack
 departure from baseline. Dashed line is the 75-year Theil-Sen trend
 (1951-present); solid line is the 45-year trend (1981-present).
-
-``` r
-
-ggplot(ano_all[ano_all$variable == "snowmelt_doy_50" & ano_all$period == "annual", ],
-       aes(x = year, y = anomaly)) +
-  geom_col(aes(fill = anomaly >= 0), width = 0.85, show.legend = FALSE) +
-  geom_segment(data = trn_segs_doy_50,
-               aes(x = x_start, xend = x_end, y = y_start, yend = y_end,
-                   linetype = window),
-               inherit.aes = FALSE, color = "black", linewidth = 0.6) +
-  scale_fill_manual(values = c(`TRUE` = "#d73027", `FALSE` = "#4575b4")) +
-  scale_linetype_manual(values = c("dashed", "solid"), name = "Trend window") +
-  facet_wrap(~ ecoregion, ncol = 3,
-             labeller = labeller(ecoregion = er_labels)) +
-  labs(x = NULL, y = "DOY-50 anomaly (days; negative = earlier melt)") +
-  theme_minimal(base_size = 11) +
-  theme(legend.position = "bottom")
-```
 
 ![Snowmelt 50% day-of-year (DOY-50) anomaly by ecoregion, relative to
 the 1951-1980 baseline. Negative values (red) mean the freshet midpoint
@@ -1132,19 +879,15 @@ than by ecoregion.
 
 ``` r
 
-ggplot(ano_wsg[ano_wsg$variable == "swe_max" & ano_wsg$period == "annual", ],
-       aes(x = year, y = anomaly)) +
-  geom_col(aes(fill = anomaly >= 0), width = 0.85, show.legend = FALSE) +
-  geom_segment(data = trn_wsg_swe_max,
-               aes(x = x_start, xend = x_end, y = y_start, yend = y_end,
-                   linetype = window),
-               inherit.aes = FALSE, color = "black", linewidth = 0.6) +
-  scale_fill_manual(values = c(`TRUE` = "#4575b4", `FALSE` = "#d73027")) +
-  scale_linetype_manual(values = c("dashed", "solid"), name = "Trend window") +
-  facet_wrap(~ wsg, ncol = 2) +
-  labs(x = NULL, y = "Peak SWE anomaly (mm)") +
-  theme_minimal(base_size = 11) +
-  theme(legend.position = "bottom")
+# Same cd pipeline applied per watershed group polygon:
+wsg_results <- lapply(seq_len(nrow(wsgs)), function(i) {
+  poly  <- wsgs[i, ]
+  ts_i  <- cd::cd_extract(catalog, poly)
+  bl_i  <- cd::cd_baseline(ts_i, baseline_years = 1951:1980)
+  ano_i <- cd::cd_anomaly(ts_i, bl_i)
+  trn_i <- cd::cd_trend(ano_i, trend_start = c(1951, 1981))
+  list(ano = ano_i, trn = trn_i)
+})
 ```
 
 ![Annual peak SWE anomaly by watershed group. Bars are mm of
@@ -1156,64 +899,12 @@ Annual peak SWE anomaly by watershed group. Bars are mm of
 water-equivalent snowpack departure from the 1951-1980 baseline. Dashed
 line is the 75-year Theil-Sen trend; solid line is the 45-year trend.
 
-``` r
-
-ggplot(ano_wsg[ano_wsg$variable == "snowmelt_doy_50" & ano_wsg$period == "annual", ],
-       aes(x = year, y = anomaly)) +
-  geom_col(aes(fill = anomaly >= 0), width = 0.85, show.legend = FALSE) +
-  geom_segment(data = trn_wsg_doy_50,
-               aes(x = x_start, xend = x_end, y = y_start, yend = y_end,
-                   linetype = window),
-               inherit.aes = FALSE, color = "black", linewidth = 0.6) +
-  scale_fill_manual(values = c(`TRUE` = "#d73027", `FALSE` = "#4575b4")) +
-  scale_linetype_manual(values = c("dashed", "solid"), name = "Trend window") +
-  facet_wrap(~ wsg, ncol = 2) +
-  labs(x = NULL, y = "DOY-50 anomaly (days; negative = earlier melt)") +
-  theme_minimal(base_size = 11) +
-  theme(legend.position = "bottom")
-```
-
 ![Snowmelt DOY-50 anomaly by watershed group. Negative values (red) mean
 the freshet midpoint shifted earlier in the
 year.](kootenay-lake_files/figure-html/facet-wsg-doy-50-1.png)
 
 Snowmelt DOY-50 anomaly by watershed group. Negative values (red) mean
 the freshet midpoint shifted earlier in the year.
-
-``` r
-
-get_75 <- function(trn, var) {
-  trn[trn$variable == var & trn$period == "annual" & trn$trend_start == 1951, ]
-}
-rollup <- do.call(rbind, lapply(seq_along(results), function(i) {
-  res <- results[[i]]
-  cmp <- res$cmp
-  tmean <- get_75(res$trn, "tmean")
-  tmax  <- get_75(res$trn, "tmax")
-  tmin  <- get_75(res$trn, "tmin")
-  prcp  <- get_75(res$trn, "prcp")
-  vpd   <- get_75(res$trn, "vpd")
-  data.frame(
-    Ecoregion = ecoregions$code[i],
-    `tmean degC/dec` = round(10 * tmean$slope, 2),
-    `tmax degC/dec`  = round(10 * tmax$slope, 2),
-    `tmin degC/dec`  = round(10 * tmin$slope, 2),
-    `prcp mm/yr` = round(prcp$slope, 3),
-    `prcp p` = round(prcp$mk_pvalue, 3),
-    `vpd hPa/dec` = round(10 * vpd$slope, 3),
-    `vpd p` = round(vpd$mk_pvalue, 3),
-    `prcp pct change` = round(
-      cmp$difference[cmp$variable == "prcp" & cmp$period == "annual"], 1
-    ),
-    `soil moisture pct change` = round(
-      cmp$difference[cmp$variable == "soil_moisture" & cmp$period == "annual"], 1
-    ),
-    check.names = FALSE
-  )
-}))
-knitr::kable(rollup, row.names = FALSE,
-  caption = "Per-ecoregion roll-up over the 75-year window (1951-present): annual mean, daytime maximum, and overnight minimum temperature trends (degrees C per decade); annual precipitation trend (mm per year) and Mann-Kendall p-value; annual vapour pressure deficit trend (hPa per decade) and p-value; and recent (2015-2025) vs pre-warming (1951-1980) percent change for precipitation and soil moisture. All temperature p-values are below 0.001. A tmin slope greater than the tmax slope indicates the textbook day-night asymmetry.")
-```
 
 | Ecoregion | tmean degC/dec | tmax degC/dec | tmin degC/dec | prcp mm/yr | prcp p | vpd hPa/dec | vpd p | prcp pct change | soil moisture pct change |
 |:---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
@@ -1249,40 +940,6 @@ Foothills (SBF). The map below shows the watershed groups labelled with
 their codes, on top of ecoregion fills. The table that follows gives the
 share of each watershed group’s area falling in each ecoregion.
 
-``` r
-
-wsgs <- st_read(ctx, layer = "wsgs", quiet = TRUE)
-
-wsg_centroids <- suppressWarnings(st_centroid(wsgs))
-
-ggplot() +
-  geom_sf(data = ecoregions, aes(fill = name_tc), color = "grey45",
-          linewidth = 0.3, alpha = 0.45) +
-  geom_sf(data = aoi, fill = NA, color = "#2166ac", linewidth = 0.8) +
-  geom_sf(data = wsgs, fill = NA, color = "grey25", linewidth = 0.4) +
-  ggrepel::geom_label_repel(
-    data = wsg_centroids,
-    aes(label = code, geometry = geom),
-    stat = "sf_coordinates",
-    size = 2.6, fill = "white", alpha = 0.85,
-    label.padding = unit(0.15, "lines"),
-    min.segment.length = 0
-  ) +
-  scale_fill_brewer(palette = "Set3", name = "Ecoregion") +
-  guides(fill = guide_legend(nrow = 2, byrow = TRUE)) +
-  coord_sf(
-    xlim = c(aoi_bb["xmin"] - 0.4, aoi_bb["xmax"] + 0.4),
-    ylim = c(aoi_bb["ymin"] - 0.5, aoi_bb["ymax"] + 0.3)
-  ) +
-  labs(title = "Watershed Groups on Ecoregion Backdrop") +
-  theme_minimal(base_size = 12) +
-  theme(axis.title = element_blank(),
-        legend.position = "bottom",
-        legend.text = element_text(size = 8),
-        legend.title = element_text(size = 9),
-        legend.key.size = unit(0.4, "cm"))
-```
-
 ![The four watershed groups making up the AOI (KOTL, LARL, DUNC, SLOC)
 on top of ecoregion fills. Northern Columbia Mountains (NCM) covers most
 of the area; Selkirk-Bitterroot Foothills (SBF) covers the western
@@ -1295,38 +952,6 @@ top of ecoregion fills. Northern Columbia Mountains (NCM) covers most of
 the area; Selkirk-Bitterroot Foothills (SBF) covers the western portion
 of LARL; small slivers in the southwest belong to Thompson-Okanagan
 Plateau (TOP) and Pacific and Cascade Ranges (PTR).
-
-``` r
-
-# Pre-computed inline by data-raw/kootenay_lake_vignette_data.R
-ovr <- vignette_data$wsg_eco_overlap
-ovr_wide <- reshape(
-  ovr[, c("wsg_code", "ecoregion_code", "pct_of_wsg")],
-  idvar = "wsg_code", timevar = "ecoregion_code", direction = "wide"
-)
-names(ovr_wide) <- gsub("^pct_of_wsg\\.", "", names(ovr_wide))
-# Order WSG rows alphabetically; replace NAs with 0
-ovr_wide <- ovr_wide[order(ovr_wide$wsg_code), ]
-for (col in setdiff(names(ovr_wide), "wsg_code")) {
-  ovr_wide[[col]][is.na(ovr_wide[[col]])] <- 0
-}
-# Add full WSG name
-wsg_names <- setNames(ovr$wsg_name, ovr$wsg_code)[!duplicated(ovr$wsg_code)]
-ovr_wide$Name <- wsg_names[ovr_wide$wsg_code]
-ovr_wide <- ovr_wide[, c("wsg_code", "Name",
-                          intersect(c("NCM","SBF","TOP","PTR"), names(ovr_wide)))]
-names(ovr_wide)[1] <- "Code"
-for (col in setdiff(names(ovr_wide), c("Code", "Name"))) {
-  names(ovr_wide)[names(ovr_wide) == col] <- paste0(col, " %")
-}
-
-kableExtra::kable_styling(
-  knitr::kable(ovr_wide, label = NA,
-    caption = "Watershed groups in the Kootenay Lake Region with the percent of each group's area falling in each ecoregion. KOTL, DUNC, and SLOC are essentially within Northern Columbia Mountains; LARL is the only WSG that meaningfully splits across two ecoregions (NCM + SBF), making it the place where ecoregion-level findings can pull in two directions.",
-    row.names = FALSE),
-  bootstrap_options = c("striped", "hover", "condensed")
-)
-```
 
 | Code | Name             | NCM % | SBF % | TOP % | PTR % |
 |:-----|:-----------------|------:|------:|------:|------:|
@@ -1402,31 +1027,32 @@ ecoregion.
 For the cold-water resident salmonids the Kootenay Lake region supports
 — bull trout, Gerrard rainbow trout, mountain whitefish, kokanee — these
 signals compound. Stream temperatures are likely rising in step with
-warmer ambient air temperatures, and the combined effect of warming
-summer stream temperatures and altered low flows is expected to reduce
-thermally-suitable habitat for cold-water species ([Mantua et al.
-2010](#ref-mantua_etal2010Climatechange); [Eaton and Scheller
-1996](#ref-eaton_scheller1996Effectsclimate)). The evapotranspiration
-imbalance means low-flow conditions in late summer are not being
-relieved (precipitation is falling, not rising as in the Peace); the
-cold-water input that high-elevation snowpack provides to streams during
-the warmest, most thermally stressful weeks of summer is dropping in
-parallel with summer SWE; and the spring freshet — the dominant
-high-flow event that shapes channel morphology, mobilizes spawning
-gravels, and refills off-channel rearing habitat — is shifting weeks
-earlier. The neighbouring Fraser Basin documents the same kind of
-freshet advance ([Kang et al. 2016](#ref-kang_etal2016ImpactsRapidly))
-at comparable magnitude. Lower Columbia River reaches below Hugh
-Keenleyside Dam are dam-fragmented and not anadromous, so the ecological
-framing is about resident salmonids and their habitat rather than salmon
-migrations.
+warmer ambient air temperatures. Mantua et al.
+([2010](#ref-mantua_etal2010Climatechange)) modelled this for Washington
+State watersheds and found that warming summer stream temperatures
+combined with altered low flows would reduce reproductive success for
+many salmon populations, and Eaton and Scheller
+([1996](#ref-eaton_scheller1996Effectsclimate)) showed across 57 US fish
+species that cold- and cool-water species lose substantially more
+thermal habitat than warm-water species under the same forcing. Both
+findings carry directly into the BC interior cold-water cohort the
+Kootenay Lake Region supports. The evapotranspiration imbalance means
+low-flow conditions in late summer are not being relieved (precipitation
+is falling, not rising as in the Peace); the cold-water input that
+high-elevation snowpack provides to streams during the warmest, most
+thermally stressful weeks of summer is dropping in parallel with summer
+SWE; and the spring freshet — the dominant high-flow event that shapes
+channel morphology, mobilizes spawning gravels, and refills off-channel
+rearing habitat — is shifting weeks earlier. The neighbouring Fraser
+Basin shows the same shift — Kang et al.
+([2016](#ref-kang_etal2016ImpactsRapidly)) documented a ~10-day advance
+in the spring freshet at Hope between 1949 and 2006, with persistent
+declines through autumn recession just when salmon are migrating up the
+Fraser. Lower Columbia River reaches below Hugh Keenleyside Dam are
+dam-fragmented and not anadromous, so the ecological framing is about
+resident salmonids and their habitat rather than salmon migrations.
 
 ## References
-
-Arguez, Anthony, and Russell S. Vose. 2011. “The Definition of the
-Standard WMO Climate Normal: The Key to Deriving Alternative Climate
-Normals.” *Bulletin of the American Meteorological Society* 92 (6):
-699–704. <https://doi.org/10.1175/2010BAMS2955.1>.
 
 Cayan, Daniel R., Michael D. Dettinger, Susan A. Kammerdiener, Joseph M.
 Caprio, and David H. Peterson. 2001. “Changes in the Onset of Spring in
