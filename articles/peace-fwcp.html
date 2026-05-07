@@ -65,6 +65,17 @@
 
     
     
+<!--
+After adding or removing pandoc citation markers in this vignette
+(or in kootenay-lake.Rmd), regenerate vignettes/references.bib by
+running:
+
+  Rscript data-raw/regenerate_bib.R
+
+Pulls source records from Zotero via Better BibTeX (rbbt -> BBT).
+Requires Zotero running with the BBT plugin enabled. CI does not
+run this script — the bib is committed and pkgdown reads it.
+-->
 <p>The <code>cd</code> package builds on ERA5-Land hourly reanalysis
 (1950–present, ~9 km native grid) fetched from the DestinE Earth Data
 Hub, aggregated to monthly, seasonal, and annual periods over British
