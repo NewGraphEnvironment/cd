@@ -174,12 +174,16 @@ this size a live extraction takes a few seconds per variable. To keep
 the vignette fast and reproducible we load a pre-computed result of
 exactly that call.
 
-```{r extract}
-# In a fresh interactive session, you would compute this with:
-#   ts <- cd_extract(catalog, aoi)
-# Below we load the pre-computed equivalent so the vignette renders
-# without hitting the network. ts is the time series tibble; bl_early,
-# ano, trn, cmp, and cmp_pct are the downstream products.
+```{r extract-recipe, eval = FALSE}
+ts <- cd_extract(catalog, aoi)
+head(ts, 10)
+```
+
+```{r extract-load, echo = FALSE}
+# Load the pre-computed equivalent so the vignette renders without
+# hitting the network. ts is the time series tibble; bl_early, ano,
+# trn, cmp, and cmp_pct are the downstream products of the cd
+# pipeline (computed once in data-raw/kootenay_lake_vignette_data.R).
 vignette_data <- readRDS(system.file(
   "vignette-data", "kootenay_lake.rds", package = "cd"
 ))
@@ -225,11 +229,14 @@ roughly steady across the full record.
 Total Change is the slope multiplied by the number of years — the
 cumulative shift over the trend window.
 
-```{r trend}
-# Equivalent to:
-#   bl_early <- cd_baseline(ts, baseline_years = 1951:1980)
-#   ano <- cd_anomaly(ts, bl_early)
-#   trn <- cd_trend(ano, trend_start = c(1951, 1981))
+```{r trend-recipe, eval = FALSE}
+bl_early <- cd_baseline(ts, baseline_years = 1951:1980)
+ano      <- cd_anomaly(ts, bl_early)
+trn      <- cd_trend(ano, trend_start = c(1951, 1981))
+cd_summary(trn)
+```
+
+```{r trend-table, echo = FALSE}
 kableExtra::kable_styling(
   knitr::kable(cd_summary(trn), label = NA,
     caption = "Trend statistics for all variables and periods, Kootenay Lake Region."),
@@ -550,7 +557,11 @@ the long-term Mann-Kendall trend test does confirm a steady
 year-on-year decline (p ≈ 0.02). Soil moisture is roughly flat.
 Relative humidity shows a small significant decline.
 
-```{r compare}
+```{r compare-recipe, eval = FALSE}
+cmp <- cd_compare(ts, window_a = 2015:2025, window_b = 1951:1980)
+```
+
+```{r compare-table, echo = FALSE}
 trn_p <- trn[trn$trend_start == 1951, c("variable", "period", "mk_pvalue")]
 names(trn_p)[3] <- "trend_p"
 trn_p$trend_p <- round(trn_p$trend_p, 3)
@@ -666,10 +677,23 @@ shows a region-wide decline; the magnitude is consistent across
 ecoregions rather than concentrated in any one zone. Vapour
 pressure deficit is up significantly across the region.
 
-```{r per-ecoregion-compute, include = FALSE}
-# Pre-computed by data-raw/kootenay_lake_vignette_data.R. Live equivalent
-# would loop cd_extract / cd_baseline / cd_anomaly / cd_trend / cd_compare
-# over each ecoregion polygon.
+```{r per-ecoregion-recipe, eval = FALSE}
+# For each ecoregion polygon, run the same cd pipeline as the regional one:
+results <- lapply(seq_len(nrow(ecoregions)), function(i) {
+  poly  <- ecoregions[i, ]
+  ts_i  <- cd_extract(catalog, poly)
+  bl_i  <- cd_baseline(ts_i, baseline_years = 1951:1980)
+  ano_i <- cd_anomaly(ts_i, bl_i)
+  trn_i <- cd_trend(ano_i, trend_start = c(1951, 1981))
+  cmp_i <- cd_compare(ts_i, window_a = 2015:2025, window_b = 1951:1980)
+  list(ano = ano_i, trn = trn_i, cmp = cmp_i)
+})
+```
+
+```{r per-ecoregion-reshape, include = FALSE}
+# Pre-computed equivalent loaded from the bundled rds; the reshape
+# below builds long-form tables and trend-line segments for the
+# per-ecoregion facet plots.
 results <- lapply(vignette_data$ecoregion, function(x) {
   list(ano = x$ano, trn = x$trn, cmp = x$cmp_pct)
 })
@@ -800,7 +824,19 @@ reporting unit directly. Per-WSG facet plots show the same
 two-metric snow signal — peak SWE and DOY-50 — broken out by
 watershed group rather than by ecoregion.
 
-```{r per-wsg-compute, include = FALSE}
+```{r per-wsg-recipe, eval = FALSE}
+# Same cd pipeline applied per watershed group polygon:
+wsg_results <- lapply(seq_len(nrow(wsgs)), function(i) {
+  poly  <- wsgs[i, ]
+  ts_i  <- cd_extract(catalog, poly)
+  bl_i  <- cd_baseline(ts_i, baseline_years = 1951:1980)
+  ano_i <- cd_anomaly(ts_i, bl_i)
+  trn_i <- cd_trend(ano_i, trend_start = c(1951, 1981))
+  list(ano = ano_i, trn = trn_i)
+})
+```
+
+```{r per-wsg-reshape, include = FALSE}
 wsg_results <- vignette_data$wsg
 wsg_codes_v <- vignette_data$wsg_codes
 
