@@ -118,6 +118,8 @@ Two regional reporting vignettes in `vignettes/`:
 
 Both share the same structure (Area of Interest → Trends → Snowpack → Spatial Pattern → Per-Ecoregion → WSGs Across Ecoregions → Interpretation). Heavy data is precomputed by `data-raw/<vignette>_vignette_data.R` into `inst/vignette-data/<vignette>.{rds,tif}` so pkgdown CI doesn't re-fetch from S3 on every render. ASWS QA cross-checks are in `data-raw/qa_snow_validation*.R` — run locally only, results land in `planning/archive/<issue>/`.
 
+**Bibliography regen.** After adding or removing `[@key]` markers in either vignette, regenerate `vignettes/references.bib` from Zotero/BBT by running `Rscript data-raw/regenerate_bib.R`. Pulls source records via rbbt → BBT, writes the union of keys across both vignettes. Requires Zotero running with BBT enabled (BBT 9.x for Zotero 8/9). CI does not run this — the bib is committed and pkgdown reads the static file.
+
 The two-vignette template is the foundation for additional regional reporting appendices (cf #47) — port directly to a `fish_passage_<region>_<year>` reporting context.
 
 ## Data Directories (gitignored)
