@@ -1,5 +1,36 @@
 # Changelog
 
+## cd 0.2.8 (2026-05-07)
+
+- Vignette polish bundle covering both regional vignettes
+  (kootenay-lake, peace-fwcp): (1) **citation prose tightening** —
+  surfaces source-specific findings ([Karl et
+  al. 1993](https://doi.org/10.1175/1520-0477(1993)074%3C1007:ANPORG%3E2.0.CO;2)’s
+  3:1 min:max ratio, [Mantua et
+  al. 2010](https://doi.org/10.1007/s10584-010-9845-2)’s
+  Washington-State scope + [Eaton & Scheller
+  1996](https://doi.org/10.4319/lo.1996.41.5.1109)’s 57-species
+  comparative finding, [Kang et
+  al. 2016](https://doi.org/10.1038/srep19299)’s ~10-day Fraser advance)
+  instead of name-drop end-tags; drops `arguez_vose2011` as
+  decorative-only attribution; references.bib regen 18 → 17 entries; (2)
+  **km² superscript fix** + **highway symbology** lifted from
+  `gq/inst/registry/reg_qgis_restoration.json` (grey casing under
+  warm-yellow fill); (3) **kootenay town filter** to Rossland,
+  Castlegar, Nelson, Cranbrook, Kaslo, Nakusp; (4) **chunk restructure**
+  (Option B) — hide ~13 visualization/styling chunks per vignette via
+  `echo = FALSE`, lift `cd_*()` recipes (`cd_extract`,
+  `cd_baseline + cd_anomaly + cd_trend + cd_summary`, `cd_compare`,
+  per-ecoregion + per-WSG cd loops) out of `# Equivalent to:` comment
+  blocks into shown `eval = FALSE` companion chunks. Reader’s flow
+  becomes: cd recipe (visible, copy-pasteable) → output (table/figure,
+  source hidden) → narrative; (5) **`cd::` namespace prefix** on every
+  cd function call in both vignettes (visible + hidden) for explicit
+  package attribution. Independent Explore subagent re-verified each
+  tightened citation against source archives + PDFs; both vignettes
+  render cleanly post-restructure.
+  ([\#72](https://github.com/NewGraphEnvironment/cd/pull/72))
+
 ## cd 0.2.7 (2026-05-06)
 
 - Tooling. Adds `data-raw/regenerate_bib.R` — a one-line helper that

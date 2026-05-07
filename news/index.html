@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">cd</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.7</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.8</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,6 +36,10 @@
       <small>Source: <a href="https://github.com/NewGraphEnvironment/cd/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.2.8" id="cd-028-2026-05-07">cd 0.2.8 (2026-05-07)<a class="anchor" aria-label="anchor" href="#cd-028-2026-05-07"></a></h2>
+<ul><li>Vignette polish bundle covering both regional vignettes (kootenay-lake, peace-fwcp): (1) <strong>citation prose tightening</strong> — surfaces source-specific findings (<a href="https://doi.org/10.1175/1520-0477(1993)074%3C1007:ANPORG%3E2.0.CO;2" class="external-link">Karl et al. 1993</a>’s 3:1 min:max ratio, <a href="https://doi.org/10.1007/s10584-010-9845-2" class="external-link">Mantua et al. 2010</a>’s Washington-State scope + <a href="https://doi.org/10.4319/lo.1996.41.5.1109" class="external-link">Eaton &amp; Scheller 1996</a>’s 57-species comparative finding, <a href="https://doi.org/10.1038/srep19299" class="external-link">Kang et al. 2016</a>’s ~10-day Fraser advance) instead of name-drop end-tags; drops <code>arguez_vose2011</code> as decorative-only attribution; references.bib regen 18 → 17 entries; (2) <strong>km² superscript fix</strong> + <strong>highway symbology</strong> lifted from <code>gq/inst/registry/reg_qgis_restoration.json</code> (grey casing under warm-yellow fill); (3) <strong>kootenay town filter</strong> to Rossland, Castlegar, Nelson, Cranbrook, Kaslo, Nakusp; (4) <strong>chunk restructure</strong> (Option B) — hide ~13 visualization/styling chunks per vignette via <code>echo = FALSE</code>, lift <code>cd_*()</code> recipes (<code>cd_extract</code>, <code>cd_baseline + cd_anomaly + cd_trend + cd_summary</code>, <code>cd_compare</code>, per-ecoregion + per-WSG cd loops) out of <code># Equivalent to:</code> comment blocks into shown <code>eval = FALSE</code> companion chunks. Reader’s flow becomes: cd recipe (visible, copy-pasteable) → output (table/figure, source hidden) → narrative; (5) <strong><code>cd::</code> namespace prefix</strong> on every cd function call in both vignettes (visible + hidden) for explicit package attribution. Independent Explore subagent re-verified each tightened citation against source archives + PDFs; both vignettes render cleanly post-restructure. (<a href="https://github.com/NewGraphEnvironment/cd/pull/72" class="external-link">#72</a>)</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.7" id="cd-027-2026-05-06">cd 0.2.7 (2026-05-06)<a class="anchor" aria-label="anchor" href="#cd-027-2026-05-06"></a></h2>
 <ul><li>Tooling. Adds <code>data-raw/regenerate_bib.R</code> — a one-line helper that regenerates <code>vignettes/references.bib</code> from the union of pandoc citation markers across both regional vignettes by pulling source records from Zotero via Better BibTeX (<code>rbbt::bbt_bib</code>). Run after editing cites: <code>Rscript data-raw/regenerate_bib.R</code>. Each vignette gets a top-of-file HTML comment pointing to the helper; CLAUDE.md Vignettes section documents the prerequisite (BBT 9.x for Zotero 8/9). The conservative option vs embedding the rbbt call in YAML at render time, which would break pkgdown CI (no Zotero on the runner). (<a href="https://github.com/NewGraphEnvironment/cd/pull/70" class="external-link">#70</a>)</li>
