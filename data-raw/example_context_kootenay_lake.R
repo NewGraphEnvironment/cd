@@ -36,8 +36,7 @@ out_path <- "inst/extdata/context_kootenay_lake.gpkg"
 
 # -- Towns --------------------------------------------------------------------
 town_names <- c(
-  "Nelson", "Castlegar", "Trail", "Rossland", "Kaslo", "Nakusp",
-  "Slocan", "New Denver", "Argenta", "Crawford Bay", "Kimberley", "Cranbrook"
+  "Rossland", "Castlegar", "Nelson", "Cranbrook", "Kaslo", "Nakusp"
 )
 town_list_sql <- paste0("'", gsub("'", "''", town_names), "'", collapse = ", ")
 
