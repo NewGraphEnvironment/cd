@@ -208,10 +208,10 @@ from two different start years:
   magnitude of warming since the pre-warming reference.
 - **1981–present (45 years)** — starts at the beginning of the World
   Meteorological Organization's most recent 30-year "climate normal"
-  (1981–2010) [@arguez_vose2011DefinitionStandard]. This is the
-  reference period used in most published climate products, so it
-  makes results easy to compare against Intergovernmental Panel on
-  Climate Change reports and government climate summaries.
+  (1981–2010). This is the reference period used in most published
+  climate products, so it makes results easy to compare against
+  Intergovernmental Panel on Climate Change reports and government
+  climate summaries.
 
 Comparing the two slopes is informative. If the 45-year slope is steeper
 than the 75-year slope, warming has accelerated — recent decades are
@@ -258,9 +258,12 @@ The cd package ships daytime maximum (tmax) and overnight minimum (tmin)
 temperatures alongside the daily mean. They carry distinct information.
 Overnight minimums warming faster than daytime maximums — the
 "day-night asymmetry" — is one of the textbook fingerprints of
-greenhouse warming [@karl_etal1993NewPerspective]. Whether a
-watershed or region shows that signal depends on local geography
-(valley inversions, snow cover, slope-aspect mix).
+greenhouse warming. @karl_etal1993NewPerspective documented this
+first at the global scale, finding overnight minimums rose at
+roughly three times the rate of daytime maximums between 1951 and
+1990 (0.84 vs 0.28 °C). Whether a watershed or region shows that
+signal depends on local geography (valley inversions, snow cover,
+slope-aspect mix).
 
 For the Kootenay Lake Region, **overnight minimums are warming faster
 than daytime maximums** — the textbook day-night asymmetry, though
@@ -1035,11 +1038,15 @@ the signal is not concentrated in any one ecoregion.
 For the cold-water resident salmonids the Kootenay Lake region
 supports — bull trout, Gerrard rainbow trout, mountain whitefish,
 kokanee — these signals compound. Stream temperatures are likely
-rising in step with warmer ambient air temperatures, and the
-combined effect of warming summer stream temperatures and altered
-low flows is expected to reduce thermally-suitable habitat for
-cold-water species [@mantua_etal2010Climatechange;
-@eaton_scheller1996Effectsclimate]. The evapotranspiration
+rising in step with warmer ambient air temperatures.
+@mantua_etal2010Climatechange modelled this for Washington State
+watersheds and found that warming summer stream temperatures
+combined with altered low flows would reduce reproductive success
+for many salmon populations, and @eaton_scheller1996Effectsclimate
+showed across 57 US fish species that cold- and cool-water species
+lose substantially more thermal habitat than warm-water species
+under the same forcing. Both findings carry directly into the BC
+interior cold-water cohort the Kootenay Lake Region supports. The evapotranspiration
 imbalance means low-flow conditions in late summer are not being
 relieved (precipitation is falling, not rising as in the Peace);
 the cold-water input that high-elevation snowpack provides to
@@ -1048,8 +1055,11 @@ summer is dropping in parallel with summer SWE; and the spring
 freshet — the dominant high-flow event that shapes channel
 morphology, mobilizes spawning gravels, and refills off-channel
 rearing habitat — is shifting weeks earlier. The neighbouring
-Fraser Basin documents the same kind of freshet advance
-[@kang_etal2016ImpactsRapidly] at comparable magnitude. Lower
+Fraser Basin shows the same shift —
+@kang_etal2016ImpactsRapidly documented a ~10-day advance in the
+spring freshet at Hope between 1949 and 2006, with persistent
+declines through autumn recession just when salmon are migrating
+up the Fraser. Lower
 Columbia River reaches below Hugh Keenleyside Dam are
 dam-fragmented and not anadromous, so the ecological framing is
 about resident salmonids and their habitat rather than salmon
