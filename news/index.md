@@ -1,5 +1,18 @@
 # Changelog
 
+## cd 0.2.7 (2026-05-06)
+
+- Tooling. Adds `data-raw/regenerate_bib.R` — a one-line helper that
+  regenerates `vignettes/references.bib` from the union of pandoc
+  citation markers across both regional vignettes by pulling source
+  records from Zotero via Better BibTeX (`rbbt::bbt_bib`). Run after
+  editing cites: `Rscript data-raw/regenerate_bib.R`. Each vignette gets
+  a top-of-file HTML comment pointing to the helper; CLAUDE.md Vignettes
+  section documents the prerequisite (BBT 9.x for Zotero 8/9). The
+  conservative option vs embedding the rbbt call in YAML at render time,
+  which would break pkgdown CI (no Zotero on the runner).
+  ([\#70](https://github.com/NewGraphEnvironment/cd/pull/70))
+
 ## cd 0.2.6 (2026-05-05)
 
 - Wires up `vignettes/peace-fwcp.Rmd` interpretation paragraphs with

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">cd</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.6</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.7</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,6 +36,10 @@
       <small>Source: <a href="https://github.com/NewGraphEnvironment/cd/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.2.7" id="cd-027-2026-05-06">cd 0.2.7 (2026-05-06)<a class="anchor" aria-label="anchor" href="#cd-027-2026-05-06"></a></h2>
+<ul><li>Tooling. Adds <code>data-raw/regenerate_bib.R</code> — a one-line helper that regenerates <code>vignettes/references.bib</code> from the union of pandoc citation markers across both regional vignettes by pulling source records from Zotero via Better BibTeX (<code>rbbt::bbt_bib</code>). Run after editing cites: <code>Rscript data-raw/regenerate_bib.R</code>. Each vignette gets a top-of-file HTML comment pointing to the helper; CLAUDE.md Vignettes section documents the prerequisite (BBT 9.x for Zotero 8/9). The conservative option vs embedding the rbbt call in YAML at render time, which would break pkgdown CI (no Zotero on the runner). (<a href="https://github.com/NewGraphEnvironment/cd/pull/70" class="external-link">#70</a>)</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.6" id="cd-026-2026-05-05">cd 0.2.6 (2026-05-05)<a class="anchor" aria-label="anchor" href="#cd-026-2026-05-05"></a></h2>
 <ul><li>Wires up <code>vignettes/peace-fwcp.Rmd</code> interpretation paragraphs with citations from the climate-departure 3-split lit reviews — companion to v0.2.5’s kootenay-lake wire-up. Same 7-insertion pattern (8 unique new keys + 1 reuse), sparingly applied per the plain-language vignette philosophy. Two AOI-specific tweaks vs the kootenay PR: the <code>[@pepin_etal2015Elevationdependentwarming; <a href="https://github.com/rangwala_miller2012Climatechange" class="external-link">@rangwala_miller2012Climatechange</a>]</code> cite lands at the <strong>Interpretation paragraph</strong> rather than the Spatial Pattern section (Peace’s dominant warming gradient is east-west / windward-of-Rockies, not pure elevation), and the [@ficklin_novick2017Historicprojected] VPD-drying cite is <strong>stronger here</strong> than in Kootenay because Peace’s precipitation is <em>up</em> 3-4% in 2 ecoregions yet soil moisture is flat — pure VPD-driven evaporative-demand effect. Audit log at <code>planning/archive/2026-05-issue-67-peace-vignette-wireup/citation_audit.md</code> records the per-cite source quote, paraphrase, and visible-in-vignette warrant. An independent Explore subagent verified each row against source quote archives + PDFs and signed off all 7 cites with zero edits or removals required (stronger pass than the v0.2.5 review, which caught one minor scope nit). <code>vignettes/references.bib</code> regen produced no diff — both vignettes draw from the same 18-key union. Snow-section citations from <a href="https://github.com/NewGraphEnvironment/cd/issues/54" class="external-link">#54</a> untouched. (<a href="https://github.com/NewGraphEnvironment/cd/pull/68" class="external-link">#68</a>)</li>
