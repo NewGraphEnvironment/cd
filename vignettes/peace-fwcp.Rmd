@@ -69,7 +69,7 @@ departure can vary across them in ways the regional average hides,
 and we use them later as the sub-region for the per-ecoregion
 breakdown.
 
-```{r load-aoi}
+```{r load-aoi, echo = FALSE}
 library(cd)
 library(sf)
 
@@ -93,7 +93,7 @@ ecoregions  <- ecoregions[ecoregions$area_km2 > 100, ]
 ecoregions$name_tc <- tools::toTitleCase(tolower(ecoregions$name))
 ```
 
-```{r map-location, fig.cap="FWCP Peace Region area of interest (~73,000 km²) in northeastern British Columbia, coloured by ecoregion. Williston Reservoir dominates the basin.", fig.height=7}
+```{r map-location, fig.cap="FWCP Peace Region area of interest (~73,000 km²) in northeastern British Columbia, coloured by ecoregion. Williston Reservoir dominates the basin.", fig.height=7, echo = FALSE}
 aoi_bb <- st_bbox(aoi)
 
 ggplot() +
@@ -287,7 +287,7 @@ cd_plot_timeseries(ano, variable = "tmin", period = "annual", trend = trn_tmin,
   title = "Overnight Minimum (tmin) — Annual Anomaly")
 ```
 
-```{r plot-dtr, fig.cap="Diurnal temperature range (daytime maximum minus overnight minimum) annual mean for the FWCP Peace Region. The downward trend indicates overnight lows are warming faster than daytime highs — the textbook day-night asymmetry shows up here."}
+```{r plot-dtr, fig.cap="Diurnal temperature range (daytime maximum minus overnight minimum) annual mean for the FWCP Peace Region. The downward trend indicates overnight lows are warming faster than daytime highs — the textbook day-night asymmetry shows up here.", echo = FALSE}
 tmax_ts <- ts[ts$variable == "tmax" & ts$period == "annual", c("year", "value")]
 tmin_ts <- ts[ts$variable == "tmin" & ts$period == "annual", c("year", "value")]
 dtr <- merge(tmax_ts, tmin_ts, by = "year", suffixes = c("_max", "_min"))
@@ -386,7 +386,7 @@ spring (March–May), summer (June–August), and fall
 The headline numbers above (summer SWE collapse, spring snowmelt rise)
 are in the **summer** and **spring** rows.
 
-```{r snow-seasonal-table}
+```{r snow-seasonal-table, echo = FALSE}
 snow_monthly <- c("swe", "snowfall", "snowmelt", "snow_cover")
 season_order <- c("winter", "spring", "summer", "fall")
 
@@ -579,7 +579,7 @@ smaller south-to-north component. The west-of-Rockies pattern is
 consistent with windward-slope amplification along the Continental
 Divide.
 
-```{r spatial-tmean, fig.cap="Spatial pattern of annual mean temperature departure across the FWCP Peace Region (2015-2025 mean minus 1951-1980 mean, degrees C).", fig.height=7}
+```{r spatial-tmean, fig.cap="Spatial pattern of annual mean temperature departure across the FWCP Peace Region (2015-2025 mean minus 1951-1980 mean, degrees C).", fig.height=7, echo = FALSE}
 # Pre-computed by data-raw/peace_fwcp_vignette_data.R. Live equivalent:
 #   r_tmean <- cd_crop(catalog$href[catalog$variable == "tmean"
 #                                   & catalog$period == "annual"], aoi)
@@ -683,7 +683,7 @@ trn_segs_swe_max <- build_segments("swe_max")
 trn_segs_doy_50  <- build_segments("snowmelt_doy_50")
 ```
 
-```{r facet-tmean, fig.cap="Annual mean temperature anomaly relative to the 1951-1980 baseline, by ecoregion. Dashed line is the 75-year Theil-Sen trend (1951-present); solid line is the 45-year trend (1981-present). A solid line steeper than the dashed line indicates accelerating warming.", fig.height=6}
+```{r facet-tmean, fig.cap="Annual mean temperature anomaly relative to the 1951-1980 baseline, by ecoregion. Dashed line is the 75-year Theil-Sen trend (1951-present); solid line is the 45-year trend (1981-present). A solid line steeper than the dashed line indicates accelerating warming.", fig.height=6, echo = FALSE}
 ggplot(ano_all[ano_all$variable == "tmean" & ano_all$period == "annual", ],
        aes(x = year, y = anomaly)) +
   geom_col(aes(fill = anomaly >= 0), width = 0.85, show.legend = FALSE) +
@@ -700,7 +700,7 @@ ggplot(ano_all[ano_all$variable == "tmean" & ano_all$period == "annual", ],
   theme(legend.position = "bottom")
 ```
 
-```{r facet-prcp, fig.cap="Annual precipitation anomaly (% of the 1951-1980 baseline) by ecoregion. Dashed line is the 75-year trend (1951-present); solid line is the 45-year trend (1981-present). The two northernmost ecoregions (BMP, NRM) show statistically significant precipitation increases over the full record; the others do not.", fig.height=6}
+```{r facet-prcp, fig.cap="Annual precipitation anomaly (% of the 1951-1980 baseline) by ecoregion. Dashed line is the 75-year trend (1951-present); solid line is the 45-year trend (1981-present). The two northernmost ecoregions (BMP, NRM) show statistically significant precipitation increases over the full record; the others do not.", fig.height=6, echo = FALSE}
 ggplot(ano_all[ano_all$variable == "prcp" & ano_all$period == "annual", ],
        aes(x = year, y = anomaly)) +
   geom_col(aes(fill = anomaly >= 0), width = 0.85, show.legend = FALSE) +
@@ -727,7 +727,7 @@ ecoregion to ecoregion. Pair them with the Watershed Groups Across
 Ecoregions section below to read each watershed group's dominant
 ecoregion's signal.
 
-```{r facet-swe-max, fig.cap="Annual peak snow water equivalent (SWE) anomaly by ecoregion, relative to the 1951-1980 baseline. Bars are mm of water-equivalent snowpack departure from baseline. Dashed line is the 75-year Theil-Sen trend (1951-present); solid line is the 45-year trend (1981-present).", fig.height=6}
+```{r facet-swe-max, fig.cap="Annual peak snow water equivalent (SWE) anomaly by ecoregion, relative to the 1951-1980 baseline. Bars are mm of water-equivalent snowpack departure from baseline. Dashed line is the 75-year Theil-Sen trend (1951-present); solid line is the 45-year trend (1981-present).", fig.height=6, echo = FALSE}
 ggplot(ano_all[ano_all$variable == "swe_max" & ano_all$period == "annual", ],
        aes(x = year, y = anomaly)) +
   geom_col(aes(fill = anomaly >= 0), width = 0.85, show.legend = FALSE) +
@@ -744,7 +744,7 @@ ggplot(ano_all[ano_all$variable == "swe_max" & ano_all$period == "annual", ],
   theme(legend.position = "bottom")
 ```
 
-```{r facet-doy-50, fig.cap="Snowmelt 50% day-of-year (DOY-50) anomaly by ecoregion, relative to the 1951-1980 baseline. Negative values (red) mean the freshet midpoint shifted earlier in the year. Dashed line is the 75-year Theil-Sen trend; solid line is the 45-year trend.", fig.height=6}
+```{r facet-doy-50, fig.cap="Snowmelt 50% day-of-year (DOY-50) anomaly by ecoregion, relative to the 1951-1980 baseline. Negative values (red) mean the freshet midpoint shifted earlier in the year. Dashed line is the 75-year Theil-Sen trend; solid line is the 45-year trend.", fig.height=6, echo = FALSE}
 ggplot(ano_all[ano_all$variable == "snowmelt_doy_50" & ano_all$period == "annual", ],
        aes(x = year, y = anomaly)) +
   geom_col(aes(fill = anomaly >= 0), width = 0.85, show.legend = FALSE) +
@@ -761,7 +761,7 @@ ggplot(ano_all[ano_all$variable == "snowmelt_doy_50" & ano_all$period == "annual
   theme(legend.position = "bottom")
 ```
 
-```{r rollup}
+```{r rollup, echo = FALSE}
 get_75 <- function(trn, var) {
   trn[trn$variable == var & trn$period == "annual" & trn$trend_start == 1951, ]
 }
@@ -816,7 +816,7 @@ boundary, but only at its upstream end — its main drainage runs east
 beyond the region, so it is excluded here to keep the reporting unit
 clean.
 
-```{r map-wsgs, fig.cap="Watershed groups intersecting the FWCP Peace Region (full extent, including the parts spilling outside the FWCP boundary), labelled with their codes, on top of ecoregion fills. The Fraser Basin, Central Canadian Rockies, and Omineca Mountains ecoregions occupy the southern and central portions; Boreal Mountains and Plateaus and Northern Canadian Rocky Mountains sit in the north.", fig.height=7}
+```{r map-wsgs, fig.cap="Watershed groups intersecting the FWCP Peace Region (full extent, including the parts spilling outside the FWCP boundary), labelled with their codes, on top of ecoregion fills. The Fraser Basin, Central Canadian Rockies, and Omineca Mountains ecoregions occupy the southern and central portions; Boreal Mountains and Plateaus and Northern Canadian Rocky Mountains sit in the north.", fig.height=7, echo = FALSE}
 wsgs <- st_read(ctx, layer = "wsgs", quiet = TRUE)
 
 wsg_centroids <- suppressWarnings(st_centroid(wsgs))
@@ -849,7 +849,7 @@ ggplot() +
         legend.key.size = unit(0.4, "cm"))
 ```
 
-```{r wsg-ecoregion-table}
+```{r wsg-ecoregion-table, echo = FALSE}
 wsg_xref <- read.csv(
   system.file("extdata", "peace_wsg_ecoregion_commentary.csv", package = "cd"),
   check.names = FALSE
