@@ -93,7 +93,7 @@ ecoregions  <- ecoregions[ecoregions$area_km2 > 100, ]
 ecoregions$name_tc <- tools::toTitleCase(tolower(ecoregions$name))
 ```
 
-```{r map-location, fig.cap="FWCP Peace Region area of interest (~73,000 km^2) in northeastern British Columbia, coloured by ecoregion. Williston Reservoir dominates the basin.", fig.height=7}
+```{r map-location, fig.cap="FWCP Peace Region area of interest (~73,000 km²) in northeastern British Columbia, coloured by ecoregion. Williston Reservoir dominates the basin.", fig.height=7}
 aoi_bb <- st_bbox(aoi)
 
 ggplot() +
@@ -103,7 +103,9 @@ ggplot() +
   geom_sf(data = lakes, fill = "#a6bddb", color = "#74a9cf", linewidth = 0.2) +
   geom_sf(data = rivers, fill = "#a6bddb", color = "#74a9cf", linewidth = 0.2) +
   geom_sf(data = streams, color = "#74a9cf", linewidth = 0.3, alpha = 0.6) +
-  geom_sf(data = highways, color = "#333333", linewidth = 0.5) +
+  # Highway: grey casing under warm yellow fill (gq reg_qgis_restoration)
+  geom_sf(data = highways, color = "#9c9c9c", linewidth = 0.75) +
+  geom_sf(data = highways, color = "#ffe585", linewidth = 0.5) +
   geom_sf(data = towns, color = "black", size = 2.5) +
   ggrepel::geom_label_repel(
     data = towns,
@@ -120,7 +122,7 @@ ggplot() +
     ylim = c(aoi_bb["ymin"] - 0.5, aoi_bb["ymax"] + 0.3)
   ) +
   labs(title = "FWCP Peace Region",
-       subtitle = paste0(round(area_km2), " km^2 — ", nrow(ecoregions), " ecoregions")) +
+       subtitle = paste0(round(area_km2), " km² — ", nrow(ecoregions), " ecoregions")) +
   theme_minimal(base_size = 12) +
   theme(axis.title = element_blank(),
         legend.position = "bottom",
@@ -596,7 +598,9 @@ ggplot() +
           linewidth = 0.4, linetype = "dashed") +
   geom_sf(data = aoi, fill = NA, color = "black", linewidth = 0.6) +
   geom_sf(data = lakes, fill = NA, color = "grey40", linewidth = 0.2) +
-  geom_sf(data = highways, color = "#333333", linewidth = 0.4) +
+  # Highway: grey casing under warm yellow fill (gq reg_qgis_restoration)
+  geom_sf(data = highways, color = "#9c9c9c", linewidth = 0.6) +
+  geom_sf(data = highways, color = "#ffe585", linewidth = 0.4) +
   geom_sf(data = towns, color = "black", size = 2) +
   ggrepel::geom_label_repel(
     data = towns, aes(label = name, geometry = geom),
