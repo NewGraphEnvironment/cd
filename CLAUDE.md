@@ -186,6 +186,19 @@ rbbt → BBT, writes the union of keys across both vignettes. Requires
 Zotero running with BBT enabled (BBT 9.x for Zotero 8/9). CI does not
 run this — the bib is committed and pkgdown reads the static file.
 
+**Chunk pattern (v0.2.8).** Visible code in both vignettes is dominated
+by `cd::cd_*()` calls — the package showcase. Boilerplate (ggplot AOI
+maps, Spatial Pattern map, kableExtra wrappers, facet-plot recipes) is
+hidden via `echo = FALSE`. Heavy cd recipes (`cd_extract`,
+`cd_baseline + cd_anomaly + cd_trend + cd_summary`, `cd_compare`,
+per-ecoregion + per-WSG loops) are lifted into shown `eval = FALSE`
+companion chunks above the actual data-load chunks (named
+`<chunk>-recipe` shown / `<chunk>-load` or `<chunk>-table` or
+`<chunk>-reshape` hidden). Reader sees: cd recipe → output → narrative.
+Snow plot chunks (`snow-swe-max` etc) stay fully visible since they’re
+already pure cd\_\*() calls. All cd function calls use `cd::` namespace
+prefix for explicit package attribution.
+
 The two-vignette template is the foundation for additional regional
 reporting appendices (cf \#47) — port directly to a
 `fish_passage_<region>_<year>` reporting context.
