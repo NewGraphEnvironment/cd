@@ -4,7 +4,13 @@
 \alias{cd_compare}
 \title{Compare arbitrary time windows}
 \usage{
-cd_compare(x, window_a = 2015:2025, window_b = 1951:1980, method = "mean_diff")
+cd_compare(
+  x,
+  window_a = 2015:2025,
+  window_b = 1951:1980,
+  method = "mean_diff",
+  test = "t"
+)
 }
 \arguments{
 \item{x}{A tibble from \code{\link[=cd_extract]{cd_extract()}} with columns \code{variable},
@@ -19,15 +25,23 @@ window. Default \code{1951:1980} (WMO-style standard normal).}
 \item{method}{Character. Comparison method: \code{"mean_diff"} for
 \code{mean_a - mean_b}, or \code{"pct_change"} for percentage change
 relative to window_b.}
+
+\item{test}{Character or NULL. Window-vs-window significance
+test: \code{"t"} for Welch's two-sample t-test (default) or
+\code{"wilcox"} for Mann-Whitney U. Set to \code{NULL} to skip — output
+then drops the \code{p_value} column. Rows where either window has
+fewer than 8 non-NA values get \code{p_value = NA} and a single
+batched warning.}
 }
 \value{
 A tibble with columns \code{variable}, \code{period}, \code{mean_a},
-\code{mean_b}, \code{difference}, \code{method}.
+\code{mean_b}, \code{difference}, \code{method}, and (when \code{test} is
+non-NULL) \code{p_value}.
 }
 \description{
-Computes the mean value for two user-defined time windows and
-the difference between them. Enables custom comparisons beyond
-standard baseline anomalies.
+Computes the mean value for two user-defined time windows, the
+difference between them, and (by default) a p-value testing
+whether the two windows differ.
 }
 \details{
 Defaults compare a recent decade (\code{2015:2025}) to the WMO-style
@@ -36,6 +50,19 @@ used in the package vignettes. This is a \emph{cumulative-impact}
 comparison ("how much warmer is the recent decade than the
 pre-warming reference?") rather than a rate-of-change
 comparison; for the latter use \code{\link[=cd_trend]{cd_trend()}}.
+
+The window-vs-window p-value (\code{test = "t"} Welch t-test or
+\code{test = "wilcox"} Mann-Whitney U) tests whether the means of
+the two windows differ — a different question than
+\code{\link[=cd_trend]{cd_trend()}}'s Mann-Kendall test, which checks for a monotonic
+trend across the full series. Two windows can differ
+significantly without a monotonic trend (step changes, U-shapes)
+and a non-significant trend doesn't always mean the windows are
+indistinguishable. The test treats annual values as independent;
+for series with strong autocorrelation the t-test p is mildly
+anti-conservative — the Wilcoxon alternative is more robust to
+non-Gaussian tails / outliers but shares the independence
+assumption.
 }
 \examples{
 catalog <- cd_catalog(
@@ -49,10 +76,12 @@ ts <- cd_extract(catalog, aoi)
 
 # The toy example catalog only spans 1951:1960, so the windows
 # below override the defaults (2015:2025 vs 1951:1980) — those
-# are the right choice on the live STAC catalog.
-cd_compare(ts, window_a = 1956:1960, window_b = 1951:1955)
+# are the right choice on the live STAC catalog. test = NULL
+# because the toy windows have < 8 years.
+cd_compare(ts, window_a = 1956:1960, window_b = 1951:1955, test = NULL)
 
 # Same comparison as percentage change
-cd_compare(ts, window_a = 1956:1960, window_b = 1951:1955, method = "pct_change")
+cd_compare(ts, window_a = 1956:1960, window_b = 1951:1955,
+           method = "pct_change", test = NULL)
 
 }

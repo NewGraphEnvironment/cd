@@ -27,19 +27,21 @@ together" — single branch, single PR.
 
 ## Phase 2 — Window-vs-window p-value (#43)
 
-- [ ] Edit `R/cd_compare.R` body — add `test = "t"` argument,
+- [x] Edit `R/cd_compare.R` body — add `test = "t"` argument,
       window-extraction + Welch t / Wilcoxon dispatch, < 8-year
       small-N guard with batched warning, `p_value` column emitted
       only when `test != NULL` (default `"t"` so column is present
       by default)
-- [ ] Add tests covering: clean step-change → tiny p; iid noise →
+- [x] Add tests covering: clean step-change → tiny p; iid noise →
       large p; `test = "wilcox"`; `test = NULL` → original 6-col
       schema; small-N guard fires once with warning; multi-variable
       input gets per-row p-values
-- [ ] `devtools::document()` to refresh `man/cd_compare.Rd`
-- [ ] `devtools::test()` — green
-- [ ] `lintr::lint_package()` — clean
-- [ ] Atomic commit: "Add window-vs-window p-value to cd_compare() (#43)"
+- [x] `devtools::document()` to refresh `man/cd_compare.Rd`
+- [x] `devtools::test()` — green
+- [x] `lintr::lint_package()` — clean (no new lints from
+      cd_compare; pre-existing `.data` pronoun + vignette caption
+      length unchanged)
+- [x] Atomic commit: "Add window-vs-window p-value to cd_compare() (#43)"
 
 ## Phase 3 — Vignette updates
 

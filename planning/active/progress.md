@@ -11,4 +11,11 @@
 - Phase 1 done — defaults `window_a = 2015:2025`, `window_b = 1951:1980`
   on `cd_compare()`; roxygen documents cumulative-impact framing;
   defaults test passes; 16 PASS / 0 FAIL on the cd_compare suite
-- Next: Phase 2 — `test = "t"` argument + p_value column
+- Phase 2 done — `test = c("t", "wilcox", NULL)` argument added;
+  default `"t"` so output gains `p_value` column by default;
+  small-N guard (< 8 years either window) → NA + single batched
+  warning naming affected variable/period rows; 6 new tests
+  covering step-change, iid noise, wilcox, NULL, small-N guard,
+  multi-variable; full suite 181 PASS / 0 FAIL
+- Next: Phase 3 — vignette wire-up (drop synthesized trend_p
+  proxy, surface real `Δ p (windows)` column)
