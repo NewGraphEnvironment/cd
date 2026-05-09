@@ -4,15 +4,17 @@
 \alias{cd_compare}
 \title{Compare arbitrary time windows}
 \usage{
-cd_compare(x, window_a, window_b, method = "mean_diff")
+cd_compare(x, window_a = 2015:2025, window_b = 1951:1980, method = "mean_diff")
 }
 \arguments{
 \item{x}{A tibble from \code{\link[=cd_extract]{cd_extract()}} with columns \code{variable},
 \code{period}, \code{year}, \code{value}.}
 
-\item{window_a}{Integer vector of years for the first window.}
+\item{window_a}{Integer vector of years for the recent / impact
+window. Default \code{2015:2025}.}
 
-\item{window_b}{Integer vector of years for the second window.}
+\item{window_b}{Integer vector of years for the reference
+window. Default \code{1951:1980} (WMO-style standard normal).}
 
 \item{method}{Character. Comparison method: \code{"mean_diff"} for
 \code{mean_a - mean_b}, or \code{"pct_change"} for percentage change
@@ -27,6 +29,14 @@ Computes the mean value for two user-defined time windows and
 the difference between them. Enables custom comparisons beyond
 standard baseline anomalies.
 }
+\details{
+Defaults compare a recent decade (\code{2015:2025}) to the WMO-style
+standard normal reference period (\code{1951:1980}) — the framing
+used in the package vignettes. This is a \emph{cumulative-impact}
+comparison ("how much warmer is the recent decade than the
+pre-warming reference?") rather than a rate-of-change
+comparison; for the latter use \code{\link[=cd_trend]{cd_trend()}}.
+}
 \examples{
 catalog <- cd_catalog(
   system.file("extdata", "example_catalog.json", package = "cd")
@@ -37,7 +47,9 @@ aoi <- sf::st_read(
 )
 ts <- cd_extract(catalog, aoi)
 
-# How has the recent period shifted from the early period?
+# The toy example catalog only spans 1951:1960, so the windows
+# below override the defaults (2015:2025 vs 1951:1980) — those
+# are the right choice on the live STAC catalog.
 cd_compare(ts, window_a = 1956:1960, window_b = 1951:1955)
 
 # Same comparison as percentage change

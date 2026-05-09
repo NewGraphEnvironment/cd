@@ -15,15 +15,15 @@ together" — single branch, single PR.
 
 ## Phase 1 — Add defaults (#20)
 
-- [ ] Edit `R/cd_compare.R` signature: `window_a = 2015:2025`,
+- [x] Edit `R/cd_compare.R` signature: `window_a = 2015:2025`,
       `window_b = 1951:1980` defaults; update roxygen with the
       framing rationale (cumulative-impact vs rate-of-change)
-- [ ] Update existing tests in `tests/testthat/test-cd_compare.R` —
+- [x] Update existing tests in `tests/testthat/test-cd_compare.R` —
       keep explicit-window tests, add a new test exercising the
       defaults
-- [ ] `devtools::document()` to refresh `man/cd_compare.Rd`
-- [ ] `devtools::test()` — green
-- [ ] Atomic commit: "Add cd_compare() defaults: 2015:2025 vs 1951:1980 (#20)"
+- [x] `devtools::document()` to refresh `man/cd_compare.Rd`
+- [x] `devtools::test()` — green
+- [x] Atomic commit: "Add cd_compare() defaults: 2015:2025 vs 1951:1980 (#20)"
 
 ## Phase 2 — Window-vs-window p-value (#43)
 

@@ -41,6 +41,23 @@ test_that("cd_compare warns on small windows", {
   )
 })
 
+test_that("cd_compare uses 2015:2025 vs 1951:1980 defaults", {
+  # Toy series with values that bake in the default-window framing —
+  # 1951:1980 reference at value 0, 2015:2025 recent at value 2.
+  ts <- tibble::tibble(
+    variable = "tmean",
+    period = "annual",
+    year = c(1951:1980, 2015:2025),
+    value = c(rep(0, 30), rep(2, 11))
+  )
+  cmp <- cd_compare(ts)
+
+  expect_named(cmp, c("variable", "period", "mean_a", "mean_b", "difference", "method"))
+  expect_equal(cmp$mean_a, 2)
+  expect_equal(cmp$mean_b, 0)
+  expect_equal(cmp$difference, 2)
+})
+
 test_that("cd_compare handles multiple variables", {
   ts <- tibble::tibble(
     variable = rep(c("tmean", "prcp"), each = 6),
