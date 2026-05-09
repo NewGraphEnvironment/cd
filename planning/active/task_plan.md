@@ -59,11 +59,12 @@ together" — single branch, single PR.
 
 ## Phase 4 — Release
 
-- [ ] Update `NEWS.md` — single section bullet covering both
-- [ ] Bump `DESCRIPTION` Version: `0.2.8` → `0.3.0` (minor — new
-      arg with default value, output schema gains `p_value` column
-      by default)
-- [ ] PR via `/gh-pr-push`; merge via `/gh-pr-merge`
+- [ ] PR via `/gh-pr-push` (NEWS + DESCRIPTION bump handled
+      post-merge by `/gh-pr-merge`, per repo convention — recent
+      pattern: `Release v0.X.Y` is a separate post-merge commit
+      on main, e.g. `298cce4 Release v0.2.8`)
+- [ ] Bump on merge: `0.2.8` → `0.3.0` (minor — output schema
+      gains `p_value` column by default; new `test` argument)
 - [ ] `/planning-archive` after merge
 
 ## Validation
