@@ -45,14 +45,17 @@ together" — single branch, single PR.
 
 ## Phase 3 — Vignette updates
 
-- [ ] `vignettes/peace-fwcp.Rmd` — bare default-driven
+- [x] `vignettes/peace-fwcp.Rmd` — bare default-driven
       `cd::cd_compare(ts)` recipe call; comparison table swaps
       synthesized `trend_p` proxy for new `Δ p (windows)` column
       (keep `Trend p (75-yr)` alongside — different question);
       add one-paragraph narrative on the two p-values
-- [ ] `vignettes/kootenay-lake.Rmd` — same edits
-- [ ] Local render of both vignettes — clean
-- [ ] Atomic commit: "Use cd_compare() defaults + window-vs-window p-value in regional vignettes"
+- [x] `vignettes/kootenay-lake.Rmd` — same edits
+- [x] `data-raw/<vignette>_vignette_data.R` — drop explicit
+      windows so future precompute runs use defaults
+- [x] Local render of both vignettes — clean (HTML contains both
+      `Δ p (windows)` and `Trend p (75-yr)` column headers)
+- [x] Atomic commit: "Use cd_compare() defaults + window-vs-window p-value in regional vignettes"
 
 ## Phase 4 — Release
 

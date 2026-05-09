@@ -17,5 +17,12 @@
   warning naming affected variable/period rows; 6 new tests
   covering step-change, iid noise, wilcox, NULL, small-N guard,
   multi-variable; full suite 181 PASS / 0 FAIL
-- Next: Phase 3 — vignette wire-up (drop synthesized trend_p
-  proxy, surface real `Δ p (windows)` column)
+- Phase 3 done — both vignettes show bare `cd::cd_compare(ts)`
+  recipe call (defaults take over); compare-table chunks
+  recompute `cmp` from cached `ts` so `p_value` flows through
+  without re-running the heavy precompute scripts; surfaces both
+  `Δ p (windows)` and `Trend p (75-yr)` columns side-by-side;
+  narrative paragraph explains the two-test framing; precompute
+  scripts updated for next refresh; both vignettes render clean
+  with the new column visible in HTML
+- Next: Phase 4 — NEWS + DESCRIPTION bump → v0.3.0; PR + merge

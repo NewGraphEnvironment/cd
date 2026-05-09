@@ -48,12 +48,10 @@ regional_ts  <- cd_extract(catalog, aoi)
 regional_bl  <- cd_baseline(regional_ts, baseline_years = 1951:1980)
 regional_ano <- cd_anomaly(regional_ts, regional_bl)
 regional_trn <- cd_trend(regional_ano, trend_start = c(1951, 1981))
-regional_cmp <- cd_compare(regional_ts,
-                           window_a = 2015:2025, window_b = 1951:1980,
-                           method = "mean_diff")
+regional_cmp <- cd_compare(regional_ts, method = "mean_diff")  # defaults: 2015:2025 vs 1951:1980, Welch t
 regional_cmp_pct <- cd_compare(
   regional_ts[regional_ts$variable %in% pct_normal_vars, ],
-  window_a = 2015:2025, window_b = 1951:1980, method = "pct_change"
+  method = "pct_change"
 )
 
 # -- Per-ecoregion -----------------------------------------------------------
@@ -65,7 +63,7 @@ ecoregion_results <- lapply(seq_len(nrow(ecoregions)), function(i) {
   trn <- cd_trend(ano, trend_start = c(1951, 1981))
   cmp_pct <- cd_compare(
     ts[ts$variable %in% pct_normal_vars, ],
-    window_a = 2015:2025, window_b = 1951:1980, method = "pct_change"
+    method = "pct_change"
   )
   list(ts = ts, ano = ano, trn = trn, cmp_pct = cmp_pct)
 })
@@ -81,7 +79,7 @@ wsg_results <- lapply(seq_len(nrow(wsgs)), function(i) {
   trn <- cd_trend(ano, trend_start = c(1951, 1981))
   cmp_pct <- cd_compare(
     ts[ts$variable %in% pct_normal_vars, ],
-    window_a = 2015:2025, window_b = 1951:1980, method = "pct_change"
+    method = "pct_change"
   )
   list(ts = ts, ano = ano, trn = trn, cmp_pct = cmp_pct)
 })
