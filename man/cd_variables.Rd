@@ -11,17 +11,24 @@ A tibble with columns:
 \describe{
 \item{variable}{Short name used throughout the package.}
 \item{long_name}{Human-readable label for plots and tables.}
-\item{unit}{Measurement unit (degree C, percent, Pa).}
-\item{anomaly_type}{"absolute" for direct departures, "pct_normal"
-for percent-of-normal anomalies.}
+\item{unit}{Measurement unit (degree C, percent, Pa, mm, day, mm/wk).}
+\item{anomaly_type}{"absolute" for direct departures (value - baseline,
+reported in the variable's native unit), "pct_normal" for
+percent-of-normal anomalies (100 * value / baseline - 100, capped),
+"pct_point_diff" for departures in percentage points (used for
+variables that are already fractions/percentages, e.g. snow cover,
+snowfall fraction, where pct-of-normal is meaningless and the
+natural delta is value - baseline interpreted as percentage points).}
 \item{era5_name}{ERA5-Land variable name for CDS API requests,
 or NA for derived variables.}
 }
 }
 \description{
-Returns a tibble of metadata for the seven climate variables supported
-by the cd package. Used internally for unit labels, anomaly type routing,
-and ERA5-Land API variable names.
+Returns a tibble of metadata for the climate variables supported by the
+cd package. Used internally for unit labels, anomaly type routing, and
+ERA5-Land API variable names. Covers the seven core climate variables
+plus eight snow-related variables (four monthly natives, four annual
+derived) added in v0.2.0.
 }
 \examples{
 cd_variables()

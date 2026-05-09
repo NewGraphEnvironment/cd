@@ -14,7 +14,9 @@ cd_anomaly(x, baseline, cap_pct = 200)
 \code{variable}, \code{period}, \code{baseline_mean}.}
 
 \item{cap_pct}{Numeric. Cap for percent-of-normal anomalies.
-Values beyond +/- \code{cap_pct} are clamped. Default \code{200}.}
+Values beyond +/- \code{cap_pct} are clamped. Default \code{200}. Only
+applies to \code{pct_normal} variables; \code{absolute} and
+\code{pct_point_diff} anomalies are not capped.}
 }
 \value{
 A tibble with columns \code{variable}, \code{period}, \code{year},
@@ -23,8 +25,11 @@ A tibble with columns \code{variable}, \code{period}, \code{year},
 \description{
 Calculates departure from a baseline for each year. Uses
 \code{\link[=cd_variables]{cd_variables()}} to determine the anomaly type: absolute deviation
-for temperature, VPD, and RH; percent of normal for precipitation
-and soil moisture.
+for temperature, VPD, RH, and the annual snow scalars; percent of
+normal for precipitation, soil moisture, and the monthly snow vars
+(\code{swe}, \code{snowfall}, \code{snowmelt}); percentage-point difference for
+variables that are already fractions/percentages (\code{snow_cover},
+\code{snowfall_fraction}).
 }
 \examples{
 catalog <- cd_catalog(
