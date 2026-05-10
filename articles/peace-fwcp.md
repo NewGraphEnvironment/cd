@@ -353,6 +353,102 @@ Peace Region.](peace-fwcp_files/figure-html/plot-prcp-1.png)
 Annual precipitation anomaly (% of 1951-1980 baseline) for the FWCP
 Peace Region.
 
+## Recent Decade vs Pre-Warming Reference
+
+The table below compares two windows directly — the recent decade
+(2015–2025) against the pre-warming reference (1951–1980). Δ absolute is
+the difference of the two means in the variable’s native units. Δ % is
+shown only for variables where it is meaningful (precipitation, soil
+moisture, vapour pressure deficit, relative humidity). Two p-values are
+reported, answering different questions. **Δ p (windows)** is the Welch
+t-test on the annual values within each window — does the recent decade
+differ from the pre-warming reference? **Trend p (75-yr)** is the
+Mann-Kendall test on the full 1951–present series — is there a steady
+year-on-year ramp? Step changes show up as significant Δ p with
+non-significant trend p; gradual ramps show up as both significant.
+
+The recent decade was 1.7 to 2.4 °C warmer than the pre-warming
+reference for annual mean, daytime maximum, and overnight minimum, with
+both window and trend p-values below 0.001. Vapour pressure deficit is
+up significantly on both tests. Annual precipitation was about 3 to 4 %
+higher in the recent decade; neither test confirms the shift (Δ p ≈ 0.4,
+trend p ≈ 0.20). Soil moisture and relative humidity show no meaningful
+change.
+
+``` r
+
+cmp <- cd::cd_compare(ts)   # defaults: 2015–2025 vs 1951–1980, Welch t-test
+```
+
+| Variable | Period | Recent (2015–2025) | Pre-warming (1951–1980) | Δ absolute | Δ % | Δ p (windows) | Trend p (75-yr) |
+|:---|:---|---:|---:|---:|---:|---:|---:|
+| prcp | annual | 835.20 | 803.11 | 32.08 | 4.0 | 0.308 | 0.197 |
+| prcp | fall | 239.18 | 230.76 | 8.42 | 3.7 | 0.622 | 0.493 |
+| prcp | spring | 155.72 | 150.62 | 5.10 | 3.4 | 0.643 | 0.164 |
+| prcp | summer | 266.04 | 242.15 | 23.89 | 9.9 | 0.283 | 0.185 |
+| prcp | winter | 174.26 | 179.59 | -5.33 | -3.0 | 0.674 | 0.661 |
+| rh | annual | 74.08 | 74.08 | 0.00 | 0.0 | 0.992 | 0.862 |
+| rh | fall | 79.38 | 80.16 | -0.78 | -1.0 | 0.279 | 0.091 |
+| rh | spring | 68.43 | 69.49 | -1.06 | -1.5 | 0.159 | 0.385 |
+| rh | summer | 67.25 | 67.63 | -0.38 | -0.6 | 0.760 | 0.756 |
+| rh | winter | 81.25 | 79.05 | 2.20 | 2.8 | 0.004 | 0.003 |
+| snow_cover | annual | 59.89 | 63.84 | -3.95 | NA | 0.001 | 0.003 |
+| snow_cover | fall | 49.76 | 52.03 | -2.27 | NA | 0.424 | 0.405 |
+| snow_cover | spring | 88.85 | 93.80 | -4.95 | NA | 0.004 | 0.001 |
+| snow_cover | summer | 4.22 | 12.80 | -8.58 | NA | 0.000 | 0.001 |
+| snow_cover | winter | 96.73 | 96.71 | 0.02 | NA | 0.238 | 0.282 |
+| snowfall | annual | 405.53 | 432.37 | -26.84 | -6.2 | 0.089 | 0.253 |
+| snowfall | fall | 136.62 | 135.00 | 1.61 | 1.2 | 0.895 | 0.934 |
+| snowfall | spring | 94.08 | 109.02 | -14.94 | -13.7 | 0.074 | 0.459 |
+| snowfall | summer | 4.87 | 12.02 | -7.15 | -59.5 | 0.002 | 0.002 |
+| snowfall | winter | 169.96 | 176.32 | -6.36 | -3.6 | 0.619 | 0.708 |
+| snowfall_fraction | annual | 48.45 | 53.56 | -5.10 | NA | 0.005 | 0.008 |
+| snowmelt | annual | 381.07 | 409.27 | -28.20 | -6.9 | 0.139 | 0.528 |
+| snowmelt | fall | 25.92 | 30.93 | -5.02 | -16.2 | 0.214 | 0.421 |
+| snowmelt | spring | 289.89 | 212.24 | 77.65 | 36.6 | 0.002 | 0.001 |
+| snowmelt | summer | 63.82 | 165.05 | -101.23 | -61.3 | 0.001 | 0.007 |
+| snowmelt | winter | 1.44 | 1.05 | 0.39 | 37.2 | 0.599 | 0.599 |
+| snowmelt_doy_50 | annual | 137.74 | 148.50 | -10.75 | NA | 0.000 | 0.002 |
+| snowmelt_rate_peak | annual | 118.44 | 116.52 | 1.93 | 1.7 | 0.805 | 0.385 |
+| soil_moisture | annual | 0.32 | 0.32 | 0.00 | -0.3 | 0.749 | 0.898 |
+| soil_moisture | fall | 0.32 | 0.32 | 0.00 | -0.4 | 0.821 | 0.996 |
+| soil_moisture | spring | 0.32 | 0.32 | 0.01 | 1.9 | 0.029 | 0.015 |
+| soil_moisture | summer | 0.33 | 0.33 | -0.01 | -2.5 | 0.132 | 0.173 |
+| soil_moisture | winter | 0.31 | 0.31 | 0.00 | -0.2 | 0.819 | 0.498 |
+| swe | annual | 121.65 | 135.11 | -13.46 | -10.0 | 0.104 | 0.264 |
+| swe | fall | 29.15 | 30.24 | -1.09 | -3.6 | 0.751 | 0.985 |
+| swe | spring | 259.56 | 292.80 | -33.24 | -11.4 | 0.100 | 0.272 |
+| swe | summer | 5.27 | 21.50 | -16.23 | -75.5 | 0.000 | 0.003 |
+| swe | winter | 192.64 | 195.91 | -3.27 | -1.7 | 0.754 | 0.913 |
+| swe_max | annual | 333.64 | 348.42 | -14.79 | -4.2 | 0.433 | 0.770 |
+| tmax | annual | 3.66 | 1.99 | 1.67 | NA | 0.000 | 0.000 |
+| tmax | fall | 3.49 | 2.55 | 0.93 | NA | 0.039 | 0.066 |
+| tmax | spring | 3.93 | 2.16 | 1.76 | NA | 0.000 | 0.001 |
+| tmax | summer | 16.62 | 15.00 | 1.62 | NA | 0.001 | 0.000 |
+| tmax | winter | -9.40 | -11.77 | 2.37 | NA | 0.001 | 0.000 |
+| tmean | annual | -0.59 | -2.41 | 1.82 | NA | 0.000 | 0.000 |
+| tmean | fall | -0.32 | -1.58 | 1.26 | NA | 0.005 | 0.010 |
+| tmean | spring | -0.75 | -2.57 | 1.82 | NA | 0.000 | 0.000 |
+| tmean | summer | 11.64 | 9.76 | 1.88 | NA | 0.000 | 0.000 |
+| tmean | winter | -12.92 | -15.27 | 2.34 | NA | 0.003 | 0.000 |
+| tmin | annual | -4.12 | -6.05 | 1.93 | NA | 0.000 | 0.000 |
+| tmin | fall | -3.19 | -4.71 | 1.52 | NA | 0.001 | 0.003 |
+| tmin | spring | -4.76 | -6.49 | 1.74 | NA | 0.000 | 0.000 |
+| tmin | summer | 6.93 | 4.81 | 2.12 | NA | 0.000 | 0.000 |
+| tmin | winter | -15.47 | -17.81 | 2.33 | NA | 0.004 | 0.000 |
+| vpd | annual | 2.14 | 1.86 | 0.28 | 15.1 | 0.002 | 0.001 |
+| vpd | fall | 1.48 | 1.32 | 0.16 | 12.3 | 0.065 | 0.032 |
+| vpd | spring | 2.05 | 1.67 | 0.38 | 22.8 | 0.000 | 0.000 |
+| vpd | summer | 4.62 | 4.06 | 0.55 | 13.6 | 0.045 | 0.034 |
+| vpd | winter | 0.43 | 0.40 | 0.03 | 6.5 | 0.023 | 0.001 |
+
+Recent decade (2015-2025 mean) compared to pre-warming reference
+(1951-1980 mean) for the FWCP Peace Region. {.table .table
+.table-striped .table-hover .table-condensed
+style="margin-left: auto; margin-right: auto;"}
+
+  
+
 ## Daytime Highs and Overnight Lows
 
 The cd package ships daytime maximum (tmax) and overnight minimum (tmin)
@@ -641,100 +737,6 @@ summer snowmelt is down 61%. The high-elevation snowpack that
 historically lingered into summer no longer does in the recent decade.
 For aquatic ecosystems downstream, this is a loss of late- season
 cold-water input to streams during the warmest part of the year.
-
-## Recent vs Pre-warming
-
-The table below compares two windows directly — the recent decade
-(2015–2025) against the pre-warming reference (1951–1980). Δ absolute is
-the difference of the two means in the variable’s native units. Δ % is
-shown only for variables where it is meaningful (precipitation, soil
-moisture, vapour pressure deficit, relative humidity). The trend p
-column is the Mann-Kendall p-value of the 75-year (1951–present) trend
-on the same variable and period; it tests for a steady year-on-year
-ramp, which is a related but distinct question from “do these two
-windows differ”.
-
-The recent decade was 1.7 to 2.4 °C warmer than the pre-warming
-reference for annual mean, daytime maximum, and overnight minimum, with
-Mann-Kendall trend p-values below 0.001. Vapour pressure deficit is up
-significantly. Annual precipitation was about 3 to 4 % higher in the
-recent decade; the long-term trend test does not confirm a steady
-year-on-year ramp (p ≈ 0.20). Soil moisture and relative humidity show
-no meaningful change.
-
-``` r
-
-cmp <- cd::cd_compare(ts, window_a = 2015:2025, window_b = 1951:1980)
-```
-
-| Variable | Period | Recent (2015–2025) | Pre-warming (1951–1980) | Δ absolute | Δ % | Trend p (75-yr) |
-|:---|:---|---:|---:|---:|---:|---:|
-| prcp | annual | 835.20 | 803.11 | 32.08 | 4.0 | 0.197 |
-| prcp | fall | 239.18 | 230.76 | 8.42 | 3.7 | 0.493 |
-| prcp | spring | 155.72 | 150.62 | 5.10 | 3.4 | 0.164 |
-| prcp | summer | 266.04 | 242.15 | 23.89 | 9.9 | 0.185 |
-| prcp | winter | 174.26 | 179.59 | -5.33 | -3.0 | 0.661 |
-| rh | annual | 74.08 | 74.08 | 0.00 | 0.0 | 0.862 |
-| rh | fall | 79.38 | 80.16 | -0.78 | -1.0 | 0.091 |
-| rh | spring | 68.43 | 69.49 | -1.06 | -1.5 | 0.385 |
-| rh | summer | 67.25 | 67.63 | -0.38 | -0.6 | 0.756 |
-| rh | winter | 81.25 | 79.05 | 2.20 | 2.8 | 0.003 |
-| snow_cover | annual | 59.89 | 63.84 | -3.95 | NA | 0.003 |
-| snow_cover | fall | 49.76 | 52.03 | -2.27 | NA | 0.405 |
-| snow_cover | spring | 88.85 | 93.80 | -4.95 | NA | 0.001 |
-| snow_cover | summer | 4.22 | 12.80 | -8.58 | NA | 0.001 |
-| snow_cover | winter | 96.73 | 96.71 | 0.02 | NA | 0.282 |
-| snowfall | annual | 405.53 | 432.37 | -26.84 | -6.2 | 0.253 |
-| snowfall | fall | 136.62 | 135.00 | 1.61 | 1.2 | 0.934 |
-| snowfall | spring | 94.08 | 109.02 | -14.94 | -13.7 | 0.459 |
-| snowfall | summer | 4.87 | 12.02 | -7.15 | -59.5 | 0.002 |
-| snowfall | winter | 169.96 | 176.32 | -6.36 | -3.6 | 0.708 |
-| snowfall_fraction | annual | 48.45 | 53.56 | -5.10 | NA | 0.008 |
-| snowmelt | annual | 381.07 | 409.27 | -28.20 | -6.9 | 0.528 |
-| snowmelt | fall | 25.92 | 30.93 | -5.02 | -16.2 | 0.421 |
-| snowmelt | spring | 289.89 | 212.24 | 77.65 | 36.6 | 0.001 |
-| snowmelt | summer | 63.82 | 165.05 | -101.23 | -61.3 | 0.007 |
-| snowmelt | winter | 1.44 | 1.05 | 0.39 | 37.2 | 0.599 |
-| snowmelt_doy_50 | annual | 137.74 | 148.50 | -10.75 | NA | 0.002 |
-| snowmelt_rate_peak | annual | 118.44 | 116.52 | 1.93 | 1.7 | 0.385 |
-| soil_moisture | annual | 0.32 | 0.32 | 0.00 | -0.3 | 0.898 |
-| soil_moisture | fall | 0.32 | 0.32 | 0.00 | -0.4 | 0.996 |
-| soil_moisture | spring | 0.32 | 0.32 | 0.01 | 1.9 | 0.015 |
-| soil_moisture | summer | 0.33 | 0.33 | -0.01 | -2.5 | 0.173 |
-| soil_moisture | winter | 0.31 | 0.31 | 0.00 | -0.2 | 0.498 |
-| swe | annual | 121.65 | 135.11 | -13.46 | -10.0 | 0.264 |
-| swe | fall | 29.15 | 30.24 | -1.09 | -3.6 | 0.985 |
-| swe | spring | 259.56 | 292.80 | -33.24 | -11.4 | 0.272 |
-| swe | summer | 5.27 | 21.50 | -16.23 | -75.5 | 0.003 |
-| swe | winter | 192.64 | 195.91 | -3.27 | -1.7 | 0.913 |
-| swe_max | annual | 333.64 | 348.42 | -14.79 | -4.2 | 0.770 |
-| tmax | annual | 3.66 | 1.99 | 1.67 | NA | 0.000 |
-| tmax | fall | 3.49 | 2.55 | 0.93 | NA | 0.066 |
-| tmax | spring | 3.93 | 2.16 | 1.76 | NA | 0.001 |
-| tmax | summer | 16.62 | 15.00 | 1.62 | NA | 0.000 |
-| tmax | winter | -9.40 | -11.77 | 2.37 | NA | 0.000 |
-| tmean | annual | -0.59 | -2.41 | 1.82 | NA | 0.000 |
-| tmean | fall | -0.32 | -1.58 | 1.26 | NA | 0.010 |
-| tmean | spring | -0.75 | -2.57 | 1.82 | NA | 0.000 |
-| tmean | summer | 11.64 | 9.76 | 1.88 | NA | 0.000 |
-| tmean | winter | -12.92 | -15.27 | 2.34 | NA | 0.000 |
-| tmin | annual | -4.12 | -6.05 | 1.93 | NA | 0.000 |
-| tmin | fall | -3.19 | -4.71 | 1.52 | NA | 0.003 |
-| tmin | spring | -4.76 | -6.49 | 1.74 | NA | 0.000 |
-| tmin | summer | 6.93 | 4.81 | 2.12 | NA | 0.000 |
-| tmin | winter | -15.47 | -17.81 | 2.33 | NA | 0.000 |
-| vpd | annual | 2.14 | 1.86 | 0.28 | 15.1 | 0.001 |
-| vpd | fall | 1.48 | 1.32 | 0.16 | 12.3 | 0.032 |
-| vpd | spring | 2.05 | 1.67 | 0.38 | 22.8 | 0.000 |
-| vpd | summer | 4.62 | 4.06 | 0.55 | 13.6 | 0.034 |
-| vpd | winter | 0.43 | 0.40 | 0.03 | 6.5 | 0.001 |
-
-Recent decade (2015-2025 mean) compared to pre-warming reference
-(1951-1980 mean) for the FWCP Peace Region. {.table .table
-.table-striped .table-hover .table-condensed
-style="margin-left: auto; margin-right: auto;"}
-
-  
 
 ## Spatial Pattern
 

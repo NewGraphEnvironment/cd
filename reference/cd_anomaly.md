@@ -3,7 +3,10 @@
 Calculates departure from a baseline for each year. Uses
 [`cd_variables()`](https://newgraphenvironment.github.io/cd/reference/cd_variables.md)
 to determine the anomaly type: absolute deviation for temperature, VPD,
-and RH; percent of normal for precipitation and soil moisture.
+RH, and the annual snow scalars; percent of normal for precipitation,
+soil moisture, and the monthly snow vars (`swe`, `snowfall`,
+`snowmelt`); percentage-point difference for variables that are already
+fractions/percentages (`snow_cover`, `snowfall_fraction`).
 
 ## Usage
 
@@ -28,7 +31,8 @@ cd_anomaly(x, baseline, cap_pct = 200)
 - cap_pct:
 
   Numeric. Cap for percent-of-normal anomalies. Values beyond +/-
-  `cap_pct` are clamped. Default `200`.
+  `cap_pct` are clamped. Default `200`. Only applies to `pct_normal`
+  variables; `absolute` and `pct_point_diff` anomalies are not capped.
 
 ## Value
 

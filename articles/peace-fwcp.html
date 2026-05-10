@@ -3690,6 +3690,1602 @@ Peace Region.
 </div>
 </div>
 <div class="section level2">
+<h2 id="recent-decade-vs-pre-warming-reference">Recent Decade vs Pre-Warming Reference<a class="anchor" aria-label="anchor" href="#recent-decade-vs-pre-warming-reference"></a>
+</h2>
+<p>The table below compares two windows directly — the recent decade
+(2015–2025) against the pre-warming reference (1951–1980). Δ absolute is
+the difference of the two means in the variable’s native units. Δ % is
+shown only for variables where it is meaningful (precipitation, soil
+moisture, vapour pressure deficit, relative humidity). Two p-values are
+reported, answering different questions. <strong>Δ p (windows)</strong>
+is the Welch t-test on the annual values within each window — does the
+recent decade differ from the pre-warming reference? <strong>Trend p
+(75-yr)</strong> is the Mann-Kendall test on the full 1951–present
+series — is there a steady year-on-year ramp? Step changes show up as
+significant Δ p with non-significant trend p; gradual ramps show up as
+both significant.</p>
+<p>The recent decade was 1.7 to 2.4 °C warmer than the pre-warming
+reference for annual mean, daytime maximum, and overnight minimum, with
+both window and trend p-values below 0.001. Vapour pressure deficit is
+up significantly on both tests. Annual precipitation was about 3 to 4 %
+higher in the recent decade; neither test confirms the shift (Δ p ≈ 0.4,
+trend p ≈ 0.20). Soil moisture and relative humidity show no meaningful
+change.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">cmp</span> <span class="op">&lt;-</span> <span class="fu">cd</span><span class="fu">::</span><span class="fu"><a href="../reference/cd_compare.html">cd_compare</a></span><span class="op">(</span><span class="va">ts</span><span class="op">)</span>   <span class="co"># defaults: 2015–2025 vs 1951–1980, Welch t-test</span></span></code></pre></div>
+<div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:360px; ">
+<table class="table table table-striped table-hover table-condensed" style="margin-left: auto; margin-right: auto;">
+<caption>
+Recent decade (2015-2025 mean) compared to pre-warming reference
+(1951-1980 mean) for the FWCP Peace Region.
+</caption>
+<thead><tr>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+Variable
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+Period
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+Recent (2015–2025)
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+Pre-warming (1951–1980)
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+Δ absolute
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+Δ %
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+Δ p (windows)
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+Trend p (75-yr)
+</th>
+</tr></thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+prcp
+</td>
+<td style="text-align:left;">
+annual
+</td>
+<td style="text-align:right;">
+835.20
+</td>
+<td style="text-align:right;">
+803.11
+</td>
+<td style="text-align:right;">
+32.08
+</td>
+<td style="text-align:right;">
+4.0
+</td>
+<td style="text-align:right;">
+0.308
+</td>
+<td style="text-align:right;">
+0.197
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+prcp
+</td>
+<td style="text-align:left;">
+fall
+</td>
+<td style="text-align:right;">
+239.18
+</td>
+<td style="text-align:right;">
+230.76
+</td>
+<td style="text-align:right;">
+8.42
+</td>
+<td style="text-align:right;">
+3.7
+</td>
+<td style="text-align:right;">
+0.622
+</td>
+<td style="text-align:right;">
+0.493
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+prcp
+</td>
+<td style="text-align:left;">
+spring
+</td>
+<td style="text-align:right;">
+155.72
+</td>
+<td style="text-align:right;">
+150.62
+</td>
+<td style="text-align:right;">
+5.10
+</td>
+<td style="text-align:right;">
+3.4
+</td>
+<td style="text-align:right;">
+0.643
+</td>
+<td style="text-align:right;">
+0.164
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+prcp
+</td>
+<td style="text-align:left;">
+summer
+</td>
+<td style="text-align:right;">
+266.04
+</td>
+<td style="text-align:right;">
+242.15
+</td>
+<td style="text-align:right;">
+23.89
+</td>
+<td style="text-align:right;">
+9.9
+</td>
+<td style="text-align:right;">
+0.283
+</td>
+<td style="text-align:right;">
+0.185
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+prcp
+</td>
+<td style="text-align:left;">
+winter
+</td>
+<td style="text-align:right;">
+174.26
+</td>
+<td style="text-align:right;">
+179.59
+</td>
+<td style="text-align:right;">
+-5.33
+</td>
+<td style="text-align:right;">
+-3.0
+</td>
+<td style="text-align:right;">
+0.674
+</td>
+<td style="text-align:right;">
+0.661
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rh
+</td>
+<td style="text-align:left;">
+annual
+</td>
+<td style="text-align:right;">
+74.08
+</td>
+<td style="text-align:right;">
+74.08
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.0
+</td>
+<td style="text-align:right;">
+0.992
+</td>
+<td style="text-align:right;">
+0.862
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rh
+</td>
+<td style="text-align:left;">
+fall
+</td>
+<td style="text-align:right;">
+79.38
+</td>
+<td style="text-align:right;">
+80.16
+</td>
+<td style="text-align:right;">
+-0.78
+</td>
+<td style="text-align:right;">
+-1.0
+</td>
+<td style="text-align:right;">
+0.279
+</td>
+<td style="text-align:right;">
+0.091
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rh
+</td>
+<td style="text-align:left;">
+spring
+</td>
+<td style="text-align:right;">
+68.43
+</td>
+<td style="text-align:right;">
+69.49
+</td>
+<td style="text-align:right;">
+-1.06
+</td>
+<td style="text-align:right;">
+-1.5
+</td>
+<td style="text-align:right;">
+0.159
+</td>
+<td style="text-align:right;">
+0.385
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rh
+</td>
+<td style="text-align:left;">
+summer
+</td>
+<td style="text-align:right;">
+67.25
+</td>
+<td style="text-align:right;">
+67.63
+</td>
+<td style="text-align:right;">
+-0.38
+</td>
+<td style="text-align:right;">
+-0.6
+</td>
+<td style="text-align:right;">
+0.760
+</td>
+<td style="text-align:right;">
+0.756
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rh
+</td>
+<td style="text-align:left;">
+winter
+</td>
+<td style="text-align:right;">
+81.25
+</td>
+<td style="text-align:right;">
+79.05
+</td>
+<td style="text-align:right;">
+2.20
+</td>
+<td style="text-align:right;">
+2.8
+</td>
+<td style="text-align:right;">
+0.004
+</td>
+<td style="text-align:right;">
+0.003
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+snow_cover
+</td>
+<td style="text-align:left;">
+annual
+</td>
+<td style="text-align:right;">
+59.89
+</td>
+<td style="text-align:right;">
+63.84
+</td>
+<td style="text-align:right;">
+-3.95
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+0.001
+</td>
+<td style="text-align:right;">
+0.003
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+snow_cover
+</td>
+<td style="text-align:left;">
+fall
+</td>
+<td style="text-align:right;">
+49.76
+</td>
+<td style="text-align:right;">
+52.03
+</td>
+<td style="text-align:right;">
+-2.27
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+0.424
+</td>
+<td style="text-align:right;">
+0.405
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+snow_cover
+</td>
+<td style="text-align:left;">
+spring
+</td>
+<td style="text-align:right;">
+88.85
+</td>
+<td style="text-align:right;">
+93.80
+</td>
+<td style="text-align:right;">
+-4.95
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+0.004
+</td>
+<td style="text-align:right;">
+0.001
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+snow_cover
+</td>
+<td style="text-align:left;">
+summer
+</td>
+<td style="text-align:right;">
+4.22
+</td>
+<td style="text-align:right;">
+12.80
+</td>
+<td style="text-align:right;">
+-8.58
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+0.000
+</td>
+<td style="text-align:right;">
+0.001
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+snow_cover
+</td>
+<td style="text-align:left;">
+winter
+</td>
+<td style="text-align:right;">
+96.73
+</td>
+<td style="text-align:right;">
+96.71
+</td>
+<td style="text-align:right;">
+0.02
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+0.238
+</td>
+<td style="text-align:right;">
+0.282
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+snowfall
+</td>
+<td style="text-align:left;">
+annual
+</td>
+<td style="text-align:right;">
+405.53
+</td>
+<td style="text-align:right;">
+432.37
+</td>
+<td style="text-align:right;">
+-26.84
+</td>
+<td style="text-align:right;">
+-6.2
+</td>
+<td style="text-align:right;">
+0.089
+</td>
+<td style="text-align:right;">
+0.253
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+snowfall
+</td>
+<td style="text-align:left;">
+fall
+</td>
+<td style="text-align:right;">
+136.62
+</td>
+<td style="text-align:right;">
+135.00
+</td>
+<td style="text-align:right;">
+1.61
+</td>
+<td style="text-align:right;">
+1.2
+</td>
+<td style="text-align:right;">
+0.895
+</td>
+<td style="text-align:right;">
+0.934
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+snowfall
+</td>
+<td style="text-align:left;">
+spring
+</td>
+<td style="text-align:right;">
+94.08
+</td>
+<td style="text-align:right;">
+109.02
+</td>
+<td style="text-align:right;">
+-14.94
+</td>
+<td style="text-align:right;">
+-13.7
+</td>
+<td style="text-align:right;">
+0.074
+</td>
+<td style="text-align:right;">
+0.459
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+snowfall
+</td>
+<td style="text-align:left;">
+summer
+</td>
+<td style="text-align:right;">
+4.87
+</td>
+<td style="text-align:right;">
+12.02
+</td>
+<td style="text-align:right;">
+-7.15
+</td>
+<td style="text-align:right;">
+-59.5
+</td>
+<td style="text-align:right;">
+0.002
+</td>
+<td style="text-align:right;">
+0.002
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+snowfall
+</td>
+<td style="text-align:left;">
+winter
+</td>
+<td style="text-align:right;">
+169.96
+</td>
+<td style="text-align:right;">
+176.32
+</td>
+<td style="text-align:right;">
+-6.36
+</td>
+<td style="text-align:right;">
+-3.6
+</td>
+<td style="text-align:right;">
+0.619
+</td>
+<td style="text-align:right;">
+0.708
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+snowfall_fraction
+</td>
+<td style="text-align:left;">
+annual
+</td>
+<td style="text-align:right;">
+48.45
+</td>
+<td style="text-align:right;">
+53.56
+</td>
+<td style="text-align:right;">
+-5.10
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+0.005
+</td>
+<td style="text-align:right;">
+0.008
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+snowmelt
+</td>
+<td style="text-align:left;">
+annual
+</td>
+<td style="text-align:right;">
+381.07
+</td>
+<td style="text-align:right;">
+409.27
+</td>
+<td style="text-align:right;">
+-28.20
+</td>
+<td style="text-align:right;">
+-6.9
+</td>
+<td style="text-align:right;">
+0.139
+</td>
+<td style="text-align:right;">
+0.528
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+snowmelt
+</td>
+<td style="text-align:left;">
+fall
+</td>
+<td style="text-align:right;">
+25.92
+</td>
+<td style="text-align:right;">
+30.93
+</td>
+<td style="text-align:right;">
+-5.02
+</td>
+<td style="text-align:right;">
+-16.2
+</td>
+<td style="text-align:right;">
+0.214
+</td>
+<td style="text-align:right;">
+0.421
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+snowmelt
+</td>
+<td style="text-align:left;">
+spring
+</td>
+<td style="text-align:right;">
+289.89
+</td>
+<td style="text-align:right;">
+212.24
+</td>
+<td style="text-align:right;">
+77.65
+</td>
+<td style="text-align:right;">
+36.6
+</td>
+<td style="text-align:right;">
+0.002
+</td>
+<td style="text-align:right;">
+0.001
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+snowmelt
+</td>
+<td style="text-align:left;">
+summer
+</td>
+<td style="text-align:right;">
+63.82
+</td>
+<td style="text-align:right;">
+165.05
+</td>
+<td style="text-align:right;">
+-101.23
+</td>
+<td style="text-align:right;">
+-61.3
+</td>
+<td style="text-align:right;">
+0.001
+</td>
+<td style="text-align:right;">
+0.007
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+snowmelt
+</td>
+<td style="text-align:left;">
+winter
+</td>
+<td style="text-align:right;">
+1.44
+</td>
+<td style="text-align:right;">
+1.05
+</td>
+<td style="text-align:right;">
+0.39
+</td>
+<td style="text-align:right;">
+37.2
+</td>
+<td style="text-align:right;">
+0.599
+</td>
+<td style="text-align:right;">
+0.599
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+snowmelt_doy_50
+</td>
+<td style="text-align:left;">
+annual
+</td>
+<td style="text-align:right;">
+137.74
+</td>
+<td style="text-align:right;">
+148.50
+</td>
+<td style="text-align:right;">
+-10.75
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+0.000
+</td>
+<td style="text-align:right;">
+0.002
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+snowmelt_rate_peak
+</td>
+<td style="text-align:left;">
+annual
+</td>
+<td style="text-align:right;">
+118.44
+</td>
+<td style="text-align:right;">
+116.52
+</td>
+<td style="text-align:right;">
+1.93
+</td>
+<td style="text-align:right;">
+1.7
+</td>
+<td style="text-align:right;">
+0.805
+</td>
+<td style="text-align:right;">
+0.385
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+soil_moisture
+</td>
+<td style="text-align:left;">
+annual
+</td>
+<td style="text-align:right;">
+0.32
+</td>
+<td style="text-align:right;">
+0.32
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+-0.3
+</td>
+<td style="text-align:right;">
+0.749
+</td>
+<td style="text-align:right;">
+0.898
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+soil_moisture
+</td>
+<td style="text-align:left;">
+fall
+</td>
+<td style="text-align:right;">
+0.32
+</td>
+<td style="text-align:right;">
+0.32
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+-0.4
+</td>
+<td style="text-align:right;">
+0.821
+</td>
+<td style="text-align:right;">
+0.996
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+soil_moisture
+</td>
+<td style="text-align:left;">
+spring
+</td>
+<td style="text-align:right;">
+0.32
+</td>
+<td style="text-align:right;">
+0.32
+</td>
+<td style="text-align:right;">
+0.01
+</td>
+<td style="text-align:right;">
+1.9
+</td>
+<td style="text-align:right;">
+0.029
+</td>
+<td style="text-align:right;">
+0.015
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+soil_moisture
+</td>
+<td style="text-align:left;">
+summer
+</td>
+<td style="text-align:right;">
+0.33
+</td>
+<td style="text-align:right;">
+0.33
+</td>
+<td style="text-align:right;">
+-0.01
+</td>
+<td style="text-align:right;">
+-2.5
+</td>
+<td style="text-align:right;">
+0.132
+</td>
+<td style="text-align:right;">
+0.173
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+soil_moisture
+</td>
+<td style="text-align:left;">
+winter
+</td>
+<td style="text-align:right;">
+0.31
+</td>
+<td style="text-align:right;">
+0.31
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+-0.2
+</td>
+<td style="text-align:right;">
+0.819
+</td>
+<td style="text-align:right;">
+0.498
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+swe
+</td>
+<td style="text-align:left;">
+annual
+</td>
+<td style="text-align:right;">
+121.65
+</td>
+<td style="text-align:right;">
+135.11
+</td>
+<td style="text-align:right;">
+-13.46
+</td>
+<td style="text-align:right;">
+-10.0
+</td>
+<td style="text-align:right;">
+0.104
+</td>
+<td style="text-align:right;">
+0.264
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+swe
+</td>
+<td style="text-align:left;">
+fall
+</td>
+<td style="text-align:right;">
+29.15
+</td>
+<td style="text-align:right;">
+30.24
+</td>
+<td style="text-align:right;">
+-1.09
+</td>
+<td style="text-align:right;">
+-3.6
+</td>
+<td style="text-align:right;">
+0.751
+</td>
+<td style="text-align:right;">
+0.985
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+swe
+</td>
+<td style="text-align:left;">
+spring
+</td>
+<td style="text-align:right;">
+259.56
+</td>
+<td style="text-align:right;">
+292.80
+</td>
+<td style="text-align:right;">
+-33.24
+</td>
+<td style="text-align:right;">
+-11.4
+</td>
+<td style="text-align:right;">
+0.100
+</td>
+<td style="text-align:right;">
+0.272
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+swe
+</td>
+<td style="text-align:left;">
+summer
+</td>
+<td style="text-align:right;">
+5.27
+</td>
+<td style="text-align:right;">
+21.50
+</td>
+<td style="text-align:right;">
+-16.23
+</td>
+<td style="text-align:right;">
+-75.5
+</td>
+<td style="text-align:right;">
+0.000
+</td>
+<td style="text-align:right;">
+0.003
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+swe
+</td>
+<td style="text-align:left;">
+winter
+</td>
+<td style="text-align:right;">
+192.64
+</td>
+<td style="text-align:right;">
+195.91
+</td>
+<td style="text-align:right;">
+-3.27
+</td>
+<td style="text-align:right;">
+-1.7
+</td>
+<td style="text-align:right;">
+0.754
+</td>
+<td style="text-align:right;">
+0.913
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+swe_max
+</td>
+<td style="text-align:left;">
+annual
+</td>
+<td style="text-align:right;">
+333.64
+</td>
+<td style="text-align:right;">
+348.42
+</td>
+<td style="text-align:right;">
+-14.79
+</td>
+<td style="text-align:right;">
+-4.2
+</td>
+<td style="text-align:right;">
+0.433
+</td>
+<td style="text-align:right;">
+0.770
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+tmax
+</td>
+<td style="text-align:left;">
+annual
+</td>
+<td style="text-align:right;">
+3.66
+</td>
+<td style="text-align:right;">
+1.99
+</td>
+<td style="text-align:right;">
+1.67
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+0.000
+</td>
+<td style="text-align:right;">
+0.000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+tmax
+</td>
+<td style="text-align:left;">
+fall
+</td>
+<td style="text-align:right;">
+3.49
+</td>
+<td style="text-align:right;">
+2.55
+</td>
+<td style="text-align:right;">
+0.93
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+0.039
+</td>
+<td style="text-align:right;">
+0.066
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+tmax
+</td>
+<td style="text-align:left;">
+spring
+</td>
+<td style="text-align:right;">
+3.93
+</td>
+<td style="text-align:right;">
+2.16
+</td>
+<td style="text-align:right;">
+1.76
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+0.000
+</td>
+<td style="text-align:right;">
+0.001
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+tmax
+</td>
+<td style="text-align:left;">
+summer
+</td>
+<td style="text-align:right;">
+16.62
+</td>
+<td style="text-align:right;">
+15.00
+</td>
+<td style="text-align:right;">
+1.62
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+0.001
+</td>
+<td style="text-align:right;">
+0.000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+tmax
+</td>
+<td style="text-align:left;">
+winter
+</td>
+<td style="text-align:right;">
+-9.40
+</td>
+<td style="text-align:right;">
+-11.77
+</td>
+<td style="text-align:right;">
+2.37
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+0.001
+</td>
+<td style="text-align:right;">
+0.000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+tmean
+</td>
+<td style="text-align:left;">
+annual
+</td>
+<td style="text-align:right;">
+-0.59
+</td>
+<td style="text-align:right;">
+-2.41
+</td>
+<td style="text-align:right;">
+1.82
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+0.000
+</td>
+<td style="text-align:right;">
+0.000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+tmean
+</td>
+<td style="text-align:left;">
+fall
+</td>
+<td style="text-align:right;">
+-0.32
+</td>
+<td style="text-align:right;">
+-1.58
+</td>
+<td style="text-align:right;">
+1.26
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+0.005
+</td>
+<td style="text-align:right;">
+0.010
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+tmean
+</td>
+<td style="text-align:left;">
+spring
+</td>
+<td style="text-align:right;">
+-0.75
+</td>
+<td style="text-align:right;">
+-2.57
+</td>
+<td style="text-align:right;">
+1.82
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+0.000
+</td>
+<td style="text-align:right;">
+0.000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+tmean
+</td>
+<td style="text-align:left;">
+summer
+</td>
+<td style="text-align:right;">
+11.64
+</td>
+<td style="text-align:right;">
+9.76
+</td>
+<td style="text-align:right;">
+1.88
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+0.000
+</td>
+<td style="text-align:right;">
+0.000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+tmean
+</td>
+<td style="text-align:left;">
+winter
+</td>
+<td style="text-align:right;">
+-12.92
+</td>
+<td style="text-align:right;">
+-15.27
+</td>
+<td style="text-align:right;">
+2.34
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+0.003
+</td>
+<td style="text-align:right;">
+0.000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+tmin
+</td>
+<td style="text-align:left;">
+annual
+</td>
+<td style="text-align:right;">
+-4.12
+</td>
+<td style="text-align:right;">
+-6.05
+</td>
+<td style="text-align:right;">
+1.93
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+0.000
+</td>
+<td style="text-align:right;">
+0.000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+tmin
+</td>
+<td style="text-align:left;">
+fall
+</td>
+<td style="text-align:right;">
+-3.19
+</td>
+<td style="text-align:right;">
+-4.71
+</td>
+<td style="text-align:right;">
+1.52
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+0.001
+</td>
+<td style="text-align:right;">
+0.003
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+tmin
+</td>
+<td style="text-align:left;">
+spring
+</td>
+<td style="text-align:right;">
+-4.76
+</td>
+<td style="text-align:right;">
+-6.49
+</td>
+<td style="text-align:right;">
+1.74
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+0.000
+</td>
+<td style="text-align:right;">
+0.000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+tmin
+</td>
+<td style="text-align:left;">
+summer
+</td>
+<td style="text-align:right;">
+6.93
+</td>
+<td style="text-align:right;">
+4.81
+</td>
+<td style="text-align:right;">
+2.12
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+0.000
+</td>
+<td style="text-align:right;">
+0.000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+tmin
+</td>
+<td style="text-align:left;">
+winter
+</td>
+<td style="text-align:right;">
+-15.47
+</td>
+<td style="text-align:right;">
+-17.81
+</td>
+<td style="text-align:right;">
+2.33
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+0.004
+</td>
+<td style="text-align:right;">
+0.000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+vpd
+</td>
+<td style="text-align:left;">
+annual
+</td>
+<td style="text-align:right;">
+2.14
+</td>
+<td style="text-align:right;">
+1.86
+</td>
+<td style="text-align:right;">
+0.28
+</td>
+<td style="text-align:right;">
+15.1
+</td>
+<td style="text-align:right;">
+0.002
+</td>
+<td style="text-align:right;">
+0.001
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+vpd
+</td>
+<td style="text-align:left;">
+fall
+</td>
+<td style="text-align:right;">
+1.48
+</td>
+<td style="text-align:right;">
+1.32
+</td>
+<td style="text-align:right;">
+0.16
+</td>
+<td style="text-align:right;">
+12.3
+</td>
+<td style="text-align:right;">
+0.065
+</td>
+<td style="text-align:right;">
+0.032
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+vpd
+</td>
+<td style="text-align:left;">
+spring
+</td>
+<td style="text-align:right;">
+2.05
+</td>
+<td style="text-align:right;">
+1.67
+</td>
+<td style="text-align:right;">
+0.38
+</td>
+<td style="text-align:right;">
+22.8
+</td>
+<td style="text-align:right;">
+0.000
+</td>
+<td style="text-align:right;">
+0.000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+vpd
+</td>
+<td style="text-align:left;">
+summer
+</td>
+<td style="text-align:right;">
+4.62
+</td>
+<td style="text-align:right;">
+4.06
+</td>
+<td style="text-align:right;">
+0.55
+</td>
+<td style="text-align:right;">
+13.6
+</td>
+<td style="text-align:right;">
+0.045
+</td>
+<td style="text-align:right;">
+0.034
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+vpd
+</td>
+<td style="text-align:left;">
+winter
+</td>
+<td style="text-align:right;">
+0.43
+</td>
+<td style="text-align:right;">
+0.40
+</td>
+<td style="text-align:right;">
+0.03
+</td>
+<td style="text-align:right;">
+6.5
+</td>
+<td style="text-align:right;">
+0.023
+</td>
+<td style="text-align:right;">
+0.001
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><br></p>
+</div>
+<div class="section level2">
 <h2 id="daytime-highs-and-overnight-lows">Daytime Highs and Overnight Lows<a class="anchor" aria-label="anchor" href="#daytime-highs-and-overnight-lows"></a>
 </h2>
 <p>The cd package ships daytime maximum (tmax) and overnight minimum
@@ -3709,7 +5305,7 @@ per year (+2.4 °C cumulative). The overnight side warmed roughly 0.4 °C
 more than the daytime side over the full record, narrowing the diurnal
 temperature range by the same amount. The three figures below show the
 tmax, tmin and diurnal-range time series that yield those numbers.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">trn_tmax</span> <span class="op">&lt;-</span> <span class="fu">cd</span><span class="fu">::</span><span class="fu"><a href="../reference/cd_trend.html">cd_trend</a></span><span class="op">(</span></span>
 <span>  <span class="va">ano</span><span class="op">[</span><span class="va">ano</span><span class="op">$</span><span class="va">variable</span> <span class="op">==</span> <span class="st">"tmax"</span> <span class="op">&amp;</span> <span class="va">ano</span><span class="op">$</span><span class="va">period</span> <span class="op">==</span> <span class="st">"annual"</span>, <span class="op">]</span>,</span>
 <span>  trend_start <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1951</span>, <span class="fl">1981</span><span class="op">)</span></span>
@@ -3722,7 +5318,7 @@ Annual daytime maximum temperature (tmax) anomaly for the FWCP Peace
 Region relative to the 1951-1980 baseline.
 </p>
 </div>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">trn_tmin</span> <span class="op">&lt;-</span> <span class="fu">cd</span><span class="fu">::</span><span class="fu"><a href="../reference/cd_trend.html">cd_trend</a></span><span class="op">(</span></span>
 <span>  <span class="va">ano</span><span class="op">[</span><span class="va">ano</span><span class="op">$</span><span class="va">variable</span> <span class="op">==</span> <span class="st">"tmin"</span> <span class="op">&amp;</span> <span class="va">ano</span><span class="op">$</span><span class="va">period</span> <span class="op">==</span> <span class="st">"annual"</span>, <span class="op">]</span>,</span>
 <span>  trend_start <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1951</span>, <span class="fl">1981</span><span class="op">)</span></span>
@@ -4070,7 +5666,7 @@ streamflow-based flashiness measures in the literature <span class="citation">(<
 et al. 2005</a>; <a href="#ref-kang_etal2016ImpactsRapidly">Kang et al.
 2016</a>)</span> — diagnostic of snowpack-side intensity before routing
 through soil and channel storage.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">trn_swe_max</span> <span class="op">&lt;-</span> <span class="fu">cd</span><span class="fu">::</span><span class="fu"><a href="../reference/cd_trend.html">cd_trend</a></span><span class="op">(</span></span>
 <span>  <span class="va">ano</span><span class="op">[</span><span class="va">ano</span><span class="op">$</span><span class="va">variable</span> <span class="op">==</span> <span class="st">"swe_max"</span> <span class="op">&amp;</span> <span class="va">ano</span><span class="op">$</span><span class="va">period</span> <span class="op">==</span> <span class="st">"annual"</span>, <span class="op">]</span>,</span>
 <span>  trend_start <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1951</span>, <span class="fl">1981</span><span class="op">)</span></span>
@@ -4084,7 +5680,7 @@ Annual peak snow water equivalent (swe_max) for the FWCP Peace Region.
 ERA5-Land mm SWE (regional spatial mean).
 </p>
 </div>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">trn_doy</span> <span class="op">&lt;-</span> <span class="fu">cd</span><span class="fu">::</span><span class="fu"><a href="../reference/cd_trend.html">cd_trend</a></span><span class="op">(</span></span>
 <span>  <span class="va">ano</span><span class="op">[</span><span class="va">ano</span><span class="op">$</span><span class="va">variable</span> <span class="op">==</span> <span class="st">"snowmelt_doy_50"</span> <span class="op">&amp;</span> <span class="va">ano</span><span class="op">$</span><span class="va">period</span> <span class="op">==</span> <span class="st">"annual"</span>, <span class="op">]</span>,</span>
 <span>  trend_start <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1951</span>, <span class="fl">1981</span><span class="op">)</span></span>
@@ -4098,7 +5694,7 @@ Day of year when half the annual snowmelt has accumulated
 (snowmelt_doy_50). Earlier dates indicate an earlier freshet centroid.
 </p>
 </div>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">trn_rate</span> <span class="op">&lt;-</span> <span class="fu">cd</span><span class="fu">::</span><span class="fu"><a href="../reference/cd_trend.html">cd_trend</a></span><span class="op">(</span></span>
 <span>  <span class="va">ano</span><span class="op">[</span><span class="va">ano</span><span class="op">$</span><span class="va">variable</span> <span class="op">==</span> <span class="st">"snowmelt_rate_peak"</span> <span class="op">&amp;</span> <span class="va">ano</span><span class="op">$</span><span class="va">period</span> <span class="op">==</span> <span class="st">"annual"</span>, <span class="op">]</span>,</span>
 <span>  trend_start <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1951</span>, <span class="fl">1981</span><span class="op">)</span></span>
@@ -4112,7 +5708,7 @@ Annual maximum of 7-day rolling daily snowmelt (snowmelt_rate_peak).
 Higher values indicate more concentrated freshet pulses.
 </p>
 </div>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">trn_frac</span> <span class="op">&lt;-</span> <span class="fu">cd</span><span class="fu">::</span><span class="fu"><a href="../reference/cd_trend.html">cd_trend</a></span><span class="op">(</span></span>
 <span>  <span class="va">ano</span><span class="op">[</span><span class="va">ano</span><span class="op">$</span><span class="va">variable</span> <span class="op">==</span> <span class="st">"snowfall_fraction"</span> <span class="op">&amp;</span> <span class="va">ano</span><span class="op">$</span><span class="va">period</span> <span class="op">==</span> <span class="st">"annual"</span>, <span class="op">]</span>,</span>
 <span>  trend_start <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1951</span>, <span class="fl">1981</span><span class="op">)</span></span>
@@ -4151,1419 +5747,6 @@ recent decade. For aquatic ecosystems downstream, this is a loss of
 late- season cold-water input to streams during the warmest part of the
 year.</p>
 </div>
-</div>
-<div class="section level2">
-<h2 id="recent-vs-pre-warming">Recent vs Pre-warming<a class="anchor" aria-label="anchor" href="#recent-vs-pre-warming"></a>
-</h2>
-<p>The table below compares two windows directly — the recent decade
-(2015–2025) against the pre-warming reference (1951–1980). Δ absolute is
-the difference of the two means in the variable’s native units. Δ % is
-shown only for variables where it is meaningful (precipitation, soil
-moisture, vapour pressure deficit, relative humidity). The trend p
-column is the Mann-Kendall p-value of the 75-year (1951–present) trend
-on the same variable and period; it tests for a steady year-on-year
-ramp, which is a related but distinct question from “do these two
-windows differ”.</p>
-<p>The recent decade was 1.7 to 2.4 °C warmer than the pre-warming
-reference for annual mean, daytime maximum, and overnight minimum, with
-Mann-Kendall trend p-values below 0.001. Vapour pressure deficit is up
-significantly. Annual precipitation was about 3 to 4 % higher in the
-recent decade; the long-term trend test does not confirm a steady
-year-on-year ramp (p ≈ 0.20). Soil moisture and relative humidity show
-no meaningful change.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">cmp</span> <span class="op">&lt;-</span> <span class="fu">cd</span><span class="fu">::</span><span class="fu"><a href="../reference/cd_compare.html">cd_compare</a></span><span class="op">(</span><span class="va">ts</span>, window_a <span class="op">=</span> <span class="fl">2015</span><span class="op">:</span><span class="fl">2025</span>, window_b <span class="op">=</span> <span class="fl">1951</span><span class="op">:</span><span class="fl">1980</span><span class="op">)</span></span></code></pre></div>
-<div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:360px; ">
-<table class="table table table-striped table-hover table-condensed" style="margin-left: auto; margin-right: auto;">
-<caption>
-Recent decade (2015-2025 mean) compared to pre-warming reference
-(1951-1980 mean) for the FWCP Peace Region.
-</caption>
-<thead><tr>
-<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
-Variable
-</th>
-<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
-Period
-</th>
-<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
-Recent (2015–2025)
-</th>
-<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
-Pre-warming (1951–1980)
-</th>
-<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
-Δ absolute
-</th>
-<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
-Δ %
-</th>
-<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
-Trend p (75-yr)
-</th>
-</tr></thead>
-<tbody>
-<tr>
-<td style="text-align:left;">
-prcp
-</td>
-<td style="text-align:left;">
-annual
-</td>
-<td style="text-align:right;">
-835.20
-</td>
-<td style="text-align:right;">
-803.11
-</td>
-<td style="text-align:right;">
-32.08
-</td>
-<td style="text-align:right;">
-4.0
-</td>
-<td style="text-align:right;">
-0.197
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-prcp
-</td>
-<td style="text-align:left;">
-fall
-</td>
-<td style="text-align:right;">
-239.18
-</td>
-<td style="text-align:right;">
-230.76
-</td>
-<td style="text-align:right;">
-8.42
-</td>
-<td style="text-align:right;">
-3.7
-</td>
-<td style="text-align:right;">
-0.493
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-prcp
-</td>
-<td style="text-align:left;">
-spring
-</td>
-<td style="text-align:right;">
-155.72
-</td>
-<td style="text-align:right;">
-150.62
-</td>
-<td style="text-align:right;">
-5.10
-</td>
-<td style="text-align:right;">
-3.4
-</td>
-<td style="text-align:right;">
-0.164
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-prcp
-</td>
-<td style="text-align:left;">
-summer
-</td>
-<td style="text-align:right;">
-266.04
-</td>
-<td style="text-align:right;">
-242.15
-</td>
-<td style="text-align:right;">
-23.89
-</td>
-<td style="text-align:right;">
-9.9
-</td>
-<td style="text-align:right;">
-0.185
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-prcp
-</td>
-<td style="text-align:left;">
-winter
-</td>
-<td style="text-align:right;">
-174.26
-</td>
-<td style="text-align:right;">
-179.59
-</td>
-<td style="text-align:right;">
--5.33
-</td>
-<td style="text-align:right;">
--3.0
-</td>
-<td style="text-align:right;">
-0.661
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-rh
-</td>
-<td style="text-align:left;">
-annual
-</td>
-<td style="text-align:right;">
-74.08
-</td>
-<td style="text-align:right;">
-74.08
-</td>
-<td style="text-align:right;">
-0.00
-</td>
-<td style="text-align:right;">
-0.0
-</td>
-<td style="text-align:right;">
-0.862
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-rh
-</td>
-<td style="text-align:left;">
-fall
-</td>
-<td style="text-align:right;">
-79.38
-</td>
-<td style="text-align:right;">
-80.16
-</td>
-<td style="text-align:right;">
--0.78
-</td>
-<td style="text-align:right;">
--1.0
-</td>
-<td style="text-align:right;">
-0.091
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-rh
-</td>
-<td style="text-align:left;">
-spring
-</td>
-<td style="text-align:right;">
-68.43
-</td>
-<td style="text-align:right;">
-69.49
-</td>
-<td style="text-align:right;">
--1.06
-</td>
-<td style="text-align:right;">
--1.5
-</td>
-<td style="text-align:right;">
-0.385
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-rh
-</td>
-<td style="text-align:left;">
-summer
-</td>
-<td style="text-align:right;">
-67.25
-</td>
-<td style="text-align:right;">
-67.63
-</td>
-<td style="text-align:right;">
--0.38
-</td>
-<td style="text-align:right;">
--0.6
-</td>
-<td style="text-align:right;">
-0.756
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-rh
-</td>
-<td style="text-align:left;">
-winter
-</td>
-<td style="text-align:right;">
-81.25
-</td>
-<td style="text-align:right;">
-79.05
-</td>
-<td style="text-align:right;">
-2.20
-</td>
-<td style="text-align:right;">
-2.8
-</td>
-<td style="text-align:right;">
-0.003
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-snow_cover
-</td>
-<td style="text-align:left;">
-annual
-</td>
-<td style="text-align:right;">
-59.89
-</td>
-<td style="text-align:right;">
-63.84
-</td>
-<td style="text-align:right;">
--3.95
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-0.003
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-snow_cover
-</td>
-<td style="text-align:left;">
-fall
-</td>
-<td style="text-align:right;">
-49.76
-</td>
-<td style="text-align:right;">
-52.03
-</td>
-<td style="text-align:right;">
--2.27
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-0.405
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-snow_cover
-</td>
-<td style="text-align:left;">
-spring
-</td>
-<td style="text-align:right;">
-88.85
-</td>
-<td style="text-align:right;">
-93.80
-</td>
-<td style="text-align:right;">
--4.95
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-0.001
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-snow_cover
-</td>
-<td style="text-align:left;">
-summer
-</td>
-<td style="text-align:right;">
-4.22
-</td>
-<td style="text-align:right;">
-12.80
-</td>
-<td style="text-align:right;">
--8.58
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-0.001
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-snow_cover
-</td>
-<td style="text-align:left;">
-winter
-</td>
-<td style="text-align:right;">
-96.73
-</td>
-<td style="text-align:right;">
-96.71
-</td>
-<td style="text-align:right;">
-0.02
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-0.282
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-snowfall
-</td>
-<td style="text-align:left;">
-annual
-</td>
-<td style="text-align:right;">
-405.53
-</td>
-<td style="text-align:right;">
-432.37
-</td>
-<td style="text-align:right;">
--26.84
-</td>
-<td style="text-align:right;">
--6.2
-</td>
-<td style="text-align:right;">
-0.253
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-snowfall
-</td>
-<td style="text-align:left;">
-fall
-</td>
-<td style="text-align:right;">
-136.62
-</td>
-<td style="text-align:right;">
-135.00
-</td>
-<td style="text-align:right;">
-1.61
-</td>
-<td style="text-align:right;">
-1.2
-</td>
-<td style="text-align:right;">
-0.934
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-snowfall
-</td>
-<td style="text-align:left;">
-spring
-</td>
-<td style="text-align:right;">
-94.08
-</td>
-<td style="text-align:right;">
-109.02
-</td>
-<td style="text-align:right;">
--14.94
-</td>
-<td style="text-align:right;">
--13.7
-</td>
-<td style="text-align:right;">
-0.459
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-snowfall
-</td>
-<td style="text-align:left;">
-summer
-</td>
-<td style="text-align:right;">
-4.87
-</td>
-<td style="text-align:right;">
-12.02
-</td>
-<td style="text-align:right;">
--7.15
-</td>
-<td style="text-align:right;">
--59.5
-</td>
-<td style="text-align:right;">
-0.002
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-snowfall
-</td>
-<td style="text-align:left;">
-winter
-</td>
-<td style="text-align:right;">
-169.96
-</td>
-<td style="text-align:right;">
-176.32
-</td>
-<td style="text-align:right;">
--6.36
-</td>
-<td style="text-align:right;">
--3.6
-</td>
-<td style="text-align:right;">
-0.708
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-snowfall_fraction
-</td>
-<td style="text-align:left;">
-annual
-</td>
-<td style="text-align:right;">
-48.45
-</td>
-<td style="text-align:right;">
-53.56
-</td>
-<td style="text-align:right;">
--5.10
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-0.008
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-snowmelt
-</td>
-<td style="text-align:left;">
-annual
-</td>
-<td style="text-align:right;">
-381.07
-</td>
-<td style="text-align:right;">
-409.27
-</td>
-<td style="text-align:right;">
--28.20
-</td>
-<td style="text-align:right;">
--6.9
-</td>
-<td style="text-align:right;">
-0.528
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-snowmelt
-</td>
-<td style="text-align:left;">
-fall
-</td>
-<td style="text-align:right;">
-25.92
-</td>
-<td style="text-align:right;">
-30.93
-</td>
-<td style="text-align:right;">
--5.02
-</td>
-<td style="text-align:right;">
--16.2
-</td>
-<td style="text-align:right;">
-0.421
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-snowmelt
-</td>
-<td style="text-align:left;">
-spring
-</td>
-<td style="text-align:right;">
-289.89
-</td>
-<td style="text-align:right;">
-212.24
-</td>
-<td style="text-align:right;">
-77.65
-</td>
-<td style="text-align:right;">
-36.6
-</td>
-<td style="text-align:right;">
-0.001
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-snowmelt
-</td>
-<td style="text-align:left;">
-summer
-</td>
-<td style="text-align:right;">
-63.82
-</td>
-<td style="text-align:right;">
-165.05
-</td>
-<td style="text-align:right;">
--101.23
-</td>
-<td style="text-align:right;">
--61.3
-</td>
-<td style="text-align:right;">
-0.007
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-snowmelt
-</td>
-<td style="text-align:left;">
-winter
-</td>
-<td style="text-align:right;">
-1.44
-</td>
-<td style="text-align:right;">
-1.05
-</td>
-<td style="text-align:right;">
-0.39
-</td>
-<td style="text-align:right;">
-37.2
-</td>
-<td style="text-align:right;">
-0.599
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-snowmelt_doy_50
-</td>
-<td style="text-align:left;">
-annual
-</td>
-<td style="text-align:right;">
-137.74
-</td>
-<td style="text-align:right;">
-148.50
-</td>
-<td style="text-align:right;">
--10.75
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-0.002
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-snowmelt_rate_peak
-</td>
-<td style="text-align:left;">
-annual
-</td>
-<td style="text-align:right;">
-118.44
-</td>
-<td style="text-align:right;">
-116.52
-</td>
-<td style="text-align:right;">
-1.93
-</td>
-<td style="text-align:right;">
-1.7
-</td>
-<td style="text-align:right;">
-0.385
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-soil_moisture
-</td>
-<td style="text-align:left;">
-annual
-</td>
-<td style="text-align:right;">
-0.32
-</td>
-<td style="text-align:right;">
-0.32
-</td>
-<td style="text-align:right;">
-0.00
-</td>
-<td style="text-align:right;">
--0.3
-</td>
-<td style="text-align:right;">
-0.898
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-soil_moisture
-</td>
-<td style="text-align:left;">
-fall
-</td>
-<td style="text-align:right;">
-0.32
-</td>
-<td style="text-align:right;">
-0.32
-</td>
-<td style="text-align:right;">
-0.00
-</td>
-<td style="text-align:right;">
--0.4
-</td>
-<td style="text-align:right;">
-0.996
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-soil_moisture
-</td>
-<td style="text-align:left;">
-spring
-</td>
-<td style="text-align:right;">
-0.32
-</td>
-<td style="text-align:right;">
-0.32
-</td>
-<td style="text-align:right;">
-0.01
-</td>
-<td style="text-align:right;">
-1.9
-</td>
-<td style="text-align:right;">
-0.015
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-soil_moisture
-</td>
-<td style="text-align:left;">
-summer
-</td>
-<td style="text-align:right;">
-0.33
-</td>
-<td style="text-align:right;">
-0.33
-</td>
-<td style="text-align:right;">
--0.01
-</td>
-<td style="text-align:right;">
--2.5
-</td>
-<td style="text-align:right;">
-0.173
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-soil_moisture
-</td>
-<td style="text-align:left;">
-winter
-</td>
-<td style="text-align:right;">
-0.31
-</td>
-<td style="text-align:right;">
-0.31
-</td>
-<td style="text-align:right;">
-0.00
-</td>
-<td style="text-align:right;">
--0.2
-</td>
-<td style="text-align:right;">
-0.498
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-swe
-</td>
-<td style="text-align:left;">
-annual
-</td>
-<td style="text-align:right;">
-121.65
-</td>
-<td style="text-align:right;">
-135.11
-</td>
-<td style="text-align:right;">
--13.46
-</td>
-<td style="text-align:right;">
--10.0
-</td>
-<td style="text-align:right;">
-0.264
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-swe
-</td>
-<td style="text-align:left;">
-fall
-</td>
-<td style="text-align:right;">
-29.15
-</td>
-<td style="text-align:right;">
-30.24
-</td>
-<td style="text-align:right;">
--1.09
-</td>
-<td style="text-align:right;">
--3.6
-</td>
-<td style="text-align:right;">
-0.985
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-swe
-</td>
-<td style="text-align:left;">
-spring
-</td>
-<td style="text-align:right;">
-259.56
-</td>
-<td style="text-align:right;">
-292.80
-</td>
-<td style="text-align:right;">
--33.24
-</td>
-<td style="text-align:right;">
--11.4
-</td>
-<td style="text-align:right;">
-0.272
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-swe
-</td>
-<td style="text-align:left;">
-summer
-</td>
-<td style="text-align:right;">
-5.27
-</td>
-<td style="text-align:right;">
-21.50
-</td>
-<td style="text-align:right;">
--16.23
-</td>
-<td style="text-align:right;">
--75.5
-</td>
-<td style="text-align:right;">
-0.003
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-swe
-</td>
-<td style="text-align:left;">
-winter
-</td>
-<td style="text-align:right;">
-192.64
-</td>
-<td style="text-align:right;">
-195.91
-</td>
-<td style="text-align:right;">
--3.27
-</td>
-<td style="text-align:right;">
--1.7
-</td>
-<td style="text-align:right;">
-0.913
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-swe_max
-</td>
-<td style="text-align:left;">
-annual
-</td>
-<td style="text-align:right;">
-333.64
-</td>
-<td style="text-align:right;">
-348.42
-</td>
-<td style="text-align:right;">
--14.79
-</td>
-<td style="text-align:right;">
--4.2
-</td>
-<td style="text-align:right;">
-0.770
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-tmax
-</td>
-<td style="text-align:left;">
-annual
-</td>
-<td style="text-align:right;">
-3.66
-</td>
-<td style="text-align:right;">
-1.99
-</td>
-<td style="text-align:right;">
-1.67
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-0.000
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-tmax
-</td>
-<td style="text-align:left;">
-fall
-</td>
-<td style="text-align:right;">
-3.49
-</td>
-<td style="text-align:right;">
-2.55
-</td>
-<td style="text-align:right;">
-0.93
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-0.066
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-tmax
-</td>
-<td style="text-align:left;">
-spring
-</td>
-<td style="text-align:right;">
-3.93
-</td>
-<td style="text-align:right;">
-2.16
-</td>
-<td style="text-align:right;">
-1.76
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-0.001
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-tmax
-</td>
-<td style="text-align:left;">
-summer
-</td>
-<td style="text-align:right;">
-16.62
-</td>
-<td style="text-align:right;">
-15.00
-</td>
-<td style="text-align:right;">
-1.62
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-0.000
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-tmax
-</td>
-<td style="text-align:left;">
-winter
-</td>
-<td style="text-align:right;">
--9.40
-</td>
-<td style="text-align:right;">
--11.77
-</td>
-<td style="text-align:right;">
-2.37
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-0.000
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-tmean
-</td>
-<td style="text-align:left;">
-annual
-</td>
-<td style="text-align:right;">
--0.59
-</td>
-<td style="text-align:right;">
--2.41
-</td>
-<td style="text-align:right;">
-1.82
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-0.000
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-tmean
-</td>
-<td style="text-align:left;">
-fall
-</td>
-<td style="text-align:right;">
--0.32
-</td>
-<td style="text-align:right;">
--1.58
-</td>
-<td style="text-align:right;">
-1.26
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-0.010
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-tmean
-</td>
-<td style="text-align:left;">
-spring
-</td>
-<td style="text-align:right;">
--0.75
-</td>
-<td style="text-align:right;">
--2.57
-</td>
-<td style="text-align:right;">
-1.82
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-0.000
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-tmean
-</td>
-<td style="text-align:left;">
-summer
-</td>
-<td style="text-align:right;">
-11.64
-</td>
-<td style="text-align:right;">
-9.76
-</td>
-<td style="text-align:right;">
-1.88
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-0.000
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-tmean
-</td>
-<td style="text-align:left;">
-winter
-</td>
-<td style="text-align:right;">
--12.92
-</td>
-<td style="text-align:right;">
--15.27
-</td>
-<td style="text-align:right;">
-2.34
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-0.000
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-tmin
-</td>
-<td style="text-align:left;">
-annual
-</td>
-<td style="text-align:right;">
--4.12
-</td>
-<td style="text-align:right;">
--6.05
-</td>
-<td style="text-align:right;">
-1.93
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-0.000
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-tmin
-</td>
-<td style="text-align:left;">
-fall
-</td>
-<td style="text-align:right;">
--3.19
-</td>
-<td style="text-align:right;">
--4.71
-</td>
-<td style="text-align:right;">
-1.52
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-0.003
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-tmin
-</td>
-<td style="text-align:left;">
-spring
-</td>
-<td style="text-align:right;">
--4.76
-</td>
-<td style="text-align:right;">
--6.49
-</td>
-<td style="text-align:right;">
-1.74
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-0.000
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-tmin
-</td>
-<td style="text-align:left;">
-summer
-</td>
-<td style="text-align:right;">
-6.93
-</td>
-<td style="text-align:right;">
-4.81
-</td>
-<td style="text-align:right;">
-2.12
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-0.000
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-tmin
-</td>
-<td style="text-align:left;">
-winter
-</td>
-<td style="text-align:right;">
--15.47
-</td>
-<td style="text-align:right;">
--17.81
-</td>
-<td style="text-align:right;">
-2.33
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-0.000
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-vpd
-</td>
-<td style="text-align:left;">
-annual
-</td>
-<td style="text-align:right;">
-2.14
-</td>
-<td style="text-align:right;">
-1.86
-</td>
-<td style="text-align:right;">
-0.28
-</td>
-<td style="text-align:right;">
-15.1
-</td>
-<td style="text-align:right;">
-0.001
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-vpd
-</td>
-<td style="text-align:left;">
-fall
-</td>
-<td style="text-align:right;">
-1.48
-</td>
-<td style="text-align:right;">
-1.32
-</td>
-<td style="text-align:right;">
-0.16
-</td>
-<td style="text-align:right;">
-12.3
-</td>
-<td style="text-align:right;">
-0.032
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-vpd
-</td>
-<td style="text-align:left;">
-spring
-</td>
-<td style="text-align:right;">
-2.05
-</td>
-<td style="text-align:right;">
-1.67
-</td>
-<td style="text-align:right;">
-0.38
-</td>
-<td style="text-align:right;">
-22.8
-</td>
-<td style="text-align:right;">
-0.000
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-vpd
-</td>
-<td style="text-align:left;">
-summer
-</td>
-<td style="text-align:right;">
-4.62
-</td>
-<td style="text-align:right;">
-4.06
-</td>
-<td style="text-align:right;">
-0.55
-</td>
-<td style="text-align:right;">
-13.6
-</td>
-<td style="text-align:right;">
-0.034
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-vpd
-</td>
-<td style="text-align:left;">
-winter
-</td>
-<td style="text-align:right;">
-0.43
-</td>
-<td style="text-align:right;">
-0.40
-</td>
-<td style="text-align:right;">
-0.03
-</td>
-<td style="text-align:right;">
-6.5
-</td>
-<td style="text-align:right;">
-0.001
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-<p><br></p>
 </div>
 <div class="section level2">
 <h2 id="spatial-pattern">Spatial Pattern<a class="anchor" aria-label="anchor" href="#spatial-pattern"></a>

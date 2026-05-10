@@ -360,6 +360,103 @@ Kootenay Lake Region.](kootenay-lake_files/figure-html/plot-prcp-1.png)
 Annual precipitation anomaly (% of 1951-1980 baseline) for the Kootenay
 Lake Region.
 
+## Recent Decade vs Pre-Warming Reference
+
+The table below compares two windows directly — the recent decade
+(2015–2025) against the pre-warming reference (1951–1980). Δ absolute is
+the difference of the two means in the variable’s native units. Δ % is
+shown only for variables where it is meaningful (precipitation, soil
+moisture, vapour pressure deficit, relative humidity). Two p-values are
+reported, answering different questions. **Δ p (windows)** is the Welch
+t-test on the annual values within each window — does the recent decade
+differ from the pre-warming reference? **Trend p (75-yr)** is the
+Mann-Kendall test on the full 1951–present series — is there a steady
+year-on-year ramp? Step changes show up as significant Δ p with
+non-significant trend p; gradual ramps show up as both significant.
+
+The recent decade was 1.6 to 1.8 °C warmer than the pre-warming
+reference for annual mean, daytime maximum, and overnight minimum, with
+both window and trend p-values below 0.001. Vapour pressure deficit is
+up significantly on both tests. Annual precipitation was about 6 to 7 %
+*lower* in the recent decade — and unlike the FWCP Peace just to the
+north, the long-term Mann-Kendall trend test does confirm a steady
+year-on-year decline (trend p ≈ 0.02). Soil moisture is roughly flat.
+Relative humidity shows a small significant decline.
+
+``` r
+
+cmp <- cd::cd_compare(ts)   # defaults: 2015–2025 vs 1951–1980, Welch t-test
+```
+
+| Variable | Period | Recent (2015–2025) | Pre-warming (1951–1980) | Δ absolute | Δ % | Δ p (windows) | Trend p (75-yr) |
+|:---|:---|---:|---:|---:|---:|---:|---:|
+| prcp | annual | 1017.80 | 1088.75 | -70.96 | -6.5 | 0.033 | 0.021 |
+| prcp | fall | 281.22 | 270.22 | 11.00 | 4.1 | 0.632 | 0.913 |
+| prcp | spring | 258.29 | 251.19 | 7.10 | 2.8 | 0.679 | 0.085 |
+| prcp | summer | 192.13 | 230.76 | -38.63 | -16.7 | 0.018 | 0.146 |
+| prcp | winter | 286.15 | 336.58 | -50.43 | -15.0 | 0.008 | 0.005 |
+| rh | annual | 68.89 | 71.45 | -2.56 | -3.6 | 0.000 | 0.001 |
+| rh | fall | 73.51 | 75.36 | -1.85 | -2.5 | 0.161 | 0.017 |
+| rh | spring | 67.54 | 69.97 | -2.42 | -3.5 | 0.023 | 0.151 |
+| rh | summer | 53.26 | 59.25 | -5.99 | -10.1 | 0.003 | 0.015 |
+| rh | winter | 81.25 | 81.24 | 0.01 | 0.0 | 0.987 | 0.942 |
+| snow_cover | annual | 57.85 | 62.06 | -4.21 | NA | 0.001 | 0.000 |
+| snow_cover | fall | 41.63 | 42.85 | -1.22 | NA | 0.603 | 0.197 |
+| snow_cover | spring | 87.27 | 93.72 | -6.45 | NA | 0.002 | 0.000 |
+| snow_cover | summer | 5.58 | 14.72 | -9.13 | NA | 0.000 | 0.001 |
+| snow_cover | winter | 96.91 | 96.95 | -0.04 | NA | 0.408 | 0.030 |
+| snowfall | annual | 553.85 | 648.93 | -95.08 | -14.7 | 0.004 | 0.006 |
+| snowfall | fall | 141.39 | 149.97 | -8.58 | -5.7 | 0.469 | 0.224 |
+| snowfall | spring | 137.58 | 165.63 | -28.06 | -16.9 | 0.063 | 0.245 |
+| snowfall | summer | 4.31 | 7.25 | -2.94 | -40.5 | 0.028 | 0.033 |
+| snowfall | winter | 270.57 | 326.08 | -55.51 | -17.0 | 0.004 | 0.004 |
+| snowfall_fraction | annual | 54.06 | 59.13 | -5.08 | NA | 0.040 | 0.004 |
+| snowmelt | annual | 557.71 | 660.80 | -103.09 | -15.6 | 0.003 | 0.004 |
+| snowmelt | fall | 33.80 | 34.40 | -0.60 | -1.7 | 0.905 | 0.728 |
+| snowmelt | spring | 421.38 | 376.06 | 45.33 | 12.1 | 0.158 | 0.276 |
+| snowmelt | summer | 96.89 | 247.97 | -151.08 | -60.9 | 0.000 | 0.001 |
+| snowmelt | winter | 5.63 | 2.37 | 3.27 | 138.0 | 0.122 | 0.077 |
+| snowmelt_doy_50 | annual | 133.32 | 145.90 | -12.58 | NA | 0.001 | 0.000 |
+| snowmelt_rate_peak | annual | 135.52 | 147.44 | -11.92 | -8.1 | 0.170 | 0.032 |
+| soil_moisture | annual | 0.33 | 0.34 | -0.01 | -2.1 | 0.062 | 0.040 |
+| soil_moisture | fall | 0.32 | 0.33 | -0.01 | -4.2 | 0.130 | 0.058 |
+| soil_moisture | spring | 0.36 | 0.35 | 0.01 | 1.7 | 0.214 | 0.040 |
+| soil_moisture | summer | 0.32 | 0.34 | -0.02 | -6.9 | 0.000 | 0.002 |
+| soil_moisture | winter | 0.33 | 0.33 | 0.00 | 0.8 | 0.533 | 0.602 |
+| swe | annual | 159.54 | 206.33 | -46.79 | -22.7 | 0.000 | 0.001 |
+| swe | fall | 26.61 | 26.42 | 0.19 | 0.7 | 0.945 | 0.833 |
+| swe | spring | 353.55 | 464.55 | -111.00 | -23.9 | 0.001 | 0.002 |
+| swe | summer | 10.24 | 37.82 | -27.58 | -72.9 | 0.000 | 0.002 |
+| swe | winter | 247.77 | 296.54 | -48.77 | -16.4 | 0.000 | 0.001 |
+| swe_max | annual | 471.59 | 563.35 | -91.75 | -16.3 | 0.006 | 0.004 |
+| tmax | annual | 7.89 | 6.32 | 1.57 | NA | 0.000 | 0.000 |
+| tmax | fall | 7.88 | 6.91 | 0.97 | NA | 0.052 | 0.016 |
+| tmax | spring | 6.72 | 4.90 | 1.82 | NA | 0.001 | 0.000 |
+| tmax | summer | 21.16 | 18.67 | 2.49 | NA | 0.000 | 0.000 |
+| tmax | winter | -4.20 | -5.21 | 1.01 | NA | 0.041 | 0.003 |
+| tmean | annual | 3.29 | 1.63 | 1.65 | NA | 0.000 | 0.000 |
+| tmean | fall | 3.49 | 2.07 | 1.42 | NA | 0.002 | 0.000 |
+| tmean | spring | 2.05 | 0.28 | 1.77 | NA | 0.000 | 0.000 |
+| tmean | summer | 15.27 | 12.75 | 2.52 | NA | 0.000 | 0.000 |
+| tmean | winter | -7.65 | -8.56 | 0.91 | NA | 0.098 | 0.028 |
+| tmin | annual | -0.69 | -2.34 | 1.66 | NA | 0.000 | 0.000 |
+| tmin | fall | -0.07 | -1.85 | 1.78 | NA | 0.000 | 0.000 |
+| tmin | spring | -2.04 | -3.60 | 1.56 | NA | 0.000 | 0.000 |
+| tmin | summer | 9.54 | 7.07 | 2.47 | NA | 0.000 | 0.000 |
+| tmin | winter | -10.18 | -10.99 | 0.81 | NA | 0.176 | 0.091 |
+| vpd | annual | 3.63 | 2.81 | 0.81 | 28.8 | 0.000 | 0.000 |
+| vpd | fall | 2.67 | 2.22 | 0.46 | 20.6 | 0.060 | 0.009 |
+| vpd | spring | 2.52 | 1.98 | 0.54 | 27.5 | 0.000 | 0.000 |
+| vpd | summer | 8.65 | 6.45 | 2.20 | 34.1 | 0.001 | 0.000 |
+| vpd | winter | 0.65 | 0.61 | 0.04 | 7.4 | 0.012 | 0.001 |
+
+Recent decade (2015-2025 mean) compared to pre-warming reference
+(1951-1980 mean) for the Kootenay Lake Region. {.table .table
+.table-striped .table-hover .table-condensed
+style="margin-left: auto; margin-right: auto;"}
+
+  
+
 ## Daytime Highs and Overnight Lows
 
 The cd package ships daytime maximum (tmax) and overnight minimum (tmin)
@@ -663,101 +760,6 @@ historically lingered into summer no longer does in the recent decade.
 For aquatic ecosystems downstream, this is a loss of late-season
 cold-water input to streams during the warmest, most thermally stressful
 weeks of the year.
-
-## Recent vs Pre-warming
-
-The table below compares two windows directly — the recent decade
-(2015–2025) against the pre-warming reference (1951–1980). Δ absolute is
-the difference of the two means in the variable’s native units. Δ % is
-shown only for variables where it is meaningful (precipitation, soil
-moisture, vapour pressure deficit, relative humidity). The trend p
-column is the Mann-Kendall p-value of the 75-year (1951–present) trend
-on the same variable and period; it tests for a steady year-on-year
-ramp, which is a related but distinct question from “do these two
-windows differ”.
-
-The recent decade was 1.6 to 1.8 °C warmer than the pre-warming
-reference for annual mean, daytime maximum, and overnight minimum, with
-Mann-Kendall trend p-values below 0.001. Vapour pressure deficit is up
-significantly. Annual precipitation was about 6 to 7 % *lower* in the
-recent decade — and unlike the FWCP Peace just to the north, the
-long-term Mann-Kendall trend test does confirm a steady year-on-year
-decline (p ≈ 0.02). Soil moisture is roughly flat. Relative humidity
-shows a small significant decline.
-
-``` r
-
-cmp <- cd::cd_compare(ts, window_a = 2015:2025, window_b = 1951:1980)
-```
-
-| Variable | Period | Recent (2015–2025) | Pre-warming (1951–1980) | Δ absolute | Δ % | Trend p (75-yr) |
-|:---|:---|---:|---:|---:|---:|---:|
-| prcp | annual | 1017.80 | 1088.75 | -70.96 | -6.5 | 0.021 |
-| prcp | fall | 281.22 | 270.22 | 11.00 | 4.1 | 0.913 |
-| prcp | spring | 258.29 | 251.19 | 7.10 | 2.8 | 0.085 |
-| prcp | summer | 192.13 | 230.76 | -38.63 | -16.7 | 0.146 |
-| prcp | winter | 286.15 | 336.58 | -50.43 | -15.0 | 0.005 |
-| rh | annual | 68.89 | 71.45 | -2.56 | -3.6 | 0.001 |
-| rh | fall | 73.51 | 75.36 | -1.85 | -2.5 | 0.017 |
-| rh | spring | 67.54 | 69.97 | -2.42 | -3.5 | 0.151 |
-| rh | summer | 53.26 | 59.25 | -5.99 | -10.1 | 0.015 |
-| rh | winter | 81.25 | 81.24 | 0.01 | 0.0 | 0.942 |
-| snow_cover | annual | 57.85 | 62.06 | -4.21 | NA | 0.000 |
-| snow_cover | fall | 41.63 | 42.85 | -1.22 | NA | 0.197 |
-| snow_cover | spring | 87.27 | 93.72 | -6.45 | NA | 0.000 |
-| snow_cover | summer | 5.58 | 14.72 | -9.13 | NA | 0.001 |
-| snow_cover | winter | 96.91 | 96.95 | -0.04 | NA | 0.030 |
-| snowfall | annual | 553.85 | 648.93 | -95.08 | -14.7 | 0.006 |
-| snowfall | fall | 141.39 | 149.97 | -8.58 | -5.7 | 0.224 |
-| snowfall | spring | 137.58 | 165.63 | -28.06 | -16.9 | 0.245 |
-| snowfall | summer | 4.31 | 7.25 | -2.94 | -40.5 | 0.033 |
-| snowfall | winter | 270.57 | 326.08 | -55.51 | -17.0 | 0.004 |
-| snowfall_fraction | annual | 54.06 | 59.13 | -5.08 | NA | 0.004 |
-| snowmelt | annual | 557.71 | 660.80 | -103.09 | -15.6 | 0.004 |
-| snowmelt | fall | 33.80 | 34.40 | -0.60 | -1.7 | 0.728 |
-| snowmelt | spring | 421.38 | 376.06 | 45.33 | 12.1 | 0.276 |
-| snowmelt | summer | 96.89 | 247.97 | -151.08 | -60.9 | 0.001 |
-| snowmelt | winter | 5.63 | 2.37 | 3.27 | 138.0 | 0.077 |
-| snowmelt_doy_50 | annual | 133.32 | 145.90 | -12.58 | NA | 0.000 |
-| snowmelt_rate_peak | annual | 135.52 | 147.44 | -11.92 | -8.1 | 0.032 |
-| soil_moisture | annual | 0.33 | 0.34 | -0.01 | -2.1 | 0.040 |
-| soil_moisture | fall | 0.32 | 0.33 | -0.01 | -4.2 | 0.058 |
-| soil_moisture | spring | 0.36 | 0.35 | 0.01 | 1.7 | 0.040 |
-| soil_moisture | summer | 0.32 | 0.34 | -0.02 | -6.9 | 0.002 |
-| soil_moisture | winter | 0.33 | 0.33 | 0.00 | 0.8 | 0.602 |
-| swe | annual | 159.54 | 206.33 | -46.79 | -22.7 | 0.001 |
-| swe | fall | 26.61 | 26.42 | 0.19 | 0.7 | 0.833 |
-| swe | spring | 353.55 | 464.55 | -111.00 | -23.9 | 0.002 |
-| swe | summer | 10.24 | 37.82 | -27.58 | -72.9 | 0.002 |
-| swe | winter | 247.77 | 296.54 | -48.77 | -16.4 | 0.001 |
-| swe_max | annual | 471.59 | 563.35 | -91.75 | -16.3 | 0.004 |
-| tmax | annual | 7.89 | 6.32 | 1.57 | NA | 0.000 |
-| tmax | fall | 7.88 | 6.91 | 0.97 | NA | 0.016 |
-| tmax | spring | 6.72 | 4.90 | 1.82 | NA | 0.000 |
-| tmax | summer | 21.16 | 18.67 | 2.49 | NA | 0.000 |
-| tmax | winter | -4.20 | -5.21 | 1.01 | NA | 0.003 |
-| tmean | annual | 3.29 | 1.63 | 1.65 | NA | 0.000 |
-| tmean | fall | 3.49 | 2.07 | 1.42 | NA | 0.000 |
-| tmean | spring | 2.05 | 0.28 | 1.77 | NA | 0.000 |
-| tmean | summer | 15.27 | 12.75 | 2.52 | NA | 0.000 |
-| tmean | winter | -7.65 | -8.56 | 0.91 | NA | 0.028 |
-| tmin | annual | -0.69 | -2.34 | 1.66 | NA | 0.000 |
-| tmin | fall | -0.07 | -1.85 | 1.78 | NA | 0.000 |
-| tmin | spring | -2.04 | -3.60 | 1.56 | NA | 0.000 |
-| tmin | summer | 9.54 | 7.07 | 2.47 | NA | 0.000 |
-| tmin | winter | -10.18 | -10.99 | 0.81 | NA | 0.091 |
-| vpd | annual | 3.63 | 2.81 | 0.81 | 28.8 | 0.000 |
-| vpd | fall | 2.67 | 2.22 | 0.46 | 20.6 | 0.009 |
-| vpd | spring | 2.52 | 1.98 | 0.54 | 27.5 | 0.000 |
-| vpd | summer | 8.65 | 6.45 | 2.20 | 34.1 | 0.000 |
-| vpd | winter | 0.65 | 0.61 | 0.04 | 7.4 | 0.001 |
-
-Recent decade (2015-2025 mean) compared to pre-warming reference
-(1951-1980 mean) for the Kootenay Lake Region. {.table .table
-.table-striped .table-hover .table-condensed
-style="margin-left: auto; margin-right: auto;"}
-
-  
 
 ## Spatial Pattern
 
