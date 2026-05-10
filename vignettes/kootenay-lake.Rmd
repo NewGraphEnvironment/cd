@@ -261,6 +261,83 @@ cd::cd_plot_timeseries(
 )
 ```
 
+## Recent Decade vs Pre-Warming Reference
+
+The table below compares two windows directly — the recent decade
+(2015–2025) against the pre-warming reference (1951–1980). Δ
+absolute is the difference of the two means in the variable's native
+units. Δ % is shown only for variables where it is meaningful
+(precipitation, soil moisture, vapour pressure deficit, relative
+humidity). Two p-values are reported, answering different
+questions. **Δ p (windows)** is the Welch t-test on the annual
+values within each window — does the recent decade differ from
+the pre-warming reference? **Trend p (75-yr)** is the Mann-Kendall
+test on the full 1951–present series — is there a steady
+year-on-year ramp? Step changes show up as significant Δ p with
+non-significant trend p; gradual ramps show up as both significant.
+
+The recent decade was 1.6 to 1.8 °C warmer than the pre-warming
+reference for annual mean, daytime maximum, and overnight minimum,
+with both window and trend p-values below 0.001. Vapour pressure
+deficit is up significantly on both tests. Annual precipitation
+was about 6 to 7 % *lower* in the recent decade — and unlike the
+FWCP Peace just to the north, the long-term Mann-Kendall trend
+test does confirm a steady year-on-year decline (trend p ≈ 0.02).
+Soil moisture is roughly flat. Relative humidity shows a small
+significant decline.
+
+```{r compare-recipe, eval = FALSE}
+cmp <- cd::cd_compare(ts)   # defaults: 2015–2025 vs 1951–1980, Welch t-test
+```
+
+```{r compare-table, echo = FALSE}
+# Recompute cmp from the cached ts so the p_value column reflects the
+# current cd_compare() defaults — the precomputed rds was generated
+# before #43 added the test argument.
+cmp <- cd::cd_compare(ts)
+trn_p <- trn[trn$trend_start == 1951, c("variable", "period", "mk_pvalue")]
+names(trn_p)[3] <- "trend_p"
+trn_p$trend_p <- round(trn_p$trend_p, 3)
+
+no_pct_vars <- c(
+  "tmean", "tmax", "tmin",
+  # snow_cover and snowfall_fraction are already in % (pct_point_diff
+  # anomaly type) — pct-of-baseline mixes units. snowmelt_doy_50 is a
+  # day-of-year — pct-change of a date is meaningless.
+  "snow_cover", "snowfall_fraction", "snowmelt_doy_50"
+)
+cmp_combined <- cmp |>
+  dplyr::mutate(
+    pct_change = ifelse(
+      variable %in% no_pct_vars,
+      NA_real_,
+      round(100 * (mean_a - mean_b) / mean_b, 1)
+    ),
+    mean_a    = round(mean_a, 2),
+    mean_b    = round(mean_b, 2),
+    abs_diff  = round(difference, 2),
+    window_p  = round(p_value, 3)
+  ) |>
+  dplyr::select(variable, period, mean_a, mean_b, abs_diff, pct_change, window_p) |>
+  merge(trn_p, by = c("variable", "period"), all.x = TRUE)
+
+names(cmp_combined) <- c(
+  "Variable", "Period",
+  "Recent (2015–2025)", "Pre-warming (1951–1980)",
+  "Δ absolute", "Δ %", "Δ p (windows)", "Trend p (75-yr)"
+)
+
+kableExtra::kable_styling(
+  knitr::kable(cmp_combined, label = NA,
+    caption = "Recent decade (2015-2025 mean) compared to pre-warming reference (1951-1980 mean) for the Kootenay Lake Region.",
+    row.names = FALSE),
+  bootstrap_options = c("striped", "hover", "condensed")
+) |>
+  kableExtra::scroll_box(height = "360px")
+```
+
+<br>
+
 ## Daytime Highs and Overnight Lows
 
 The cd package ships daytime maximum (tmax) and overnight minimum (tmin)
@@ -535,83 +612,6 @@ historically lingered into summer no longer does in the recent
 decade. For aquatic ecosystems downstream, this is a loss of
 late-season cold-water input to streams during the warmest, most
 thermally stressful weeks of the year.
-
-## Recent vs Pre-warming
-
-The table below compares two windows directly — the recent decade
-(2015–2025) against the pre-warming reference (1951–1980). Δ
-absolute is the difference of the two means in the variable's native
-units. Δ % is shown only for variables where it is meaningful
-(precipitation, soil moisture, vapour pressure deficit, relative
-humidity). Two p-values are reported, answering different
-questions. **Δ p (windows)** is the Welch t-test on the annual
-values within each window — does the recent decade differ from
-the pre-warming reference? **Trend p (75-yr)** is the Mann-Kendall
-test on the full 1951–present series — is there a steady
-year-on-year ramp? Step changes show up as significant Δ p with
-non-significant trend p; gradual ramps show up as both significant.
-
-The recent decade was 1.6 to 1.8 °C warmer than the pre-warming
-reference for annual mean, daytime maximum, and overnight minimum,
-with both window and trend p-values below 0.001. Vapour pressure
-deficit is up significantly on both tests. Annual precipitation
-was about 6 to 7 % *lower* in the recent decade — and unlike the
-FWCP Peace just to the north, the long-term Mann-Kendall trend
-test does confirm a steady year-on-year decline (trend p ≈ 0.02).
-Soil moisture is roughly flat. Relative humidity shows a small
-significant decline.
-
-```{r compare-recipe, eval = FALSE}
-cmp <- cd::cd_compare(ts)   # defaults: 2015–2025 vs 1951–1980, Welch t-test
-```
-
-```{r compare-table, echo = FALSE}
-# Recompute cmp from the cached ts so the p_value column reflects the
-# current cd_compare() defaults — the precomputed rds was generated
-# before #43 added the test argument.
-cmp <- cd::cd_compare(ts)
-trn_p <- trn[trn$trend_start == 1951, c("variable", "period", "mk_pvalue")]
-names(trn_p)[3] <- "trend_p"
-trn_p$trend_p <- round(trn_p$trend_p, 3)
-
-no_pct_vars <- c(
-  "tmean", "tmax", "tmin",
-  # snow_cover and snowfall_fraction are already in % (pct_point_diff
-  # anomaly type) — pct-of-baseline mixes units. snowmelt_doy_50 is a
-  # day-of-year — pct-change of a date is meaningless.
-  "snow_cover", "snowfall_fraction", "snowmelt_doy_50"
-)
-cmp_combined <- cmp |>
-  dplyr::mutate(
-    pct_change = ifelse(
-      variable %in% no_pct_vars,
-      NA_real_,
-      round(100 * (mean_a - mean_b) / mean_b, 1)
-    ),
-    mean_a    = round(mean_a, 2),
-    mean_b    = round(mean_b, 2),
-    abs_diff  = round(difference, 2),
-    window_p  = round(p_value, 3)
-  ) |>
-  dplyr::select(variable, period, mean_a, mean_b, abs_diff, pct_change, window_p) |>
-  merge(trn_p, by = c("variable", "period"), all.x = TRUE)
-
-names(cmp_combined) <- c(
-  "Variable", "Period",
-  "Recent (2015–2025)", "Pre-warming (1951–1980)",
-  "Δ absolute", "Δ %", "Δ p (windows)", "Trend p (75-yr)"
-)
-
-kableExtra::kable_styling(
-  knitr::kable(cmp_combined, label = NA,
-    caption = "Recent decade (2015-2025 mean) compared to pre-warming reference (1951-1980 mean) for the Kootenay Lake Region.",
-    row.names = FALSE),
-  bootstrap_options = c("striped", "hover", "condensed")
-) |>
-  kableExtra::scroll_box(height = "360px")
-```
-
-<br>
 
 ## Spatial Pattern
 
