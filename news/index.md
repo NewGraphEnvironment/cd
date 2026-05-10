@@ -1,5 +1,31 @@
 # Changelog
 
+## cd 0.3.0 (2026-05-10)
+
+- [`cd_compare()`](https://newgraphenvironment.github.io/cd/reference/cd_compare.md)
+  API: adds defaults `window_a = 2015:2025`, `window_b = 1951:1980` (the
+  WMO-style standard normal vs recent decade — the framing both regional
+  vignettes had settled on) and a new `test = "t"` argument that adds a
+  `p_value` column to the output. `test = "t"` runs Welch’s two-sample
+  t-test on the annual values within each window; `test = "wilcox"` runs
+  Mann-Whitney U; `test = NULL` skips and drops the column. Rows where
+  either window has \< 8 non-NA years get `p_value = NA` and a single
+  batched warning naming affected variable/period rows. The
+  window-vs-window p-value answers a different question than
+  [`cd_trend()`](https://newgraphenvironment.github.io/cd/reference/cd_trend.md)’s
+  Mann-Kendall test — “do the two windows differ” vs “is there a
+  monotonic trend” — and step changes / U-shapes can produce significant
+  Δ p with non-significant trend p (and vice versa). Both regional
+  vignettes now report both p-values side-by-side (`Δ p (windows)` +
+  `Trend p (75-yr)`), and the visible `compare-recipe` chunk drops to
+  `cd::cd_compare(ts)` letting defaults carry the call. Vignette
+  structure tweak: the **Recent Decade vs Pre-Warming Reference**
+  section (renamed from “Recent vs Pre-warming”) moves up directly after
+  Trends so the headline cumulative-impact number lands before DTR /
+  Snowpack / Spatial Pattern drill-down. Minor bump (output schema gains
+  `p_value` column by default; new `test` argument).
+  ([\#73](https://github.com/NewGraphEnvironment/cd/pull/73))
+
 ## cd 0.2.8 (2026-05-07)
 
 - Vignette polish bundle covering both regional vignettes
