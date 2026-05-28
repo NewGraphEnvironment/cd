@@ -62,6 +62,27 @@ The catalog is consumable directly outside R — for example, in QGIS via
 the STAC plugin, in `gdalcubes`, or with any STAC-aware client. The
 `cd_catalog()` consumer function reads the catalog URL by default.
 
+## Architecture
+
+cd has a strict producer / consumer split, kept separate so reference periods, baselines, and statistical choices are not baked into the published data:
+
+| Side | Functions | Where it runs |
+|---|---|---|
+| **Producer** | `cd_fetch()`, `cd_derive()`, `cd_aggregate()`, `cd_cog_write()`, `cd_stac_catalog()`, `cd_stac_item()`, `cd_s3_push()`, plus `scripts/backfill_edh_*.py` and `scripts/pipeline_*_edh.R` | A monthly GitHub Action pulls fresh ERA5-Land data from DestinE EDH, derives variables, writes COGs, rebuilds the STAC catalog, and pushes to `s3://stac-era5-land`. Run by maintainers; users do not need to run it. |
+| **Consumer** | `cd_catalog()`, `cd_extract()`, `cd_crop()`, `cd_baseline()`, `cd_anomaly()`, `cd_trend()`, `cd_compare()`, `cd_summary()`, `cd_plot_timeseries()`, `cd_plot_comparison()`, `cd_periods()`, `cd_seasons()`, `cd_cache_*()` | Reads COGs directly via `/vsicurl/` — no credentials, no tile server. All baseline selection and statistical work (Mann-Kendall, Theil-Sen, Welch's t, Mann-Whitney U) happen client-side on the cropped time series. |
+
+Anyone can compute climate departure against any baseline period, in any AOI, with whatever statistical test they prefer — without re-publishing the underlying data.
+
+## Roadmap
+
+- **BEC zone shift analysis** ([#59](https://github.com/NewGraphEnvironment/cd/issues/59)) — methodology lit review for biogeoclimatic ecosystem classification (BEC) shifts under climate change, alongside the existing temperature / precipitation+drying / interpretation-framing methodology stacks.
+- **Local-time daily aggregation** ([#37](https://github.com/NewGraphEnvironment/cd/issues/37)) — `tmax`/`tmin` currently use UTC-day. Fixing this aligns the daily extremes with local solar timing for BC longitudes; ~6 h offset matters for late-summer daytime maxima.
+- **Vignette templates** — `peace-fwcp` and `kootenay-lake` are reference implementations of the regional reporting pattern. Future regional vignettes follow the same structure (trends → recent vs pre-warming → spatial → per-ecoregion → snowpack) so cross-region findings are directly comparable.
+
+## Used by
+
+cd's consumer functions and vignettes are the climate-change reporting backbone for New Graph Environment fish-passage, restoration, and habitat-assessment reports. Each regional vignette is reproducible against the live STAC catalog, with reference periods chosen client-side per project.
+
 ## Links
 
 - [Function reference](https://newgraphenvironment.github.io/cd/reference/)
