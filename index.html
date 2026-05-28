@@ -7,8 +7,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Climate Departure Analysis from ERA5-Land Reanalysis • cd</title>
 <script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Climate Departure Analysis from ERA5-Land Reanalysis">
 <meta name="description" content="Compute climate anomalies from ERA5-Land reanalysis data for custom areas of interest. Producer functions download ERA5-Land monthly means, derive variables (VPD, RH, soil moisture), and publish Cloud-Optimized GeoTIFFs with a static STAC catalog. Consumer functions query the catalog, crop to AOI, compute baselines and anomalies for arbitrary reference periods, and run trend analysis (Mann-Kendall and Theil-Sen).">
@@ -121,6 +121,57 @@
 <li>Periods: seasonal (DJF/MAM/JJA/SON) and annual for monthly-native vars; annual only for snow_max / snowfall_fraction / snowmelt_doy_50 / snowmelt_rate_peak</li>
 </ul>
 <p>The catalog is consumable directly outside R — for example, in QGIS via the STAC plugin, in <code>gdalcubes</code>, or with any STAC-aware client. The <code><a href="reference/cd_catalog.html">cd_catalog()</a></code> consumer function reads the catalog URL by default.</p>
+</div>
+<div class="section level2">
+<h2 id="architecture">Architecture<a class="anchor" aria-label="anchor" href="#architecture"></a>
+</h2>
+<p>cd has a strict producer / consumer split, kept separate so reference periods, baselines, and statistical choices are not baked into the published data:</p>
+<table class="table">
+<colgroup>
+<col width="33%">
+<col width="33%">
+<col width="33%">
+</colgroup>
+<thead><tr>
+<th>Side</th>
+<th>Functions</th>
+<th>Where it runs</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><strong>Producer</strong></td>
+<td>
+<code><a href="reference/cd_fetch.html">cd_fetch()</a></code>, <code><a href="reference/cd_derive.html">cd_derive()</a></code>, <code><a href="reference/cd_aggregate.html">cd_aggregate()</a></code>, <code><a href="reference/cd_cog_write.html">cd_cog_write()</a></code>, <code><a href="reference/cd_stac_catalog.html">cd_stac_catalog()</a></code>, <code>cd_stac_item()</code>, <code><a href="reference/cd_s3_push.html">cd_s3_push()</a></code>, plus <code>scripts/backfill_edh_*.py</code> and <code>scripts/pipeline_*_edh.R</code>
+</td>
+<td>A monthly GitHub Action pulls fresh ERA5-Land data from DestinE EDH, derives variables, writes COGs, rebuilds the STAC catalog, and pushes to <code>s3://stac-era5-land</code>. Run by maintainers; users do not need to run it.</td>
+</tr>
+<tr>
+<td><strong>Consumer</strong></td>
+<td>
+<code><a href="reference/cd_catalog.html">cd_catalog()</a></code>, <code><a href="reference/cd_extract.html">cd_extract()</a></code>, <code><a href="reference/cd_crop.html">cd_crop()</a></code>, <code><a href="reference/cd_baseline.html">cd_baseline()</a></code>, <code><a href="reference/cd_anomaly.html">cd_anomaly()</a></code>, <code><a href="reference/cd_trend.html">cd_trend()</a></code>, <code><a href="reference/cd_compare.html">cd_compare()</a></code>, <code><a href="reference/cd_summary.html">cd_summary()</a></code>, <code><a href="reference/cd_plot_timeseries.html">cd_plot_timeseries()</a></code>, <code><a href="reference/cd_plot_comparison.html">cd_plot_comparison()</a></code>, <code><a href="reference/cd_periods.html">cd_periods()</a></code>, <code><a href="reference/cd_seasons.html">cd_seasons()</a></code>, <code>cd_cache_*()</code>
+</td>
+<td>Reads COGs directly via <code>/vsicurl/</code> — no credentials, no tile server. All baseline selection and statistical work (Mann-Kendall, Theil-Sen, Welch’s t, Mann-Whitney U) happen client-side on the cropped time series.</td>
+</tr>
+</tbody>
+</table>
+<p>Anyone can compute climate departure against any baseline period, in any AOI, with whatever statistical test they prefer — without re-publishing the underlying data.</p>
+</div>
+<div class="section level2">
+<h2 id="roadmap">Roadmap<a class="anchor" aria-label="anchor" href="#roadmap"></a>
+</h2>
+<ul>
+<li>
+<strong>BEC zone shift analysis</strong> (<a href="https://github.com/NewGraphEnvironment/cd/issues/59" class="external-link">#59</a>) — methodology lit review for biogeoclimatic ecosystem classification (BEC) shifts under climate change, alongside the existing temperature / precipitation+drying / interpretation-framing methodology stacks.</li>
+<li>
+<strong>Local-time daily aggregation</strong> (<a href="https://github.com/NewGraphEnvironment/cd/issues/37" class="external-link">#37</a>) — <code>tmax</code>/<code>tmin</code> currently use UTC-day. Fixing this aligns the daily extremes with local solar timing for BC longitudes; ~6 h offset matters for late-summer daytime maxima.</li>
+<li>
+<strong>Vignette templates</strong> — <code>peace-fwcp</code> and <code>kootenay-lake</code> are reference implementations of the regional reporting pattern. Future regional vignettes follow the same structure (trends → recent vs pre-warming → spatial → per-ecoregion → snowpack) so cross-region findings are directly comparable.</li>
+</ul>
+</div>
+<div class="section level2">
+<h2 id="used-by">Used by<a class="anchor" aria-label="anchor" href="#used-by"></a>
+</h2>
+<p>cd’s consumer functions and vignettes are the climate-change reporting backbone for New Graph Environment fish-passage, restoration, and habitat-assessment reports. Each regional vignette is reproducible against the live STAC catalog, with reference periods chosen client-side per project.</p>
 </div>
 <div class="section level2">
 <h2 id="links">Links<a class="anchor" aria-label="anchor" href="#links"></a>
