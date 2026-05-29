@@ -122,14 +122,6 @@ the underlying data.
   pre-warming → spatial → per-ecoregion → snowpack) so cross-region
   findings are directly comparable.
 
-## Used by
-
-cd’s consumer functions and vignettes are the climate-change reporting
-backbone for New Graph Environment fish-passage, restoration, and
-habitat-assessment reports. Each regional vignette is reproducible
-against the live STAC catalog, with reference periods chosen client-side
-per project.
-
 ## Links
 
 - [Function
