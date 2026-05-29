@@ -79,9 +79,6 @@ Anyone can compute climate departure against any baseline period, in any AOI, wi
 - **Local-time daily aggregation** ([#37](https://github.com/NewGraphEnvironment/cd/issues/37)) — `tmax`/`tmin` currently use UTC-day. Fixing this aligns the daily extremes with local solar timing for BC longitudes; ~6 h offset matters for late-summer daytime maxima.
 - **Vignette templates** — `peace-fwcp` and `kootenay-lake` are reference implementations of the regional reporting pattern. Future regional vignettes follow the same structure (trends → recent vs pre-warming → spatial → per-ecoregion → snowpack) so cross-region findings are directly comparable.
 
-## Used by
-
-cd's consumer functions and vignettes are the climate-change reporting backbone for New Graph Environment fish-passage, restoration, and habitat-assessment reports. Each regional vignette is reproducible against the live STAC catalog, with reference periods chosen client-side per project.
 
 ## Links
 
