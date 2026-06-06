@@ -216,6 +216,48 @@ reporting appendices (cf \#47) — port directly to a
   it to DESCRIPTION Suggests; pak can’t resolve it on the pkgdown
   runner. Same for any other GitHub-only package.
 
+# CI Monitoring
+
+When this repo has GitHub Actions workflows, scan recent runs on session
+start. Catches failed pkgdown deploys, broken vignette builds, and stale
+citation regenerations that would otherwise linger until the user
+manually checks.
+
+## On Session Start
+
+``` bash
+gh run list --limit 5 --json status,conclusion,name,createdAt,databaseId \
+  --jq '.[] | select(.conclusion == "failure")'
+```
+
+If any failures since the last visit, surface to the user before
+starting other work:
+
+> Workflow `<name>` failed `<time>` ago (run `<id>`). Investigate with
+> `gh run view <id> --log-failed`. Fix or proceed with current task?
+
+User decides; do not auto-fix.
+
+## Particular Failures Worth Naming
+
+- **pkgdown** — docs site on GitHub Pages broken
+- **R-CMD-check** — package may not install
+- **Vignette / build-vignettes** — vignette docs incomplete
+- **update-citation-cff** — CITATION.cff stale
+
+## Why This Matters
+
+Without this scan, post-merge workflow failures linger until someone
+(often the user) notices a stale docs site or a missing vignette. The
+session-start sweep catches them on the first re-entry into the repo.
+
+## Pairs with `/gh-pr-merge`
+
+The skill watches workflows triggered by a fresh merge in real time —
+that’s the targeted catch. This convention is the backstop for failures
+that landed when no one was watching (merges via web UI, scheduled
+triggers, manually-triggered workflows).
+
 # Code Check Conventions
 
 Structured checklist for reviewing diffs before commit. Used by
@@ -232,6 +274,30 @@ compound over time.
 - Use `printf '%s\n' "$VAR" | command` to pipe values safely
 - Heredocs: unquoted `<<EOF` expands variables locally, `<<'EOF'` does
   not — know which you need
+- Pass-through-ssh args: `printf '%q'` escapes per-arg so workload paths
+  with spaces / quotes / metacharacters survive the local-shell →
+  ssh-argv → remote-shell round-trip. Without it,
+  `ssh host 'cmd' "$path"` joins args with spaces on remote and
+  re-parses, losing argument boundaries.
+
+### Heredoc precedence in pipelines
+
+- `cmd1 | cmd2 <<EOF` — the heredoc binds to `cmd2` (the rightmost
+  simple command). If you intended `cmd1` to receive it, put `<<EOF` on
+  cmd1 explicitly: `cmd1 <<EOF | cmd2`.
+- Symptom when wrong: ssh body silently echoed by tee/cat/etc, ssh side
+  gets empty stdin, exits 0 (or near-0) without doing anything. Caught
+  the hard way 2026-05-01 in cypher_restore-fwapg.sh.
+
+### pipefail with ssh+tee
+
+- `set -eu` does NOT propagate exit codes through pipelines.
+  `ssh ... | tee log` returns tee’s exit (always 0 for healthy tee),
+  masking ssh failure.
+- Use `set -euo pipefail` for any script that pipes a meaningful command
+  into tee/cat/grep/etc. Or check `${PIPESTATUS[0]}` explicitly.
+- Symptom when wrong: task notifications report “exit 0 / completed”
+  while remote work was actually skipped or errored.
 
 ### Paths
 
@@ -247,6 +313,58 @@ compound over time.
   `[ -n "$VAR" ] || exit 1`
 - `grep` returning empty silently — downstream commands get empty input
 
+### `mktemp` template needs enough X’s, and a failed `mktemp` leaves an empty var
+
+- BSD/macOS `mktemp -d -t <name>` requires the template to contain at
+  least 3 `X`s (`XXXXXX` is the safe default). Without them, mktemp
+  errors to stderr (`too few X's in template`) and **prints nothing to
+  stdout**.
+- Pattern:
+  `SCRATCH=$(mktemp -d -t aider-smoke) && cd "$SCRATCH" && <destructive>`.
+  When mktemp fails, `$SCRATCH=""`. `cd ""` is a no-op that **leaves you
+  in the caller’s cwd**. The destructive command (`rm`, `git init`,
+  `git add+commit`) then runs in cwd instead of a throwaway tmpdir.
+- Caught the hard way 2026-05-13: a Claude smoke test inside the rtj
+  checkout did exactly this, accidentally committed a `demo.R` to the
+  active feature branch, which then rode the squash-merge into rtj/main
+  and had to be cleaned up post-merge.
+- Fix patterns:
+  - Always use `XXXXXX` (6 X’s) in the template:
+    `mktemp -d -t aider-smoke.XXXXXX`.
+  - Guard the result:
+    `SCRATCH=$(mktemp -d ...) || exit 1; [ -n "$SCRATCH" ] || exit 1`.
+  - Use `set -euo pipefail` so the failed command-substitution kills the
+    script.
+
+### BSD vs GNU sed/grep portability (macOS hits this constantly)
+
+- macOS ships BSD `sed`/`grep`. Linux CI/cloud-init hosts ship GNU.
+  Snippets that work on one silently misbehave on the other.
+- **`\+` and `\|` are GNU BRE extensions.** On BSD they’re treated as
+  literal `+` and `|`, so the regex still “matches” but matches nothing
+  useful — leaving raw input unchanged.
+  - Symptom seen 2026-05-28: `sed 's/[^a-z0-9]\+/-/g'` on macOS left
+    spaces in an issue-title slug, producing an invalid git branch name.
+  - Fix: use `sed -E` (POSIX ERE) so `+`, `|`, `?`, `(...)` all work
+    without escapes on both flavors. The same regex becomes
+    `sed -E 's/[^a-z0-9]+/-/g'`.
+- **`s|pat|repl|` delimiter conflicts with `|` in
+  alternation/replacement on BSD.** Pick a delimiter that does not
+  appear in pattern or replacement (`#`, `,`, `:` are common choices).
+  Compound `s|x|y|; s|^| /||` chains where the trailing `||` looks like
+  an empty delimiter break on BSD sed even when GNU accepts them.
+- **Don’t parse `ls`.** BSD `ls` emits ANSI colour codes when stdout is
+  a TTY *or* when `CLICOLOR_FORCE` is set in env (often by shell rc
+  files), and the codes leak through pipes. Downstream `grep`/`sed`
+  chokes on the embedded escapes (`[01;31m...[0m`).
+  - Use
+    `find <dir> -maxdepth 1 -mindepth 1 -type d -exec basename {} \;`
+    for directory listings, or `printf '%s\n' <dir>/*/` for a glob, or
+    `for d in <dir>/*/; do basename "$d"; done`.
+- **When writing a snippet you expect to ship in a `skills/` SKILL.md or
+  any cloud-init runcmd**: it must be POSIX-portable. Default to
+  `sed -E`, avoid `\+`/`\|`, and don’t pipe `ls`.
+
 ### Process Visibility
 
 - Secrets passed as command-line args are visible in `ps aux`
@@ -260,18 +378,81 @@ compound over time.
   parse failure
 - Check with: `perl -ne 'print "$.: $_" if /[^\x00-\x7F]/' file.yaml`
 
+### YAML flow-mapping in runcmd
+
+- Any runcmd item containing both `{` and `:` is at risk of being parsed
+  as a YAML flow-mapping (dict), not a literal string. Cloud-init’s
+  shellify hits a non-string and throws TypeError, **aborting all
+  subsequent runcmd steps silently** while `final_message` still fires.
+
+- Don’t write: `- test -s /file || { echo "FATAL: ..." }` — the `:`
+  inside braces makes YAML see a dict.
+
+- Do write: use `- |` block scalar with explicit `if/then/fi`:
+
+  ``` yaml
+  - |
+    if [ ! -s /file ]; then
+      echo "FATAL: ..." >&2
+      exit 1
+    fi
+  ```
+
+- Validate post-edit:
+  `python3 -c "import yaml; runcmd=yaml.safe_load(open('cloud-init.yaml').read().split(chr(10),1)[1])['runcmd']; print([type(x).__name__ for x in runcmd if not isinstance(x,str)] or 'all strings')"`.
+  If the output is anything other than `all strings`, the runcmd will
+  fail.
+
 ### State
 
 - `cloud-init clean` causes full re-provisioning on next boot — almost
   never what you want before snapshot
 - Use `tailscale logout` not `tailscale down` before snapshot
   (deregister vs disconnect)
+- Wipe `/var/lib/tailscale/*` before snapshot too — `tailscale logout`
+  deauthorizes server-side but local node identity blob persists in
+  tailscaled.state. Snapshot restored elsewhere inherits prior key
+  material until `tailscale up` runs again.
+- Wipe `/etc/ssh/ssh_host_*` before snapshot — otherwise droplets
+  spawned from the same image share host identity.
 
 ### Template Variables
 
 - Secrets rendered via `templatefile()` are readable at
   `169.254.169.254` metadata endpoint
 - Acceptable for ephemeral machines, document the tradeoff
+- Heredocs in runcmd that write secrets: `<<'EOF'` (quoted) prevents
+  bash from re-expanding `$X` sequences in already-substituted
+  credential strings. AWS keys rarely contain `$` but base64-padded
+  secrets might.
+
+### Repo + key install ordering
+
+- `apt-key adv --keyserver` is deprecated on Ubuntu 24.04 noble —
+  silently fails AND APT ignores resulting keyring. Use
+  `gpg --dearmor` + `signed-by=` keyring file pattern.
+- Repo .list files in `write_files:` trigger the implicit
+  `package_update` BEFORE runcmd installs the keyring → first apt-get
+  update fails with NO_PUBKEY. Put the repo line in runcmd alongside the
+  key install, not in write_files.
+
+### Cloud-init users vs DO SSH key injection
+
+- DO injects `ssh_key_ids` only into `/root/.ssh/authorized_keys`
+  (cloud-init’s `cc_ssh` module). Cloud-init `users:` block with
+  `ssh_authorized_keys: []` does NOT pick those up.
+
+- Non-root users that need SSH access must copy from root’s keys in
+  runcmd:
+
+  ``` yaml
+  - mkdir -p /home/<user>/.ssh
+  - cp /root/.ssh/authorized_keys /home/<user>/.ssh/authorized_keys
+  - chown -R <user>:<user> /home/<user>/.ssh
+  ```
+
+- Guard with `test -s /root/.ssh/authorized_keys` to fail loudly if
+  `cc_ssh` hasn’t run before runcmd (rare race).
 
 ## OpenTofu / Terraform
 
@@ -288,8 +469,228 @@ compound over time.
 - Validate resource IDs before destroy: `[ -n "$ID" ] || exit 1`
 - `tofu destroy` without `-target` destroys everything including
   reserved IPs
-- Snapshot ID extraction: use `--resource droplet` and `grep -F` for
-  exact match
+- Snapshot ID extraction by name: use
+  `awk -v n="$NAME" '$2 == n {print $1}'` (exact match on column 2).
+  `grep -F "$NAME"` is substring-match and can grab a stale snapshot
+  whose name contains the new name as a substring.
+
+### “Has been deleted” in plan output is not authoritative — verify against the cloud API first
+
+- The AWS provider (5.x and some 6.x) has a known class of bug where a
+  transient read error (false 404, regional-endpoint hiccup) is
+  interpreted as “resource deleted outside of OpenTofu.” The plan will
+  show the resource and any children scheduled for destroy + recreate
+  (`forces replacement` cascades through children that interpolate the
+  parent’s id/arn).
+- If you didn’t delete the resource and the plan says it’s gone,
+  **verify against the cloud API before applying**:
+  `aws s3 head-bucket --bucket X`, `aws iam get-role --role-name X`,
+  etc. A `tofu plan -refresh=true` re-run a moment later often reports
+  “No changes.”
+- Caught 2026-05-14 in rtj env/prod for stac-era5-land: bucket fully
+  intact (60 objects, 307 MB) but plan said deleted with 5 child
+  resources “must be replaced.” Apply would have clobbered the policy +
+  lifecycle configs against the still-existing bucket. Recovery via
+  `-target` on the unrelated resource being added (rtj#157 then codifies
+  `lifecycle { prevent_destroy = true }` on the bucket + load-bearing
+  children).
+- **Belt-and-suspenders defense:** add
+  `lifecycle { prevent_destroy = true }` to high-value resources (S3
+  buckets, RDS instances, anything irreplaceable) in their module. Tofu
+  will refuse to plan a destroy until the lifecycle line itself is
+  removed in config — converts the failure mode from “apply silently
+  clobbers” into “plan errors with `Instance cannot be destroyed`.”
+  Don’t apply it to count-based resources where `count: 1 → 0` is a
+  legitimate transition.
+
+## DigitalOcean
+
+### Snapshot disk-size constraint
+
+- DO snapshots include the source droplet’s disk size. New droplets from
+  a snapshot must have disk **\>=** snapshot disk. Resize **up** is
+  fine; resize **down** below the snapshot disk is impossible without
+  rebuilding.
+- Build the snapshot at the smallest droplet size you’d ever want to
+  spin from it. Sizes vs disks at writing: `g-4vcpu-16gb` = 50 GB,
+  `g-8vcpu-32gb` / `m-4vcpu-32gb` = 100 GB, `m-8vcpu-64gb` = 200 GB.
+- If your workload requires X GB RAM minimum, your snapshot floor is
+  whatever droplet has X GB AND the smallest disk class.
+
+### Reserved IP detach behavior
+
+- Targeted destroy
+  (`tofu destroy -target=module.droplet -target=...assignment...`)
+  preserves the reserved IP at \$4/mo. Full `tofu destroy` releases it
+  (next apply gets a NEW IP).
+
+### Reserved IP assignment race (rtj#55, rtj#85)
+
+- DO returns 422 “Droplet already has a pending event” when reserved IP
+  assignment fires immediately after droplet+firewall creation. The
+  droplet’s internal event queue takes time to drain.
+- **Every DO droplet module that uses a reserved IP MUST have:**
+  1.  `time_sleep` resource between droplet creation and IP assignment,
+      with `create_duration ≥ 60s` (10s and 30s have both been observed
+      to race; 60s has more headroom)
+  2.  `depends_on = [time_sleep.<name>]` on the
+      `digitalocean_reserved_ip_assignment` resource
+  3.  A retry fallback in the wrapping shell script (`up.sh` style) that
+      detects the 422 in tofu output and uses
+      `doctl compute reserved-ip-action assign <ip> <droplet-id>` to
+      recover. Tofu doesn’t retry; it leaves state half-applied
+      (assignment recorded but DO didn’t actually attach).
+- **Snapshot-based spins are MORE prone to the race** than first-boot
+  from blank Ubuntu (more startup events compete for the droplet’s event
+  queue).
+- **Audit existing modules:**
+  `grep -L 'time_sleep' env/do/*/<host>/main.tf` finds modules missing
+  the gate. As of 2026-05-02, openclaw and geoserv have no `time_sleep`
+  — they will race eventually.
+
+## Docker / Postgres
+
+### Postgis init time
+
+- `imresamu/postgis` (and similar postgis images) on first cold start
+  (empty data volume) take **5-12 min** to install all extensions —
+  varies with disk IO and noisy-neighbor lottery on cloud hosts.
+  Health-wait scripts must allow 15 min minimum, ideally with
+  hard-fail + log dump on timeout.
+
+### Tuning vs host RAM
+
+- fresh’s `docker/docker-compose.yml` defaults are tuned for a 128 GB
+  host (`shared_buffers=32GB`, `shm_size=36gb`). On smaller hosts,
+  postgres OOMs at startup with “could not map anonymous shared memory”.
+- 32 GB host floor: use the M1/cypher 32 GB-host preset
+  (`scripts/fwapg/compose.override.m1.yml`) which sets
+  `shared_buffers=8GB, shm_size=12gb`.
+- Below 32 GB: postgres can technically start with smaller
+  `shared_buffers` but fwapg work becomes painful. Don’t run fwapg
+  pipelines on \<32 GB hosts.
+
+### `search_path` is data, not config
+
+- `ALTER DATABASE <db> SET search_path TO ...` is a database-level
+  setting **stored in the postgres data dir**. Wiped with
+  `docker compose down -v`. Must be re-applied on every restore.
+- Codify in your restore script, not in cloud-init or compose env (those
+  don’t apply to db-level settings).
+
+### `pkill <R/Python/etc. client>` does NOT cancel its Postgres query
+
+- Killing the client (R, Python, psql) closes its connection. The libpq
+  backend on the server keeps running the in-flight query until it
+  finishes — **server-side orphan**. The orphaned backend holds whatever
+  locks it had (table, view, advisory). Every later `DROP VIEW` /
+  `LOCK TABLE` / `ALTER` on the same object blocks behind it
+  indefinitely — *silent hangs* indistinguishable from a slow query.
+
+- Caught 2026-05-25 in link#205: a `pkill`’d `wsg_run_one.R` left a
+  `frs_network_features` SELECT running 1h45m; subsequent recomputes
+  wedged on `DROP VIEW barriers_bt_access` for 1h08m before someone
+  noticed.
+
+- **Always terminate the server-side backend**, not just the client:
+
+  ``` sql
+  SELECT pid, pg_terminate_backend(pid)
+  FROM pg_stat_activity
+  WHERE datname='<db>' AND state='active' AND now()-query_start > interval '3 minutes'
+    AND pid <> pg_backend_pid();
+  ```
+
+  Then kill the client. Order matters when you don’t know which side
+  will block.
+
+### Set `statement_timeout` + `lock_timeout` on long DB ops
+
+- Any long-running DB op from an R/Python/etc. client should set both at
+  session start, ideally via env
+  (`PGOPTIONS='-c statement_timeout=600000 -c lock_timeout=60000'`) or
+  on the connection itself
+  (`DBI::dbExecute(conn, "SET statement_timeout = '600000'")`). A
+  runaway query then cancels server-side (no orphan); a blocked
+  `DROP VIEW` gives up rather than wedging behind a zombie lock. Without
+  it, silent hangs become indistinguishable from “still working” and you
+  wait hours.
+- Pick a generous-but-bounded timeout (10× expected query time). The
+  point isn’t tight enforcement — it’s “fail loud instead of fail
+  silent.”
+
+### Function-as-join-predicate: index visibility depends on inlineability
+
+- `JOIN b ON some_function(a.cols, b.cols)` — Postgres can only use the
+  underlying indexes if `some_function` is `LANGUAGE sql` (inlineable).
+  `plpgsql` functions are opaque and force per-row evaluation → seq scan
+  / nested loop without indexes. Verify with `\df+ <function>` (look at
+  `Language`) and `EXPLAIN` (look for the function body expanded into
+  Filter / Index Cond).
+- Caught in link#205 with `whse_basemapping.fwa_downstream` — it IS
+  `LANGUAGE sql` + the planner did inline it; the symptom was elsewhere
+  (see below). But if a function-based join is slow and the function is
+  plpgsql, that’s the first thing to look at.
+
+### Joining on a per-tenant key (e.g. `id_segment` per-WSG) against a multi-tenant table is cartesian
+
+- `id_segment` in link’s persist schema is unique *within* a WSG, not
+  globally (link#203).
+  `WHERE id_segment IN (SELECT id_segment FROM streams WHERE wsg=aoi)`
+  against persist matches access rows from *every* WSG sharing those
+  id_segment values → N(WSGs)× duplicates → PK violations downstream and
+  50× memory.
+- Fix: filter by the full tenant key (`watershed_group_code = aoi`) when
+  the table has it. Pattern: introspect via `information_schema.columns`
+  at runtime and branch — the same function can serve a working schema
+  (single tenant, no WSG col) and persist (multi-tenant, with WSG col).
+
+### View vs. real table changes the planner’s join direction
+
+- A `CREATE VIEW v AS SELECT * FROM big_table WHERE …` carries no
+  row-count statistics. Used as a join input, the planner may pick the
+  other side (big) as the outer driver, blowing nested-loop cost ~1000×
+  — the symptom looks like “the indexes aren’t being used” but it’s
+  actually a wrong-direction nested loop.
+- Caught in link#205: AOI-scoping streams via a `VIEW` left Postgres
+  thinking the 26k FINA segments were as big as the 800k persist
+  barriers; it picked barriers as outer; 71M estimated result rows; \>10
+  min wall.
+- Fix when AOI-scoping into a smaller dataset: **materialise as a real
+  `CREATE TABLE` with indexes + `ANALYZE`**. The planner then sees the
+  small row count and picks it as outer. Drop the table on `on.exit` if
+  it’s transient.
+
+### Two-statement DELETE/INSERT into a persist table is not atomic
+
+- A “DELETE WHERE wsg=‘X’; INSERT …” pair into a persist table from an
+  orchestration script: if the INSERT fails (e.g. duplicate key from a
+  subtle JOIN bug), the DELETE already ran → **data loss for that WSG**.
+  Wrap in a single transaction (`BEGIN; … ; COMMIT`) when the persist
+  table is the only source of truth, so a failed INSERT rolls back the
+  DELETE. (link#205 lost FINA’s `streams_mapping_code` to this; the
+  surrounding cheap-recompute orchestration in `wsg_recompute_one.R`
+  should wrap both statements in a tx.)
+
+## Tailscale
+
+### ACL “users” semantics
+
+- Tailscale SSH ACL `"users": ["autogroup:nonroot"]` for `tag:compute`
+  blocks `ssh root@<node>` over the tailnet. Use `ssh <user>@<node>` +
+  sudo for root operations.
+- For SSH-as-root from off-tailnet (regular OpenSSH on the public IP),
+  the ACL doesn’t apply — but you need the SSH key registered on the
+  node.
+
+### Reusable + ephemeral auth keys
+
+- Cypher-style ephemeral compute droplets need both flags on the auth
+  key: **Reusable** (same key works across destroy/recreate) +
+  **Ephemeral** (tailnet entries auto-clean when offline \>5 min).
+- Tag the key (e.g. `tag:compute`) at creation time. Nodes joining with
+  that key inherit the tag automatically — no `--advertise-tags` needed
+  at `tailscale up` time.
 
 ## Security
 
@@ -328,6 +729,35 @@ compound over time.
 - Pinned download URLs (RStudio .deb) go stale — document where to
   update
 
+### Base name shadowing in formal args
+
+- Avoid `names`, `length`, `data`, `c`, `t`, `T`, `F`, etc. as formal
+  argument names. R’s function-lookup fallback often rescues `names(x)`
+  calls inside a function whose arg is also called `names` — but it’s a
+  confusing read, breaks under refactors, and generates a real “could
+  not find function” error when the lookup heuristic misses (e.g. inside
+  lapply/vapply/match.fun chains). Prefer descriptive alternatives:
+  `label_names`, `n`, `df`, etc.
+- Caught in mc#33 round 1 — `mc_label_ensure(names)` worked by luck when
+  calling `names(existing)` to read a named-vector’s names; renamed to
+  `label_names` for safety.
+
+### Cross-function consistency for label/string normalization
+
+- When two functions in the same package both decide whether a string is
+  a “system value” (or any normalized form), they MUST use the same
+  comparison. Mismatches are silent bugs that surface only on edge
+  cases.
+- mc#33 example: `mc_label_ensure` used `toupper(nm) %in% sys`
+  (case-insensitive system-label skip), but `resolve_label_names` used
+  `nm %in% sys` (case-sensitive). Result: `add = "inbox"` with
+  `create_missing = TRUE` was silently broken — ensure skipped creation,
+  resolve couldn’t match. Fix: both use `toupper(nm) %in% sys` and the
+  resolver normalizes its return to the canonical case.
+- Generalized check: when reviewing a diff that adds normalization
+  (case, whitespace, prefix-trim) on one side of an interaction, grep
+  for the other side and align them.
+
 ## General
 
 ### Adopting Existing Config
@@ -350,6 +780,65 @@ project’s `settings.json` → soul):
 - Moving/renaming scripts: update CLAUDE.md, READMEs, usage comments
 - New variables: update .tfvars.example
 - New workflows: update relevant README
+
+# NGE Feature Workflow
+
+For non-trivial issue-driven work, follow this checklist. Each step
+exists for a reason — skipping leads to rework, broken builds, and
+avoidable bugs that we’ve hit repeatedly.
+
+## The Sequence
+
+1.  **Start with `/planning-init <N>`** — given an issue number, enters
+    plan mode for codebase exploration, presents a phase breakdown for
+    user approval, then scaffolds branch + PWF baseline with the
+    approved phases. One command replaces the manual issue → explore →
+    plan → branch → scaffold dance.
+2.  **Write robust tests first** — failing tests that reproduce the
+    issue or document the new behavior. Tests are the contract; they
+    fail until the work makes them pass.
+3.  **Name with intent** — functions, parameters, internal helpers carry
+    the naming style of the package they live in. Look at existing
+    exports as the guide; consistency over cleverness. (Per-package
+    naming convention TBD — see soul issue tracking.)
+4.  **Examples that run** — every exported function gets a runnable
+    `@examples` block. Pkgdown renders them; CI executes them. An
+    example that doesn’t run is documentation rot.
+5.  **Code-check before each commit** — `/code-check` on staged diff.
+    Catches what tests miss: edge cases, hard-coded paths, unguarded
+    variables, security issues.
+6.  **Atomic commits** — each commit bundles code change + checkbox flip
+    in `task_plan.md`. The diff and the progress live in the same
+    commit; `git log -- planning/` tells the full story.
+7.  **`/planning-archive` when complete** — moves PWF to
+    `archive/YYYY-MM-issue-N-slug/`, creates a fresh `active/`. Then
+    `/gh-pr-push` opens the PR; `/gh-pr-merge` handles the release
+    bookkeeping.
+
+## When to Skip
+
+For one-line typo fixes, version-bump-only PRs, or trivial documentation
+edits, the full workflow is overhead. Use judgment. The threshold is
+roughly: **multi-step issue, multi-file change, or anything that
+requires scoping** → use the workflow.
+
+## Skills That Slot In
+
+- `/planning-init <N>` — start
+- `/planning-update` — sync checkboxes mid-session
+- `/code-check` — before every commit
+- `/planning-archive` — when issue closes
+- `/gh-pr-push` — open the PR
+- `/gh-pr-merge` — merge with release bookkeeping
+
+## Why This Exists
+
+We’ve hit snags repeatedly when half-doing this — branches that mix
+concerns, tests bolted on after, code-check skipped (and then a bug
+ships in the diff), examples that fail in pkgdown. Each step is small;
+the cumulative reliability gain is real. The convention is here so it
+becomes the default expectation, not a thing the user has to remind
+every session about.
 
 # LLM Behavioral Guidelines
 
@@ -444,15 +933,29 @@ next steps.
     - `task_plan.md` — Phases with checkbox tasks
     - `findings.md` — Research, discoveries, technical analysis
     - `progress.md` — Session log with timestamps and commit refs
-3.  **Commit the plan** — Commit the planning files before starting
-    implementation. This is the baseline.
-4.  **Work in atomic commits** — Each commit bundles code changes WITH
+3.  **Plan-review with the Plan agent before committing the plan** —
+    After scaffolding `task_plan.md` but BEFORE the baseline commit,
+    spawn the Plan subagent
+    (`Agent({subagent_type: "Plan", prompt: "..."}`) and ask it to
+    critically review the task_plan against the issue body + actual
+    codebase. Categorize findings as Blocker / Gap / Ordering /
+    Assumption / Scope / Acceptance. Address each before committing. The
+    agent reads files fresh — it catches what you miss when you’ve been
+    thinking about the design too long. Real example: caught 21 issues
+    including hardcoded literals across 4 files not listed in the plan,
+    untested DB column mismatches, unfixable test-literal-string
+    assertions, and a baseline-cache-shadow that would have produced a
+    6-second no-op run. Cost: ~5 min agent. Saves: hours of
+    mid-implementation rework.
+4.  **Commit the plan** — After Plan-agent review + fixes. This is the
+    baseline.
+5.  **Work in atomic commits** — Each commit bundles code changes WITH
     checkbox updates in the planning files. The diff shows both what was
     done and the checkbox marking it done.
-5.  **Code check before commit** — Run `/code-check` on staged diffs
+6.  **Code check before commit** — Run `/code-check` on staged diffs
     before committing. Don’t mark a task done until the diff passes
     review.
-6.  **Archive when complete** — Move `planning/active/` to
+7.  **Archive when complete** — Move `planning/active/` to
     `planning/archive/` via `/planning-archive`. Write a README.md in
     the archive directory with a one-paragraph outcome summary and
     closing commit/PR ref — future sessions scan these to catch up fast.
@@ -542,12 +1045,36 @@ NEWS.md style, pkgdown setup, test structure, hex sticker, etc.).
 ## Style
 
 - tidyverse style guide: snake_case, pipe operators (`|>` or `%>%`)
+
 - Match existing patterns in each codebase
+
 - Use `pak` for package installation (not `install.packages`)
+
 - Prefix column name vectors with `cols_` for discoverability in the
   environment pane: `cols_all`, `cols_carry`, `cols_split`,
   `cols_writable`. Same principle for other grouped vectors (`params_`,
   `tbl_`, etc.)
+
+- For SQL DDL+INSERT pairs that share a schema, use a single named
+  vector as the source of truth. Both `CREATE TABLE` and
+  `INSERT (cols) SELECT cols` derive their column lists from the same
+  `cols_*` vector. Avoids drift between table shape and write projection
+  — when columns change, you edit one place. Example:
+
+  ``` r
+
+  cols_streams <- c(
+    id_segment           = "integer NOT NULL",
+    watershed_group_code = "varchar(4) NOT NULL",
+    geom                 = "geometry(MultiLineStringZM, 3005)"
+    # …
+  )
+  # CREATE TABLE consumes both names + types
+  ddl_body <- paste(names(cols_streams), unname(cols_streams), sep = " ",
+                    collapse = ", ")
+  # INSERT consumes names only
+  proj <- paste(names(cols_streams), collapse = ", ")
+  ```
 
 ## Package Structure
 
@@ -578,7 +1105,7 @@ traceable record of what was planned, built, and verified.
 
 For new packages or major features, work on a branch and merge via PR:
 
-    main ← scaffold-branch (PR closes with "Relates to NewGraphEnvironment/sred-2025-2026#N")
+    main ← scaffold-branch (PR closes with "Relates to NewGraphEnvironment/sred#N")
 
 This gives one PR that contains all commits — a single SRED
 cross-reference covers the entire body of work. Individual commits
@@ -612,6 +1139,22 @@ newgraph conventions.
 
   For error context: `grep -E "(ERROR:|FAIL )" -A 10 | head -25`
 
+### Common pitfalls
+
+- **[`cli::cli_alert_warning()`](https://cli.r-lib.org/reference/cli_alert.html)
+  is not [`warning()`](https://rdrr.io/r/base/warning.html).** It’s
+  visual only — callers can’t catch it with
+  `withCallingHandlers(warning = ...)` and testthat’s `expect_warning()`
+  won’t fire. When a function offers a `warn` mode that callers may want
+  to react to programmatically, use
+  [`warning()`](https://rdrr.io/r/base/warning.html). Reserve
+  `cli_alert_warning()` for FYI messages with no programmatic contract.
+
+- **`expect_match(x, ..., all = FALSE)` passes silently on
+  `character(0)`.** If the input is empty (e.g. no warnings fired), the
+  assertion succeeds vacuously and defeats the test. Always pair with
+  `expect_gt(length(x), 0)` first when input may be empty.
+
 ## Examples and Vignettes
 
 ### Runnable examples on every exported function
@@ -638,9 +1181,19 @@ users can read it without installing
 [`bookdown::html_vignette2`](https://pkgs.rstudio.com/bookdown/reference/html_document2.html)
 (not
 [`rmarkdown::html_vignette`](https://pkgs.rstudio.com/rmarkdown/reference/html_vignette.html))
-for figure numbering and cross-references. Requires `bookdown` in
-Suggests and chunks must have `fig.cap` for numbered figures.
-Cross-reference with `Figure \@ref(fig:chunk-name)`.
+for figure numbering. Requires `bookdown` in Suggests and chunks must
+have `fig.cap` / `caption =` for numbered figures and tables.
+
+**Gotcha — cross-references don’t resolve in vignettes.**
+`Table \@ref(tab:foo)` and `Figure \@ref(fig:foo)` markers compile to a
+literal `\@ref(...)` in the rendered HTML rather than a numbered link.
+Bookdown’s cross-ref machinery isn’t fully wired through
+`html_vignette2` under pkgdown. Use natural language instead — “the
+table below”, “the floodplain map”, “the parameter table” — and let the
+captions speak for themselves. If you need real numbered cross-refs, use
+[`bookdown::html_document2`](https://pkgs.rstudio.com/bookdown/reference/html_document2.html)
+(matches the cd-style report-appendix pattern) and accept that the
+output is no longer a true package vignette.
 
 **Vignettes that need external resources (DB, API, STAC):** Do NOT use
 the `.Rmd.orig` pre-knit pattern — it breaks `bookdown` figure numbering

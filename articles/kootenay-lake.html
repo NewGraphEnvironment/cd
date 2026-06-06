@@ -3715,10 +3715,10 @@ both significant.</p>
 reference for annual mean, daytime maximum, and overnight minimum, with
 both window and trend p-values below 0.001. Vapour pressure deficit is
 up significantly on both tests. Annual precipitation was about 6 to 7 %
-<em>lower</em> in the recent decade — and unlike the FWCP Peace just to
-the north, the long-term Mann-Kendall trend test does confirm a steady
-year-on-year decline (trend p ≈ 0.02). Soil moisture is roughly flat.
-Relative humidity shows a small significant decline.</p>
+<em>lower</em> in the recent decade, and the long-term Mann-Kendall
+trend test confirms a steady year-on-year decline (trend p ≈ 0.02). Soil
+moisture is roughly flat. Relative humidity shows a small significant
+decline.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cmp</span> <span class="op">&lt;-</span> <span class="fu">cd</span><span class="fu">::</span><span class="fu"><a href="../reference/cd_compare.html">cd_compare</a></span><span class="op">(</span><span class="va">ts</span><span class="op">)</span>   <span class="co"># defaults: 2015–2025 vs 1951–1980, Welch t-test</span></span></code></pre></div>
 <div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:360px; ">
@@ -5359,25 +5359,19 @@ the timing of the spring freshet — the annual flood pulse that shapes
 channel morphology, mobilizes spawning gravels, and refills off-channel
 rearing habitat for resident salmonids. Cordillera-wide, snowpack has
 been declining for decades <span class="citation">(<a href="#ref-mote_etal2018Dramaticdeclines">Mote et al. 2018</a>; <a href="#ref-pederson_etal2011UnusualNature">Pederson et al.
-2011</a>)</span>. For four BC river basins (Fraser, Peace, Columbia,
-Campbell), Najafi et al. <span class="citation">(<a href="#ref-najafi_etal2017AttributionObserved">2017</a>)</span>
-attribute observed spring SWE decline to anthropogenic forcing —
-including the Columbia basin, the parent system of the Kootenays. For
-the neighbouring Fraser, Kang et al. <span class="citation">(<a href="#ref-kang_etal2016ImpactsRapidly">2016</a>)</span> document a
-~10-day advance of the spring freshet over 1949-2006.</p>
-<p><strong>For the Kootenay Lake Region the snowpack signal is sharper
-than in northern BC reporting regions, in line with the Selkirks /
-Purcells sitting at warmer latitudes than Peace-region snow
-zones.</strong> Annual snow water equivalent (SWE) is down
-<strong>23%</strong> (206 → 160 mm) since the 1951–1980 reference.
-Annual snowfall and annual snowmelt both fell about 15%, and the
-<strong>snowmelt midpoint (DOY-50) shifted 12.6 days earlier</strong> in
-the year. Annual peak SWE — the seasonal maximum — dropped <strong>92
-mm</strong> (-16%). And — distinct from the FWCP Peace where total
-precipitation is roughly stable — <strong>annual precipitation in the
-Kootenay Lake Region has declined ~7%</strong> since the reference
-period, with a long-term Mann-Kendall p of 0.02. Together this is a
-“warmer <em>and</em> drier” story rather than a “warmer-only” one.</p>
+2011</a>)</span>. Najafi et al. <span class="citation">(<a href="#ref-najafi_etal2017AttributionObserved">2017</a>)</span>
+attribute observed spring SWE decline in the Columbia basin — the parent
+system of the Kootenays — to anthropogenic forcing.</p>
+<p><strong>The Kootenay Lake Region snowpack signal is sharp.</strong>
+Annual snow water equivalent (SWE) is down <strong>23%</strong> (206 →
+160 mm) since the 1951–1980 reference. Annual snowfall and annual
+snowmelt both fell about 15%, and the <strong>snowmelt midpoint (DOY-50)
+shifted 12.6 days earlier</strong> in the year. Annual peak SWE — the
+seasonal maximum — dropped <strong>92 mm</strong> (-16%). <strong>Annual
+precipitation in the Kootenay Lake Region has declined ~7%</strong>
+since the reference period, with a long-term Mann-Kendall p of 0.02.
+Together this is a “warmer <em>and</em> drier” story rather than a
+“warmer-only” one.</p>
 <p>A few notes on how to read the snow numbers below.</p>
 <p>ERA5-Land represents snow on a roughly 9 km grid — each grid cell is
 a single number summarizing snow averaged over about 80 km² of mixed
@@ -5395,19 +5389,19 @@ model).</p>
 <p>Our QA cross-check for this region used three usable BC ASWS
 automated snow-pillow records inside the AOI (74 paired station-years
 1972-2025). Pooled correlation between ERA5-Land peak SWE and station
-peak SWE is <strong>r = 0.90</strong> — meaningfully better than the
-FWCP Peace’s 0.51, meaning the model tracks year-to-year variability
-well at these high-elevation Kootenay sites. But the absolute bias is
-large and uniformly negative: ERA5-Land is <strong>40-63% too
-low</strong> at Moyie Mountain (1835 m, Purcells alpine) and Redfish
-Creek (2100 m, Selkirks alpine), consistent with both stations sitting
-at high-snow microsites within their 9 km cells. Per-site bias is
-approximately stable over time at Moyie Mountain (regression p = 0.15)
-and marginal at Redfish Creek (p = 0.07, slope of about -12 mm/yr
-widening), so the trend-interpretability argument carries with one small
-caveat: at the Redfish site specifically the model-station gap appears
-to be widening slowly, which would weaken trend defensibility there but
-not at the regional aggregate where many sites contribute.</p>
+peak SWE is <strong>r = 0.90</strong>, meaning the model tracks
+year-to-year variability well at these high-elevation Kootenay sites.
+But the absolute bias is large and uniformly negative: ERA5-Land is
+<strong>40-63% too low</strong> at Moyie Mountain (1835 m, Purcells
+alpine) and Redfish Creek (2100 m, Selkirks alpine), consistent with
+both stations sitting at high-snow microsites within their 9 km cells.
+Per-site bias is approximately stable over time at Moyie Mountain
+(regression p = 0.15) and marginal at Redfish Creek (p = 0.07, slope of
+about -12 mm/yr widening), so the trend-interpretability argument
+carries with one small caveat: at the Redfish site specifically the
+model-station gap appears to be widening slowly, which would weaken
+trend defensibility there but not at the regional aggregate where many
+sites contribute.</p>
 <p>What does survive both kinds of error: <strong>the gap between the
 model and the stations is the same size in 2020 as it was in
 1990.</strong> The bias is stable over time at every site (regression of
@@ -5747,13 +5741,11 @@ precipitation that fell as snow. Anomaly is in percentage points.
 <p>Three findings carry the snowpack story for the Kootenay Lake
 Region.</p>
 <p><strong>Snow is leaving <em>and</em> falling less.</strong> Annual
-snowfall is down 15% (649 → 554 mm) — distinct from the FWCP Peace
-pattern just north, where the snowpack decline was almost entirely about
-earlier melt on roughly stable annual snowfall. The Kootenay Lake region
-is warm enough at the relevant elevations that the snow-vs-rain
-threshold is being crossed in the calendar — winter precipitation is
-falling more often as rain instead of snow. This matches the threshold
-finding from Knowles et al. <span class="citation">(<a href="#ref-knowles_etal2006TrendsSnowfall">2006</a>)</span>: the
+snowfall is down 15% (649 → 554 mm). The Kootenay Lake region is warm
+enough at the relevant elevations that the snow-vs-rain threshold is
+being crossed in the calendar — winter precipitation is falling more
+often as rain instead of snow. This matches the threshold finding from
+Knowles et al. <span class="citation">(<a href="#ref-knowles_etal2006TrendsSnowfall">2006</a>)</span>: the
 strongest snowfall-fraction declines in the western US occur where
 winter wet-day minimum temperatures are warmer than -5 °C, which is the
 regime the southern Kootenays sit in.</p>
@@ -6120,16 +6112,12 @@ doubt of being random noise. Daily maximum, daily minimum, and daily
 mean temperatures all tell the same story. The whole region moved
 together — there is no warming hot-spot at the ecoregion scale.</p>
 <p><strong>Precipitation is declining and the decline is regionally
-consistent.</strong> This is the place where the Kootenay Lake Region
-diverges sharpest from the FWCP Peace just north. The Peace showed
-mostly-flat annual precipitation with significant <em>increases</em> in
-two of its five ecoregions; the Kootenays show a <strong>~7%
-decline</strong> in annual precipitation from the 1951-1980 reference to
-the 2015-2025 recent decade, with a long-term Mann-Kendall p of 0.02.
-Spatially the decline is consistent across all four ecoregions of the
-AOI, so the pattern at the regional average mirrors what each watershed
-group sees individually. All four watershed groups in the AOI are
-sitting in the same drying signal.</p>
+consistent.</strong> Annual precipitation dropped <strong>~7%</strong>
+from the 1951-1980 reference to the 2015-2025 recent decade, with a
+long-term Mann-Kendall p of 0.02. Spatially the decline is consistent
+across all four ecoregions of the AOI, so the pattern at the regional
+average mirrors what each watershed group sees individually. All four
+watershed groups in the AOI are sitting in the same drying signal.</p>
 <p><strong>The atmosphere is drying.</strong> Vapour pressure deficit —
 the gap between how much water the air could hold and how much it
 actually does — is up significantly across the region, mirroring the
@@ -6146,13 +6134,10 @@ the precipitation decline — the warmer atmosphere is drinking surface
 moisture at a rate that keeps the topsoil layer roughly even, but the
 resulting late-summer water deficit shows up in stream baseflow rather
 than in soil-moisture statistics.</p>
-<p><strong>Snow is leaving <em>and</em> falling less.</strong> This is
-the second place the Kootenays diverge from the FWCP Peace pattern. The
-Peace’s snowpack decline was almost entirely about earlier melt on
-roughly stable annual snowfall. The Kootenays show <strong>annual
-snowfall down 15%</strong> alongside the freshet shift — winter
-precipitation is falling more often as rain instead of snow, matching
-the threshold finding from Knowles et al. <span class="citation">(<a href="#ref-knowles_etal2006TrendsSnowfall">2006</a>)</span> for sites
+<p><strong>Snow is leaving <em>and</em> falling less.</strong> Annual
+snowfall is <strong>down 15%</strong> alongside the freshet shift —
+winter precipitation is falling more often as rain instead of snow,
+matching the threshold finding from Knowles et al. <span class="citation">(<a href="#ref-knowles_etal2006TrendsSnowfall">2006</a>)</span> for sites
 with winter wet-day minimum temperatures warmer than -5 °C. Annual snow
 water equivalent (SWE) is down 23% (206 → 160 mm); summer SWE has
 collapsed by 73%; the snowmelt 50% day-of-year shifted <strong>12.6 days
@@ -6173,20 +6158,15 @@ substantially more thermal habitat than warm-water species under the
 same forcing. Both findings carry directly into the BC interior
 cold-water cohort the Kootenay Lake Region supports. The
 evapotranspiration imbalance means low-flow conditions in late summer
-are not being relieved (precipitation is falling, not rising as in the
-Peace); the cold-water input that high-elevation snowpack provides to
-streams during the warmest, most thermally stressful weeks of summer is
-dropping in parallel with summer SWE; and the spring freshet — the
-dominant high-flow event that shapes channel morphology, mobilizes
-spawning gravels, and refills off-channel rearing habitat — is shifting
-weeks earlier. The neighbouring Fraser Basin shows the same shift —
-<span class="citation">Kang et al. (<a href="#ref-kang_etal2016ImpactsRapidly">2016</a>)</span> documented a
-~10-day advance in the spring freshet at Hope between 1949 and 2006,
-with persistent declines through autumn recession just when salmon are
-migrating up the Fraser. Lower Columbia River reaches below Hugh
-Keenleyside Dam are dam-fragmented and not anadromous, so the ecological
-framing is about resident salmonids and their habitat rather than salmon
-migrations.</p>
+are not being relieved by precipitation; the cold-water input that
+high-elevation snowpack provides to streams during the warmest, most
+thermally stressful weeks of summer is dropping in parallel with summer
+SWE; and the spring freshet — the dominant high-flow event that shapes
+channel morphology, mobilizes spawning gravels, and refills off-channel
+rearing habitat — is shifting weeks earlier. Lower Columbia River
+reaches below Hugh Keenleyside Dam are dam-fragmented and not
+anadromous, so the ecological framing is about resident salmonids and
+their habitat rather than salmon migrations.</p>
 </div>
 <div class="section level2 unnumbered">
 <h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>

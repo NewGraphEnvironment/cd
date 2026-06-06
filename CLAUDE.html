@@ -174,6 +174,40 @@
 </ul><!-- BEGIN SOUL CONVENTIONS — DO NOT EDIT BELOW THIS LINE --></div>
 </div>
 <div class="section level1">
+<h1 id="ci-monitoring">CI Monitoring<a class="anchor" aria-label="anchor" href="#ci-monitoring"></a></h1>
+<p>When this repo has GitHub Actions workflows, scan recent runs on session start. Catches failed pkgdown deploys, broken vignette builds, and stale citation regenerations that would otherwise linger until the user manually checks.</p>
+<div class="section level2">
+<h2 id="on-session-start">On Session Start<a class="anchor" aria-label="anchor" href="#on-session-start"></a></h2>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="ex">gh</span> run list <span class="at">--limit</span> 5 <span class="at">--json</span> status,conclusion,name,createdAt,databaseId <span class="dt">\</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>  <span class="at">--jq</span> <span class="st">'.[] | select(.conclusion == "failure")'</span></span></code></pre></div>
+<p>If any failures since the last visit, surface to the user before starting other work:</p>
+<blockquote>
+<p>Workflow <code>&lt;name&gt;</code> failed <code>&lt;time&gt;</code> ago (run <code>&lt;id&gt;</code>). Investigate with <code>gh run view &lt;id&gt; --log-failed</code>. Fix or proceed with current task?</p>
+</blockquote>
+<p>User decides; do not auto-fix.</p>
+</div>
+<div class="section level2">
+<h2 id="particular-failures-worth-naming">Particular Failures Worth Naming<a class="anchor" aria-label="anchor" href="#particular-failures-worth-naming"></a></h2>
+<ul><li>
+<strong>pkgdown</strong> — docs site on GitHub Pages broken</li>
+<li>
+<strong>R-CMD-check</strong> — package may not install</li>
+<li>
+<strong>Vignette / build-vignettes</strong> — vignette docs incomplete</li>
+<li>
+<strong>update-citation-cff</strong> — CITATION.cff stale</li>
+</ul></div>
+<div class="section level2">
+<h2 id="why-this-matters">Why This Matters<a class="anchor" aria-label="anchor" href="#why-this-matters"></a></h2>
+<p>Without this scan, post-merge workflow failures linger until someone (often the user) notices a stale docs site or a missing vignette. The session-start sweep catches them on the first re-entry into the repo.</p>
+</div>
+<div class="section level2">
+<h2 id="pairs-with-gh-pr-merge">Pairs with <code>/gh-pr-merge</code>
+<a class="anchor" aria-label="anchor" href="#pairs-with-gh-pr-merge"></a></h2>
+<p>The skill watches workflows triggered by a fresh merge in real time — that’s the targeted catch. This convention is the backstop for failures that landed when no one was watching (merges via web UI, scheduled triggers, manually-triggered workflows).</p>
+</div>
+</div>
+<div class="section level1">
 <h1 id="code-check-conventions">Code Check Conventions<a class="anchor" aria-label="anchor" href="#code-check-conventions"></a></h1>
 <p>Structured checklist for reviewing diffs before commit. Used by <code>/code-check</code>. Add new checks here when a bug class is discovered — they compound over time.</p>
 <div class="section level2">
@@ -186,6 +220,20 @@
 <code>"echo '${VAR}'"</code> — if VAR contains <code>'</code>, shell syntax breaks</li>
 <li>Use <code>printf '%s\n' "$VAR" | command</code> to pipe values safely</li>
 <li>Heredocs: unquoted <code>&lt;&lt;EOF</code> expands variables locally, <code>&lt;&lt;'EOF'</code> does not — know which you need</li>
+<li>Pass-through-ssh args: <code>printf '%q'</code> escapes per-arg so workload paths with spaces / quotes / metacharacters survive the local-shell → ssh-argv → remote-shell round-trip. Without it, <code>ssh host 'cmd' "$path"</code> joins args with spaces on remote and re-parses, losing argument boundaries.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="heredoc-precedence-in-pipelines">Heredoc precedence in pipelines<a class="anchor" aria-label="anchor" href="#heredoc-precedence-in-pipelines"></a></h3>
+<ul><li>
+<code>cmd1 | cmd2 &lt;&lt;EOF</code> — the heredoc binds to <code>cmd2</code> (the rightmost simple command). If you intended <code>cmd1</code> to receive it, put <code>&lt;&lt;EOF</code> on cmd1 explicitly: <code>cmd1 &lt;&lt;EOF | cmd2</code>.</li>
+<li>Symptom when wrong: ssh body silently echoed by tee/cat/etc, ssh side gets empty stdin, exits 0 (or near-0) without doing anything. Caught the hard way 2026-05-01 in cypher_restore-fwapg.sh.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="pipefail-with-sshtee">pipefail with ssh+tee<a class="anchor" aria-label="anchor" href="#pipefail-with-sshtee"></a></h3>
+<ul><li>
+<code>set -eu</code> does NOT propagate exit codes through pipelines. <code>ssh ... | tee log</code> returns tee’s exit (always 0 for healthy tee), masking ssh failure.</li>
+<li>Use <code>set -euo pipefail</code> for any script that pipes a meaningful command into tee/cat/grep/etc. Or check <code>${PIPESTATUS[0]}</code> explicitly.</li>
+<li>Symptom when wrong: task notifications report “exit 0 / completed” while remote work was actually skipped or errored.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="paths">Paths<a class="anchor" aria-label="anchor" href="#paths"></a></h3>
@@ -205,6 +253,35 @@
 <code>grep</code> returning empty silently — downstream commands get empty input</li>
 </ul></div>
 <div class="section level3">
+<h3 id="mktemp-template-needs-enough-xs-and-a-failed-mktemp-leaves-an-empty-var">
+<code>mktemp</code> template needs enough X’s, and a failed <code>mktemp</code> leaves an empty var<a class="anchor" aria-label="anchor" href="#mktemp-template-needs-enough-xs-and-a-failed-mktemp-leaves-an-empty-var"></a></h3>
+<ul><li>BSD/macOS <code>mktemp -d -t &lt;name&gt;</code> requires the template to contain at least 3 <code>X</code>s (<code>XXXXXX</code> is the safe default). Without them, mktemp errors to stderr (<code>too few X's in template</code>) and <strong>prints nothing to stdout</strong>.</li>
+<li>Pattern: <code>SCRATCH=$(mktemp -d -t aider-smoke) &amp;&amp; cd "$SCRATCH" &amp;&amp; &lt;destructive&gt;</code>. When mktemp fails, <code>$SCRATCH=""</code>. <code>cd ""</code> is a no-op that <strong>leaves you in the caller’s cwd</strong>. The destructive command (<code>rm</code>, <code>git init</code>, <code>git add+commit</code>) then runs in cwd instead of a throwaway tmpdir.</li>
+<li>Caught the hard way 2026-05-13: a Claude smoke test inside the rtj checkout did exactly this, accidentally committed a <code>demo.R</code> to the active feature branch, which then rode the squash-merge into rtj/main and had to be cleaned up post-merge.</li>
+<li>Fix patterns:
+<ul><li>Always use <code>XXXXXX</code> (6 X’s) in the template: <code>mktemp -d -t aider-smoke.XXXXXX</code>.</li>
+<li>Guard the result: <code>SCRATCH=$(mktemp -d ...) || exit 1; [ -n "$SCRATCH" ] || exit 1</code>.</li>
+<li>Use <code>set -euo pipefail</code> so the failed command-substitution kills the script.</li>
+</ul></li>
+</ul></div>
+<div class="section level3">
+<h3 id="bsd-vs-gnu-sedgrep-portability-macos-hits-this-constantly">BSD vs GNU sed/grep portability (macOS hits this constantly)<a class="anchor" aria-label="anchor" href="#bsd-vs-gnu-sedgrep-portability-macos-hits-this-constantly"></a></h3>
+<ul><li>macOS ships BSD <code>sed</code>/<code>grep</code>. Linux CI/cloud-init hosts ship GNU. Snippets that work on one silently misbehave on the other.</li>
+<li>
+<strong><code>\+</code> and <code>\|</code> are GNU BRE extensions.</strong> On BSD they’re treated as literal <code>+</code> and <code>|</code>, so the regex still “matches” but matches nothing useful — leaving raw input unchanged.
+<ul><li>Symptom seen 2026-05-28: <code>sed 's/[^a-z0-9]\+/-/g'</code> on macOS left spaces in an issue-title slug, producing an invalid git branch name.</li>
+<li>Fix: use <code>sed -E</code> (POSIX ERE) so <code>+</code>, <code>|</code>, <code>?</code>, <code>(...)</code> all work without escapes on both flavors. The same regex becomes <code>sed -E 's/[^a-z0-9]+/-/g'</code>.</li>
+</ul></li>
+<li>
+<strong><code>s|pat|repl|</code> delimiter conflicts with <code>|</code> in alternation/replacement on BSD.</strong> Pick a delimiter that does not appear in pattern or replacement (<code>#</code>, <code>,</code>, <code>:</code> are common choices). Compound <code>s|x|y|; s|^| /||</code> chains where the trailing <code>||</code> looks like an empty delimiter break on BSD sed even when GNU accepts them.</li>
+<li>
+<strong>Don’t parse <code>ls</code>.</strong> BSD <code>ls</code> emits ANSI colour codes when stdout is a TTY <em>or</em> when <code>CLICOLOR_FORCE</code> is set in env (often by shell rc files), and the codes leak through pipes. Downstream <code>grep</code>/<code>sed</code> chokes on the embedded escapes (<code>[01;31m...[0m</code>).
+<ul><li>Use <code>find &lt;dir&gt; -maxdepth 1 -mindepth 1 -type d -exec basename {} \;</code> for directory listings, or <code>printf '%s\n' &lt;dir&gt;/*/</code> for a glob, or <code>for d in &lt;dir&gt;/*/; do basename "$d"; done</code>.</li>
+</ul></li>
+<li>
+<strong>When writing a snippet you expect to ship in a <code>skills/</code> SKILL.md or any cloud-init runcmd</strong>: it must be POSIX-portable. Default to <code>sed -E</code>, avoid <code>\+</code>/<code>\|</code>, and don’t pipe <code>ls</code>.</li>
+</ul></div>
+<div class="section level3">
 <h3 id="process-visibility">Process Visibility<a class="anchor" aria-label="anchor" href="#process-visibility"></a></h3>
 <ul><li>Secrets passed as command-line args are visible in <code>ps aux</code>
 </li>
@@ -220,15 +297,49 @@
 </li>
 </ul></div>
 <div class="section level3">
+<h3 id="yaml-flow-mapping-in-runcmd">YAML flow-mapping in runcmd<a class="anchor" aria-label="anchor" href="#yaml-flow-mapping-in-runcmd"></a></h3>
+<ul><li><p>Any runcmd item containing both <code>{</code> and <code>:</code> is at risk of being parsed as a YAML flow-mapping (dict), not a literal string. Cloud-init’s shellify hits a non-string and throws TypeError, <strong>aborting all subsequent runcmd steps silently</strong> while <code>final_message</code> still fires.</p></li>
+<li><p>Don’t write: <code>- test -s /file || { echo "FATAL: ..." }</code> — the <code>:</code> inside braces makes YAML see a dict.</p></li>
+<li>
+<p>Do write: use <code>- |</code> block scalar with explicit <code>if/then/fi</code>:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="kw">- </span><span class="ch">|</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>  if [ ! -s /file ]; then</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>    echo "FATAL: ..." &gt;&amp;2</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>    exit 1</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>  fi</span></code></pre></div>
+</li>
+<li><p>Validate post-edit: <code>python3 -c "import yaml; runcmd=yaml.safe_load(open('cloud-init.yaml').read().split(chr(10),1)[1])['runcmd']; print([type(x).__name__ for x in runcmd if not isinstance(x,str)] or 'all strings')"</code>. If the output is anything other than <code>all strings</code>, the runcmd will fail.</p></li>
+</ul></div>
+<div class="section level3">
 <h3 id="state">State<a class="anchor" aria-label="anchor" href="#state"></a></h3>
 <ul><li>
 <code>cloud-init clean</code> causes full re-provisioning on next boot — almost never what you want before snapshot</li>
 <li>Use <code>tailscale logout</code> not <code>tailscale down</code> before snapshot (deregister vs disconnect)</li>
+<li>Wipe <code>/var/lib/tailscale/*</code> before snapshot too — <code>tailscale logout</code> deauthorizes server-side but local node identity blob persists in tailscaled.state. Snapshot restored elsewhere inherits prior key material until <code>tailscale up</code> runs again.</li>
+<li>Wipe <code>/etc/ssh/ssh_host_*</code> before snapshot — otherwise droplets spawned from the same image share host identity.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="template-variables">Template Variables<a class="anchor" aria-label="anchor" href="#template-variables"></a></h3>
 <ul><li>Secrets rendered via <code>templatefile()</code> are readable at <code>169.254.169.254</code> metadata endpoint</li>
 <li>Acceptable for ephemeral machines, document the tradeoff</li>
+<li>Heredocs in runcmd that write secrets: <code>&lt;&lt;'EOF'</code> (quoted) prevents bash from re-expanding <code>$X</code> sequences in already-substituted credential strings. AWS keys rarely contain <code>$</code> but base64-padded secrets might.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="repo--key-install-ordering">Repo + key install ordering<a class="anchor" aria-label="anchor" href="#repo--key-install-ordering"></a></h3>
+<ul><li>
+<code>apt-key adv --keyserver</code> is deprecated on Ubuntu 24.04 noble — silently fails AND APT ignores resulting keyring. Use <code>gpg --dearmor</code> + <code>signed-by=</code> keyring file pattern.</li>
+<li>Repo .list files in <code>write_files:</code> trigger the implicit <code>package_update</code> BEFORE runcmd installs the keyring → first apt-get update fails with NO_PUBKEY. Put the repo line in runcmd alongside the key install, not in write_files.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="cloud-init-users-vs-do-ssh-key-injection">Cloud-init users vs DO SSH key injection<a class="anchor" aria-label="anchor" href="#cloud-init-users-vs-do-ssh-key-injection"></a></h3>
+<ul><li><p>DO injects <code>ssh_key_ids</code> only into <code>/root/.ssh/authorized_keys</code> (cloud-init’s <code>cc_ssh</code> module). Cloud-init <code>users:</code> block with <code>ssh_authorized_keys: []</code> does NOT pick those up.</p></li>
+<li>
+<p>Non-root users that need SSH access must copy from root’s keys in runcmd:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="kw">-</span><span class="at"> mkdir -p /home/&lt;user&gt;/.ssh</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="kw">-</span><span class="at"> cp /root/.ssh/authorized_keys /home/&lt;user&gt;/.ssh/authorized_keys</span></span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="kw">-</span><span class="at"> chown -R &lt;user&gt;:&lt;user&gt; /home/&lt;user&gt;/.ssh</span></span></code></pre></div>
+</li>
+<li><p>Guard with <code>test -s /root/.ssh/authorized_keys</code> to fail loudly if <code>cc_ssh</code> hasn’t run before runcmd (rare race).</p></li>
 </ul></div>
 </div>
 <div class="section level2">
@@ -245,7 +356,119 @@
 </li>
 <li>
 <code>tofu destroy</code> without <code>-target</code> destroys everything including reserved IPs</li>
-<li>Snapshot ID extraction: use <code>--resource droplet</code> and <code>grep -F</code> for exact match</li>
+<li>Snapshot ID extraction by name: use <code>awk -v n="$NAME" '$2 == n {print $1}'</code> (exact match on column 2). <code>grep -F "$NAME"</code> is substring-match and can grab a stale snapshot whose name contains the new name as a substring.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="has-been-deleted-in-plan-output-is-not-authoritative--verify-against-the-cloud-api-first">“Has been deleted” in plan output is not authoritative — verify against the cloud API first<a class="anchor" aria-label="anchor" href="#has-been-deleted-in-plan-output-is-not-authoritative--verify-against-the-cloud-api-first"></a></h3>
+<ul><li>The AWS provider (5.x and some 6.x) has a known class of bug where a transient read error (false 404, regional-endpoint hiccup) is interpreted as “resource deleted outside of OpenTofu.” The plan will show the resource and any children scheduled for destroy + recreate (<code>forces replacement</code> cascades through children that interpolate the parent’s id/arn).</li>
+<li>If you didn’t delete the resource and the plan says it’s gone, <strong>verify against the cloud API before applying</strong>: <code>aws s3 head-bucket --bucket X</code>, <code>aws iam get-role --role-name X</code>, etc. A <code>tofu plan -refresh=true</code> re-run a moment later often reports “No changes.”</li>
+<li>Caught 2026-05-14 in rtj env/prod for stac-era5-land: bucket fully intact (60 objects, 307 MB) but plan said deleted with 5 child resources “must be replaced.” Apply would have clobbered the policy + lifecycle configs against the still-existing bucket. Recovery via <code>-target</code> on the unrelated resource being added (rtj#157 then codifies <code>lifecycle { prevent_destroy = true }</code> on the bucket + load-bearing children).</li>
+<li>
+<strong>Belt-and-suspenders defense:</strong> add <code>lifecycle { prevent_destroy = true }</code> to high-value resources (S3 buckets, RDS instances, anything irreplaceable) in their module. Tofu will refuse to plan a destroy until the lifecycle line itself is removed in config — converts the failure mode from “apply silently clobbers” into “plan errors with <code>Instance cannot be destroyed</code>.” Don’t apply it to count-based resources where <code>count: 1 → 0</code> is a legitimate transition.</li>
+</ul></div>
+</div>
+<div class="section level2">
+<h2 id="digitalocean">DigitalOcean<a class="anchor" aria-label="anchor" href="#digitalocean"></a></h2>
+<div class="section level3">
+<h3 id="snapshot-disk-size-constraint">Snapshot disk-size constraint<a class="anchor" aria-label="anchor" href="#snapshot-disk-size-constraint"></a></h3>
+<ul><li>DO snapshots include the source droplet’s disk size. New droplets from a snapshot must have disk <strong>&gt;=</strong> snapshot disk. Resize <strong>up</strong> is fine; resize <strong>down</strong> below the snapshot disk is impossible without rebuilding.</li>
+<li>Build the snapshot at the smallest droplet size you’d ever want to spin from it. Sizes vs disks at writing: <code>g-4vcpu-16gb</code> = 50 GB, <code>g-8vcpu-32gb</code> / <code>m-4vcpu-32gb</code> = 100 GB, <code>m-8vcpu-64gb</code> = 200 GB.</li>
+<li>If your workload requires X GB RAM minimum, your snapshot floor is whatever droplet has X GB AND the smallest disk class.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="reserved-ip-detach-behavior">Reserved IP detach behavior<a class="anchor" aria-label="anchor" href="#reserved-ip-detach-behavior"></a></h3>
+<ul><li>Targeted destroy (<code>tofu destroy -target=module.droplet -target=...assignment...</code>) preserves the reserved IP at $4/mo. Full <code>tofu destroy</code> releases it (next apply gets a NEW IP).</li>
+</ul></div>
+<div class="section level3">
+<h3 id="reserved-ip-assignment-race-rtj55-rtj85">Reserved IP assignment race (rtj#55, rtj#85)<a class="anchor" aria-label="anchor" href="#reserved-ip-assignment-race-rtj55-rtj85"></a></h3>
+<ul><li>DO returns 422 “Droplet already has a pending event” when reserved IP assignment fires immediately after droplet+firewall creation. The droplet’s internal event queue takes time to drain.</li>
+<li>
+<strong>Every DO droplet module that uses a reserved IP MUST have:</strong>
+<ol style="list-style-type: decimal"><li>
+<code>time_sleep</code> resource between droplet creation and IP assignment, with <code>create_duration ≥ 60s</code> (10s and 30s have both been observed to race; 60s has more headroom)</li>
+<li>
+<code>depends_on = [time_sleep.&lt;name&gt;]</code> on the <code>digitalocean_reserved_ip_assignment</code> resource</li>
+<li>A retry fallback in the wrapping shell script (<code>up.sh</code> style) that detects the 422 in tofu output and uses <code>doctl compute reserved-ip-action assign &lt;ip&gt; &lt;droplet-id&gt;</code> to recover. Tofu doesn’t retry; it leaves state half-applied (assignment recorded but DO didn’t actually attach).</li>
+</ol></li>
+<li>
+<strong>Snapshot-based spins are MORE prone to the race</strong> than first-boot from blank Ubuntu (more startup events compete for the droplet’s event queue).</li>
+<li>
+<strong>Audit existing modules:</strong> <code>grep -L 'time_sleep' env/do/*/&lt;host&gt;/main.tf</code> finds modules missing the gate. As of 2026-05-02, openclaw and geoserv have no <code>time_sleep</code> — they will race eventually.</li>
+</ul></div>
+</div>
+<div class="section level2">
+<h2 id="docker--postgres">Docker / Postgres<a class="anchor" aria-label="anchor" href="#docker--postgres"></a></h2>
+<div class="section level3">
+<h3 id="postgis-init-time">Postgis init time<a class="anchor" aria-label="anchor" href="#postgis-init-time"></a></h3>
+<ul><li>
+<code>imresamu/postgis</code> (and similar postgis images) on first cold start (empty data volume) take <strong>5-12 min</strong> to install all extensions — varies with disk IO and noisy-neighbor lottery on cloud hosts. Health-wait scripts must allow 15 min minimum, ideally with hard-fail + log dump on timeout.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="tuning-vs-host-ram">Tuning vs host RAM<a class="anchor" aria-label="anchor" href="#tuning-vs-host-ram"></a></h3>
+<ul><li>fresh’s <code>docker/docker-compose.yml</code> defaults are tuned for a 128 GB host (<code>shared_buffers=32GB</code>, <code>shm_size=36gb</code>). On smaller hosts, postgres OOMs at startup with “could not map anonymous shared memory”.</li>
+<li>32 GB host floor: use the M1/cypher 32 GB-host preset (<code>scripts/fwapg/compose.override.m1.yml</code>) which sets <code>shared_buffers=8GB, shm_size=12gb</code>.</li>
+<li>Below 32 GB: postgres can technically start with smaller <code>shared_buffers</code> but fwapg work becomes painful. Don’t run fwapg pipelines on &lt;32 GB hosts.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="search_path-is-data-not-config">
+<code>search_path</code> is data, not config<a class="anchor" aria-label="anchor" href="#search_path-is-data-not-config"></a></h3>
+<ul><li>
+<code>ALTER DATABASE &lt;db&gt; SET search_path TO ...</code> is a database-level setting <strong>stored in the postgres data dir</strong>. Wiped with <code>docker compose down -v</code>. Must be re-applied on every restore.</li>
+<li>Codify in your restore script, not in cloud-init or compose env (those don’t apply to db-level settings).</li>
+</ul></div>
+<div class="section level3">
+<h3 id="pkill-rpythonetc-client-does-not-cancel-its-postgres-query">
+<code>pkill &lt;R/Python/etc. client&gt;</code> does NOT cancel its Postgres query<a class="anchor" aria-label="anchor" href="#pkill-rpythonetc-client-does-not-cancel-its-postgres-query"></a></h3>
+<ul><li><p>Killing the client (R, Python, psql) closes its connection. The libpq backend on the server keeps running the in-flight query until it finishes — <strong>server-side orphan</strong>. The orphaned backend holds whatever locks it had (table, view, advisory). Every later <code>DROP VIEW</code> / <code>LOCK TABLE</code> / <code>ALTER</code> on the same object blocks behind it indefinitely — <em>silent hangs</em> indistinguishable from a slow query.</p></li>
+<li><p>Caught 2026-05-25 in link#205: a <code>pkill</code>’d <code>wsg_run_one.R</code> left a <code>frs_network_features</code> SELECT running 1h45m; subsequent recomputes wedged on <code>DROP VIEW barriers_bt_access</code> for 1h08m before someone noticed.</p></li>
+<li>
+<p><strong>Always terminate the server-side backend</strong>, not just the client:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="kw">SELECT</span> pid, pg_terminate_backend(pid)</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="kw">FROM</span> pg_stat_activity</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="kw">WHERE</span> datname<span class="op">=</span><span class="st">'&lt;db&gt;'</span> <span class="kw">AND</span> state<span class="op">=</span><span class="st">'active'</span> <span class="kw">AND</span> now()<span class="op">-</span>query_start <span class="op">&gt;</span> <span class="dt">interval</span> <span class="st">'3 minutes'</span></span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>  <span class="kw">AND</span> pid <span class="op">&lt;&gt;</span> pg_backend_pid();</span></code></pre></div>
+<p>Then kill the client. Order matters when you don’t know which side will block.</p>
+</li>
+</ul></div>
+<div class="section level3">
+<h3 id="set-statement_timeout--lock_timeout-on-long-db-ops">Set <code>statement_timeout</code> + <code>lock_timeout</code> on long DB ops<a class="anchor" aria-label="anchor" href="#set-statement_timeout--lock_timeout-on-long-db-ops"></a></h3>
+<ul><li>Any long-running DB op from an R/Python/etc. client should set both at session start, ideally via env (<code>PGOPTIONS='-c statement_timeout=600000 -c lock_timeout=60000'</code>) or on the connection itself (<code>DBI::dbExecute(conn, "SET statement_timeout = '600000'")</code>). A runaway query then cancels server-side (no orphan); a blocked <code>DROP VIEW</code> gives up rather than wedging behind a zombie lock. Without it, silent hangs become indistinguishable from “still working” and you wait hours.</li>
+<li>Pick a generous-but-bounded timeout (10× expected query time). The point isn’t tight enforcement — it’s “fail loud instead of fail silent.”</li>
+</ul></div>
+<div class="section level3">
+<h3 id="function-as-join-predicate-index-visibility-depends-on-inlineability">Function-as-join-predicate: index visibility depends on inlineability<a class="anchor" aria-label="anchor" href="#function-as-join-predicate-index-visibility-depends-on-inlineability"></a></h3>
+<ul><li>
+<code>JOIN b ON some_function(a.cols, b.cols)</code> — Postgres can only use the underlying indexes if <code>some_function</code> is <code>LANGUAGE sql</code> (inlineable). <code>plpgsql</code> functions are opaque and force per-row evaluation → seq scan / nested loop without indexes. Verify with <code>\df+ &lt;function&gt;</code> (look at <code>Language</code>) and <code>EXPLAIN</code> (look for the function body expanded into Filter / Index Cond).</li>
+<li>Caught in link#205 with <code>whse_basemapping.fwa_downstream</code> — it IS <code>LANGUAGE sql</code> + the planner did inline it; the symptom was elsewhere (see below). But if a function-based join is slow and the function is plpgsql, that’s the first thing to look at.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="joining-on-a-per-tenant-key-eg-id_segment-per-wsg-against-a-multi-tenant-table-is-cartesian">Joining on a per-tenant key (e.g. <code>id_segment</code> per-WSG) against a multi-tenant table is cartesian<a class="anchor" aria-label="anchor" href="#joining-on-a-per-tenant-key-eg-id_segment-per-wsg-against-a-multi-tenant-table-is-cartesian"></a></h3>
+<ul><li>
+<code>id_segment</code> in link’s persist schema is unique <em>within</em> a WSG, not globally (link#203). <code>WHERE id_segment IN (SELECT id_segment FROM streams WHERE wsg=aoi)</code> against persist matches access rows from <em>every</em> WSG sharing those id_segment values → N(WSGs)× duplicates → PK violations downstream and 50× memory.</li>
+<li>Fix: filter by the full tenant key (<code>watershed_group_code = aoi</code>) when the table has it. Pattern: introspect via <code>information_schema.columns</code> at runtime and branch — the same function can serve a working schema (single tenant, no WSG col) and persist (multi-tenant, with WSG col).</li>
+</ul></div>
+<div class="section level3">
+<h3 id="view-vs-real-table-changes-the-planners-join-direction">View vs. real table changes the planner’s join direction<a class="anchor" aria-label="anchor" href="#view-vs-real-table-changes-the-planners-join-direction"></a></h3>
+<ul><li>A <code>CREATE VIEW v AS SELECT * FROM big_table WHERE …</code> carries no row-count statistics. Used as a join input, the planner may pick the other side (big) as the outer driver, blowing nested-loop cost ~1000× — the symptom looks like “the indexes aren’t being used” but it’s actually a wrong-direction nested loop.</li>
+<li>Caught in link#205: AOI-scoping streams via a <code>VIEW</code> left Postgres thinking the 26k FINA segments were as big as the 800k persist barriers; it picked barriers as outer; 71M estimated result rows; &gt;10 min wall.</li>
+<li>Fix when AOI-scoping into a smaller dataset: <strong>materialise as a real <code>CREATE TABLE</code> with indexes + <code>ANALYZE</code></strong>. The planner then sees the small row count and picks it as outer. Drop the table on <code>on.exit</code> if it’s transient.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="two-statement-deleteinsert-into-a-persist-table-is-not-atomic">Two-statement DELETE/INSERT into a persist table is not atomic<a class="anchor" aria-label="anchor" href="#two-statement-deleteinsert-into-a-persist-table-is-not-atomic"></a></h3>
+<ul><li>A “DELETE WHERE wsg=‘X’; INSERT …” pair into a persist table from an orchestration script: if the INSERT fails (e.g. duplicate key from a subtle JOIN bug), the DELETE already ran → <strong>data loss for that WSG</strong>. Wrap in a single transaction (<code>BEGIN; … ; COMMIT</code>) when the persist table is the only source of truth, so a failed INSERT rolls back the DELETE. (link#205 lost FINA’s <code>streams_mapping_code</code> to this; the surrounding cheap-recompute orchestration in <code>wsg_recompute_one.R</code> should wrap both statements in a tx.)</li>
+</ul></div>
+</div>
+<div class="section level2">
+<h2 id="tailscale">Tailscale<a class="anchor" aria-label="anchor" href="#tailscale"></a></h2>
+<div class="section level3">
+<h3 id="acl-users-semantics">ACL “users” semantics<a class="anchor" aria-label="anchor" href="#acl-users-semantics"></a></h3>
+<ul><li>Tailscale SSH ACL <code>"users": ["autogroup:nonroot"]</code> for <code>tag:compute</code> blocks <code>ssh root@&lt;node&gt;</code> over the tailnet. Use <code>ssh &lt;user&gt;@&lt;node&gt;</code> + sudo for root operations.</li>
+<li>For SSH-as-root from off-tailnet (regular OpenSSH on the public IP), the ACL doesn’t apply — but you need the SSH key registered on the node.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="reusable--ephemeral-auth-keys">Reusable + ephemeral auth keys<a class="anchor" aria-label="anchor" href="#reusable--ephemeral-auth-keys"></a></h3>
+<ul><li>Cypher-style ephemeral compute droplets need both flags on the auth key: <strong>Reusable</strong> (same key works across destroy/recreate) + <strong>Ephemeral</strong> (tailnet entries auto-clean when offline &gt;5 min).</li>
+<li>Tag the key (e.g. <code>tag:compute</code>) at creation time. Nodes joining with that key inherit the tag automatically — no <code>--advertise-tags</code> needed at <code>tailscale up</code> time.</li>
 </ul></div>
 </div>
 <div class="section level2">
@@ -285,6 +508,17 @@
 <ul><li>Branch pins (<code>pkg@branch</code>) are not reproducible — document why used</li>
 <li>Pinned download URLs (RStudio .deb) go stale — document where to update</li>
 </ul></div>
+<div class="section level3">
+<h3 id="base-name-shadowing-in-formal-args">Base name shadowing in formal args<a class="anchor" aria-label="anchor" href="#base-name-shadowing-in-formal-args"></a></h3>
+<ul><li>Avoid <code>names</code>, <code>length</code>, <code>data</code>, <code>c</code>, <code>t</code>, <code>T</code>, <code>F</code>, etc. as formal argument names. R’s function-lookup fallback often rescues <code>names(x)</code> calls inside a function whose arg is also called <code>names</code> — but it’s a confusing read, breaks under refactors, and generates a real “could not find function” error when the lookup heuristic misses (e.g. inside lapply/vapply/match.fun chains). Prefer descriptive alternatives: <code>label_names</code>, <code>n</code>, <code>df</code>, etc.</li>
+<li>Caught in mc#33 round 1 — <code>mc_label_ensure(names)</code> worked by luck when calling <code>names(existing)</code> to read a named-vector’s names; renamed to <code>label_names</code> for safety.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="cross-function-consistency-for-labelstring-normalization">Cross-function consistency for label/string normalization<a class="anchor" aria-label="anchor" href="#cross-function-consistency-for-labelstring-normalization"></a></h3>
+<ul><li>When two functions in the same package both decide whether a string is a “system value” (or any normalized form), they MUST use the same comparison. Mismatches are silent bugs that surface only on edge cases.</li>
+<li>mc#33 example: <code>mc_label_ensure</code> used <code>toupper(nm) %in% sys</code> (case-insensitive system-label skip), but <code>resolve_label_names</code> used <code>nm %in% sys</code> (case-sensitive). Result: <code>add = "inbox"</code> with <code>create_missing = TRUE</code> was silently broken — ensure skipped creation, resolve couldn’t match. Fix: both use <code>toupper(nm) %in% sys</code> and the resolver normalizes its return to the canonical case.</li>
+<li>Generalized check: when reviewing a diff that adds normalization (case, whitespace, prefix-trim) on one side of an interaction, grep for the other side and align them.</li>
+</ul></div>
 </div>
 <div class="section level2">
 <h2 id="general">General<a class="anchor" aria-label="anchor" href="#general"></a></h2>
@@ -305,6 +539,50 @@
 <li>New variables: update .tfvars.example</li>
 <li>New workflows: update relevant README</li>
 </ul></div>
+</div>
+</div>
+<div class="section level1">
+<h1 id="nge-feature-workflow">NGE Feature Workflow<a class="anchor" aria-label="anchor" href="#nge-feature-workflow"></a></h1>
+<p>For non-trivial issue-driven work, follow this checklist. Each step exists for a reason — skipping leads to rework, broken builds, and avoidable bugs that we’ve hit repeatedly.</p>
+<div class="section level2">
+<h2 id="the-sequence">The Sequence<a class="anchor" aria-label="anchor" href="#the-sequence"></a></h2>
+<ol style="list-style-type: decimal"><li>
+<strong>Start with <code>/planning-init &lt;N&gt;</code></strong> — given an issue number, enters plan mode for codebase exploration, presents a phase breakdown for user approval, then scaffolds branch + PWF baseline with the approved phases. One command replaces the manual issue → explore → plan → branch → scaffold dance.</li>
+<li>
+<strong>Write robust tests first</strong> — failing tests that reproduce the issue or document the new behavior. Tests are the contract; they fail until the work makes them pass.</li>
+<li>
+<strong>Name with intent</strong> — functions, parameters, internal helpers carry the naming style of the package they live in. Look at existing exports as the guide; consistency over cleverness. (Per-package naming convention TBD — see soul issue tracking.)</li>
+<li>
+<strong>Examples that run</strong> — every exported function gets a runnable <code>@examples</code> block. Pkgdown renders them; CI executes them. An example that doesn’t run is documentation rot.</li>
+<li>
+<strong>Code-check before each commit</strong> — <code>/code-check</code> on staged diff. Catches what tests miss: edge cases, hard-coded paths, unguarded variables, security issues.</li>
+<li>
+<strong>Atomic commits</strong> — each commit bundles code change + checkbox flip in <code>task_plan.md</code>. The diff and the progress live in the same commit; <code>git log -- planning/</code> tells the full story.</li>
+<li>
+<strong><code>/planning-archive</code> when complete</strong> — moves PWF to <code>archive/YYYY-MM-issue-N-slug/</code>, creates a fresh <code>active/</code>. Then <code>/gh-pr-push</code> opens the PR; <code>/gh-pr-merge</code> handles the release bookkeeping.</li>
+</ol></div>
+<div class="section level2">
+<h2 id="when-to-skip">When to Skip<a class="anchor" aria-label="anchor" href="#when-to-skip"></a></h2>
+<p>For one-line typo fixes, version-bump-only PRs, or trivial documentation edits, the full workflow is overhead. Use judgment. The threshold is roughly: <strong>multi-step issue, multi-file change, or anything that requires scoping</strong> → use the workflow.</p>
+</div>
+<div class="section level2">
+<h2 id="skills-that-slot-in">Skills That Slot In<a class="anchor" aria-label="anchor" href="#skills-that-slot-in"></a></h2>
+<ul><li>
+<code>/planning-init &lt;N&gt;</code> — start</li>
+<li>
+<code>/planning-update</code> — sync checkboxes mid-session</li>
+<li>
+<code>/code-check</code> — before every commit</li>
+<li>
+<code>/planning-archive</code> — when issue closes</li>
+<li>
+<code>/gh-pr-push</code> — open the PR</li>
+<li>
+<code>/gh-pr-merge</code> — merge with release bookkeeping</li>
+</ul></div>
+<div class="section level2">
+<h2 id="why-this-exists">Why This Exists<a class="anchor" aria-label="anchor" href="#why-this-exists"></a></h2>
+<p>We’ve hit snags repeatedly when half-doing this — branches that mix concerns, tests bolted on after, code-check skipped (and then a bug ships in the diff), examples that fail in pkgdown. Each step is small; the cumulative reliability gain is real. The convention is here so it becomes the default expectation, not a thing the user has to remind every session about.</p>
 </div>
 </div>
 <div class="section level1">
@@ -371,7 +649,9 @@
 <code>progress.md</code> — Session log with timestamps and commit refs</li>
 </ul></li>
 <li>
-<strong>Commit the plan</strong> — Commit the planning files before starting implementation. This is the baseline.</li>
+<strong>Plan-review with the Plan agent before committing the plan</strong> — After scaffolding <code>task_plan.md</code> but BEFORE the baseline commit, spawn the Plan subagent (<code>Agent({subagent_type: "Plan", prompt: "..."}</code>) and ask it to critically review the task_plan against the issue body + actual codebase. Categorize findings as Blocker / Gap / Ordering / Assumption / Scope / Acceptance. Address each before committing. The agent reads files fresh — it catches what you miss when you’ve been thinking about the design too long. Real example: caught 21 issues including hardcoded literals across 4 files not listed in the plan, untested DB column mismatches, unfixable test-literal-string assertions, and a baseline-cache-shadow that would have produced a 6-second no-op run. Cost: ~5 min agent. Saves: hours of mid-implementation rework.</li>
+<li>
+<strong>Commit the plan</strong> — After Plan-agent review + fixes. This is the baseline.</li>
 <li>
 <strong>Work in atomic commits</strong> — Each commit bundles code changes WITH checkbox updates in the planning files. The diff shows both what was done and the checkbox marking it done.</li>
 <li>
@@ -389,33 +669,33 @@
 <div class="section level3">
 <h3 id="task_planmd">task_plan.md<a class="anchor" aria-label="anchor" href="#task_planmd"></a></h3>
 <p>Phases with checkboxes. This is the core tracking file.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu"># Task Plan</span></span>
-<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a></span>
-<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="fu">## Phase 1: [Name]</span></span>
-<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="ss">- </span><span class="va">[ ]</span> Task description</span>
-<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a><span class="ss">- </span><span class="va">[ ]</span> Another task</span>
-<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a></span>
-<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a><span class="fu">## Phase 2: [Name]</span></span>
-<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a><span class="ss">- </span><span class="va">[ ]</span> Task description</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="fu"># Task Plan</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="fu">## Phase 1: [Name]</span></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="ss">- </span><span class="va">[ ]</span> Task description</span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="ss">- </span><span class="va">[ ]</span> Another task</span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a><span class="fu">## Phase 2: [Name]</span></span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a><span class="ss">- </span><span class="va">[ ]</span> Task description</span></code></pre></div>
 <p>Mark tasks done as they’re completed: <code>- [x] Task description</code></p>
 </div>
 <div class="section level3">
 <h3 id="findingsmd">findings.md<a class="anchor" aria-label="anchor" href="#findingsmd"></a></h3>
 <p>Append-only research log. Discoveries, technical analysis, things learned.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu"># Findings</span></span>
-<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a></span>
-<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="fu">## [Topic]</span></span>
-<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="co">[</span><span class="ot">What was found, with source/date</span><span class="co">]</span></span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu"># Findings</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="fu">## [Topic]</span></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a><span class="co">[</span><span class="ot">What was found, with source/date</span><span class="co">]</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="progressmd">progress.md<a class="anchor" aria-label="anchor" href="#progressmd"></a></h3>
 <p>Session entries with commit references.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu"># Progress</span></span>
-<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a></span>
-<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="fu">## Session YYYY-MM-DD</span></span>
-<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a><span class="ss">- </span>Completed: <span class="co">[</span><span class="ot">items</span><span class="co">]</span></span>
-<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="ss">- </span>Commits: <span class="co">[</span><span class="ot">refs</span><span class="co">]</span></span>
-<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a><span class="ss">- </span>Next: <span class="co">[</span><span class="ot">items</span><span class="co">]</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="fu"># Progress</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a><span class="fu">## Session YYYY-MM-DD</span></span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a><span class="ss">- </span>Completed: <span class="co">[</span><span class="ot">items</span><span class="co">]</span></span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a><span class="ss">- </span>Commits: <span class="co">[</span><span class="ot">refs</span><span class="co">]</span></span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a><span class="ss">- </span>Next: <span class="co">[</span><span class="ot">items</span><span class="co">]</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -444,10 +724,25 @@
 <p><strong>Reference packages:</strong> When starting a new package, study these existing packages for patterns: <code>flooded</code>, <code>gq</code>. They demonstrate the conventions below in practice (DESCRIPTION fields, README layout, NEWS.md style, pkgdown setup, test structure, hex sticker, etc.).</p>
 <div class="section level2">
 <h2 id="style">Style<a class="anchor" aria-label="anchor" href="#style"></a></h2>
-<ul><li>tidyverse style guide: snake_case, pipe operators (<code>|&gt;</code> or <code>%&gt;%</code>)</li>
-<li>Match existing patterns in each codebase</li>
-<li>Use <code>pak</code> for package installation (not <code>install.packages</code>)</li>
-<li>Prefix column name vectors with <code>cols_</code> for discoverability in the environment pane: <code>cols_all</code>, <code>cols_carry</code>, <code>cols_split</code>, <code>cols_writable</code>. Same principle for other grouped vectors (<code>params_</code>, <code>tbl_</code>, etc.)</li>
+<ul><li><p>tidyverse style guide: snake_case, pipe operators (<code>|&gt;</code> or <code>%&gt;%</code>)</p></li>
+<li><p>Match existing patterns in each codebase</p></li>
+<li><p>Use <code>pak</code> for package installation (not <code>install.packages</code>)</p></li>
+<li><p>Prefix column name vectors with <code>cols_</code> for discoverability in the environment pane: <code>cols_all</code>, <code>cols_carry</code>, <code>cols_split</code>, <code>cols_writable</code>. Same principle for other grouped vectors (<code>params_</code>, <code>tbl_</code>, etc.)</p></li>
+<li>
+<p>For SQL DDL+INSERT pairs that share a schema, use a single named vector as the source of truth. Both <code>CREATE TABLE</code> and <code>INSERT (cols) SELECT cols</code> derive their column lists from the same <code>cols_*</code> vector. Avoids drift between table shape and write projection — when columns change, you edit one place. Example:</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">cols_streams</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>  id_segment           <span class="op">=</span> <span class="st">"integer NOT NULL"</span>,</span>
+<span>  watershed_group_code <span class="op">=</span> <span class="st">"varchar(4) NOT NULL"</span>,</span>
+<span>  geom                 <span class="op">=</span> <span class="st">"geometry(MultiLineStringZM, 3005)"</span></span>
+<span>  <span class="co"># …</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co"># CREATE TABLE consumes both names + types</span></span>
+<span><span class="va">ddl_body</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">cols_streams</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/unname.html" class="external-link">unname</a></span><span class="op">(</span><span class="va">cols_streams</span><span class="op">)</span>, sep <span class="op">=</span> <span class="st">" "</span>,</span>
+<span>                  collapse <span class="op">=</span> <span class="st">", "</span><span class="op">)</span></span>
+<span><span class="co"># INSERT consumes names only</span></span>
+<span><span class="va">proj</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">cols_streams</span><span class="op">)</span>, collapse <span class="op">=</span> <span class="st">", "</span><span class="op">)</span></span></code></pre></div>
+</li>
 </ul></div>
 <div class="section level2">
 <h2 id="package-structure">Package Structure<a class="anchor" aria-label="anchor" href="#package-structure"></a></h2>
@@ -466,7 +761,7 @@
 <div class="section level3">
 <h3 id="branching-for-sred">Branching for SRED<a class="anchor" aria-label="anchor" href="#branching-for-sred"></a></h3>
 <p>For new packages or major features, work on a branch and merge via PR:</p>
-<pre><code>main ← scaffold-branch (PR closes with "Relates to NewGraphEnvironment/sred-2025-2026#N")</code></pre>
+<pre><code>main ← scaffold-branch (PR closes with "Relates to NewGraphEnvironment/sred#N")</code></pre>
 <p>This gives one PR that contains all commits — a single SRED cross-reference covers the entire body of work. Individual commits within the branch close their respective function issues with <code>Fixes #N</code>.</p>
 </div>
 <div class="section level3">
@@ -483,10 +778,15 @@
 <li><p>Tests must pass before closing the function’s issue</p></li>
 <li>
 <p>Always grep for errors in the same command as the test run to avoid running twice:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="ex">Rscript</span> <span class="at">-e</span> <span class="st">'devtools::test()'</span> <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span> <span class="kw">|</span> <span class="fu">grep</span> <span class="at">-E</span> <span class="st">"(FAIL|ERROR|PASS)"</span> <span class="kw">|</span> <span class="fu">tail</span> <span class="at">-5</span></span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="ex">Rscript</span> <span class="at">-e</span> <span class="st">'devtools::test()'</span> <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span> <span class="kw">|</span> <span class="fu">grep</span> <span class="at">-E</span> <span class="st">"(FAIL|ERROR|PASS)"</span> <span class="kw">|</span> <span class="fu">tail</span> <span class="at">-5</span></span></code></pre></div>
 <p>For error context: <code>grep -E "(ERROR:|FAIL )" -A 10 | head -25</code></p>
 </li>
+</ul><div class="section level3">
+<h3 id="common-pitfalls">Common pitfalls<a class="anchor" aria-label="anchor" href="#common-pitfalls"></a></h3>
+<ul><li><p><strong><code><a href="https://cli.r-lib.org/reference/cli_alert.html" class="external-link">cli::cli_alert_warning()</a></code> is not <code><a href="https://rdrr.io/r/base/warning.html" class="external-link">warning()</a></code>.</strong> It’s visual only — callers can’t catch it with <code>withCallingHandlers(warning = ...)</code> and testthat’s <code>expect_warning()</code> won’t fire. When a function offers a <code>warn</code> mode that callers may want to react to programmatically, use <code><a href="https://rdrr.io/r/base/warning.html" class="external-link">warning()</a></code>. Reserve <code>cli_alert_warning()</code> for FYI messages with no programmatic contract.</p></li>
+<li><p><strong><code>expect_match(x, ..., all = FALSE)</code> passes silently on <code>character(0)</code>.</strong> If the input is empty (e.g. no warnings fired), the assertion succeeds vacuously and defeats the test. Always pair with <code>expect_gt(length(x), 0)</code> first when input may be empty.</p></li>
 </ul></div>
+</div>
 <div class="section level2">
 <h2 id="examples-and-vignettes">Examples and Vignettes<a class="anchor" aria-label="anchor" href="#examples-and-vignettes"></a></h2>
 <div class="section level3">
@@ -496,7 +796,8 @@
 <div class="section level3">
 <h3 id="vignettes-1">Vignettes<a class="anchor" aria-label="anchor" href="#vignettes-1"></a></h3>
 <p>At least one vignette showing the full pipeline on real data: - Demonstrates the package solving an actual problem end-to-end - Uses bundled test data (committed to <code>inst/testdata/</code>) - Hosted on pkgdown so users can read it without installing</p>
-<p><strong>Output format:</strong> Use <code><a href="https://pkgs.rstudio.com/bookdown/reference/html_document2.html" class="external-link">bookdown::html_vignette2</a></code> (not <code><a href="https://pkgs.rstudio.com/rmarkdown/reference/html_vignette.html" class="external-link">rmarkdown::html_vignette</a></code>) for figure numbering and cross-references. Requires <code>bookdown</code> in Suggests and chunks must have <code>fig.cap</code> for numbered figures. Cross-reference with <code>Figure \@ref(fig:chunk-name)</code>.</p>
+<p><strong>Output format:</strong> Use <code><a href="https://pkgs.rstudio.com/bookdown/reference/html_document2.html" class="external-link">bookdown::html_vignette2</a></code> (not <code><a href="https://pkgs.rstudio.com/rmarkdown/reference/html_vignette.html" class="external-link">rmarkdown::html_vignette</a></code>) for figure numbering. Requires <code>bookdown</code> in Suggests and chunks must have <code>fig.cap</code> / <code>caption =</code> for numbered figures and tables.</p>
+<p><strong>Gotcha — cross-references don’t resolve in vignettes.</strong> <code>Table \@ref(tab:foo)</code> and <code>Figure \@ref(fig:foo)</code> markers compile to a literal <code>\@ref(...)</code> in the rendered HTML rather than a numbered link. Bookdown’s cross-ref machinery isn’t fully wired through <code>html_vignette2</code> under pkgdown. Use natural language instead — “the table below”, “the floodplain map”, “the parameter table” — and let the captions speak for themselves. If you need real numbered cross-refs, use <code><a href="https://pkgs.rstudio.com/bookdown/reference/html_document2.html" class="external-link">bookdown::html_document2</a></code> (matches the cd-style report-appendix pattern) and accept that the output is no longer a true package vignette.</p>
 <p><strong>Vignettes that need external resources (DB, API, STAC):</strong> Do NOT use the <code>.Rmd.orig</code> pre-knit pattern — it breaks <code>bookdown</code> figure numbering because knitr evaluates chunks during pre-knit and emits <code>![](path)</code> markdown that bookdown can’t number.</p>
 <p>Instead, separate data generation from presentation: 1. <code>data-raw/vignette_data.R</code> — runs the queries, saves results as <code>.rds</code> to <code>inst/testdata/</code> (or <code>inst/vignette-data/</code>) 2. Vignette loads <code>.rds</code> files, all chunks run live during pkgdown build 3. Note at top of vignette: “Data generated by <code>data-raw/script.R</code>” 4. bookdown controls all chunks — figure numbers, cross-refs work</p>
 <p>This is the same pattern as test data: <code>data-raw/</code> documents how the data was produced, committed artifacts make vignettes reproducible without the external resource.</p>
@@ -521,7 +822,7 @@
 <p>Run <code>lintr::lint_package()</code> before committing R package code. Fix all warnings — every lint should be worth fixing.</p>
 <div class="section level3">
 <h3 id="recommended-lintr-config">Recommended .lintr config<a class="anchor" aria-label="anchor" href="#recommended-lintr-config"></a></h3>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">linters</span><span class="op">:</span> <span class="fu">linters_with_defaults</span><span class="op">(</span></span>
 <span>    <span class="fu">line_length_linter</span><span class="op">(</span><span class="fl">120</span><span class="op">)</span>,</span>
 <span>    <span class="fu">object_name_linter</span><span class="op">(</span>styles <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"snake_case"</span>, <span class="st">"dotted.case"</span><span class="op">)</span><span class="op">)</span>,</span>
@@ -559,18 +860,18 @@
 <div class="section level3">
 <h3 id="branch-protection">Branch protection<a class="anchor" aria-label="anchor" href="#branch-protection"></a></h3>
 <p>Protect main from deletion and force pushes:</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="ex">gh</span> api repos/OWNER/REPO/rulesets <span class="at">--method</span> POST <span class="at">--input</span> <span class="at">-</span> <span class="op">&lt;&lt;'EOF'</span></span>
-<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a><span class="st">{</span></span>
-<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a><span class="st">  "name": "Protect main",</span></span>
-<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a><span class="st">  "target": "branch",</span></span>
-<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a><span class="st">  "enforcement": "active",</span></span>
-<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a><span class="st">  "bypass_actors": [</span></span>
-<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a><span class="st">    { "actor_id": 5, "actor_type": "RepositoryRole", "bypass_mode": "always" }</span></span>
-<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a><span class="st">  ],</span></span>
-<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a><span class="st">  "conditions": { "ref_name": { "include": ["refs/heads/main"], "exclude": [] } },</span></span>
-<span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a><span class="st">  "rules": [ { "type": "deletion" }, { "type": "non_fast_forward" } ]</span></span>
-<span id="cb9-11"><a href="#cb9-11" tabindex="-1"></a><span class="st">}</span></span>
-<span id="cb9-12"><a href="#cb9-12" tabindex="-1"></a><span class="op">EOF</span></span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="ex">gh</span> api repos/OWNER/REPO/rulesets <span class="at">--method</span> POST <span class="at">--input</span> <span class="at">-</span> <span class="op">&lt;&lt;'EOF'</span></span>
+<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a><span class="st">{</span></span>
+<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a><span class="st">  "name": "Protect main",</span></span>
+<span id="cb14-4"><a href="#cb14-4" tabindex="-1"></a><span class="st">  "target": "branch",</span></span>
+<span id="cb14-5"><a href="#cb14-5" tabindex="-1"></a><span class="st">  "enforcement": "active",</span></span>
+<span id="cb14-6"><a href="#cb14-6" tabindex="-1"></a><span class="st">  "bypass_actors": [</span></span>
+<span id="cb14-7"><a href="#cb14-7" tabindex="-1"></a><span class="st">    { "actor_id": 5, "actor_type": "RepositoryRole", "bypass_mode": "always" }</span></span>
+<span id="cb14-8"><a href="#cb14-8" tabindex="-1"></a><span class="st">  ],</span></span>
+<span id="cb14-9"><a href="#cb14-9" tabindex="-1"></a><span class="st">  "conditions": { "ref_name": { "include": ["refs/heads/main"], "exclude": [] } },</span></span>
+<span id="cb14-10"><a href="#cb14-10" tabindex="-1"></a><span class="st">  "rules": [ { "type": "deletion" }, { "type": "non_fast_forward" } ]</span></span>
+<span id="cb14-11"><a href="#cb14-11" tabindex="-1"></a><span class="st">}</span></span>
+<span id="cb14-12"><a href="#cb14-12" tabindex="-1"></a><span class="op">EOF</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="scaffold-checklist">Scaffold checklist<a class="anchor" aria-label="anchor" href="#scaffold-checklist"></a></h3>
@@ -655,11 +956,11 @@
 <h2 id="in-reports-bookdown">In Reports (bookdown)<a class="anchor" aria-label="anchor" href="#in-reports-bookdown"></a></h2>
 <div class="section level3">
 <h3 id="bibliography-generation">Bibliography generation<a class="anchor" aria-label="anchor" href="#bibliography-generation"></a></h3>
-<div class="sourceCode" id="cb10"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="co"># index.Rmd — dynamic bib from Zotero via Better BibTeX</span></span>
-<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a><span class="fu">bibliography</span><span class="kw">:</span><span class="at"> </span><span class="st">"`r rbbt::bbt_write_bib('references.bib', overwrite = TRUE)`"</span></span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a><span class="co"># index.Rmd — dynamic bib from Zotero via Better BibTeX</span></span>
+<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a><span class="fu">bibliography</span><span class="kw">:</span><span class="at"> </span><span class="st">"`r rbbt::bbt_write_bib('references.bib', overwrite = TRUE)`"</span></span></code></pre></div>
 <p><code>rbbt</code> pulls from BBT, which syncs with Zotero. Edit references in Zotero → rebuild report → bibliography updates.</p>
 <p><strong>Library targeting:</strong> rbbt must know which Zotero library to search. This is set globally in <code>~/.Rprofile</code>:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># default library — NewGraphEnvironment group (libraryID 9, group 4733734)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>rbbt.default.library_id <span class="op">=</span> <span class="fl">9</span><span class="op">)</span></span></code></pre></div>
 <p>Without this option, rbbt searches only the personal library (libraryID 1) and won’t find group library references. The library IDs map to Zotero’s internal numbering — use <code>/zotero-lookup</code> with <code>SELECT DISTINCT libraryID FROM citationkey</code> against the BBT database to discover available libraries.</p>
