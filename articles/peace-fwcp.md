@@ -160,35 +160,27 @@ First 10 rows of the extracted climate time series. {.table}
 
 ## Trends
 
-Anomalies are computed against a pre-warming reference period —
-1951–1980, the three decades before climate change accelerated. This is
-the same base period Hansen et al.
-([2012](#ref-hansen_etal2012Perceptionclimate)) use to detect the
-emergence of 3-sigma summertime-temperature outliers globally. Saying a
-year is “+1.5 °C” means it was 1.5 °C warmer than the average year
-between 1951 and 1980.
+An anomaly is the difference between a year’s value and the average
+value over a reference period. Here the reference is **1951–1980** — the
+three decades before climate change accelerated, the same baseline
+Hansen et al. ([2012](#ref-hansen_etal2012Perceptionclimate)) used to
+track global temperature outliers. Saying a year is “+1.5 °C” means it
+was 1.5 °C warmer than the average year in 1951–1980.
 
-The trend table that follows has two rows per variable. We compute
-trends from two different start years:
+The trend table shows two rows per variable, fit from two different
+start years:
 
-- **1951–present (75 years)** — the long view. Captures the full
-  magnitude of warming since the pre-warming reference.
-- **1981–present (45 years)** — starts at the beginning of the World
-  Meteorological Organization’s most recent 30-year “climate normal”
-  (1981–2010). This is the reference period used in most published
-  climate products, so it makes results easy to compare against
-  Intergovernmental Panel on Climate Change reports and government
-  climate summaries.
+- **1951–present (75 years)** — the long view. How much has the variable
+  changed since the pre-warming reference?
+- **1981–present (45 years)** — the recent view. Starts at the beginning
+  of the most recent WMO “climate normal” (1981–2010), the period used
+  in IPCC reports, so the numbers are easy to compare against published
+  summaries.
 
-Comparing the two slopes is informative. If the 45-year slope is steeper
-than the 75-year slope, warming has accelerated — recent decades are
-heating faster than the long-term average. If the 45-year slope is
-shallower, warming has slowed (though “slower” almost never means
-“stopped”). When the two slopes are similar, the rate of change has been
-roughly steady across the full record.
-
-Total Change is the slope multiplied by the number of years — the
-cumulative shift over the trend window.
+If the 45-year slope is **steeper** than the 75-year slope, change has
+accelerated. **Shallower** means it has slowed. **Similar** means a
+roughly steady rate across the full record. “Total Change” is the slope
+times the number of years in the window — the cumulative shift.
 
 ``` r
 
@@ -328,44 +320,33 @@ style="margin-left: auto; margin-right: auto;"}
 ``` r
 
 cd::cd_plot_timeseries(
-  ano, variable = "tmean", period = "annual", trend = trn,
-  title = "Annual Mean Temperature Anomaly — FWCP Peace Region"
-)
-```
-
-![Annual mean temperature anomaly for the FWCP Peace Region relative to
-1951-1980 baseline.](peace-fwcp_files/figure-html/plot-tmean-1.png)
-
-Annual mean temperature anomaly for the FWCP Peace Region relative to
-1951-1980 baseline.
-
-``` r
-
-cd::cd_plot_timeseries(
   ano, variable = "prcp", period = "annual", trend = trn,
   title = "Annual Precipitation Anomaly — FWCP Peace Region"
 )
 ```
 
 ![Annual precipitation anomaly (% of 1951-1980 baseline) for the FWCP
-Peace Region.](peace-fwcp_files/figure-html/plot-prcp-1.png)
+Peace Region. The per-ecoregion mean temperature panel is shown later in
+the Per-Ecoregion
+section.](peace-fwcp_files/figure-html/plot-prcp-1.png)
 
 Annual precipitation anomaly (% of 1951-1980 baseline) for the FWCP
-Peace Region.
+Peace Region. The per-ecoregion mean temperature panel is shown later in
+the Per-Ecoregion section.
 
 ## Recent Decade vs Pre-Warming Reference
 
-The table below compares two windows directly — the recent decade
-(2015–2025) against the pre-warming reference (1951–1980). Δ absolute is
-the difference of the two means in the variable’s native units. Δ % is
-shown only for variables where it is meaningful (precipitation, soil
-moisture, vapour pressure deficit, relative humidity). Two p-values are
-reported, answering different questions. **Δ p (windows)** is the Welch
-t-test on the annual values within each window — does the recent decade
-differ from the pre-warming reference? **Trend p (75-yr)** is the
-Mann-Kendall test on the full 1951–present series — is there a steady
-year-on-year ramp? Step changes show up as significant Δ p with
-non-significant trend p; gradual ramps show up as both significant.
+The table below compares the recent decade (2015–2025) directly against
+the pre-warming reference (1951–1980). **Δ absolute** is the difference
+of the two means in the variable’s native units. **Δ %** is shown only
+where percent change makes physical sense (precipitation, soil moisture,
+VPD, relative humidity).
+
+Two p-values appear side-by-side because they answer different
+questions. **Δ p (windows)** asks whether the recent decade differs from
+the pre-warming reference. **Trend p (75-yr)** asks whether the full
+series ramps year-on-year. A sudden step change shows up as significant
+Δ p but not trend p; a gradual ramp shows up as both.
 
 The recent decade was 1.7 to 2.4 °C warmer than the pre-warming
 reference for annual mean, daytime maximum, and overnight minimum, with
@@ -451,88 +432,48 @@ style="margin-left: auto; margin-right: auto;"}
 
 ## Daytime Highs and Overnight Lows
 
-The cd package ships daytime maximum (tmax) and overnight minimum (tmin)
-temperatures alongside the daily mean. They carry distinct information.
-Overnight minimums warming faster than daytime maximums — the “day-night
-asymmetry” — is one of the textbook fingerprints of greenhouse warming.
-Karl et al. ([1993](#ref-karl_etal1993NewPerspective)) documented this
-first at the global scale, finding overnight minimums rose at roughly
-three times the rate of daytime maximums between 1951 and 1990 (0.84 vs
-0.28 °C). Whether a watershed or region shows that signal depends on
-local geography (valley inversions, snow cover, slope-aspect mix).
+Alongside the daily mean, the cd package ships **tmax** (daytime
+maximum) and **tmin** (overnight minimum). When overnight minimums warm
+faster than daytime maximums, that’s the “day-night asymmetry” — a
+textbook fingerprint of greenhouse warming, first documented globally by
+Karl et al. ([1993](#ref-karl_etal1993NewPerspective)) (overnight
+minimums rose roughly three times faster than daytime maximums between
+1951 and 1990). Whether a region shows the signal depends on local
+geography (valley inversions, snow cover, slope-aspect mix).
 
-For the FWCP Peace Region, **overnight minimums are warming faster than
-daytime maximums** — the textbook day-night asymmetry. Daytime maximums
-warmed about +0.027 °C per year since 1951 (+2.0 °C cumulative), while
-overnight minimums warmed about +0.032 °C per year (+2.4 °C cumulative).
-The overnight side warmed roughly 0.4 °C more than the daytime side over
-the full record, narrowing the diurnal temperature range by the same
-amount. The three figures below show the tmax, tmin and diurnal-range
-time series that yield those numbers.
+**For the FWCP Peace Region, overnight minimums are warming faster than
+daytime maximums.** Daytime maximums warmed about +0.027 °C/year since
+1951 (+2.0 °C cumulative); overnight minimums warmed about +0.032
+°C/year (+2.4 °C cumulative). The overnight side has gained roughly 0.4
+°C more than the daytime side over the full record, narrowing the
+diurnal temperature range by the same amount.
 
-``` r
+![Annual tmax (top) and tmin (bottom) anomalies for the FWCP Peace
+Region, relative to the 1951-1980 baseline. Dashed line is the 75-year
+Theil-Sen trend (1951-present); solid line is the 45-year trend
+(1981-present).](peace-fwcp_files/figure-html/plot-tmaxmin-1.png)
 
-trn_tmax <- cd::cd_trend(
-  ano[ano$variable == "tmax" & ano$period == "annual", ],
-  trend_start = c(1951, 1981)
-)
-cd::cd_plot_timeseries(ano, variable = "tmax", period = "annual", trend = trn_tmax,
-  title = "Daytime Maximum (tmax) — Annual Anomaly")
-```
-
-![Annual daytime maximum temperature (tmax) anomaly for the FWCP Peace
-Region relative to the 1951-1980
-baseline.](peace-fwcp_files/figure-html/plot-tmax-1.png)
-
-Annual daytime maximum temperature (tmax) anomaly for the FWCP Peace
-Region relative to the 1951-1980 baseline.
-
-``` r
-
-trn_tmin <- cd::cd_trend(
-  ano[ano$variable == "tmin" & ano$period == "annual", ],
-  trend_start = c(1951, 1981)
-)
-cd::cd_plot_timeseries(ano, variable = "tmin", period = "annual", trend = trn_tmin,
-  title = "Overnight Minimum (tmin) — Annual Anomaly")
-```
-
-![Annual overnight minimum temperature (tmin) anomaly for the FWCP Peace
-Region relative to the 1951-1980
-baseline.](peace-fwcp_files/figure-html/plot-tmin-1.png)
-
-Annual overnight minimum temperature (tmin) anomaly for the FWCP Peace
-Region relative to the 1951-1980 baseline.
-
-![Diurnal temperature range (daytime maximum minus overnight minimum)
-annual mean for the FWCP Peace Region. The downward trend indicates
-overnight lows are warming faster than daytime highs — the textbook
-day-night asymmetry shows up
-here.](peace-fwcp_files/figure-html/plot-dtr-1.png)
-
-Diurnal temperature range (daytime maximum minus overnight minimum)
-annual mean for the FWCP Peace Region. The downward trend indicates
-overnight lows are warming faster than daytime highs — the textbook
-day-night asymmetry shows up here.
+Annual tmax (top) and tmin (bottom) anomalies for the FWCP Peace Region,
+relative to the 1951-1980 baseline. Dashed line is the 75-year Theil-Sen
+trend (1951-present); solid line is the 45-year trend (1981-present).
 
 ## Snowpack
 
-Snowpack is the hinge of BC hydrology: winter precipitation falls as
-snow, accumulates on the ground, and releases as meltwater across spring
-and summer. That seasonal storage is the difference between a
-late-summer creek that still flows and one that doesn’t. It also sets
-the timing of the spring freshet — the annual flood pulse that salmonids
-time their up-river migrations to. Cordillera-wide, snowpack has been
-declining for decades ([Mote et al.
+In BC, most of the year’s runoff starts as winter snow. The snowpack
+stores it, then releases it as meltwater across spring and summer. That
+delayed release is what keeps creeks flowing through late summer and
+what drives the spring freshet — the annual flood pulse that salmonids
+time their up-river migrations to.
+
+Cordillera-wide, snowpack has been declining for decades ([Mote et al.
 2018](#ref-mote_etal2018Dramaticdeclines); [Pederson et al.
-2011](#ref-pederson_etal2011UnusualNature)). For four BC river basins
-(Fraser, Peace, Columbia, Campbell), Najafi et al.
-([2017](#ref-najafi_etal2017AttributionObserved)) attribute observed
-spring SWE decline to anthropogenic forcing using formal
-detection-attribution. For the Fraser specifically, Kang et al.
-([2016](#ref-kang_etal2016ImpactsRapidly)) document a ~10-day advance of
-the spring freshet over 1949-2006, with declining summer flows during
-the salmon migration window.
+2011](#ref-pederson_etal2011UnusualNature)). Najafi et al.
+([2017](#ref-najafi_etal2017AttributionObserved)) attribute the observed
+spring SWE decline across BC river basins — including the Peace — to
+human-caused warming. Kang et al.
+([2016](#ref-kang_etal2016ImpactsRapidly)) document a ~10-day earlier
+freshet on the neighbouring Fraser over 1949–2006, with declining summer
+flows during the salmon migration window.
 
 **For the FWCP Peace Region, the snowpack signal in our data is
 unambiguous and concentrated in the warm shoulders of the year.** Annual
@@ -543,47 +484,15 @@ shifted earlier into the calendar. Total annual snowfall barely changed
 (-6%) — the SWE decline is mostly about warming removing snow earlier,
 not less snow falling.
 
-A few notes on how to read the snow numbers below.
-
-ERA5-Land represents snow on a roughly 9 km grid — each grid cell is a
-single number summarizing snow averaged over about 80 km² of mixed
-terrain (saddles, slopes, valleys, forest, exposed alpine, all
-combined). When we compare the model against a snow station inside that
-cell, two distinct errors can stack: a **scale mismatch** (a single
-point measurement isn’t the same thing as an 80 km² average, especially
-in mountain terrain where snow accumulation varies sharply over short
-distances), and a **cell-mean bias** that the model has at the Northern
-Hemisphere scale (ERA5-Land overestimates mountain SWE by 150-200% even
-when compared against area-averaged satellite estimates ([Kouki et al.
-2023](#ref-kouki_etal2023Evaluationsnow)), traced to a simplified snow
-layer in the underlying atmospheric model).
-
-Our QA cross-check at four British Columbia automated snow stations
-inside the FWCP Peace Region (1985-2025, 95 paired station-years) sees
-both kinds of error stacked and cannot fully separate them. At Pine Pass
-— a Coast Mountain saddle that catches orographic precip from systems
-coming inland from the Pacific — the model is 61% too low at the
-station, likely mostly scale mismatch: the station sits at a high-snow
-microsite within an averaged cell. At Aiken Lake — a drier interior
-valley basin — the model is 54% too high, likely a mix of scale mismatch
-(averaging snowier surrounding terrain into the same cell) and the
-Kouki-style cell-mean bias for interior-continental cells.
-
-What does survive both kinds of error: **the gap between the model and
-the stations is the same size in 2020 as it was in 1990.** The bias is
-stable over time at every site (regression of model-minus-station on
-year is non-significant, p \> 0.2). That means the *changes over time*
-shown below — peak snowpack dropping, freshet shifting earlier — are
-real even though the absolute mm numbers shouldn’t be quoted as ground
-truth. For regional aggregates (the numbers in this section are spatial
-means over hundreds of cells), random point-vs-cell mismatches partially
-cancel, and stable cell-mean biases preserve the trend signal.
-
-The trend tests below use raw Mann-Kendall plus Theil-Sen — no
-pre-whitening — which is the right call for our 76-year series with
-strong climate trends per Yue and Wang
-([2002](#ref-yue_wang2002Applicabilityprewhitening)) (pre-whitening
-underestimates slope when a real trend exists).
+A note on how to read the snow numbers below. ERA5-Land works on a
+roughly 9 km grid: each cell is a single number averaging snow over
+about 80 km² of mixed terrain. Cross-checking against four BC automated
+snow stations inside the AOI (95 paired station-years, 1985–2025), the
+model is **biased on absolute peak SWE** — too low at high-snow Coast
+Mountain stations, too high at drier interior basins — but the **bias is
+stable over time** at every site (the gap between model and stations in
+2020 is the same size as in 1990). So the *trends and changes* below are
+credible. The absolute mm values are not ground truth.
 
 ### Seasonal snowpack curve
 
@@ -619,97 +528,30 @@ style="margin-left: auto; margin-right: auto;"}
 
   
 
-### Annual climate-departure signals
+### Annual snowpack signals
 
-Four derived annual scalars capture the climate-departure signals the
-literature treats as headline metrics for snow hydrology: peak snowpack
-([Mote et al. 2018](#ref-mote_etal2018Dramaticdeclines),
-[2005](#ref-mote_etal2005DECLININGMOUNTAIN)), the date of melt midpoint
-([Stewart et al. 2005](#ref-stewart_etal2005ChangesEarlier); [Cayan et
-al. 2001](#ref-cayan_etal2001ChangesOnset)), freshet flashiness, and the
-fraction of precipitation falling as snow ([Knowles et al.
-2006](#ref-knowles_etal2006TrendsSnowfall)). Two notes on our specific
-implementation. We use the actual annual maximum of daily SWE rather
-than the April-1 SWE canon ([Pederson et al.
-2011](#ref-pederson_etal2011UnusualNature)) — equivalent in effect for
-BC pixels (peak is at or near April 1) but date-insensitive. And our
-freshet-flashiness metric (annual maximum of 7-day rolling daily
-snowmelt) is upstream of the streamflow-based flashiness measures in the
-literature ([Stewart et al. 2005](#ref-stewart_etal2005ChangesEarlier);
-[Kang et al. 2016](#ref-kang_etal2016ImpactsRapidly)) — diagnostic of
-snowpack-side intensity before routing through soil and channel storage.
+Three annual numbers capture how the snowpack is changing:
 
-``` r
+- **Peak SWE** — the year’s maximum snow water equivalent. How much snow
+  is in the bank at the height of winter? ([Mote et al.
+  2018](#ref-mote_etal2018Dramaticdeclines),
+  [2005](#ref-mote_etal2005DECLININGMOUNTAIN))
+- **Snowmelt 50% day-of-year (DOY-50)** — the day by which half the
+  year’s melt has run off. Earlier = freshet shifting into spring.
+  ([Stewart et al. 2005](#ref-stewart_etal2005ChangesEarlier); [Cayan et
+  al. 2001](#ref-cayan_etal2001ChangesOnset))
+- **Snowfall fraction** — the share of annual precipitation that falls
+  as snow rather than rain. ([Knowles et al.
+  2006](#ref-knowles_etal2006TrendsSnowfall))
 
-trn_swe_max <- cd::cd_trend(
-  ano[ano$variable == "swe_max" & ano$period == "annual", ],
-  trend_start = c(1951, 1981)
-)
-cd::cd_plot_timeseries(ano, variable = "swe_max", period = "annual",
-                   trend = trn_swe_max,
-                   title = "Annual peak SWE — Anomaly")
-```
+![Annual snowpack signals for the FWCP Peace Region, relative to the
+1951-1980 baseline. Each panel uses its own y-axis. Dashed line is the
+75-year Theil-Sen trend; solid line is the 45-year
+trend.](peace-fwcp_files/figure-html/snow-annual-1.png)
 
-![Annual peak snow water equivalent (swe_max) for the FWCP Peace Region.
-ERA5-Land mm SWE (regional spatial
-mean).](peace-fwcp_files/figure-html/snow-swe-max-1.png)
-
-Annual peak snow water equivalent (swe_max) for the FWCP Peace Region.
-ERA5-Land mm SWE (regional spatial mean).
-
-``` r
-
-trn_doy <- cd::cd_trend(
-  ano[ano$variable == "snowmelt_doy_50" & ano$period == "annual", ],
-  trend_start = c(1951, 1981)
-)
-cd::cd_plot_timeseries(ano, variable = "snowmelt_doy_50", period = "annual",
-                   trend = trn_doy,
-                   title = "Snowmelt 50% DOY — Anomaly")
-```
-
-![Day of year when half the annual snowmelt has accumulated
-(snowmelt_doy_50). Earlier dates indicate an earlier freshet
-centroid.](peace-fwcp_files/figure-html/snow-doy-50-1.png)
-
-Day of year when half the annual snowmelt has accumulated
-(snowmelt_doy_50). Earlier dates indicate an earlier freshet centroid.
-
-``` r
-
-trn_rate <- cd::cd_trend(
-  ano[ano$variable == "snowmelt_rate_peak" & ano$period == "annual", ],
-  trend_start = c(1951, 1981)
-)
-cd::cd_plot_timeseries(ano, variable = "snowmelt_rate_peak", period = "annual",
-                   trend = trn_rate,
-                   title = "Peak weekly melt rate — Anomaly")
-```
-
-![Annual maximum of 7-day rolling daily snowmelt (snowmelt_rate_peak).
-Higher values indicate more concentrated freshet
-pulses.](peace-fwcp_files/figure-html/snow-rate-peak-1.png)
-
-Annual maximum of 7-day rolling daily snowmelt (snowmelt_rate_peak).
-Higher values indicate more concentrated freshet pulses.
-
-``` r
-
-trn_frac <- cd::cd_trend(
-  ano[ano$variable == "snowfall_fraction" & ano$period == "annual", ],
-  trend_start = c(1951, 1981)
-)
-cd::cd_plot_timeseries(ano, variable = "snowfall_fraction", period = "annual",
-                   trend = trn_frac,
-                   title = "Snowfall fraction — Anomaly")
-```
-
-![Annual snowfall fraction (snowfall_fraction): the percent of annual
-precipitation that fell as snow. Anomaly is in percentage
-points.](peace-fwcp_files/figure-html/snow-fraction-1.png)
-
-Annual snowfall fraction (snowfall_fraction): the percent of annual
-precipitation that fell as snow. Anomaly is in percentage points.
+Annual snowpack signals for the FWCP Peace Region, relative to the
+1951-1980 baseline. Each panel uses its own y-axis. Dashed line is the
+75-year Theil-Sen trend; solid line is the 45-year trend.
 
 ### What this means for the FWCP Peace Region
 
@@ -1011,28 +853,20 @@ suppresses that variability.
 
 For the cold-water resident salmonids the FWCP Peace supports — bull
 trout, Arctic grayling, mountain whitefish, rainbow trout, kokanee —
-these signals compound. Stream temperatures are likely rising in step
-with warmer ambient air temperatures. Mantua et al.
-([2010](#ref-mantua_etal2010Climatechange)) modelled this for Washington
-State watersheds and found that warming summer stream temperatures
-combined with altered low flows would reduce reproductive success for
-many salmon populations, and Eaton and Scheller
-([1996](#ref-eaton_scheller1996Effectsclimate)) showed across 57 US fish
-species that cold- and cool-water species lose substantially more
-thermal habitat than warm-water species under the same forcing. Both
-findings carry directly into the BC interior cold-water cohort the FWCP
-Peace supports. The evapotranspiration imbalance means low-flow
-conditions in late summer are not being relieved by the precipitation
-increase that did occur; and the cold-water input that high-elevation
-snowpack provides to streams during the warmest, most thermally
-stressful weeks of summer is dropping in parallel with summer SWE. The
-spring freshet — the dominant high-flow event that shapes channel
-morphology, mobilizes spawning gravels, and refills off-channel rearing
-habitat — is shifting weeks earlier; the neighbouring Fraser Basin shows
-the same shift — Kang et al. ([2016](#ref-kang_etal2016ImpactsRapidly))
-documented a ~10-day advance in the spring freshet at Hope between 1949
-and 2006, with persistent declines through autumn recession just when
-salmon are migrating up the Fraser.
+these signals compound. Stream temperatures track ambient air
+temperatures, so warmer air means warmer water. Cold-water fish lose
+thermal habitat under that forcing more than warm-water fish do ([Eaton
+and Scheller 1996](#ref-eaton_scheller1996Effectsclimate)), and warming
+summer streams combined with altered low flows reduce salmonid
+reproductive success ([Mantua et al.
+2010](#ref-mantua_etal2010Climatechange)). Three knock-on effects matter
+here. **Late-summer low flows are not being relieved** — even where
+precipitation rose, the warmer atmosphere drinks the extra back. **The
+cold-water input that high-elevation snowpack provides during the
+warmest weeks of summer is dropping in parallel with summer SWE.** **The
+spring freshet — the high-flow event that shapes channels, moves
+spawning gravels, and refills off-channel rearing habitat — is arriving
+weeks earlier, just when salmon timing depends on it.**
 
 ## References
 
@@ -1071,11 +905,6 @@ Society* 74 (6): 1007–23.
 Knowles, Noah, Michael D. Dettinger, and Daniel R. Cayan. 2006. “Trends
 in Snowfall Versus Rainfall in the Western United States.” *Journal of
 Climate* 19 (18): 4545–59. <https://doi.org/10.1175/jcli3850.1>.
-
-Kouki, Kerttu, Kari Luojus, and Aku Riihelä. 2023. “Evaluation of Snow
-Cover Properties in ERA5 and ERA5-Land with Several Satellite-Based
-Datasets in the Northern Hemisphere in Spring 1982–2018.” *The
-Cryosphere* 17 (12): 5007–26. <https://doi.org/10.5194/tc-17-5007-2023>.
 
 Mantua, Nathan, Ingrid Tohver, and Alan Hamlet. 2010. “Climate Change
 Impacts on Streamflow Extremes and Summertime Stream Temperature and
@@ -1116,8 +945,3 @@ Stewart, Iris T., Daniel R. Cayan, and Michael D. Dettinger. 2005.
 “Changes Toward Earlier Streamflow Timing Across Western North America.”
 *Journal of Climate* 18 (8): 1136–55.
 <https://doi.org/10.1175/jcli3321.1>.
-
-Yue, Sheng, and Chun Yuan Wang. 2002. “Applicability of Prewhitening to
-Eliminate the Influence of Serial Correlation on the Mann‐Kendall Test.”
-*Water Resources Research* 38 (6).
-<https://doi.org/10.1029/2001wr000861>.
