@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">cd</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,6 +36,10 @@
       <small>Source: <a href="https://github.com/NewGraphEnvironment/cd/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.3.2" id="cd-032-2026-06-06">cd 0.3.2 (2026-06-06)<a class="anchor" aria-label="anchor" href="#cd-032-2026-06-06"></a></h2>
+<ul><li>Both regional vignettes (kootenay-lake, peace-fwcp) rewritten for new readers: plainer-language opener for the snowpack section (“In BC, most of the year’s runoff starts as winter snow…” instead of the “hinge of BC hydrology” metaphor), Trends / Recent-Decade / bias-notes preambles compressed and de-jargoned, Annual snowpack signals intro reduced to a 3-bullet plain-language list, salmonid Interpretation closer tightened to one paragraph with three bold knock-on effects. Figure trim: cut <code>plot-tmean</code> (covered by <code>facet-tmean</code>), <code>plot-dtr</code> (asymmetry numbers already in prose), and <code>snow-rate-peak</code> (not load-bearing); fold <code>plot-tmax</code> + <code>plot-tmin</code> into one 2-panel faceted <code>plot-tmaxmin</code>, and <code>snow-swe-max</code> + <code>snow-doy-50</code> + <code>snow-fraction</code> into one 3-panel faceted <code>snow-annual</code> (free y-scales). Net per vignette: 3 fewer standalone figures, same coverage. Bibliography: dropped <code>kouki_etal2023</code> and <code>yue_wang2002</code> (no longer cited); union now 15/15. (<a href="https://github.com/NewGraphEnvironment/cd/pull/75" class="external-link">#75</a>)</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.3.1" id="cd-031-2026-06-06">cd 0.3.1 (2026-06-06)<a class="anchor" aria-label="anchor" href="#cd-031-2026-06-06"></a></h2>
 <ul><li>Kootenay Lake vignette: drops cross-references to the Peace vignette so the regional narrative stands on its own — recent-decade table preamble, snowpack section header, ASWS QA cross-check, snowpack-meaning section, cordillera-wide background, and the precipitation / snow Interpretation bullets all rewritten to focus on Kootenay-only findings (what is happening and what it means). Institutional FWCP reference at the watershed-group section and maintainer-facing <code>peace-fwcp.Rmd</code> build comment retained. (<a href="https://github.com/NewGraphEnvironment/cd/pull/74" class="external-link">#74</a>)</li>

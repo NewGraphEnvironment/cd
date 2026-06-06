@@ -1,5 +1,23 @@
 # Changelog
 
+## cd 0.3.2 (2026-06-06)
+
+- Both regional vignettes (kootenay-lake, peace-fwcp) rewritten for new
+  readers: plainer-language opener for the snowpack section (“In BC,
+  most of the year’s runoff starts as winter snow…” instead of the
+  “hinge of BC hydrology” metaphor), Trends / Recent-Decade / bias-notes
+  preambles compressed and de-jargoned, Annual snowpack signals intro
+  reduced to a 3-bullet plain-language list, salmonid Interpretation
+  closer tightened to one paragraph with three bold knock-on effects.
+  Figure trim: cut `plot-tmean` (covered by `facet-tmean`), `plot-dtr`
+  (asymmetry numbers already in prose), and `snow-rate-peak` (not
+  load-bearing); fold `plot-tmax` + `plot-tmin` into one 2-panel faceted
+  `plot-tmaxmin`, and `snow-swe-max` + `snow-doy-50` + `snow-fraction`
+  into one 3-panel faceted `snow-annual` (free y-scales). Net per
+  vignette: 3 fewer standalone figures, same coverage. Bibliography:
+  dropped `kouki_etal2023` and `yue_wang2002` (no longer cited); union
+  now 15/15. ([\#75](https://github.com/NewGraphEnvironment/cd/pull/75))
+
 ## cd 0.3.1 (2026-06-06)
 
 - Kootenay Lake vignette: drops cross-references to the Peace vignette
