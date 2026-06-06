@@ -1,5 +1,17 @@
 # Changelog
 
+## cd 0.3.1 (2026-06-06)
+
+- Kootenay Lake vignette: drops cross-references to the Peace vignette
+  so the regional narrative stands on its own — recent-decade table
+  preamble, snowpack section header, ASWS QA cross-check,
+  snowpack-meaning section, cordillera-wide background, and the
+  precipitation / snow Interpretation bullets all rewritten to focus on
+  Kootenay-only findings (what is happening and what it means).
+  Institutional FWCP reference at the watershed-group section and
+  maintainer-facing `peace-fwcp.Rmd` build comment retained.
+  ([\#74](https://github.com/NewGraphEnvironment/cd/pull/74))
+
 ## cd 0.3.0 (2026-05-10)
 
 - [`cd_compare()`](https://newgraphenvironment.github.io/cd/reference/cd_compare.md)
