@@ -44,6 +44,20 @@ test_that("cd_extract filters by years", {
   expect_equal(ts$year, 1951L:1953L)
 })
 
+test_that("cd_extract cache = TRUE matches cache = FALSE for local COGs", {
+  catalog <- cd_catalog(
+    system.file("extdata", "example_catalog.json", package = "cd")
+  )
+  aoi <- sf::st_read(
+    system.file("extdata", "example_aoi.gpkg", package = "cd"),
+    quiet = TRUE
+  )
+  ts_cache <- cd_extract(catalog, aoi, cache = TRUE)
+  ts_nocache <- cd_extract(catalog, aoi, cache = FALSE)
+
+  expect_equal(ts_cache, ts_nocache)
+})
+
 test_that("cd_extract filters by variables", {
   catalog <- cd_catalog(
     system.file("extdata", "example_catalog.json", package = "cd")

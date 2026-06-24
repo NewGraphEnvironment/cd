@@ -13,4 +13,11 @@
   219 PASS, lint clean. `/code-check` 3 rounds: 2 fixes (etag→size
   fallback for header-poor hosts, `file.rename` failure guard), round
   3 clean.
-- Next: Phase 2 — wire `cache = TRUE` through `cd_crop` / `cd_extract`
+- Phase 2 complete: `cd_crop(..., cache = TRUE)` routes remote hrefs
+  through `cd_cache_fetch` (local passthrough), `cd_extract(..., cache
+  = TRUE)` threads it through. Backward-compatible (default TRUE);
+  `cache=TRUE`/`FALSE` output identical for local COGs (asserted).
+  Full suite FAIL 0 / 206 PASS. Trivial param-threading over the
+  3-round-reviewed core — judgment-reviewed, not re-looped.
+- Next: Phase 3 — README/pkgdown caching + GDAL stopgap note, second-
+  knit egress confirmation, check() clean, NEWS + minor version bump

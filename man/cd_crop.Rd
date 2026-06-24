@@ -4,12 +4,16 @@
 \alias{cd_crop}
 \title{Crop and mask a raster to an AOI}
 \usage{
-cd_crop(href, aoi)
+cd_crop(href, aoi, cache = TRUE)
 }
 \arguments{
 \item{href}{Character. Path or URL to a COG or raster file.}
 
 \item{aoi}{An \code{sf} or \code{SpatVector} polygon to crop to.}
+
+\item{cache}{Logical. If \code{TRUE} (default), route remote http(s) hrefs
+through the on-disk cache via \code{\link[=cd_cache_fetch]{cd_cache_fetch()}} so repeated reads
+pull from S3 once instead of every call. Local paths are unaffected.}
 }
 \value{
 A \link[terra:SpatRaster-class]{terra::SpatRaster} cropped and masked to the AOI.

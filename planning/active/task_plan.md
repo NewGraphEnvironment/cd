@@ -42,10 +42,10 @@ NewGraphEnvironment/rtj#168). The fix is half-built: `R/cd_cache.R` ships
 
 ## Phase 2: Wire into read path
 
-- [ ] `cd_crop(href, aoi, cache = TRUE)` — route remote hrefs through `cd_cache_fetch`, local passthrough
-- [ ] `cd_extract(..., cache = TRUE)` — thread `cache` through to `cd_crop`
-- [ ] Update roxygen (`@param cache`, runnable examples stay local/passthrough)
-- [ ] Extend `test-cd_crop.R` / `test-cd_extract.R`: `cache = TRUE` with local file still passes through correctly
+- [x] `cd_crop(href, aoi, cache = TRUE)` — route remote hrefs through `cd_cache_fetch`, local passthrough (`isTRUE(cache)` guard)
+- [x] `cd_extract(..., cache = TRUE)` — thread `cache` through to `cd_crop`
+- [x] Update roxygen (`@param cache`, runnable examples stay local/passthrough)
+- [x] Extend `test-cd_crop.R` / `test-cd_extract.R`: `cache = TRUE` with local file passes through, output identical to `cache = FALSE`
 
 ## Phase 3: Docs, README stopgap, egress confirmation
 
