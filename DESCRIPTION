@@ -35,9 +35,11 @@ Suggests:
     rmarkdown,
     testthat (>= 3.0.0),
     tidyterra,
+    withr,
     zyp
 Config/testthat/edition: 3
-Imports: 
+Imports:
+    curl,
     dplyr,
     jsonlite,
     rappdirs,

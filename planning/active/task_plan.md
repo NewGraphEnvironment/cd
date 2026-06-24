@@ -33,12 +33,12 @@ NewGraphEnvironment/rtj#168). The fix is half-built: `R/cd_cache.R` ships
 
 ## Phase 1: Fetch-through-cache core
 
-- [ ] New `R/cd_cache_fetch.R`: `cd_cache_fetch(href, refresh = FALSE, cache_dir = NULL)` returns a local path
-- [ ] Local (non-http/s3) hrefs pass through untouched
-- [ ] HEAD → ETag/size; serve local on ETag match, else download-temp → size-validate → atomic rename → write `.meta`
-- [ ] `refresh = TRUE` forces re-download; `options(cd.cache_revalidate = FALSE)` skips HEAD; offline-with-local-copy serves cached + messages
-- [ ] Add `curl` to DESCRIPTION Imports
-- [ ] `tests/testthat/test-cd_cache_fetch.R`: local passthrough, key/meta creation, partial-download rejection, refresh + offline-fallback (HTTP via `file://` or mocked fetcher, CI-safe)
+- [x] New `R/cd_cache_fetch.R`: `cd_cache_fetch(href, refresh = FALSE, cache_dir = NULL)` returns a local path
+- [x] Local (non-http/s3) hrefs pass through untouched
+- [x] HEAD → ETag/size; serve local on ETag match (size fallback when ETag absent), else download-temp → size-validate → atomic rename → write `.meta`
+- [x] `refresh = TRUE` forces re-download; `options(cd.cache_revalidate = FALSE)` skips HEAD; offline-with-local-copy serves cached + messages
+- [x] Add `curl` to DESCRIPTION Imports (and `withr` to Suggests for tests)
+- [x] `tests/testthat/test-cd_cache_fetch.R`: 20 tests via mocked fetcher (`local_mocked_bindings`), CI-safe — passthrough, key/meta creation, ETag + size revalidation, partial-download rejection, refresh, offline fallback, revalidate opt-out
 
 ## Phase 2: Wire into read path
 
