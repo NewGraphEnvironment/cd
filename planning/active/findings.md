@@ -41,6 +41,24 @@
   opt-out (user-approved).
 - Atomic temp→rename with Content-Length size validation.
 
+## Egress confirmation (live S3 smoke test, 2026-06-24)
+
+Ran `cd_cache_fetch()` against the real catalog
+(`https://stac-era5-land.s3.us-west-2.amazonaws.com/prcp_annual.tif`,
+5.26 MB) in a throwaway cache dir. Not a committed test (needs network);
+documented here as the issue's "second knit does ~zero egress" check.
+
+| Call | Time | Network |
+|------|------|---------|
+| 1st fetch | 0.8 s | full 5.26 MB download |
+| 2nd fetch (HEAD revalidate) | 0.04 s | ~1 KB HEAD only, file mtime unchanged → no re-download |
+| 3rd fetch (`cd.cache_revalidate = FALSE`) | 0.000 s | zero network |
+
+Sidecar `.meta` captured the real S3 ETag (`bb297f3a…`) and
+Content-Length (5518610). So a repeat report/vignette build drops from
+N × full-COG egress to N × ~1 KB HEAD (or zero with revalidate off).
+Confirms the fix kills the recurring egress driver in rtj#168.
+
 ## Issue context
 
 (full body)

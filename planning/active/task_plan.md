@@ -49,14 +49,14 @@ NewGraphEnvironment/rtj#168). The fix is half-built: `R/cd_cache.R` ships
 
 ## Phase 3: Docs, README stopgap, egress confirmation
 
-- [ ] README + pkgdown note: caching behavior + GDAL `/vsicurl/` env-var stopgap (`VSI_CACHE`, `GDAL_HTTP_*`)
-- [ ] Manually confirm a second knit does ~zero egress (document method + result in findings.md)
-- [ ] `devtools::document()` + `devtools::check()` clean
-- [ ] NEWS entry + version bump (minor — new `cache` args + `curl` dep) as final commit
+- [x] README "Caching" section: behavior + GDAL `/vsicurl/` env-var stopgap (`VSI_CACHE`, `GDAL_HTTP_*`)
+- [x] Confirmed second read does ~zero egress via live S3 smoke test (5.26 MB → 0.04 s HEAD-only; documented in findings.md)
+- [x] `devtools::document()` clean; `check()` adds zero new issues (pre-existing `--as-cran` NOTEs are `planning/` detritus + vignettes; `curl`/`withr` wiring clean per codetools)
+- [x] NEWS entry + version bump 0.3.2 → 0.4.0 (minor — new exported `cd_cache_fetch()`, `cache` args, `curl` dep) as final commit
 
 ## Validation
 
-- [ ] Tests pass
-- [ ] `/code-check` clean on each commit
-- [ ] PWF checkboxes match landed work
+- [x] Tests pass (full suite FAIL 0)
+- [x] `/code-check` clean (3-round on core; judgment-reviewed on Phase 2 threading)
+- [x] PWF checkboxes match landed work
 - [ ] `/planning-archive` on completion

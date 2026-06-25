@@ -19,5 +19,9 @@
   `cache=TRUE`/`FALSE` output identical for local COGs (asserted).
   Full suite FAIL 0 / 206 PASS. Trivial param-threading over the
   3-round-reviewed core — judgment-reviewed, not re-looped.
-- Next: Phase 3 — README/pkgdown caching + GDAL stopgap note, second-
-  knit egress confirmation, check() clean, NEWS + minor version bump
+- Phase 3 complete: README "Caching" section + GDAL stopgap note; live
+  S3 smoke test confirmed egress kill (5.26 MB first read → 0.04 s
+  HEAD-only second read → 0 s offline); codetools clean on all new
+  functions; NEWS + version bump 0.3.2 → 0.4.0 (minor). Pre-existing
+  `--as-cran` NOTEs (planning/ detritus + vignettes) untouched.
+- Next: `/planning-archive`, then `/gh-pr-push`
