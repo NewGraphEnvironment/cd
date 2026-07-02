@@ -13,6 +13,10 @@
 #' @param periods Character vector of periods to extract.
 #'   Defaults to all periods in `catalog`.
 #' @param years Optional integer vector to filter specific years.
+#' @param cache Logical. If `TRUE` (default), remote COGs are read
+#'   through the on-disk cache (see [cd_cache_fetch()]) so repeated
+#'   extractions and report rebuilds download each COG from S3 once
+#'   rather than on every call. Passed through to [cd_crop()].
 #'
 #' @return A tibble with columns:
 #'   \describe{
@@ -36,11 +40,12 @@
 cd_extract <- function(catalog, aoi,
                        variables = catalog$variable,
                        periods = catalog$period,
-                       years = NULL) {
+                       years = NULL,
+                       cache = TRUE) {
   rows <- catalog[catalog$variable %in% variables & catalog$period %in% periods, ]
 
   results <- lapply(seq_len(nrow(rows)), function(i) {
-    r <- cd_crop(rows$href[i], aoi)
+    r <- cd_crop(rows$href[i], aoi, cache = cache)
     means <- terra::global(r, fun = "mean", na.rm = TRUE)
     yr <- as.integer(names(r))
 

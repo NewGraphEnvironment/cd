@@ -9,7 +9,8 @@ cd_extract(
   aoi,
   variables = catalog$variable,
   periods = catalog$period,
-  years = NULL
+  years = NULL,
+  cache = TRUE
 )
 }
 \arguments{
@@ -25,6 +26,11 @@ Defaults to all variables in \code{catalog}.}
 Defaults to all periods in \code{catalog}.}
 
 \item{years}{Optional integer vector to filter specific years.}
+
+\item{cache}{Logical. If \code{TRUE} (default), remote COGs are read
+through the on-disk cache (see \code{\link[=cd_cache_fetch]{cd_cache_fetch()}}) so repeated
+extractions and report rebuilds download each COG from S3 once
+rather than on every call. Passed through to \code{\link[=cd_crop]{cd_crop()}}.}
 }
 \value{
 A tibble with columns:

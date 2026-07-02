@@ -6,6 +6,9 @@
 #'
 #' @param href Character. Path or URL to a COG or raster file.
 #' @param aoi An `sf` or `SpatVector` polygon to crop to.
+#' @param cache Logical. If `TRUE` (default), route remote http(s) hrefs
+#'   through the on-disk cache via [cd_cache_fetch()] so repeated reads
+#'   pull from S3 once instead of every call. Local paths are unaffected.
 #'
 #' @return A [terra::SpatRaster] cropped and masked to the AOI.
 #'
@@ -19,7 +22,10 @@
 #' r
 #'
 #' @export
-cd_crop <- function(href, aoi) {
+cd_crop <- function(href, aoi, cache = TRUE) {
+  if (isTRUE(cache)) {
+    href <- cd_cache_fetch(href)
+  }
   r <- terra::rast(href)
   if (inherits(aoi, "sf") || inherits(aoi, "sfc")) {
     aoi <- terra::vect(aoi)
