@@ -16,7 +16,8 @@ cd_extract(
   aoi,
   variables = catalog$variable,
   periods = catalog$period,
-  years = NULL
+  years = NULL,
+  cache = TRUE
 )
 ```
 
@@ -45,6 +46,15 @@ cd_extract(
 - years:
 
   Optional integer vector to filter specific years.
+
+- cache:
+
+  Logical. If `TRUE` (default), remote COGs are read through the on-disk
+  cache (see
+  [`cd_cache_fetch()`](https://newgraphenvironment.github.io/cd/reference/cd_cache_fetch.md))
+  so repeated extractions and report rebuilds download each COG from S3
+  once rather than on every call. Passed through to
+  [`cd_crop()`](https://newgraphenvironment.github.io/cd/reference/cd_crop.md).
 
 ## Value
 

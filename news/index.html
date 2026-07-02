@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">cd</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,6 +36,10 @@
       <small>Source: <a href="https://github.com/NewGraphEnvironment/cd/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.4.0" id="cd-040-2026-06-25">cd 0.4.0 (2026-06-25)<a class="anchor" aria-label="anchor" href="#cd-040-2026-06-25"></a></h2>
+<ul><li>On-disk caching wired into the consumer read path, so repeated extractions, report renders, and vignette rebuilds pull each COG from S3 <strong>once</strong> and read locally thereafter — turning the dominant recurring S3 egress driver into a one-time cost. New exported <code><a href="../reference/cd_cache_fetch.html">cd_cache_fetch()</a></code> downloads a remote http(s) COG to the cd cache (keyed by URL hash, with a sidecar <code>.meta</code> recording the S3 ETag and size), validates freshness with a cheap HTTP HEAD (ETag, falling back to Content-Length), and serves the local copy on a hit. Downloads are size-validated and atomically renamed so a truncated file is never served; a failed HEAD with a cached copy present serves the cache, and <code>options(cd.cache_revalidate = FALSE)</code> skips revalidation entirely for offline work. <code><a href="../reference/cd_crop.html">cd_crop()</a></code> and <code><a href="../reference/cd_extract.html">cd_extract()</a></code> gain <code>cache = TRUE</code> (default), threading remote reads through the cache while local paths pass through unchanged. Live S3 confirmation: a repeat read drops from a full-COG download (megabytes) to a ~1 KB HEAD (or zero network with revalidation off). Adds <code>curl</code> to Imports. See the new README “Caching” section, which also documents the GDAL <code>/vsicurl/</code> env-var stopgap. (<a href="https://github.com/NewGraphEnvironment/cd/pull/76" class="external-link">#76</a>)</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.3.2" id="cd-032-2026-06-06">cd 0.3.2 (2026-06-06)<a class="anchor" aria-label="anchor" href="#cd-032-2026-06-06"></a></h2>
 <ul><li>Both regional vignettes (kootenay-lake, peace-fwcp) rewritten for new readers: plainer-language opener for the snowpack section (“In BC, most of the year’s runoff starts as winter snow…” instead of the “hinge of BC hydrology” metaphor), Trends / Recent-Decade / bias-notes preambles compressed and de-jargoned, Annual snowpack signals intro reduced to a 3-bullet plain-language list, salmonid Interpretation closer tightened to one paragraph with three bold knock-on effects. Figure trim: cut <code>plot-tmean</code> (covered by <code>facet-tmean</code>), <code>plot-dtr</code> (asymmetry numbers already in prose), and <code>snow-rate-peak</code> (not load-bearing); fold <code>plot-tmax</code> + <code>plot-tmin</code> into one 2-panel faceted <code>plot-tmaxmin</code>, and <code>snow-swe-max</code> + <code>snow-doy-50</code> + <code>snow-fraction</code> into one 3-panel faceted <code>snow-annual</code> (free y-scales). Net per vignette: 3 fewer standalone figures, same coverage. Bibliography: dropped <code>kouki_etal2023</code> and <code>yue_wang2002</code> (no longer cited); union now 15/15. (<a href="https://github.com/NewGraphEnvironment/cd/pull/75" class="external-link">#75</a>)</li>

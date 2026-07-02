@@ -13,7 +13,7 @@ or cd_trend()."><meta property="og:image" content="https://newgraphenvironment.g
 
     <a class="navbar-brand me-2" href="../index.html">cd</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -57,7 +57,8 @@ or <code><a href="cd_trend.html">cd_trend()</a></code>.</p>
 <span>  <span class="va">aoi</span>,</span>
 <span>  variables <span class="op">=</span> <span class="va">catalog</span><span class="op">$</span><span class="va">variable</span>,</span>
 <span>  periods <span class="op">=</span> <span class="va">catalog</span><span class="op">$</span><span class="va">period</span>,</span>
-<span>  years <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  years <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  cache <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -86,6 +87,13 @@ Defaults to all periods in <code>catalog</code>.</p></dd>
 
 <dt id="arg-years">years<a class="anchor" aria-label="anchor" href="#arg-years"></a></dt>
 <dd><p>Optional integer vector to filter specific years.</p></dd>
+
+
+<dt id="arg-cache">cache<a class="anchor" aria-label="anchor" href="#arg-cache"></a></dt>
+<dd><p>Logical. If <code>TRUE</code> (default), remote COGs are read
+through the on-disk cache (see <code><a href="cd_cache_fetch.html">cd_cache_fetch()</a></code>) so repeated
+extractions and report rebuilds download each COG from S3 once
+rather than on every call. Passed through to <code><a href="cd_crop.html">cd_crop()</a></code>.</p></dd>
 
 </dl></div>
     <div class="section level2">

@@ -10,6 +10,8 @@
   : Compute climatological baseline
 - [`cd_cache_clear()`](https://newgraphenvironment.github.io/cd/reference/cd_cache_clear.md)
   : Clear the cd cache
+- [`cd_cache_fetch()`](https://newgraphenvironment.github.io/cd/reference/cd_cache_fetch.md)
+  : Fetch a remote COG through the on-disk cache
 - [`cd_cache_info()`](https://newgraphenvironment.github.io/cd/reference/cd_cache_info.md)
   : Show cd cache info
 - [`cd_cache_path()`](https://newgraphenvironment.github.io/cd/reference/cd_cache_path.md)

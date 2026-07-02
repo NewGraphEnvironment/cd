@@ -7,7 +7,7 @@ interest polygon. Works with local file paths and remote URLs via GDAL's
 ## Usage
 
 ``` r
-cd_crop(href, aoi)
+cd_crop(href, aoi, cache = TRUE)
 ```
 
 ## Arguments
@@ -19,6 +19,14 @@ cd_crop(href, aoi)
 - aoi:
 
   An `sf` or `SpatVector` polygon to crop to.
+
+- cache:
+
+  Logical. If `TRUE` (default), route remote http(s) hrefs through the
+  on-disk cache via
+  [`cd_cache_fetch()`](https://newgraphenvironment.github.io/cd/reference/cd_cache_fetch.md)
+  so repeated reads pull from S3 once instead of every call. Local paths
+  are unaffected.
 
 ## Value
 

@@ -1,5 +1,31 @@
 # Changelog
 
+## cd 0.4.0 (2026-06-25)
+
+- On-disk caching wired into the consumer read path, so repeated
+  extractions, report renders, and vignette rebuilds pull each COG from
+  S3 **once** and read locally thereafter — turning the dominant
+  recurring S3 egress driver into a one-time cost. New exported
+  [`cd_cache_fetch()`](https://newgraphenvironment.github.io/cd/reference/cd_cache_fetch.md)
+  downloads a remote http(s) COG to the cd cache (keyed by URL hash,
+  with a sidecar `.meta` recording the S3 ETag and size), validates
+  freshness with a cheap HTTP HEAD (ETag, falling back to
+  Content-Length), and serves the local copy on a hit. Downloads are
+  size-validated and atomically renamed so a truncated file is never
+  served; a failed HEAD with a cached copy present serves the cache, and
+  `options(cd.cache_revalidate = FALSE)` skips revalidation entirely for
+  offline work.
+  [`cd_crop()`](https://newgraphenvironment.github.io/cd/reference/cd_crop.md)
+  and
+  [`cd_extract()`](https://newgraphenvironment.github.io/cd/reference/cd_extract.md)
+  gain `cache = TRUE` (default), threading remote reads through the
+  cache while local paths pass through unchanged. Live S3 confirmation:
+  a repeat read drops from a full-COG download (megabytes) to a ~1 KB
+  HEAD (or zero network with revalidation off). Adds `curl` to Imports.
+  See the new README “Caching” section, which also documents the GDAL
+  `/vsicurl/` env-var stopgap.
+  ([\#76](https://github.com/NewGraphEnvironment/cd/pull/76))
+
 ## cd 0.3.2 (2026-06-06)
 
 - Both regional vignettes (kootenay-lake, peace-fwcp) rewritten for new

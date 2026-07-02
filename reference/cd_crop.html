@@ -11,7 +11,7 @@ via GDAL's /vsicurl/."><meta property="og:image" content="https://newgraphenviro
 
     <a class="navbar-brand me-2" href="../index.html">cd</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -49,7 +49,7 @@ via GDAL's <code>/vsicurl/</code>.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">cd_crop</span><span class="op">(</span><span class="va">href</span>, <span class="va">aoi</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">cd_crop</span><span class="op">(</span><span class="va">href</span>, <span class="va">aoi</span>, cache <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -62,6 +62,12 @@ via GDAL's <code>/vsicurl/</code>.</p>
 
 <dt id="arg-aoi">aoi<a class="anchor" aria-label="anchor" href="#arg-aoi"></a></dt>
 <dd><p>An <code>sf</code> or <code>SpatVector</code> polygon to crop to.</p></dd>
+
+
+<dt id="arg-cache">cache<a class="anchor" aria-label="anchor" href="#arg-cache"></a></dt>
+<dd><p>Logical. If <code>TRUE</code> (default), route remote http(s) hrefs
+through the on-disk cache via <code><a href="cd_cache_fetch.html">cd_cache_fetch()</a></code> so repeated reads
+pull from S3 once instead of every call. Local paths are unaffected.</p></dd>
 
 </dl></div>
     <div class="section level2">
