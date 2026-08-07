@@ -32,7 +32,10 @@
 # Dry run (--dry-run, or CD_DRY_RUN=true in the environment) proves the whole
 # plumbing — package load, EDH auth, AWS read AND write, STAC catalog read,
 # target-year computation — then exits 0 before STEP 3. No EDH pull, no COG
-# rebuild, no S3 publish. climate-update.yml runs it weekly as a heartbeat (#78).
+# rebuild, no catalog publish. It is NOT a no-write mode: STEP 0 round-trips a
+# sentinel object under s3://<bucket>/_healthcheck/ (written then deleted), which
+# is the only way to prove the bucket is actually writable.
+# climate-update.yml runs it weekly as a heartbeat (#78).
 
 # Prefer the installed package (what CI does — see extra-packages: local::. in
 # climate-update.yml). devtools::load_all() is the local-dev fallback. Fail with
@@ -84,7 +87,11 @@ log_msg <- function(...) {
   cat(sprintf("[%s] %s\n", format(Sys.time(), "%Y-%m-%d %H:%M:%S"), paste0(...)))
 }
 
-log_msg("Mode: ", if (dry_run) "DRY RUN (no fetch, no write, no publish)" else "LIVE")
+log_msg("Mode: ", if (dry_run) {
+  "DRY RUN (probes only; no EDH fetch, no COG rebuild, no catalog publish)"
+} else {
+  "LIVE"
+})
 
 # -- Step 0: auth probes -------------------------------------------------------
 # Runs on every path, including the live run. STEP 1/2 can exit 0 early when
@@ -146,7 +153,11 @@ log_msg("  AWS identity: ", paste(aws_identity, collapse = " "))
 # nothing about whether this principal may write to the bucket, which is exactly
 # the class of failure that took this workflow down. Round-trip a sentinel object
 # and delete it. Keyed by run id so concurrent runs cannot clobber each other.
-run_id <- Sys.getenv("GITHUB_RUN_ID", unset = as.character(Sys.getpid()))
+# nzchar, not Sys.getenv(unset=): unset= only fires when the variable is absent,
+# so a set-but-empty GITHUB_RUN_ID would yield the bare prefix
+# s3://<bucket>/_healthcheck/ — writable, but not removable by the paired rm.
+run_id <- Sys.getenv("GITHUB_RUN_ID")
+if (!nzchar(run_id)) run_id <- as.character(Sys.getpid())
 sentinel_key <- paste0("s3://", bucket, "/_healthcheck/", run_id)
 sentinel_put <- suppressWarnings(system2(
   "aws", c("s3", "cp", "-", shQuote(sentinel_key)),
