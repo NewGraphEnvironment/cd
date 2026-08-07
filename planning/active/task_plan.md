@@ -67,23 +67,23 @@ nothing in this workflow legitimately needs `contents: write`.
 
 ## Phase 3: Wire dry-run into the workflow
 
-- [ ] Add `workflow_dispatch.inputs.dry_run` (boolean, default `true`) — a manual
+- [x] Add `workflow_dispatch.inputs.dry_run` (boolean, default `true`) — a manual
       trigger is cheap and safe by default.
-- [ ] Add a second cron `'0 6 * * 1'` (Mondays 06:00 UTC) alongside the existing
+- [x] Add a second cron `'0 6 * * 1'` (Mondays 06:00 UTC) alongside the existing
       monthly `'0 6 1 * *'`.
-- [ ] Add a `Resolve run mode` step that writes `CD_DRY_RUN` to `$GITHUB_ENV` via
+- [x] Add a `Resolve run mode` step that writes `CD_DRY_RUN` to `$GITHUB_ENV` via
       plain `if/elif/else` on `github.event_name` / `github.event.schedule` — **not**
       a nested `&&`/`||` expression ternary, which is unreadable and mis-evaluates
       on falsy inputs. Echo the resolved mode into the log.
 
 ## Phase 4: Auto-file a GitHub issue on failure
 
-- [ ] Create the `climate-update-failure` label (does not exist yet — repo has only
+- [x] Create the `climate-update-failure` label (does not exist yet — repo has only
       the 9 GitHub defaults).
-- [ ] Add a final `if: failure()` step using `gh`: search for an open issue with that
+- [x] Add a final `if: failure()` step using `gh`: search for an open issue with that
       label; **comment** on it if one exists, otherwise **create** one. Dedup by
       label so a run of red months yields one thread, not four.
-- [ ] Body carries: run URL, event name, resolved dry-run mode, and the tail of
+- [x] Body carries: run URL, event name, resolved dry-run mode, and the tail of
       `logs/*.log`. Applies to both the monthly real run and the weekly dry-run, so
       a broken dry-run self-reports too.
 
