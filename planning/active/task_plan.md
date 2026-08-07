@@ -50,9 +50,9 @@ nothing in this workflow legitimately needs `contents: write`.
 
 ## Phase 2: Dry-run mode in `pipeline_update_edh.R`
 
-- [ ] Read `CD_DRY_RUN` env var (also accept a `--dry-run` CLI flag for local use);
+- [x] Read `CD_DRY_RUN` env var (also accept a `--dry-run` CLI flag for local use);
       `dry_run <- ...` resolved next to the existing config block.
-- [ ] Add an auth-probe section that runs **before** Step 1 so it executes on every
+- [x] Add an auth-probe section that runs **before** Step 1 so it executes on every
       path (Step 1/2 can `quit(0)` early when already current):
       - EDH: token present + a cheap authenticated probe
       - AWS: `aws sts get-caller-identity`
@@ -60,10 +60,10 @@ nothing in this workflow legitimately needs `contents: write`.
         `s3://stac-era5-land/_healthcheck/<run-id>` — creds-valid alone does not
         prove the bucket is writable, and write perms are exactly what broke last
         time this pipeline was touched.
-- [ ] When `dry_run`: run Step 1 (catalog read) + Step 2 (target year), log what a
+- [x] When `dry_run`: run Step 1 (catalog read) + Step 2 (target year), log what a
       real run *would* fetch, then `quit(status = 0)` **before** Step 3
       (`uv run backfill_edh_*.py`). No EDH pull, no COG rebuild, no S3 push.
-- [ ] Keep the non-dry-run path byte-identical to today's behaviour.
+- [x] Keep the non-dry-run path byte-identical to today's behaviour.
 
 ## Phase 3: Wire dry-run into the workflow
 

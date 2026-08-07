@@ -106,3 +106,52 @@ step with `actions/upload-artifact@v4` and keep `contents: read`.
   at lines 94 and 155. Line 94 (`latest_year >= current_year`) fires **before**
   the candidate-year log, so the dry-run auth probes must run before Step 1 to
   execute on every path.
+
+## Dry-run auth probe: libcurl needs `httpauth = 1L` for EDH
+
+First cut of the EDH probe embedded credentials in the URL the way
+`scripts/backfill_edh_all.py:70` does (`https://edh:<token>@data...`). That
+returned **HTTP 401** from R while plain `curl -u` on the same URL returned 200.
+Two separate causes, both worth knowing:
+
+1. The EDH token is 104 characters and is not URL-encoded, so libcurl will not
+   reliably accept it in a userinfo field. Credentials belong on the handle
+   (`username=`/`password=`), not in the URL — which also keeps the token out of
+   any string that could end up in a log.
+2. Even on the handle, it still 401'd until `httpauth = 1L` (`CURLAUTH_BASIC`)
+   was set. libcurl defaults to waiting for a `WWW-Authenticate` challenge before
+   sending credentials, and EDH does not send one — it just 401s. Forcing
+   preemptive Basic fixes it.
+
+Verified matrix against
+`.../era5/reanalysis-era5-land-no-antartica-v0.zarr/.zmetadata`:
+
+| handle config | result |
+|---|---|
+| creds in URL, no httpauth | 401 |
+| `username`/`password`, no httpauth | 401 |
+| `username`/`password` + `httpauth = 1L` | **200** |
+| `userpwd=` + `httpauth = 1L` | 200 |
+
+`.zmetadata` and `.zgroup` both HEAD 200; `zarr.json` is 404 (this store is
+zarr v2). Used `.zmetadata`.
+
+## Local dry-run verification (2026-08-07)
+
+`Rscript scripts/pipeline_update_edh.R --dry-run` — exit 0 in ~4 s:
+
+```
+Mode: DRY RUN (no fetch, no write, no publish)
+=== STEP 0: Verify credentials ===
+  EDH: OK (HTTP 200)
+  AWS identity: arn:aws:iam::414155577829:user/airvine
+  AWS write to s3://stac-era5-land: OK
+=== STEP 1: Check S3 catalog for latest year ===
+Latest year on S3: 2025
+Candidate years to fetch: 2026
+=== DRY RUN COMPLETE ===
+```
+
+`aws s3 ls s3://stac-era5-land/_healthcheck/` returns empty afterwards — the
+sentinel round-trip cleans up after itself. `CD_DRY_RUN=true` with no flag takes
+the same path.
