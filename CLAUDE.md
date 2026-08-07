@@ -133,6 +133,10 @@ The two-vignette template is the foundation for additional regional reporting ap
 
 - `data-raw/*.R` runs **locally only** — never on CI. Outputs land in `inst/extdata/` or `inst/vignette-data/` and are committed.
 - `bcsnowdata` (used by ASWS QA scripts) is GitHub-only — **never** add it to DESCRIPTION Suggests; pak can't resolve it on the pkgdown runner. Same for any other GitHub-only package.
+- **CI cannot commit a gitignored path.** `logs/*.log` is ignored, so the old "commit the run log back to main" step in `climate-update.yml` staged nothing, skipped the commit, and only ever reached `git push` — which 403s during `git-receive-pack` ref advertisement even with nothing to push. Four months of red runs. Use `actions/upload-artifact@v4` for run output and keep the token `contents: read` (#78).
+- **`setup-r-dependencies@v2` installs dependencies, not the package.** Any workflow running a `scripts/*.R` entry point that calls `library(cd)` needs `extra-packages: local::.`, or the script falls through to a `devtools::load_all()` that isn't installed on the runner (#78).
+- **Probe credentials at the top of long jobs.** `pipeline_update_edh.R` STEP 0 checks EDH auth and round-trips an S3 sentinel object before any work, turning a stale `EDH_TOKEN` from a six-hour failure into a four-second one. `aws sts get-caller-identity` alone is not enough — it proves the keys parse, not that the bucket is writable. EDH's HTTP Basic auth needs `httpauth = 1L` on the curl handle; libcurl otherwise waits for a `WWW-Authenticate` challenge EDH never sends.
+- **A weekly dry-run cron is cheap insurance.** It proves the plumbing between monthly live runs *and* keeps the workflow active — GitHub auto-disables scheduled workflows after 60 days of repo inactivity, a silent failure no notification catches.
 
 
 <!-- BEGIN SOUL CONVENTIONS — DO NOT EDIT BELOW THIS LINE -->

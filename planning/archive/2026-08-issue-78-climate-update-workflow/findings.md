@@ -155,3 +155,52 @@ Candidate years to fetch: 2026
 `aws s3 ls s3://stac-era5-land/_healthcheck/` returns empty afterwards — the
 sentinel round-trip cleans up after itself. `CD_DRY_RUN=true` with no flag takes
 the same path.
+
+## Bug 4 (found by the new probe) — the `EDH_TOKEN` repo secret is stale
+
+The acceptance dispatch surfaced a **fourth** independent reason this workflow
+could never have succeeded, on top of the three above.
+
+- The EDH probe passes locally with the token in `~/.Renviron` — HTTP 200.
+- On the runner it returns **403**. Not 401: the request authenticates, the
+  principal is forbidden. That is a revoked or expired token, not a malformed one.
+- `gh secret list` → `EDH_TOKEN` last set **2026-04-14T17:04:21Z**, which is
+  exactly when the last green run happened. Every run since has been red.
+
+So even with bugs 1–3 fixed, the live monthly run would still have died — just
+six hours later, at the EDH fetch, instead of in four seconds at STEP 0. This is
+the case for probing credentials up front, and the clearest possible argument for
+the dry-run heartbeat: no amount of static review would have found it.
+
+**Action required (repo owner):** `gh secret set EDH_TOKEN` with a current
+DestinE token. Not done here — overwriting shared CI credential material is the
+owner's call, and the sandbox correctly refused it.
+
+If DestinE tokens are short-lived this will recur. The weekly dry-run cron is
+what catches it next time, within days rather than at the next monthly run.
+
+## Acceptance runs (2026-08-07, branch `78-monthly-climate-data-update-workflow-fa`)
+
+Two `workflow_dispatch` runs with `dry_run=true`:
+
+- [31204565836](https://github.com/NewGraphEnvironment/cd/actions/runs/31204565836)
+- [31204944259](https://github.com/NewGraphEnvironment/cd/actions/runs/31204944259)
+
+Both red at `Run EDH update pipeline` — and only there, on the stale token.
+Everything the issue set out to fix is confirmed working:
+
+| Claim | Evidence |
+|---|---|
+| Bug 1 fixed — `cd` installs, no `devtools` error | script ran to STEP 0; no `loadNamespace` error |
+| Bug 2/3 fixed — no 403 on the log path | `Upload run log` ✓ on both runs |
+| Dry-run mode wired | step env shows `CD_DRY_RUN: true`; banner logged "DRY RUN" |
+| `Resolve run mode` maps dispatch input | `event=workflow_dispatch schedule='' -> dry_run=true` |
+| Failure alarm fires | run 1 opened issue #79 |
+| Alarm dedups | run 2 **commented** on #79; still exactly one open issue |
+| Issue body renders | table + `<details>` log tail correct, token not leaked |
+
+The "deliberately break something" step in the plan was unnecessary — the stale
+token broke it for real, which exercised both the create and the comment path.
+
+Not yet proven end-to-end: the live (non-dry-run) publish path. It is unchanged
+by this work, and cannot be exercised until the token is rotated.

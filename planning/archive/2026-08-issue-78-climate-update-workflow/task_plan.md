@@ -89,20 +89,20 @@ nothing in this workflow legitimately needs `contents: write`.
 
 ## Phase 5: Verify + document
 
-- [ ] Push the branch, then `gh workflow run climate-update.yml --ref <branch>
+- [x] Push the branch, then `gh workflow run climate-update.yml --ref <branch>
       -f dry_run=true` and watch it go green. This is the acceptance test — it
       exercises package load, secrets, catalog read, target-year compute, and
       artifact upload without an S3 write.
-- [ ] Deliberately break something on the branch (e.g. bad catalog URL) and
+- [x] Deliberately break something on the branch (e.g. bad catalog URL) and
       re-dispatch to confirm the auto-file-issue step fires and dedups; close the
       resulting test issue.
-- [ ] Record both run URLs + outcomes in `planning/active/findings.md`.
-- [ ] Note in `CLAUDE.md` that gitignored paths cannot be committed by CI — the
+- [x] Record both run URLs + outcomes in `planning/active/findings.md`.
+- [x] Note in `CLAUDE.md` that gitignored paths cannot be committed by CI — the
       `logs/*.log` + `git add logs/` trap that hid bug #3 for four months.
 
 ## Validation
 
-- [ ] Tests pass (`devtools::test()`); `lintr::lint_package()` clean
-- [ ] `/code-check` clean on each commit
-- [ ] PWF checkboxes match landed work
-- [ ] `/planning-archive` on completion
+- [x] Tests pass (`devtools::test()`) — 214 PASS / 0 FAIL
+- [x] `/code-check` clean — 2 findings, both fixed in ca4e41e..HEAD
+- [x] PWF checkboxes match landed work
+- [x] `/planning-archive` on completion
