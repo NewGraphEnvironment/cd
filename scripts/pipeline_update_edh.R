@@ -28,7 +28,18 @@
 # Usage:
 #   Rscript scripts/pipeline_update_edh.R
 
-if (requireNamespace("cd", quietly = TRUE)) library(cd) else devtools::load_all()
+# Prefer the installed package (what CI does — see extra-packages: local::. in
+# climate-update.yml). devtools::load_all() is the local-dev fallback. Fail with
+# a readable message rather than a bare "no package called 'devtools'" from
+# loadNamespace, which is how #78 presented on every scheduled run.
+if (requireNamespace("cd", quietly = TRUE)) {
+  library(cd)
+} else if (requireNamespace("devtools", quietly = TRUE)) {
+  devtools::load_all()
+} else {
+  stop("cd is not installed and devtools is unavailable to load_all() it. ",
+       "Install cd (or devtools) before running this pipeline.", call. = FALSE)
+}
 suppressMessages(library(terra))
 
 # -- Config --------------------------------------------------------------------

@@ -35,17 +35,17 @@ nothing in this workflow legitimately needs `contents: write`.
 
 ## Phase 1: Fix the two blocking bugs
 
-- [ ] `climate-update.yml`: give `setup-r-dependencies@v2` `extra-packages: local::.`
+- [x] `climate-update.yml`: give `setup-r-dependencies@v2` `extra-packages: local::.`
       so **cd itself** installs and the script takes the `library(cd)` branch.
       Preferred over `any::devtools` — it exercises the installed-package path CI
       should be testing, and avoids pulling the whole dev-tooling tree.
-- [ ] `pipeline_update_edh.R:31`: make the fallback fail loudly instead of erroring
+- [x] `pipeline_update_edh.R:31`: make the fallback fail loudly instead of erroring
       inside `loadNamespace` — `library(cd)` / `else if (requireNamespace("devtools"))`
       `load_all()` / `else stop("cd not installed and devtools unavailable ...")`.
       Grep `scripts/` for the same idiom and fix any sibling occurrence.
-- [ ] Replace the `Commit log` step with `actions/upload-artifact@v4` (`if: always()`,
+- [x] Replace the `Commit log` step with `actions/upload-artifact@v4` (`if: always()`,
       path `logs/`, ~30d retention). No `contents: write`.
-- [ ] Add a minimal job-level `permissions:` block — `contents: read`,
+- [x] Add a minimal job-level `permissions:` block — `contents: read`,
       `issues: write` (needed by Phase 4 only).
 
 ## Phase 2: Dry-run mode in `pipeline_update_edh.R`
