@@ -2,13 +2,29 @@ name: Monthly Climate Data Update
 
 on:
   schedule:
-    - cron: '0 6 1 * *'  # 1st of each month, 6am UTC
-  workflow_dispatch:       # manual trigger
+    - cron: '0 6 1 * *'  # 1st of each month, 6am UTC — live run
+    # Weekly dry-run heartbeat. Proves the plumbing (package load, EDH auth,
+    # AWS read+write, catalog read) between live runs, and keeps the workflow
+    # active so GitHub does not auto-disable the cron after 60 days of repo
+    # inactivity — a silent failure no notification would ever catch.
+    - cron: '0 6 * * 1'  # Mondays, 6am UTC — dry run
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Dry run — probe credentials and catalog, skip fetch/publish'
+        type: boolean
+        default: true
 
 jobs:
   update:
     runs-on: ubuntu-latest
     timeout-minutes: 360   # 6 hours max
+
+    # The pipeline publishes to S3, not to this repo — it never needs to push.
+    # issues:write is for the auto-file-on-failure step only.
+    permissions:
+      contents: read
+      issues: write
 
     env:
       EDH_TOKEN: ${{ secrets.EDH_TOKEN }}
@@ -23,7 +39,13 @@ jobs:
         with:
           use-public-rspm: true
 
+      # local::. installs cd itself, so pipeline_update_edh.R takes the
+      # library(cd) branch. Without it only cd's dependencies install, the
+      # script falls through to devtools::load_all(), and devtools is absent
+      # on the runner — the failure that killed every scheduled run (#78).
       - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: local::.
 
       - name: Install uv (runs the Python backfill)
         uses: astral-sh/setup-uv@v5
@@ -39,6 +61,21 @@ jobs:
             exit 1
           fi
 
+      # Plain if/elif/else rather than a nested ${{ a && b || c }} expression:
+      # that idiom mis-evaluates when the middle term is falsy, which is exactly
+      # the case here (dry_run can legitimately be false).
+      - name: Resolve run mode
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            DRY="${{ inputs.dry_run }}"
+          elif [ "${{ github.event.schedule }}" = "0 6 * * 1" ]; then
+            DRY=true      # weekly heartbeat
+          else
+            DRY=false     # monthly live run
+          fi
+          echo "CD_DRY_RUN=$DRY" >> "$GITHUB_ENV"
+          echo "event=${{ github.event_name }} schedule='${{ github.event.schedule }}' -> dry_run=$DRY"
+
       - name: Run EDH update pipeline
         # pipefail so Rscript's exit code propagates through `tee`; default
         # bash -e alone would let tee swallow a non-zero R exit.
@@ -48,14 +85,73 @@ jobs:
           mkdir -p logs
           Rscript scripts/pipeline_update_edh.R 2>&1 | tee logs/update_$(date +%Y%m%d).log
 
-      # Only commit logs when running on main. workflow_dispatch from a
-      # feature branch should not rebase onto or push to main.
-      - name: Commit log
-        if: always() && github.ref == 'refs/heads/main'
+      # Logs are gitignored (.gitignore: logs/*.log), so the old "commit the
+      # log back to main" step could never stage anything — it only ever
+      # reached `git push`, which 403s on the default read-only token even
+      # with nothing to push. Upload as an artifact instead (#78).
+      - name: Upload run log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: climate-update-log-${{ github.run_id }}
+          # Scoped to this pipeline's logs — logs/ also holds three stale
+          # backfill logs tracked in the repo from before logs/*.log was
+          # gitignored, which have nothing to do with this run.
+          path: logs/update_*.log
+          retention-days: 30
+          if-no-files-found: warn
+
+      # Primary failure alarm. Team-visible and durable, unlike watch-emails,
+      # which go only to the actor and depend on per-user notification settings.
+      # Runs after the artifact upload so the log is preserved either way.
+      # Deduped by label: a run of red months yields one thread, not four.
+      - name: File or update failure issue
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git pull --rebase origin main
-          git add logs/ || true
-          git diff --cached --quiet || git commit -m "Monthly climate update $(date +%Y-%m-%d)"
-          git push
+          set -euo pipefail
+
+          # Static parts first. The log tail is appended separately so backticks
+          # and $ in R/AWS output are never expanded by this shell.
+          cat > /tmp/failure-body.md <<EOF
+          The **Monthly Climate Data Update** workflow failed.
+
+          | | |
+          |---|---|
+          | Run | ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} |
+          | Trigger | \`${{ github.event_name }}\` |
+          | Cron | \`${{ github.event.schedule }}\` |
+          | Mode | \`dry_run=${CD_DRY_RUN:-unknown}\` |
+          | Ref | \`${{ github.ref_name }}\` |
+          | Commit | ${{ github.sha }} |
+
+          Full log is attached to the run as artifact \`climate-update-log-${{ github.run_id }}\`.
+
+          <details><summary>Last 50 log lines</summary>
+
+          \`\`\`
+          EOF
+
+          tail -n 50 logs/update_*.log >> /tmp/failure-body.md 2>/dev/null \
+            || echo "(no log file — the job failed before the pipeline step)" >> /tmp/failure-body.md
+
+          cat >> /tmp/failure-body.md <<'EOF'
+          ```
+
+          </details>
+          EOF
+
+          EXISTING=$(gh issue list --label climate-update-failure --state open \
+            --limit 1 --json number --jq '.[0].number // empty')
+
+          if [ -n "$EXISTING" ]; then
+            echo "Commenting on existing tracking issue #${EXISTING}"
+            gh issue comment "$EXISTING" --body-file /tmp/failure-body.md
+          else
+            echo "Opening a new tracking issue"
+            gh issue create \
+              --title "Monthly Climate Data Update failed ($(date -u +%Y-%m-%d))" \
+              --label climate-update-failure \
+              --body-file /tmp/failure-body.md
+          fi

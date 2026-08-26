@@ -19,7 +19,17 @@
 #   Rscript scripts/pipeline_stage3_edh.R
 #   Rscript scripts/pipeline_stage3_edh.R --dry-run   # no S3 push
 
-if (requireNamespace("cd", quietly = TRUE)) library(cd) else devtools::load_all()
+# Prefer the installed package; devtools::load_all() is the local-dev fallback.
+# Fail with a readable message rather than a bare "no package called 'devtools'"
+# from loadNamespace (see #78).
+if (requireNamespace("cd", quietly = TRUE)) {
+  library(cd)
+} else if (requireNamespace("devtools", quietly = TRUE)) {
+  devtools::load_all()
+} else {
+  stop("cd is not installed and devtools is unavailable to load_all() it. ",
+       "Install cd (or devtools) before running this pipeline.", call. = FALSE)
+}
 suppressMessages(library(terra))
 
 args <- commandArgs(trailingOnly = TRUE)
