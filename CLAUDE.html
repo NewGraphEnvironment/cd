@@ -171,6 +171,14 @@
 <code>data-raw/*.R</code> runs <strong>locally only</strong> — never on CI. Outputs land in <code>inst/extdata/</code> or <code>inst/vignette-data/</code> and are committed.</li>
 <li>
 <code>bcsnowdata</code> (used by ASWS QA scripts) is GitHub-only — <strong>never</strong> add it to DESCRIPTION Suggests; pak can’t resolve it on the pkgdown runner. Same for any other GitHub-only package.</li>
+<li>
+<strong>CI cannot commit a gitignored path.</strong> <code>logs/*.log</code> is ignored, so the old “commit the run log back to main” step in <code>climate-update.yml</code> staged nothing, skipped the commit, and only ever reached <code>git push</code> — which 403s during <code>git-receive-pack</code> ref advertisement even with nothing to push. Four months of red runs. Use <code>actions/upload-artifact@v4</code> for run output and keep the token <code>contents: read</code> (#78).</li>
+<li>
+<strong><code>setup-r-dependencies@v2</code> installs dependencies, not the package.</strong> Any workflow running a <code>scripts/*.R</code> entry point that calls <code><a href="https://github.com/NewGraphEnvironment/cd" class="external-link">library(cd)</a></code> needs <code>extra-packages: local::.</code>, or the script falls through to a <code>devtools::load_all()</code> that isn’t installed on the runner (#78).</li>
+<li>
+<strong>Probe credentials at the top of long jobs.</strong> <code>pipeline_update_edh.R</code> STEP 0 checks EDH auth and round-trips an S3 sentinel object before any work, turning a stale <code>EDH_TOKEN</code> from a six-hour failure into a four-second one. <code>aws sts get-caller-identity</code> alone is not enough — it proves the keys parse, not that the bucket is writable. EDH’s HTTP Basic auth needs <code>httpauth = 1L</code> on the curl handle; libcurl otherwise waits for a <code>WWW-Authenticate</code> challenge EDH never sends.</li>
+<li>
+<strong>A weekly dry-run cron is cheap insurance.</strong> It proves the plumbing between monthly live runs <em>and</em> keeps the workflow active — GitHub auto-disables scheduled workflows after 60 days of repo inactivity, a silent failure no notification catches.</li>
 </ul><!-- BEGIN SOUL CONVENTIONS — DO NOT EDIT BELOW THIS LINE --></div>
 </div>
 <div class="section level1">
@@ -1031,7 +1039,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer></div>
