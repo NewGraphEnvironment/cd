@@ -179,6 +179,8 @@
 <strong>Probe credentials at the top of long jobs.</strong> <code>pipeline_update_edh.R</code> STEP 0 checks EDH auth and round-trips an S3 sentinel object before any work, turning a stale <code>EDH_TOKEN</code> from a six-hour failure into a four-second one. <code>aws sts get-caller-identity</code> alone is not enough — it proves the keys parse, not that the bucket is writable. EDH’s HTTP Basic auth needs <code>httpauth = 1L</code> on the curl handle; libcurl otherwise waits for a <code>WWW-Authenticate</code> challenge EDH never sends.</li>
 <li>
 <strong>A weekly dry-run cron is cheap insurance.</strong> It proves the plumbing between monthly live runs <em>and</em> keeps the workflow active — GitHub auto-disables scheduled workflows after 60 days of repo inactivity, a silent failure no notification catches.</li>
+<li>
+<strong>Close the auto-filed failure issue when the cause is fixed.</strong> <code>climate-update.yml</code> dedups by label: it comments on <em>any</em> open issue tagged <code>climate-update-failure</code> and only opens a new one when none exists. A resolved-but-open thread therefore captures every future incident — a November failure lands as a comment on an August ticket describing a fixed cause, which reads as old news and gets skimmed. Deduping is the right design; it just assumes the thread is closed on resolution, and nothing enforces that. Caught in #79, which stayed open after #78 fixed its root cause.</li>
 </ul><!-- BEGIN SOUL CONVENTIONS — DO NOT EDIT BELOW THIS LINE --></div>
 </div>
 <div class="section level1">

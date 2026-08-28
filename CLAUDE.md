@@ -238,6 +238,15 @@ reporting appendices (cf \#47) — port directly to a
   between monthly live runs *and* keeps the workflow active — GitHub
   auto-disables scheduled workflows after 60 days of repo inactivity, a
   silent failure no notification catches.
+- **Close the auto-filed failure issue when the cause is fixed.**
+  `climate-update.yml` dedups by label: it comments on *any* open issue
+  tagged `climate-update-failure` and only opens a new one when none
+  exists. A resolved-but-open thread therefore captures every future
+  incident — a November failure lands as a comment on an August ticket
+  describing a fixed cause, which reads as old news and gets skimmed.
+  Deduping is the right design; it just assumes the thread is closed on
+  resolution, and nothing enforces that. Caught in \#79, which stayed
+  open after \#78 fixed its root cause.
 
 # CI Monitoring
 
