@@ -571,6 +571,30 @@ Add new checks here when a bug class is discovered — they compound over time.
   **50 deletions**. Reset before it left the branch, but only because the file
   count looked wrong.
 
+### Running a generator is not committing what it generated
+
+- "Verified: the builder runs clean and the new field is present" is a true
+  statement about the **generator**. It says nothing about the artifact in the
+  repo, because the build happened in a temp dir or in memory and was never
+  written back. The commit then carries the input and not the output, and every
+  consumer reads the stale artifact.
+- It is convincing precisely because real verification happened. The author ran
+  the thing, read the output, and confirmed the change — so the natural
+  follow-up question ("did you test it?") gets a confident yes.
+- Caught 2026-08-28 in rfp#219: four form schema CSVs gained a `site_id` column
+  and the PR body recorded a genuine check — `rfp_form_build("viewscape", ...)`
+  built clean, 25 fields, `site_id` in both the GeoPackage and the QML. The
+  GeoPackages and QMLs a field crew actually deploys were never rebuilt. CI
+  caught it only because a drift guard rebuilds every shipped schema and
+  byte-compares against the committed artifact.
+- Two habits: run the repo's own regeneration script rather than the function
+  (`data-raw/*/build_*.R` exists to write the artifacts, not just exercise the
+  builder), and check `git status` afterwards — an edit to a generated tree that
+  produces no diff is the tell.
+- **Keep a guard that compares committed artifacts to their inputs.** Without
+  one this is invisible until something downstream reads the artifact, which is
+  usually in the field. With one it is a red CI check thirty seconds after push.
+
 ### Never silence stderr on a mutating command, and never chain one with `;`
 
 - `cmd_that_moves_things 2>/dev/null; next_command` combines two mistakes that
@@ -696,6 +720,34 @@ Add new checks here when a bug class is discovered — they compound over time.
 ### `gh` CLI
 - **`gh pr create` resolves branch from CWD, not `--repo`**. Specifying `--repo NewGraphEnvironment/X` does NOT switch branch resolution — the command still reads the current working directory's checked-out branch. To open a PR in repo X, `cd` into X's checkout first, or pass `--head <branch>` explicitly.
 - **`gh issue create` / `gh pr create` with heredoc bodies fail on prose containing special shell characters** (apostrophes, dollar signs, backticks). Use `--body-file /tmp/issue.md` instead — every project's `newgraph.md` convention specifies this; codified here for the underlying class. The two are written interchangeably, so the trap applies to both: `gh pr create --body "$(cat <<'EOF' … EOF)"` breaks the parser on a prose apostrophe and bash reports `unexpected EOF while looking for matching '"'`, aborting the whole command before anything runs.
+- **Before you *cut* a branch, verify local is current with origin.** The mirror of the
+  rule below, and easier to miss because everything about the working tree looks fine. A
+  clean tree and the right branch name say nothing about whether that branch is 19 commits
+  behind. A branch cut from a stale base regenerates its content from stale input, and the
+  PR either conflicts (loud, cheap) or auto-merges non-overlapping hunks and quietly
+  reverts someone's newer edit (silent, expensive). Assert it:
+  ```bash
+  git fetch -q origin
+  [ "$(git rev-list --count HEAD..@{u})" -eq 0 ] || { echo "local behind origin"; exit 1; }
+  ```
+  Caught 2026-08-28 syncing CLAUDE.md across 25 repos: preconditions checked clean-tree
+  and on-default-branch but not up-to-date. `nrp-nutrient-loading-2025` was 19 behind, one
+  of those commits having touched the same file, and the PR conflicted. The 24 that merged
+  cleanly still had to be proven safe after the fact — by asserting the sync commit changed
+  nothing above the CLAUDE.md marker, which is the invariant the operation actually claimed.
+- **A per-item loop reports the wrapper's exit, not the items'.** `for r in ...; do
+  script "$r"; done` exits 0 whenever the *last* item succeeds, however many failed before
+  it. The task notification then says "completed (exit code 0)" over a batch with real
+  failures in it. Same family as the wrapped-job trap above, and the fix is the same shape:
+  gate on in-band markers. Print a per-item `OK`/`FAIL` line and count the FAILs, or
+  accumulate `RC=$((RC+1))` and `exit "$RC"`. Never read a loop's exit as "all items
+  succeeded".
+- **Distinguish "the action failed" from "the cleanup after it failed".** A wrapper that
+  treats any non-zero from `gh pr merge` as *merge failed* will report a false negative
+  when the merge succeeded and only `--delete-branch` errored. Two of three failures in the
+  same 2026-08-28 run were misreported this way — one had already merged. Re-read the
+  authoritative state (`gh pr view --json state`) before acting on a failure report, rather
+  than trusting the exit code of the compound command.
 - **Before `gh pr merge`, verify the branch is fully pushed.** `gh pr merge` merges the REMOTE branch — commits made locally but never pushed are silently excluded, so the PR merges "successfully" while `main` is missing work you know you committed. Check `git status -sb` shows no `ahead N` before merging (or that `git rev-list --count @{u}..HEAD` is 0). Worse: if you then delete the local branch (`--delete-branch`, or a follow-up `git branch -D`), the unpushed commits become **dangling** — recoverable via `git reflog` / `git fsck --lost-found` then `git cherry-pick`, but only if you notice they're missing. Caught twice 2026-07 in `floodplains`: PR #6 merged 1 of 3 branch commits (the drift#34 `changes_only` fix + a CLAUDE.md update were unpushed → stranded as danglers → recovered and re-merged via a follow-up PR); a second branch sat 4-ahead-unpushed at compact time. The same check belongs in the `gh-pr-merge` skill's pre-merge step.
 
 ### Process Visibility
@@ -958,6 +1010,52 @@ prevented it.
   review.
 - Then prove the alarm can fire: feed it a deliberately undeclared input and
   assert it is reported. A guard nobody has seen fail is decoration.
+- **Pooling the inputs loses the resolution the guard exists to have.** Walking
+  all the sources and then comparing against their **union** is a different
+  check from comparing against each — and it passes for exactly the drift that
+  matters, an item present in one source and absent from another. The guard
+  looks thorough, reads as per-source, and is not.
+- The tell is a lookup whose key omits the source: `x %in% all$path` rather than
+  `x %in% all$path[all$source == s]`. Ask what the guard would report if one
+  source lost an entry the others kept; if the answer is "nothing", it is
+  pooled.
+- Caught 2026-08-28 in gq#66, inside the fix for that very issue. gq declared a
+  layer group that exists in one of two shipped QGIS templates and not the
+  other; the registry has no `template` column, so declaring it declared it for
+  both. The new drift guard compared paths against the union of both templates
+  and reported clean. A reviewer found it, not the guard — which is the point:
+  a pooled guard cannot catch its own author.
+
+### Tests that silently do not run
+
+`expect_snapshot()` **skips on CRAN**, and `testthat` treats a non-interactive run
+as CRAN by default. A regression net written with it passes locally, reports
+`SKIP` in CI, and is silently absent in exactly the run that matters. The failure
+is invisible: the suite is green either way.
+
+Seen 2026-08-28 in link#227 — a golden test pinning the output of the most
+delicate SQL in the package, written to make a refactor provably
+behaviour-preserving, was skipped the moment it ran non-interactively.
+
+Use explicit assertions for anything that is a **regression net**:
+
+```r
+# Skips on CRAN — fine for reviewing human-readable output, useless as a guard
+expect_snapshot(list(n = nrow(got), ids = sort(got$id)))
+
+# Runs everywhere
+expect_identical(nrow(got), 8L)
+expect_identical(anyDuplicated(got$id), 0L)
+```
+
+If the pinned values come from live data that may legitimately move, say so in a
+comment and re-pin deliberately — do not loosen the assertion to make it stop
+failing, which converts the guard back into decoration.
+
+Same class, different mechanism: `skip_if_no_db()` and friends are correct for
+tests that genuinely need a database, but a suite where the only coverage of a
+behaviour sits behind a skip has no coverage of it in CI. When a check matters,
+give it a mock-based twin that always runs.
 
 ### pak Behavior
 - pak stops on first unresolvable package — all subsequent packages are skipped
@@ -1061,6 +1159,33 @@ prevented it.
 - Downstream that reads as a real record. Caught 2026-08-24 in trap#14: an empty annotation table produced one key, which the join then reported as "an annotation matching no session". Guard with an explicit `if (!nrow(x)) return(character(0))`.
 - Same shape for any vectorised builder fed a possibly-empty frame — `sprintf()`, `file.path()`, `interaction()`.
 
+### A zero-length value in a comparison makes every branch false and silently picks the fallback
+
+- `x == character(0)` is `logical(0)`, so `which()` gives `integer(0)` and
+  `if (length(hit))` is FALSE **for every element**. A lookup written this way
+  does not error and does not report "not found" — it falls through to whatever
+  the else-branch does, usually *create*. The created thing then carries the
+  zero-length value as its name or key, and is unnamed rather than absent.
+  ```r
+  hit <- which(trimws(xml2::xml_attr(groups, "name")) == trimws(group))
+  if (length(hit)) return(groups[[hit[[1]]]])   # group = NULL -> never taken
+  g <- xml2::xml_add_child(parent, "layer-tree-group")
+  xml2::xml_set_attr(g, "name", group)          # sets nothing; attribute absent
+  ```
+- **The docs are what make it survive.** Because the fallback runs silently and
+  produces a plausible object, whatever the roxygen *claims* `NULL` means goes
+  unchallenged — and then gets copied into a CLAUDE.md and read as measured
+  fact. Caught 2026-08-28 in rfp#213: two exported writers documented
+  `group = NULL` as "inserts at the root" and "uses the registry's group"; both
+  created an **unnamed** layer-tree group at the end of the tree instead, where
+  everything in it draws under the basemaps and is invisible. One of them did it
+  once per call.
+- Sibling of the `paste0()` entry above: both turn "nothing" into "one thing"
+  rather than into an error.
+- Fix: test the argument, not the search result — `if (is.null(group)) stop(...)`
+  — and make the message list what *is* available, which is also the cheapest
+  way to notice the lookup never had a chance.
+
 ### open_dataset(unify_schemas = TRUE) requires aligned types
 - Cross-prefix/file schema unification only merges what types allow: `timestamp[us, tz=UTC]` will not merge with naked `timestamp[us]`, `Grade: string` not with `Grade: double`. Audit the schemas of every file group BEFORE promising unified reads over a mixed archive; plan a normalization pass otherwise. (water-temp-bc#17)
 
@@ -1131,6 +1256,16 @@ prevented it.
 - Symptoms: an `Edit` fails with "File does not exist" for a file you just wrote (their branch doesn't have it); `git branch --show-current` returns a branch you never created; your new files show as untracked on someone else's feature branch; `planning/active/` suddenly empty.
 - Caught three times in one session (2026-07, floodplains): twice mid-implementation, and once while running a `--public-clean` scrub — the scrub committed to a parallel session's feature branch instead of `main`, which would have flipped the repo public with an **un-scrubbed `main`**. That third one is the dangerous class: the safety work (`.claude/visibility`, stripped internal conventions) sat on a branch nobody was about to merge.
 - **Prevention:** one worktree per session — `git worktree add ../<repo>-<task> -b <branch>`. Each session gets its own directory and its own checked-out branch; no contention.
+  - **`git worktree add <path> <branch>` fails when that branch is already
+    checked out**, and the primary clone almost always has the default branch
+    checked out. So the obvious isolating command — `git worktree add $SP/x main`
+    — aborts precisely when you reach for it. Chained as
+    `git worktree add … ; cd "$SP/x" && …`, the failure falls through: `cd` errors,
+    the shell stays in the caller's cwd, and every later command runs **in the
+    shared checkout** — the contention the worktree existed to prevent. Use
+    `-b <new-branch>` (or `--detach`) so the worktree never asks for a branch
+    someone holds, and chain with `&&` so an abort cannot fall through.
+    Seen 2026-08-28 appending the rule directly above this one.
 - **Detection (cheap; do it before any commit, merge, or visibility flip):** assert the branch is what you think it is, not just that the tree is clean.
   ```bash
   [ "$(git branch --show-current)" = "$EXPECTED_BRANCH" ] || { echo "WRONG BRANCH"; exit 1; }
@@ -1506,6 +1641,16 @@ When importing config from one location into a canonical one (legacy `~/.bash_pr
 - Moving/renaming scripts: update CLAUDE.md, READMEs, usage comments
 - New variables: update .tfvars.example
 - New workflows: update relevant README
+
+### Generating from another repo's working tree copies its half-finished edits
+- Tooling that reads a *source* repo to generate a *target* file (`claude-md-init` reading `soul/conventions/`, template renderers, codegen from a schema repo) reads the working tree by default. If a second session is mid-edit there, you silently bake uncommitted, possibly-inconsistent state into a commit in the target — and the target's git history then attributes it to you.
+- Worse than a stale read, because partial edits are *internally* inconsistent. Cross-references are the tell: a file gaining a section renumbers its siblings, and pointers elsewhere update in a **later** commit. Catch it halfway and you ship a pointer to the wrong section that resolves to plausible, wrong content.
+- Caught 2026-08-26 syncing `fly` from `soul`: `karpathy.md` gained a section, shifting "Subagents Are Evidence" from §5 to §6. `planning.md`'s pointer was corrected in soul minutes later, in a separate commit. The sync landed between the two, so `fly` shipped "see `karpathy.md` §5" pointing at the wrong rule. `git pull` in soul reported "Already up to date" both times — the changes were staged, not unpushed, so nothing about the source repo *looked* stale.
+- Generate from the committed tree, not the checkout:
+  ```bash
+  SRC=$(mktemp -d) && git -C /path/to/source archive HEAD <subdir> | tar -x -C "$SRC"
+  ```
+- Verify the same way after any concurrent-session sync: rebuild from `HEAD` into a temp file and `diff` it against what you committed. Identical means the source was quiet while you read it; a diff is the drift, and it is cheaper to find now than in a downstream repo weeks later.
 
 
 # NGE Feature Workflow
