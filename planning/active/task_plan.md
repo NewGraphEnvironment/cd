@@ -21,13 +21,13 @@ then preserves forever.
 
 ## Phase 2: `backfill_edh_all.py`
 
-- [ ] In `process_year()`, after the `needed` dict is built: compute
+- [x] In `process_year()`, after the `needed` dict is built: compute
       `months_available()` once per store.
-- [ ] Drop hourly-derived entries from `needed` when the hourly store is short;
+- [x] Drop hourly-derived entries from `needed` when the hourly store is short;
       drop `prcp` when the daily store is short. Preserve the existing
       `SKIP <var>: got N months, expected 12` wording.
-- [ ] Return early when `needed` is empty — before `bc_slice`/`.sel()`.
-- [ ] Leave the existing post-compute `== 12` checks in place as a backstop.
+- [x] Return early when `needed` is empty — before `bc_slice`/`.sel()`.
+- [x] Leave the existing post-compute `== 12` checks in place as a backstop.
 
 ## Phase 3: `backfill_edh_snow.py`
 
