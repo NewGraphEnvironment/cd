@@ -15,9 +15,9 @@ then preserves forever.
 
 ## Phase 1: The helper
 
-- [ ] Add `months_available(ds, year)` to `scripts/_lib.py`, returning `0` for a
+- [x] Add `months_available(ds, year)` to `scripts/_lib.py`, returning `0` for a
       year absent from the store.
-- [ ] Docstring states the no-fetch guarantee, since that is the whole point.
+- [x] Docstring states the no-fetch guarantee, since that is the whole point.
 
 ## Phase 2: `backfill_edh_all.py`
 

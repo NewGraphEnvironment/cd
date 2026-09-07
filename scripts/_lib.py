@@ -12,6 +12,8 @@ needs the same safeguards against its own failure modes:
   - `write_geotiff(da, out_path, ...)` — atomic .tmp + os.replace, so a
     killed run never leaves a truncated file that fools the per-output
     idempotency check.
+  - `months_available(ds, year)` — how many months of a year the store
+    holds, from the time coordinate alone (no data transfer).
   - `log(msg)` — timestamped print, flushed.
   - `get_token()` — EDH token from env or `~/.Renviron`.
 
@@ -112,6 +114,29 @@ def with_retry(
             time.sleep(delay)
             delay *= 2
     raise RuntimeError(f"with_retry: exhausted {attempts} attempts for {what}")
+
+
+def months_available(ds: xr.Dataset, year: int) -> int:
+    """Count distinct calendar months of `year` present in `ds.valid_time`.
+
+    Reads the time coordinate only. Zarr materialises coordinates when the
+    store is opened, so this triggers no data transfer — which is the whole
+    point: callers use it to decide whether a year is worth fetching, and a
+    check that fetched in order to answer would defeat itself (#84).
+
+    Matches the semantics of the post-compute guards it fronts: those count
+    month-start bins after `resample(valid_time="1MS")`, which is the number
+    of distinct months holding any data. A month present but incomplete
+    counts as present in both.
+
+    Returns 0 when the year is absent from the store entirely.
+    """
+    vt = ds.valid_time.sel(
+        valid_time=slice(f"{year}-01-01", f"{year}-12-31T23:59:59")
+    )
+    if vt.size == 0:
+        return 0
+    return len(set(vt.dt.month.values.tolist()))
 
 
 def write_geotiff(
