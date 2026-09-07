@@ -40,7 +40,7 @@ then preserves forever.
 
 ## Phase 4: `backfill_edh_tmax_tmin.py`
 
-- [ ] Guard in `main()` before the `ds["t2m"].sel(...)`, after the existing
+- [x] Guard in `main()` before the `ds["t2m"].sel(...)`, after the existing
       output-exists check.
 
 ## Phase 5: Verify and document
