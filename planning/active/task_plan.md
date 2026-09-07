@@ -45,13 +45,13 @@ then preserves forever.
 
 ## Phase 5: Verify and document
 
-- [ ] Acceptance test — metadata only, no data fetch, no quota spend: probe both
+- [x] Acceptance test — metadata only, no data fetch, no quota spend: probe both
       Zarrs for `months_available()` on a known-complete year and the in-progress
       year. Both known answers must be right.
-- [ ] Confirm an incomplete year returns in seconds having logged the skip.
-- [ ] Do not run a complete year end-to-end — that is a full fetch.
-- [ ] Update the now-stale comment in `scripts/pipeline_update_edh.R`.
-- [ ] Record measurements in `findings.md`.
+- [x] Confirm an incomplete year returns in seconds having logged the skip.
+- [x] Do not run a complete year end-to-end — that is a full fetch.
+- [x] Update the now-stale comment in `scripts/pipeline_update_edh.R`.
+- [x] Record measurements in `findings.md`.
 
 ## Validation
 
