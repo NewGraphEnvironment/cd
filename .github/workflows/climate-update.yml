@@ -109,6 +109,12 @@ jobs:
         # || cancelled() because a job killed by timeout-minutes is CANCELLED,
         # not failed — and a bare `failure()` skips the alarm in exactly the
         # hang this step exists to report.
+        #
+        # Tradeoff, deliberate: this also fires when a human cancels a run by
+        # hand, so a mistakenly-dispatched run that gets stopped will comment on
+        # the failure thread. A spurious comment is cheaper than a six-hour hang
+        # that reports nothing. (There is no concurrency: key, so auto-cancels
+        # are not a source of noise here.)
         if: failure() || cancelled()
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

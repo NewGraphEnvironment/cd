@@ -45,11 +45,27 @@ check(grepl("reach the host", d0, fixed = TRUE), "0 says the host was unreachabl
 
 check(grepl("Rotate", d401, fixed = TRUE), "401 says to rotate the secret")
 check(grepl("NOT a bad token", d403, fixed = TRUE), "403 says it is not the token")
+# Both, because each catches what the other misses. The fixed-string form
+# catches 403 reproducing 401's exact sentence; on its own it lets any other
+# rewording of the regression through ("...but rotate your token now" survived
+# it). The regex catches an imperative rotate instruction in any wording, and
+# unlike a bare [Rr]otate it still passes the real text's "before rotating
+# anything" and a reword to "before you rotate anything".
 check(!grepl("Rotate the EDH_TOKEN secret", d403, fixed = TRUE),
-      "403 does not carry 401's rotate-the-secret instruction")
+      "403 does not carry 401's exact rotate-the-secret sentence")
+check(!grepl("[Rr]otate (the|your)", d403),
+      "403 does not tell the reader to rotate anything")
 check(grepl("quota", d403, fixed = TRUE), "403 names the quota as a candidate")
 check(grepl("moved", d404, fixed = TRUE), "404 points at the endpoint")
 check(grepl("server error", edh_diagnosis(500L), fixed = TRUE), "500 blames EDH (boundary)")
+# Pinned from below as well. With only the >= side asserted, lowering the
+# boundary in either function survives — and at 405 the two statuses
+# edh_retryable explicitly enumerates as expected EDH behaviour, 408 and 429,
+# would both be diagnosed "EDH server error" with nothing to notice.
+check(!grepl("server error", edh_diagnosis(408L), fixed = TRUE), "408 is not a server error")
+check(!grepl("server error", edh_diagnosis(429L), fixed = TRUE), "429 is not a server error")
+check(!grepl("server error", edh_diagnosis(404L), fixed = TRUE), "404 is not a server error")
+check(!grepl("server error", edh_diagnosis(499L), fixed = TRUE), "499 is not a server error (boundary from below)")
 check(grepl("server error", edh_diagnosis(503L), fixed = TRUE), "5xx blames EDH")
 check(nzchar(edh_diagnosis(418L)), "an unmapped status still says something")
 

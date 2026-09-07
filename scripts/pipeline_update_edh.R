@@ -177,14 +177,16 @@ if (edh_status < 200L || edh_status >= 400L) {
   # only on the terminal failure path, so the auto-filed issue quotes them
   # rather than our guess.
   #
-  # Only when the server actually answered with an error. Two reasons to skip
-  # it otherwise: on a connection failure (status 0) there is no server message
-  # to get, and if the network has since recovered this GET returns 200 with the
-  # real .zmetadata — which would be printed as "EDH said:" beneath a
-  # "could not reach the host" diagnosis. It is also a full GET, so on a 403
-  # quota refusal it would spend one more request against the quota that just
-  # refused us, and on a 200 it would pull the whole multi-MB store metadata
-  # into memory to truncate it to 200 characters.
+  # Skipped when the server never answered (status 0, a connection failure):
+  # there is no server message to fetch, and if the network recovered in the
+  # meantime this GET returns 200 with the real .zmetadata, which would print as
+  # "EDH said: {"metadata": ..." beneath a "could not reach the host" diagnosis.
+  #
+  # It still runs for every 4xx/5xx, including 403 — that is the case whose
+  # wording is most worth having, since EDH names a quota refusal in the body.
+  # So this does NOT avoid the extra request on a quota refusal, and on a
+  # recovered 200 the body is still downloaded before r$status_code discards it.
+  # The status check below prevents mis-REPORTING, not the transfer.
   edh_reason <- if (edh_status < 400L) "" else tryCatch({
     r <- curl::curl_fetch_memory(
       edh_probe_url,
