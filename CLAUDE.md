@@ -234,6 +234,16 @@ reporting appendices (cf \#47) — port directly to a
   it proves the keys parse, not that the bucket is writable. EDH’s HTTP
   Basic auth needs `httpauth = 1L` on the curl handle; libcurl otherwise
   waits for a `WWW-Authenticate` challenge EDH never sends.
+- **A 403 from EDH at STEP 0 means the token expired — rotate the
+  secret, do not debug the pipeline.** Observed twice: `2026-04-14` (the
+  root cause found in \#78) and `2026-09-07`, six days after a green
+  live run on 09-01. The probe does its job — a four-second failure, an
+  auto-filed issue — but nothing renews the token, so this recurs on
+  EDH’s own schedule and every recurrence looks like a new incident.
+  Rotation is the repo owner’s action: mint a fresh token at
+  earthdatahub.destine.eu, then run
+  `gh secret set EDH_TOKEN --repo NewGraphEnvironment/cd` and paste at
+  the prompt. Never pass it via `--body` — argv is visible in `ps aux`.
 - **A weekly dry-run cron is cheap insurance.** It proves the plumbing
   between monthly live runs *and* keeps the workflow active — GitHub
   auto-disables scheduled workflows after 60 days of repo inactivity, a
