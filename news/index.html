@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">cd</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,6 +36,10 @@
       <small>Source: <a href="https://github.com/NewGraphEnvironment/cd/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.4.1" id="cd-041-2026-09-07">cd 0.4.1 (2026-09-07)<a class="anchor" aria-label="anchor" href="#cd-041-2026-09-07"></a></h2>
+<ul><li>Producer-side only — no change to any exported function. The three EDH backfillers now establish whether a year is complete <strong>before</strong> fetching it. <code>.compute()</code>, where the lazy xarray graph actually pulls from the Zarr store, previously ran ahead of the 12-month guard, so every monthly <code>climate-update</code> run downloaded a full partial year across 15 variables and discarded it — against a metered EDH free tier, roughly eleven times a year. A new <code>months_available()</code> helper answers the same question from the store’s time coordinate, which Zarr materialises on open and so costs no data transfer. The check is per store, since the hourly and daily stores advance independently (measured two months apart). Also closes an unguarded write: the four annual-derived snow variables had no completeness check at all, so a partial year produced rasters that the per-output idempotency check then preserved permanently. (<a href="https://github.com/NewGraphEnvironment/cd/pull/85" class="external-link">#85</a>)</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.4.0" id="cd-040-2026-06-25">cd 0.4.0 (2026-06-25)<a class="anchor" aria-label="anchor" href="#cd-040-2026-06-25"></a></h2>
 <ul><li>On-disk caching wired into the consumer read path, so repeated extractions, report renders, and vignette rebuilds pull each COG from S3 <strong>once</strong> and read locally thereafter — turning the dominant recurring S3 egress driver into a one-time cost. New exported <code><a href="../reference/cd_cache_fetch.html">cd_cache_fetch()</a></code> downloads a remote http(s) COG to the cd cache (keyed by URL hash, with a sidecar <code>.meta</code> recording the S3 ETag and size), validates freshness with a cheap HTTP HEAD (ETag, falling back to Content-Length), and serves the local copy on a hit. Downloads are size-validated and atomically renamed so a truncated file is never served; a failed HEAD with a cached copy present serves the cache, and <code>options(cd.cache_revalidate = FALSE)</code> skips revalidation entirely for offline work. <code><a href="../reference/cd_crop.html">cd_crop()</a></code> and <code><a href="../reference/cd_extract.html">cd_extract()</a></code> gain <code>cache = TRUE</code> (default), threading remote reads through the cache while local paths pass through unchanged. Live S3 confirmation: a repeat read drops from a full-COG download (megabytes) to a ~1 KB HEAD (or zero network with revalidation off). Adds <code>curl</code> to Imports. See the new README “Caching” section, which also documents the GDAL <code>/vsicurl/</code> env-var stopgap. (<a href="https://github.com/NewGraphEnvironment/cd/pull/76" class="external-link">#76</a>)</li>

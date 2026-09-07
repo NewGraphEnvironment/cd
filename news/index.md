@@ -1,5 +1,23 @@
 # Changelog
 
+## cd 0.4.1 (2026-09-07)
+
+- Producer-side only — no change to any exported function. The three EDH
+  backfillers now establish whether a year is complete **before**
+  fetching it. `.compute()`, where the lazy xarray graph actually pulls
+  from the Zarr store, previously ran ahead of the 12-month guard, so
+  every monthly `climate-update` run downloaded a full partial year
+  across 15 variables and discarded it — against a metered EDH free
+  tier, roughly eleven times a year. A new `months_available()` helper
+  answers the same question from the store’s time coordinate, which Zarr
+  materialises on open and so costs no data transfer. The check is per
+  store, since the hourly and daily stores advance independently
+  (measured two months apart). Also closes an unguarded write: the four
+  annual-derived snow variables had no completeness check at all, so a
+  partial year produced rasters that the per-output idempotency check
+  then preserved permanently.
+  ([\#85](https://github.com/NewGraphEnvironment/cd/pull/85))
+
 ## cd 0.4.0 (2026-06-25)
 
 - On-disk caching wired into the consumer read path, so repeated
