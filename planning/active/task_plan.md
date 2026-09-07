@@ -31,11 +31,11 @@ then preserves forever.
 
 ## Phase 3: `backfill_edh_snow.py`
 
-- [ ] In `process_year()`, bail before `state_box`/`accum_box` when the hourly
+- [x] In `process_year()`, bail before `state_box`/`accum_box` when the hourly
       store has fewer than 12 months for the year.
-- [ ] Intentional behaviour change: the four annual-derived variables are no
+- [x] Intentional behaviour change: the four annual-derived variables are no
       longer written from a partial year.
-- [ ] Guard `snowfall_fraction`'s separate daily-store read on the daily store's
+- [x] Guard `snowfall_fraction`'s separate daily-store read on the daily store's
       own count.
 
 ## Phase 4: `backfill_edh_tmax_tmin.py`
