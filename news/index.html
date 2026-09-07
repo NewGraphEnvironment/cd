@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">cd</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,6 +36,10 @@
       <small>Source: <a href="https://github.com/NewGraphEnvironment/cd/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.4.2" id="cd-042-2026-09-07">cd 0.4.2 (2026-09-07)<a class="anchor" aria-label="anchor" href="#cd-042-2026-09-07"></a></h2>
+<ul><li>Producer-side only — no change to any exported function. The EDH credential probe in <code>scripts/pipeline_update_edh.R</code> STEP 0 collapsed every HTTP status <code>&gt;= 400</code> into <code>EDH rejected the token</code>, so a 403 sent the reader to rotate a secret that was in perfect health — which is exactly what happened on 2026-09-07. A 401, 403 and 404 now give three distinct diagnoses, and EDH’s own error text is quoted on the failure path. The probe also gains a bounded retry over the statuses that can clear on their own (connection failure, 408, 429, 5xx, and 403 — observed transient), while 401 still fails immediately, since retrying a rejected credential only delays the report. Both decisions are pure functions in a new <code>scripts/_lib.R</code>, asserted offline by <code>scripts/test_lib.R</code>. (<a href="https://github.com/NewGraphEnvironment/cd/pull/87" class="external-link">#87</a>)</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.4.1" id="cd-041-2026-09-07">cd 0.4.1 (2026-09-07)<a class="anchor" aria-label="anchor" href="#cd-041-2026-09-07"></a></h2>
 <ul><li>Producer-side only — no change to any exported function. The three EDH backfillers now establish whether a year is complete <strong>before</strong> fetching it. <code>.compute()</code>, where the lazy xarray graph actually pulls from the Zarr store, previously ran ahead of the 12-month guard, so every monthly <code>climate-update</code> run downloaded a full partial year across 15 variables and discarded it — against a metered EDH free tier, roughly eleven times a year. A new <code>months_available()</code> helper answers the same question from the store’s time coordinate, which Zarr materialises on open and so costs no data transfer. The check is per store, since the hourly and daily stores advance independently (measured two months apart). Also closes an unguarded write: the four annual-derived snow variables had no completeness check at all, so a partial year produced rasters that the per-output idempotency check then preserved permanently. (<a href="https://github.com/NewGraphEnvironment/cd/pull/85" class="external-link">#85</a>)</li>

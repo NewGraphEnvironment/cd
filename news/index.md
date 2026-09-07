@@ -1,5 +1,21 @@
 # Changelog
 
+## cd 0.4.2 (2026-09-07)
+
+- Producer-side only — no change to any exported function. The EDH
+  credential probe in `scripts/pipeline_update_edh.R` STEP 0 collapsed
+  every HTTP status `>= 400` into `EDH rejected the token`, so a 403
+  sent the reader to rotate a secret that was in perfect health — which
+  is exactly what happened on 2026-09-07. A 401, 403 and 404 now give
+  three distinct diagnoses, and EDH’s own error text is quoted on the
+  failure path. The probe also gains a bounded retry over the statuses
+  that can clear on their own (connection failure, 408, 429, 5xx, and
+  403 — observed transient), while 401 still fails immediately, since
+  retrying a rejected credential only delays the report. Both decisions
+  are pure functions in a new `scripts/_lib.R`, asserted offline by
+  `scripts/test_lib.R`.
+  ([\#87](https://github.com/NewGraphEnvironment/cd/pull/87))
+
 ## cd 0.4.1 (2026-09-07)
 
 - Producer-side only — no change to any exported function. The three EDH
