@@ -254,8 +254,9 @@ for (yr in candidate_years) {
   }
 
   # Verify all 7 core + 4 monthly-snow + 4 annual-snow files wrote. The Python
-  # scripts skip incomplete years (n_months != 12); a missing file means the
-  # year wasn't ready on EDH yet.
+  # scripts check completeness from the store's time coordinate *before*
+  # fetching (#84), so an unready year costs one metadata read rather than a
+  # full download; a missing file means the year wasn't ready on EDH yet.
   wrote_core <- all(vapply(core_vars, function(v) {
     file.exists(file.path(monthly_dir, paste0(v, "_", yr, ".tif")))
   }, logical(1)))

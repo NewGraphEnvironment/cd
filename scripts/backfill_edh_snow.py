@@ -66,6 +66,7 @@ import xarray as xr
 from _lib import (
     get_token,
     log,
+    months_available,
     preflight_single_instance,
     with_retry,
     write_geotiff,
@@ -154,6 +155,35 @@ def process_year(year: int, hourly_ds: xr.Dataset, daily_ds: xr.Dataset) -> None
     if not needed:
         log(f"{year}: all outputs exist, skipping")
         return
+
+    # Completeness before cost. Every variable here derives from the hourly
+    # store, and the .compute() calls below are where the lazy graph actually
+    # pulls from EDH — so an incomplete year has to stop here, not after the
+    # download (#84).
+    #
+    # This also closes a second hole. The four ANNUAL_VARS had no completeness
+    # check at all, only a WARN on a short daily series, so a partial year
+    # wrote them anyway from partial data. `needed` skips any output that
+    # already exists, so those wrong rasters were then never recomputed — and
+    # when the year finally completed they would satisfy the annual-file check
+    # in pipeline_update_edh.R and be published. Bailing here is the fix.
+    n_hourly = months_available(hourly_ds, year)
+    if n_hourly < 12:
+        log(f"{year}: got {n_hourly} months on the hourly store, expected 12 "
+            f"— nothing fetched")
+        return
+
+    # snowfall_fraction additionally divides by annual precipitation from the
+    # daily store, which advances independently of the hourly one.
+    if "snowfall_fraction" in needed:
+        n_daily = months_available(daily_ds, year)
+        if n_daily < 12:
+            log(f"  SKIP snowfall_fraction: daily store has {n_daily} months, "
+                f"expected 12")
+            del needed["snowfall_fraction"]
+            if not needed:
+                log(f"{year}: nothing left to write — nothing fetched")
+                return
 
     log(f"{year}: needed = {sorted(needed)}")
     t_year = time.time()

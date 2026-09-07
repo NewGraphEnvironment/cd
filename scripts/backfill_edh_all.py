@@ -50,6 +50,7 @@ import xarray as xr
 from _lib import (
     get_token,
     log,
+    months_available,
     preflight_single_instance,
     with_retry,
     write_geotiff,
@@ -90,10 +91,18 @@ def tetens_es(t_c):
 
 
 # -- Per-year processing -------------------------------------------------------
+# Everything derived from the hourly store; prcp alone comes from the daily one.
+# ALL_VARS derives from these two so the completeness guard and the output map
+# cannot drift apart — a var added to one but not the other would otherwise be
+# written without ever being completeness-checked.
+HOURLY_VARS = ("tmax", "tmin", "tmean", "vpd", "rh", "soil_moisture")
+DAILY_VARS = ("prcp",)
+ALL_VARS = HOURLY_VARS + DAILY_VARS
+
+
 def outputs_for_year(year: int) -> dict:
     """Map output variable name to Path."""
-    return {v: MONTHLY_DIR / f"{v}_{year}.tif" for v in (
-        "tmax", "tmin", "tmean", "vpd", "rh", "prcp", "soil_moisture")}
+    return {v: MONTHLY_DIR / f"{v}_{year}.tif" for v in ALL_VARS}
 
 
 def process_year(year: int, hourly_ds: xr.Dataset, daily_ds: xr.Dataset):
@@ -103,6 +112,32 @@ def process_year(year: int, hourly_ds: xr.Dataset, daily_ds: xr.Dataset):
     needed = {v: p for v, p in out.items() if not p.exists()}
     if not needed:
         log(f"{year}: all outputs exist, skipping")
+        return
+
+    # Completeness before cost. Every .compute() below is where the lazy graph
+    # actually pulls from EDH, so a variable that cannot be written has to be
+    # dropped before we reach one — otherwise a partial year is downloaded in
+    # full and thrown away, every month, against a metered quota (#84).
+    #
+    # Per store, not pooled: the hourly and daily stores advance independently,
+    # and a hourly-complete/daily-short year must still write the six hourly
+    # variables. The post-compute `== 12` checks below stay as a backstop.
+    if any(v in needed for v in HOURLY_VARS):
+        n_hourly = months_available(hourly_ds, year)
+        if n_hourly < 12:
+            for v in HOURLY_VARS:
+                if v in needed:
+                    log(f"  SKIP {v}: got {n_hourly} months, expected 12")
+                    del needed[v]
+    if any(v in needed for v in DAILY_VARS):
+        n_daily = months_available(daily_ds, year)
+        if n_daily < 12:
+            for v in DAILY_VARS:
+                if v in needed:
+                    log(f"  SKIP {v}: got {n_daily} months, expected 12")
+                    del needed[v]
+    if not needed:
+        log(f"{year}: not complete on EDH yet — nothing fetched")
         return
 
     log(f"{year}: needed = {sorted(needed)}")
