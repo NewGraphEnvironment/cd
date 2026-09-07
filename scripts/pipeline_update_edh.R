@@ -51,6 +51,10 @@ if (requireNamespace("cd", quietly = TRUE)) {
 }
 suppressMessages(library(terra))
 
+# Producer-side helpers (mirrors scripts/_lib.py). Repo-root cwd, same
+# assumption the `uv run scripts/...` calls below already make.
+source("scripts/_lib.R")
+
 args <- commandArgs(trailingOnly = TRUE)
 # Same --dry-run flag as pipeline_stage3_edh.R, plus CD_DRY_RUN so the GitHub
 # Action can select the mode without rewriting the command line.
@@ -115,26 +119,68 @@ edh_probe_url <- paste0(
 # contain characters libcurl will not accept unencoded in a userinfo field —
 # embedding it the way the Python fsspec calls do yields a spurious 401 here.
 # It also keeps the token out of any string that might get logged.
-edh_res <- tryCatch(
-  curl::curl_fetch_memory(
-    edh_probe_url,
-    # httpauth = 1L is CURLAUTH_BASIC. Without it libcurl waits for a
-    # WWW-Authenticate challenge that EDH does not send, and the probe 401s
-    # against an endpoint that plain `curl -u` reaches fine.
-    handle = curl::new_handle(
-      nobody = TRUE, username = "edh", password = edh_token, httpauth = 1L
-    )
-  ),
-  error = function(e) {
-    log_msg("ERROR: could not reach data.earthdatahub.destine.eu — ", conditionMessage(e))
-    quit(status = 1)
+# Retry the statuses that can clear on their own, and only those. A single
+# transient refusal should not cost a red run plus an auto-filed issue: run
+# 34119315556 died on a 403 that returned 200 from the same secret and commit
+# five hours later (#82, #83). edh_retryable() holds which is which.
+edh_attempts <- 3L
+edh_status <- 0L
+edh_err <- ""
+edh_tries <- 0L
+for (i in seq_len(edh_attempts)) {
+  edh_tries <- i
+  edh_res <- tryCatch(
+    curl::curl_fetch_memory(
+      edh_probe_url,
+      # httpauth = 1L is CURLAUTH_BASIC. Without it libcurl waits for a
+      # WWW-Authenticate challenge that EDH does not send, and the probe 401s
+      # against an endpoint that plain `curl -u` reaches fine.
+      handle = curl::new_handle(
+        nobody = TRUE, username = "edh", password = edh_token, httpauth = 1L
+      )
+    ),
+    error = function(e) {
+      edh_err <<- conditionMessage(e)
+      NULL
+    }
+  )
+  # Status 0 is the connection-level failure case edh_retryable() expects.
+  edh_status <- if (is.null(edh_res)) 0L else as.integer(edh_res$status_code)
+  if (edh_status >= 200L && edh_status < 400L) break
+  if (i < edh_attempts && edh_retryable(edh_status)) {
+    edh_wait <- 5L * i
+    log_msg("  EDH probe ", i, "/", edh_attempts, ": ",
+            if (edh_status == 0L) "connection error" else paste0("HTTP ", edh_status),
+            " — retrying in ", edh_wait, "s")
+    Sys.sleep(edh_wait)
+  } else {
+    break
   }
-)
-if (edh_res$status_code >= 400) {
-  log_msg("ERROR: EDH rejected the token (HTTP ", edh_res$status_code, ").")
+}
+if (edh_status < 200L || edh_status >= 400L) {
+  log_msg("ERROR: EDH probe failed after ", edh_tries, " attempt(s).")
+  # Say what the status means, not what it is. Collapsing every 4xx into
+  # "rejected the token" is what sent #82 toward a needless secret rotation.
+  log_msg("  HTTP ", edh_status, ": ", edh_diagnosis(edh_status))
+  if (nzchar(edh_err)) log_msg("  curl: ", edh_err)
+  # The probe is a HEAD, so it carries no body. Fetch EDH's own wording once,
+  # only on the terminal failure path, so the auto-filed issue quotes them
+  # rather than our guess.
+  edh_reason <- tryCatch({
+    r <- curl::curl_fetch_memory(
+      edh_probe_url,
+      handle = curl::new_handle(
+        username = "edh", password = edh_token, httpauth = 1L
+      )
+    )
+    # Collapse to one line: EDH errors come back as multi-line HTML, and this
+    # string is quoted into the auto-filed failure issue.
+    trimws(substr(gsub("[[:space:]]+", " ", rawToChar(r$content)), 1, 200))
+  }, error = function(e) "")
+  if (nzchar(edh_reason)) log_msg("  EDH said: ", edh_reason)
   quit(status = 1)
 }
-log_msg("  EDH: OK (HTTP ", edh_res$status_code, ")")
+log_msg("  EDH: OK (HTTP ", edh_status, ")")
 
 # AWS: identity first, so a missing/expired key reports as such rather than as
 # an opaque S3 error.
