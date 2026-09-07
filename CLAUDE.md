@@ -32,6 +32,14 @@ GH Action’s monthly entry point) →
 →
 [`cd_s3_push()`](https://newgraphenvironment.github.io/cd/reference/cd_s3_push.md)
 
+The cron is monthly but the **unit of publication is a whole calendar
+year** — both backfillers write only when a year has all 12 months, and
+`pipeline_update_edh.R` derives its target from the annual `tmean` COG’s
+band names. With ERA5-Land’s 2-3 month latency that means the catalog
+advances roughly once a year, and the other ~11 monthly runs correctly
+do nothing. They are not free, though: `.compute()` precedes the
+12-month check, so each one fetches and discards a partial year (#84).
+
 The historical
 [`cd_fetch()`](https://newgraphenvironment.github.io/cd/reference/cd_fetch.md)
 /
