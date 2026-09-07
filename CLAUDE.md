@@ -22,6 +22,8 @@ R package for climate departure analysis from ERA5-Land reanalysis data. Compute
 **Producer** (GitHub Action, monthly): Python backfillers fetch hourly Zarr from EDH, aggregate, derive (VPD/RH/soil); R stage 3 writes COGs and pushes the STAC catalog:
 `scripts/backfill_edh_*.py` → `scripts/pipeline_stage3_edh.R` → `scripts/pipeline_update_edh.R` (the GH Action's monthly entry point) → `cd_cog_write()` → `cd_stac_catalog()` → `cd_s3_push()`
 
+The cron is monthly but the **unit of publication is a whole calendar year** — both backfillers write only when a year has all 12 months, and `pipeline_update_edh.R` derives its target from the annual `tmean` COG's band names. With ERA5-Land's 2-3 month latency that means the catalog advances roughly once a year, and the other ~11 monthly runs correctly do nothing. They are not free, though: `.compute()` precedes the 12-month check, so each one fetches and discards a partial year (#84).
+
 The historical `cd_fetch()` / `cd_derive()` R-side producer functions still ship (with tests) for users who want a CDS-based fallback, but are not what runs in CI. See v0.1.0 / #36 for the migration history.
 
 **Consumer** (user-facing, local R):
