@@ -106,7 +106,10 @@ jobs:
       # Runs after the artifact upload so the log is preserved either way.
       # Deduped by label: a run of red months yields one thread, not four.
       - name: File or update failure issue
-        if: failure()
+        # || cancelled() because a job killed by timeout-minutes is CANCELLED,
+        # not failed — and a bare `failure()` skips the alarm in exactly the
+        # hang this step exists to report.
+        if: failure() || cancelled()
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |

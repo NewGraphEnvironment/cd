@@ -107,7 +107,9 @@ def main(years):
         # Completeness before cost: the .compute() calls below are where the
         # lazy graph pulls from EDH, so an incomplete year must stop here
         # rather than be downloaded and then discarded by the n_months check
-        # further down (#84). That check stays as a backstop.
+        # further down (#84). That check is NOT a backstop for this one: it
+        # counts `resample("1MS")` bins, which span min..max contiguously, so a
+        # year with an interior gap still yields 12 and passes it.
         n_available = months_available(ds, year)
         if n_available < 12:
             log(f"  SKIP {year}: got {n_available} months, expected 12 "
