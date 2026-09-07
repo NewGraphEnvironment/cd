@@ -234,19 +234,19 @@ reporting appendices (cf \#47) — port directly to a
   it proves the keys parse, not that the bucket is writable. EDH’s HTTP
   Basic auth needs `httpauth = 1L` on the curl handle; libcurl otherwise
   waits for a `WWW-Authenticate` challenge EDH never sends.
-- **A 4xx from EDH at STEP 0 is not evidence the token is bad — the
-  probe says it is anyway.** `pipeline_update_edh.R` collapses every
-  status \>= 400 into `EDH rejected the token`, so a 401 (bad
-  credential), a 403 (authenticated but refused) and a 404 all read as
-  an expiry. Checked against the EDH account on `2026-09-07` after a red
-  dry-run: the standard key **never expires** and the classic key had
-  seven months left, so that 403 was never an expiry and rotating the
-  secret would have changed nothing. EDH’s free tier is a **monthly
-  download quota that resets at midnight on the 1st**, and the run that
-  spends it is the monthly live cron — so a red run shortly after a
-  green 1st-of-month run points at quota, not credentials. Classic keys
-  must be used against `data.earthdatahub.destine.eu`; the pipeline
-  already does.
+- **A single 403 from EDH at STEP 0 is not evidence of anything —
+  re-dispatch before diagnosing.** Measured `2026-09-07`: the weekly
+  dry-run died on `EDH rejected the token (HTTP 403)` at 12:00 UTC; a
+  workflow_dispatch at 16:51 UTC, same secret and same commit, got
+  **HTTP 200**. Transient. Before that re-run, two plausible causes had
+  been argued from the log alone — an expired token (wrong: the standard
+  key never expires and the classic key had seven months left) and
+  free-tier quota exhaustion (wrong: quota resets on the 1st and would
+  not clear mid-month). The probe makes this worse by collapsing every
+  status \>= 400 into one message, so 401, 403 and 404 are
+  indistinguishable (#83) — and it has no retry, so one blip auto-files
+  a failure issue. A dry-run costs about two minutes and one HEAD
+  request; run it first.
 - **A weekly dry-run cron is cheap insurance.** It proves the plumbing
   between monthly live runs *and* keeps the workflow active — GitHub
   auto-disables scheduled workflows after 60 days of repo inactivity, a
