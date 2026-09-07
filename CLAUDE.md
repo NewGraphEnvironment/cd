@@ -4,7 +4,7 @@ R package for climate departure analysis from ERA5-Land reanalysis data. Compute
 
 ## Fork / Upstream Status
 
-- **Origin:** `NewGraphEnvironment/cd` (private)
+- **Origin:** `NewGraphEnvironment/cd` (public — verify with `gh repo view --json isPrivate` before trusting this line)
 - **No upstream** — this is an original package
 - **SRED:** `NewGraphEnvironment/sred-2025-2026#23`
 
