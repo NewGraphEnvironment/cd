@@ -22,7 +22,12 @@ check <- function(ok, what) {
 for (s in c(0L, 403L, 408L, 429L, 500L, 503L)) {
   check(edh_retryable(s), sprintf("retryable(%d) is TRUE", s))
 }
-for (s in c(200L, 400L, 401L, 404L)) {
+# 410, 451 and 499 pin the 5xx boundary from BELOW. Without them, lowering
+# edh_retryable's threshold into the 4xx range survives: at >= 405 a 410 Gone
+# or a 451 would be retried three times with backoff, which is exactly what the
+# 404 case exists to prevent. edh_diagnosis is pinned the same way below; the
+# two encode one boundary and both ends of it need holding.
+for (s in c(200L, 400L, 401L, 404L, 410L, 451L, 499L)) {
   check(!edh_retryable(s), sprintf("retryable(%d) is FALSE", s))
 }
 
@@ -48,9 +53,12 @@ check(grepl("NOT a bad token", d403, fixed = TRUE), "403 says it is not the toke
 # Both, because each catches what the other misses. The fixed-string form
 # catches 403 reproducing 401's exact sentence; on its own it lets any other
 # rewording of the regression through ("...but rotate your token now" survived
-# it). The regex catches an imperative rotate instruction in any wording, and
-# unlike a bare [Rr]otate it still passes the real text's "before rotating
-# anything" and a reword to "before you rotate anything".
+# it). The regex catches a rotate instruction naming "the" or "your" — NOT
+# every wording: "You should rotate it now" gets through both, and no substring
+# rule separates that from the legitimate "before you rotate the secret", which
+# is lexically adjacent. The pair is still strictly stronger than either half.
+# Both pass the real text's "before rotating anything" and a reword to
+# "before you rotate anything".
 check(!grepl("Rotate the EDH_TOKEN secret", d403, fixed = TRUE),
       "403 does not carry 401's exact rotate-the-secret sentence")
 check(!grepl("[Rr]otate (the|your)", d403),

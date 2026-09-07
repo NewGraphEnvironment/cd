@@ -177,10 +177,14 @@ if (edh_status < 200L || edh_status >= 400L) {
   # only on the terminal failure path, so the auto-filed issue quotes them
   # rather than our guess.
   #
-  # Skipped when the server never answered (status 0, a connection failure):
-  # there is no server message to fetch, and if the network recovered in the
-  # meantime this GET returns 200 with the real .zmetadata, which would print as
-  # "EDH said: {"metadata": ..." beneath a "could not reach the host" diagnosis.
+  # Skipped when the server never answered (status 0, a connection failure).
+  # The reason is NOT a recovered 200 — the r$status_code check below already
+  # returns "" for that, and nzchar() then suppresses the line. It is a recovered
+  # 4xx/5xx: without this guard, a probe that failed three times at the
+  # connection level and then got a 403 would print
+  # "EDH said: Quota exceeded..." underneath a "could not reach the host"
+  # diagnosis, attributing a message to a request the diagnosis says never
+  # arrived.
   #
   # It still runs for every 4xx/5xx, including 403 — that is the case whose
   # wording is most worth having, since EDH names a quota refusal in the body.
