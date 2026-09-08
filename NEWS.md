@@ -1,3 +1,13 @@
+# cd 0.4.3 (2026-09-07)
+
+* Producer-side only — no change to any exported function. Fixes what four independent review rounds found in the 0.4.1 and 0.4.2 changes, which had shipped on self-review alone.
+
+  The offline test suites added in those releases were decorative for the distinction they existed to make: `months_available()` stubbed to return the *index of the last month* instead of the *count of distinct months* passed 7/7, because every fixture's year began on 1 January and was contiguous, and for that shape the two are the same number. A guard that over-counts writes a partial year. The R suite never asserted the connection-failure diagnosis at all, so a message colliding with the 401 text would have sent an operator to rotate a healthy secret on a DNS timeout. Both suites now carry fixtures that reach those cases, and every previously surviving mutant is red.
+
+  In the probe itself: `edh_err` was not reset between retry attempts, so one attempt's connection error printed beneath another's `rotate the secret` diagnosis; the error-text fetch never checked its own status, so a recovered server's 200 body could be quoted as EDH's explanation; and neither curl handle bounded the transfer, so a server that completed the handshake and stalled hung until the job was **cancelled** — which `if: failure()` skips, silencing the alarm in exactly the hang the probe exists to catch. The workflow now also fires on `cancelled()`.
+
+  Three pre-existing defects the review surfaced are filed rather than fixed here: [#88](https://github.com/NewGraphEnvironment/cd/issues/88), [#89](https://github.com/NewGraphEnvironment/cd/issues/89), [#90](https://github.com/NewGraphEnvironment/cd/issues/90). ([#91](https://github.com/NewGraphEnvironment/cd/pull/91))
+
 # cd 0.4.2 (2026-09-07)
 
 * Producer-side only — no change to any exported function. The EDH credential probe in `scripts/pipeline_update_edh.R` STEP 0 collapsed every HTTP status `>= 400` into `EDH rejected the token`, so a 403 sent the reader to rotate a secret that was in perfect health — which is exactly what happened on 2026-09-07. A 401, 403 and 404 now give three distinct diagnoses, and EDH's own error text is quoted on the failure path. The probe also gains a bounded retry over the statuses that can clear on their own (connection failure, 408, 429, 5xx, and 403 — observed transient), while 401 still fails immediately, since retrying a rejected credential only delays the report. Both decisions are pure functions in a new `scripts/_lib.R`, asserted offline by `scripts/test_lib.R`. ([#87](https://github.com/NewGraphEnvironment/cd/pull/87))
