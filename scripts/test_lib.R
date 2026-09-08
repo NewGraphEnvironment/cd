@@ -22,7 +22,12 @@ check <- function(ok, what) {
 for (s in c(0L, 403L, 408L, 429L, 500L, 503L)) {
   check(edh_retryable(s), sprintf("retryable(%d) is TRUE", s))
 }
-for (s in c(200L, 400L, 401L, 404L)) {
+# 410, 451 and 499 pin the 5xx boundary from BELOW. Without them, lowering
+# edh_retryable's threshold into the 4xx range survives: at >= 405 a 410 Gone
+# or a 451 would be retried -- 3 fetches, 2 retries, 15s of backoff -- which is
+# exactly what the 404 case exists to prevent. edh_diagnosis is pinned the same
+# way below; the two encode one boundary and both ends of it need holding.
+for (s in c(200L, 400L, 401L, 404L, 410L, 451L, 499L)) {
   check(!edh_retryable(s), sprintf("retryable(%d) is FALSE", s))
 }
 
@@ -30,17 +35,50 @@ for (s in c(200L, 400L, 401L, 404L)) {
 # The point of #83 is that these three must not read the same. Asserting each
 # message separately would still pass if all three were identical, so assert
 # the distinctness itself.
+d0   <- edh_diagnosis(0L)
 d401 <- edh_diagnosis(401L)
 d403 <- edh_diagnosis(403L)
 d404 <- edh_diagnosis(404L)
-check(length(unique(c(d401, d403, d404))) == 3L,
-      "401, 403 and 404 give three distinct diagnoses")
+# Status 0 belongs in the distinctness set: it is the connection-failure path
+# (pipeline_update_edh.R sets edh_status <- 0L when the request returns NULL),
+# and it is the status most likely to fire in CI. Left out, a diagnosis that
+# collided with 401's would send an operator to rotate a healthy secret on a
+# DNS timeout -- the precise regression this file exists to prevent.
+check(length(unique(c(d0, d401, d403, d404))) == 4L,
+      "0, 401, 403 and 404 give four distinct diagnoses")
+check(grepl("reach the host", d0, fixed = TRUE), "0 says the host was unreachable")
 
 check(grepl("Rotate", d401, fixed = TRUE), "401 says to rotate the secret")
 check(grepl("NOT a bad token", d403, fixed = TRUE), "403 says it is not the token")
-check(!grepl("[Rr]otate", d403), "403 does NOT send the reader to rotate")
+# Two assertions, and they are NOT independent. The regex matches the fixed
+# needle itself -- grepl("[Rr]otate (the|your)", "Rotate the EDH_TOKEN secret")
+# is TRUE -- so the fixed check cannot fail unless the regex already has. It is
+# kept for its failure message, which localises the regression faster than a
+# generic regex miss, NOT for coverage. If you are ever trimming these, delete
+# the FIXED line; deleting the regex one loses everything.
+#
+# What the regex actually catches: [Rr]otate, one literal space, lowercase
+# "the" or "your". "Rotate The", "rotate  the", "rotates the", "rotate our" and
+# "You should rotate it" all escape it. That covers the realistic regression --
+# a lowercase mid-sentence "rotate the/your" -- and no substring rule does much
+# better, because "before you rotate the secret" is a legitimate reword that
+# WOULD fail this assertion. The shipped text's "before rotating anything" and
+# a reword to "before you rotate anything" both pass.
+check(!grepl("Rotate the EDH_TOKEN secret", d403, fixed = TRUE),
+      "403 does not carry 401's exact rotate-the-secret sentence")
+check(!grepl("[Rr]otate (the|your)", d403),
+      "403 does not tell the reader to rotate anything")
 check(grepl("quota", d403, fixed = TRUE), "403 names the quota as a candidate")
 check(grepl("moved", d404, fixed = TRUE), "404 points at the endpoint")
+check(grepl("server error", edh_diagnosis(500L), fixed = TRUE), "500 blames EDH (boundary)")
+# Pinned from below as well. With only the >= side asserted, lowering the
+# boundary in either function survives — and at 405 the two statuses
+# edh_retryable explicitly enumerates as expected EDH behaviour, 408 and 429,
+# would both be diagnosed "EDH server error" with nothing to notice.
+check(!grepl("server error", edh_diagnosis(408L), fixed = TRUE), "408 is not a server error")
+check(!grepl("server error", edh_diagnosis(429L), fixed = TRUE), "429 is not a server error")
+check(!grepl("server error", edh_diagnosis(404L), fixed = TRUE), "404 is not a server error")
+check(!grepl("server error", edh_diagnosis(499L), fixed = TRUE), "499 is not a server error (boundary from below)")
 check(grepl("server error", edh_diagnosis(503L), fixed = TRUE), "5xx blames EDH")
 check(nzchar(edh_diagnosis(418L)), "an unmapped status still says something")
 

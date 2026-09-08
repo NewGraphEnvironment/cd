@@ -129,14 +129,24 @@ edh_err <- ""
 edh_tries <- 0L
 for (i in seq_len(edh_attempts)) {
   edh_tries <- i
+  # Reset per attempt. Without this, a curl error from an earlier attempt is
+  # still set when a LATER attempt fails with an HTTP status, and the report
+  # prints a connection-timeout message beside a "rotate the secret"
+  # diagnosis — the mixed signal this whole change exists to remove.
+  edh_err <- ""
   edh_res <- tryCatch(
     curl::curl_fetch_memory(
       edh_probe_url,
       # httpauth = 1L is CURLAUTH_BASIC. Without it libcurl waits for a
       # WWW-Authenticate challenge that EDH does not send, and the probe 401s
       # against an endpoint that plain `curl -u` reaches fine.
+      # timeout bounds the whole transfer. new_handle() bounds only the
+      # CONNECT phase (10s), so a server that completes the handshake and then
+      # stalls hangs here indefinitely — and the job's timeout-minutes CANCELS
+      # rather than fails, which skips the if: failure() alarm entirely.
       handle = curl::new_handle(
-        nobody = TRUE, username = "edh", password = edh_token, httpauth = 1L
+        nobody = TRUE, username = "edh", password = edh_token, httpauth = 1L,
+        timeout = 30L
       )
     ),
     error = function(e) {
@@ -166,16 +176,37 @@ if (edh_status < 200L || edh_status >= 400L) {
   # The probe is a HEAD, so it carries no body. Fetch EDH's own wording once,
   # only on the terminal failure path, so the auto-filed issue quotes them
   # rather than our guess.
-  edh_reason <- tryCatch({
+  #
+  # Skipped when the server never answered (status 0, a connection failure).
+  # The reason is NOT a recovered 200 — the r$status_code check below already
+  # returns "" for that, and nzchar() then suppresses the line. It is a recovered
+  # 4xx/5xx: without this guard, a probe that failed three times at the
+  # connection level and then got a 403 would print
+  # "EDH said: Quota exceeded..." underneath a "could not reach the host"
+  # diagnosis, attributing a message to a request the diagnosis says never
+  # arrived.
+  #
+  # It still runs for every 4xx/5xx, including 403 — that is the case whose
+  # wording is most worth having, since EDH names a quota refusal in the body.
+  # So this does NOT avoid the extra request on a quota refusal, and on a
+  # recovered 200 the body is still downloaded before r$status_code discards it.
+  # The status check below prevents mis-REPORTING, not the transfer.
+  edh_reason <- if (edh_status < 400L) "" else tryCatch({
     r <- curl::curl_fetch_memory(
       edh_probe_url,
       handle = curl::new_handle(
-        username = "edh", password = edh_token, httpauth = 1L
+        username = "edh", password = edh_token, httpauth = 1L, timeout = 30L
       )
     )
-    # Collapse to one line: EDH errors come back as multi-line HTML, and this
-    # string is quoted into the auto-filed failure issue.
-    trimws(substr(gsub("[[:space:]]+", " ", rawToChar(r$content)), 1, 200))
+    if (r$status_code < 400L) {
+      # Recovered between the probe and this call: it has no error to report,
+      # and its 200 body is data, not an explanation.
+      ""
+    } else {
+      # Collapse to one line: EDH errors come back as multi-line HTML, and this
+      # string is quoted into the auto-filed failure issue.
+      trimws(substr(gsub("[[:space:]]+", " ", rawToChar(r$content)), 1, 200))
+    }
   }, error = function(e) "")
   if (nzchar(edh_reason)) log_msg("  EDH said: ", edh_reason)
   quit(status = 1)

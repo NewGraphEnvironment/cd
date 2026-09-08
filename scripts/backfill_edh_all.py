@@ -121,7 +121,13 @@ def process_year(year: int, hourly_ds: xr.Dataset, daily_ds: xr.Dataset):
     #
     # Per store, not pooled: the hourly and daily stores advance independently,
     # and a hourly-complete/daily-short year must still write the six hourly
-    # variables. The post-compute `== 12` checks below stay as a backstop.
+    # variables.
+    #
+    # NOTE the post-compute `== 12` checks below are NOT a backstop for this.
+    # They count bins from `resample(valid_time="1MS")`, which builds a
+    # contiguous grid from min to max and fills absent months with NaN — so a
+    # year holding only Jan-Mar and Dec still yields 12 bins and passes.
+    # months_available() is the only check that sees an interior gap.
     if any(v in needed for v in HOURLY_VARS):
         n_hourly = months_available(hourly_ds, year)
         if n_hourly < 12:

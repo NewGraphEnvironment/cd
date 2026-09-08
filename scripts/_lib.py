@@ -124,10 +124,14 @@ def months_available(ds: xr.Dataset, year: int) -> int:
     point: callers use it to decide whether a year is worth fetching, and a
     check that fetched in order to answer would defeat itself (#84).
 
-    Matches the semantics of the post-compute guards it fronts: those count
-    month-start bins after `resample(valid_time="1MS")`, which is the number
-    of distinct months holding any data. A month present but incomplete
-    counts as present in both.
+    Agrees with the post-compute guards it fronts on a contiguous year, but is
+    strictly stronger. Those count month-start bins after
+    `resample(valid_time="1MS")`, which builds a contiguous grid from min to max
+    and fills absent months with NaN — so a year holding only Jan-Mar and Dec
+    yields 12 bins and passes them. This counts months that actually hold data,
+    so it returns 4. Do not treat those checks as a backstop for this one.
+
+    A month present but incomplete counts as present in both.
 
     Returns 0 when the year is absent from the store entirely.
     """
