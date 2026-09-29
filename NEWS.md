@@ -1,3 +1,14 @@
+# cd 0.5.1 (2026-09-29)
+
+* `cd_plot_timeseries()` and `cd_plot_comparison()` now label a series from the `long_name` and `unit` it carries, falling back to `cd_variables()` by the rules of the 0.5.0 input contract, so a series from another package (streamflow, say) plots under the label `cd_summary()` prints for it instead of `anomaly`. `cd_compare()` carries a `long_name` column through when its input has one (no unit: it works on raw values). A `long_name` shared by several variables gets the variable name appended in the comparison plot, and each variable always gets its own facet.
+
+  Behaviour changes for existing callers:
+  - `cd_plot_timeseries()` on raw values no longer shows an anomaly unit that does not describe them: raw precipitation, which read "Precipitation (%)", now reads "Precipitation". Anomaly plots are unchanged.
+  - `cd_plot_timeseries()` errors on duplicate years in the plotted series (they were stacked into one bar) and on conflicting metadata within it, and ignores rows whose `variable` or `period` is `NA`.
+  - `cd_compare()` gains a `long_name` column when the input carries one.
+
+  Follow-ups filed from review: [#96](https://github.com/NewGraphEnvironment/cd/issues/96), [#97](https://github.com/NewGraphEnvironment/cd/issues/97), [#98](https://github.com/NewGraphEnvironment/cd/issues/98). ([#99](https://github.com/NewGraphEnvironment/cd/pull/99))
+
 # cd 0.5.0 (2026-09-29)
 
 * The consumer chain now works on any annual series in cd's long format, not only the ERA5-Land variables in `cd_variables()`. Streamflow and stream temperature from other packages are included. `cd_anomaly()` used to return a silent `NA` for any variable outside the registry. It now takes `anomaly_type`, `unit` and `long_name` from the input where present, falls back to `cd_variables()` row by row, and raises an error naming any variable whose type it cannot resolve. `unit` means the anomaly's unit, as it always has in `cd_variables()`. `cd_trend()` carries the metadata through (`anomaly_type` and `unit` only when trending anomalies) and `cd_summary()` uses it. The contract is documented under "Input contract" in `?cd_anomaly`.
