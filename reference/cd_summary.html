@@ -77,7 +77,11 @@ where present and not <code>NA</code> (carried by <code><a href="cd_trend.html">
 contract in <code><a href="cd_anomaly.html">cd_anomaly()</a></code>), otherwise from <code><a href="cd_variables.html">cd_variables()</a></code> — by
 the same rules as <code><a href="cd_anomaly.html">cd_anomaly()</a></code>, so a registered variable trended
 under a different <code>anomaly_type</code> gets no registry unit. A variable
-found in neither is labelled by its name, with no unit.</p>
+found in neither is labelled by its name, with no unit. On a trend of
+raw values (<code>trend_on == "value"</code>) <code>Unit</code> is shown only for <code>absolute</code>
+and <code>pct_point_diff</code> series — the anomaly unit of a <code>pct_normal</code>
+series is <code>"%"</code>, which does not describe a slope in mm — so it agrees
+with the axis label of <code><a href="cd_plot_timeseries.html">cd_plot_timeseries()</a></code> on the same series.</p>
     </div>
 
     <div class="section level2">

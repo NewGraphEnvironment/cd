@@ -92,8 +92,8 @@ back to
   [`cd_summary()`](https://newgraphenvironment.github.io/cd/reference/cd_summary.md)
   and
   [`cd_plot_timeseries()`](https://newgraphenvironment.github.io/cd/reference/cd_plot_timeseries.md);
-  on raw values the plot shows it only for `absolute` and
-  `pct_point_diff` series.
+  on raw values both show it only for `absolute` and `pct_point_diff`
+  series.
 
 - `long_name`:
 

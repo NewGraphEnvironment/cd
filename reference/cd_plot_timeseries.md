@@ -61,7 +61,7 @@ object.
 The y-axis label is `long_name` and `unit` from `x` where present and
 not `NA`, otherwise from
 [`cd_variables()`](https://newgraphenvironment.github.io/cd/reference/cd_variables.md)
-— for anomalies, resolved by the same rules as
+— resolved by the same rules as
 [`cd_summary()`](https://newgraphenvironment.github.io/cd/reference/cd_summary.md)
 (see the input contract in
 [`cd_anomaly()`](https://newgraphenvironment.github.io/cd/reference/cd_anomaly.md))

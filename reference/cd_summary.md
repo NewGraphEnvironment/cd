@@ -40,7 +40,12 @@ otherwise from
 [`cd_anomaly()`](https://newgraphenvironment.github.io/cd/reference/cd_anomaly.md),
 so a registered variable trended under a different `anomaly_type` gets
 no registry unit. A variable found in neither is labelled by its name,
-with no unit.
+with no unit. On a trend of raw values (`trend_on == "value"`) `Unit` is
+shown only for `absolute` and `pct_point_diff` series — the anomaly unit
+of a `pct_normal` series is `"%"`, which does not describe a slope in mm
+— so it agrees with the axis label of
+[`cd_plot_timeseries()`](https://newgraphenvironment.github.io/cd/reference/cd_plot_timeseries.md)
+on the same series.
 
 ## Examples
 
