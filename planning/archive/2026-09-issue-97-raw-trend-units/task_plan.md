@@ -56,4 +56,4 @@ read as anomaly — today's behaviour, so no data regeneration.
 - [x] Tests pass
 - [x] `/code-check` clean on each commit
 - [x] PWF checkboxes match landed work
-- [ ] `/planning-archive` on completion
+- [x] `/planning-archive` on completion
