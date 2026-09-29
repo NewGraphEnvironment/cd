@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">cd</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,6 +36,20 @@
       <small>Source: <a href="https://github.com/NewGraphEnvironment/cd/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.5.1" id="cd-051-2026-09-29">cd 0.5.1 (2026-09-29)<a class="anchor" aria-label="anchor" href="#cd-051-2026-09-29"></a></h2>
+<ul><li>
+<p><code><a href="../reference/cd_plot_timeseries.html">cd_plot_timeseries()</a></code> and <code><a href="../reference/cd_plot_comparison.html">cd_plot_comparison()</a></code> now label a series from the <code>long_name</code> and <code>unit</code> it carries, falling back to <code><a href="../reference/cd_variables.html">cd_variables()</a></code> by the rules of the 0.5.0 input contract, so a series from another package (streamflow, say) plots under the label <code><a href="../reference/cd_summary.html">cd_summary()</a></code> prints for it instead of <code>anomaly</code>. <code><a href="../reference/cd_compare.html">cd_compare()</a></code> carries a <code>long_name</code> column through when its input has one (no unit: it works on raw values). A <code>long_name</code> shared by several variables gets the variable name appended in the comparison plot, and each variable always gets its own facet.</p>
+<p>Behaviour changes for existing callers:</p>
+<ul><li>
+<code><a href="../reference/cd_plot_timeseries.html">cd_plot_timeseries()</a></code> on raw values no longer shows an anomaly unit that does not describe them: raw precipitation, which read “Precipitation (%)”, now reads “Precipitation”. Anomaly plots are unchanged.</li>
+<li>
+<code><a href="../reference/cd_plot_timeseries.html">cd_plot_timeseries()</a></code> errors on duplicate years in the plotted series (they were stacked into one bar) and on conflicting metadata within it, and ignores rows whose <code>variable</code> or <code>period</code> is <code>NA</code>.</li>
+<li>
+<code><a href="../reference/cd_compare.html">cd_compare()</a></code> gains a <code>long_name</code> column when the input carries one.</li>
+</ul><p>Follow-ups filed from review: <a href="https://github.com/NewGraphEnvironment/cd/issues/96" class="external-link">#96</a>, <a href="https://github.com/NewGraphEnvironment/cd/issues/97" class="external-link">#97</a>, <a href="https://github.com/NewGraphEnvironment/cd/issues/98" class="external-link">#98</a>. (<a href="https://github.com/NewGraphEnvironment/cd/pull/99" class="external-link">#99</a>)</p>
+</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.5.0" id="cd-050-2026-09-29">cd 0.5.0 (2026-09-29)<a class="anchor" aria-label="anchor" href="#cd-050-2026-09-29"></a></h2>
 <ul><li>

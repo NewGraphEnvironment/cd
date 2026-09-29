@@ -1,5 +1,42 @@
 # Changelog
 
+## cd 0.5.1 (2026-09-29)
+
+- [`cd_plot_timeseries()`](https://newgraphenvironment.github.io/cd/reference/cd_plot_timeseries.md)
+  and
+  [`cd_plot_comparison()`](https://newgraphenvironment.github.io/cd/reference/cd_plot_comparison.md)
+  now label a series from the `long_name` and `unit` it carries, falling
+  back to
+  [`cd_variables()`](https://newgraphenvironment.github.io/cd/reference/cd_variables.md)
+  by the rules of the 0.5.0 input contract, so a series from another
+  package (streamflow, say) plots under the label
+  [`cd_summary()`](https://newgraphenvironment.github.io/cd/reference/cd_summary.md)
+  prints for it instead of `anomaly`.
+  [`cd_compare()`](https://newgraphenvironment.github.io/cd/reference/cd_compare.md)
+  carries a `long_name` column through when its input has one (no unit:
+  it works on raw values). A `long_name` shared by several variables
+  gets the variable name appended in the comparison plot, and each
+  variable always gets its own facet.
+
+  Behaviour changes for existing callers:
+
+  - [`cd_plot_timeseries()`](https://newgraphenvironment.github.io/cd/reference/cd_plot_timeseries.md)
+    on raw values no longer shows an anomaly unit that does not describe
+    them: raw precipitation, which read “Precipitation (%)”, now reads
+    “Precipitation”. Anomaly plots are unchanged.
+  - [`cd_plot_timeseries()`](https://newgraphenvironment.github.io/cd/reference/cd_plot_timeseries.md)
+    errors on duplicate years in the plotted series (they were stacked
+    into one bar) and on conflicting metadata within it, and ignores
+    rows whose `variable` or `period` is `NA`.
+  - [`cd_compare()`](https://newgraphenvironment.github.io/cd/reference/cd_compare.md)
+    gains a `long_name` column when the input carries one.
+
+  Follow-ups filed from review:
+  [\#96](https://github.com/NewGraphEnvironment/cd/issues/96),
+  [\#97](https://github.com/NewGraphEnvironment/cd/issues/97),
+  [\#98](https://github.com/NewGraphEnvironment/cd/issues/98).
+  ([\#99](https://github.com/NewGraphEnvironment/cd/pull/99))
+
 ## cd 0.5.0 (2026-09-29)
 
 - The consumer chain now works on any annual series in cd’s long format,
