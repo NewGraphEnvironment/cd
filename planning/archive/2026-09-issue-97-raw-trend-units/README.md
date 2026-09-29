@@ -28,4 +28,4 @@ Follow-ups filed from the reviews: #101 (0x0 `cd_trend()` result breaks `cd_summ
 #102 (vignettes label a pct_normal prcp slope `mm/yr`), #103 (`cd_plot_timeseries(trend =)`
 ignores `trend_on`); the mixed raw/anomaly row case was added to #98.
 
-Closed by: commit a0bee81 / PR (to follow)
+Closed by: commit a0bee81 / PR #104
