@@ -41,3 +41,37 @@ wet#25 (flow in date windows at hydrometric stations) produces per-year window v
 
 | Error | Resolution |
 |-------|------------|
+## Plan review
+
+See `review-plan.md`. Two blockers (factor-code lookup, baseline join suffixes) and three gaps folded into Phase 2/3.
+
+## Verification (2026-09-28)
+
+- Example-catalog chain (extract → baseline → anomaly → trend → summary), before vs after: `cd_summary()` identical, raw-value `cd_summary(cd_trend(ts))` identical. `cd_anomaly()` differs only in dropping a stray `names` attribute the old named-vector lookup left on `anomaly_type`/`unit`. `cd_trend(ano)` gains `anomaly_type`, `unit` columns (additive).
+- Mutation table (scratch copy, filter anomaly|trend|summary): M1 unresolved abort off → 2 red; M2 name-indexed lookup → 1; M3 mixed-type abort off → 1; M4 full baseline join → 1; M5 unit passed on raw trend → 1; M6 summary ignores carried cols → 3; M7 trend drops metadata → 3. Unmutated → 0.
+- Full suite: FAIL 0 | WARN 2 (pre-existing, cd_plot_comparison) | PASS 256.
+- `pkgdown::check_pkgdown()` fails identically on main (DESCRIPTION URL vs github.io); no export added, unrelated.
+
+## Errors Encountered
+
+| Error | Resolution |
+|-------|------------|
+| Mutations M2–M6 all "passed" identically on first run | `git checkout -- R` in the scratch copy restored the committed (main) code, not the uncommitted implementation. Commit inside the copy first, then mutate. |
+
+## Code-check (2026-09-28)
+
+| Round | Findings | Fixed | Accepted | Inside previous fix? |
+|-------|----------|-------|----------|----------------------|
+| 1 | 3 (1 bug, 2 fragile) | 3 | 0 | — |
+| 2 | 5 (2 bug, 3 fragile) | 5 | 0 | y — unit guard missing in cd_summary; grouped input still broke cd_summary |
+| 3 | 2 (1 bug, 1 fragile) | 2 | 0 | y — the R2 `ungroup()` turned station-grouped input from an error into silent pooling |
+
+Mechanism (R3): each entry point re-derived its own input assumptions — ungrouped, keyed by (variable, period), one row per year, metadata resolved before checked — so each fix landed in one copy. Response: three shared helpers in `R/cd_anomaly.R` (`series_check`, `meta_resolve`, `meta_check`).
+
+Ended by enumeration, not a clean round: `scratchpad enum.R` walked all exports' bodies. 9 take a tibble or read the registry; `cd_aggregate`/`cd_cog_write` take rasters (n/a); all 4 series entry points call `series_check`; `cd_anomaly`, `cd_trend`, `cd_summary` call `meta_resolve`; the two `.by` callers run after `series_check`; the only remaining direct registry readers are the two plot functions → #93, whose body now says to call `meta_resolve()`.
+
+Mutation table after R3 (M0–M21): every guard red when removed; unmutated 0 red.
+
+Regression on real data: regional Peace and Kootenay `cd_trend(ano)` reproduce committed `trn` exactly and `cd_summary()` is identical; all committed vignette series have 0 duplicate keys.
+
+Known, not fixed (pre-existing, separate paths): `cd_trend()` on zero rows returns a column-less tibble; a series with no baseline row gets `anomaly = NA`; `check_pkgdown()` fails on main (DESCRIPTION URL).

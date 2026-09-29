@@ -32,20 +32,26 @@ Findings shaping it:
 - [x] End-to-end test: non-ERA5 series with `period = "spawn"` through `cd_baseline → cd_anomaly → cd_trend → cd_summary` (and `cd_compare`)
 
 ## Phase 2: cd_anomaly()
-- [ ] Resolve per row: `dplyr::coalesce(input anomaly_type, registry lookup)`; same for `unit`
-- [ ] Abort listing variables with unresolved type; abort on types outside `absolute`/`pct_normal`/`pct_point_diff`
-- [ ] Carry `long_name` through when present in `x`
-- [ ] Roxygen: "Input contract" section (`variable`, `period`, `year`, `value` required; optional `anomaly_type`, `unit` = anomaly unit, `long_name`); runnable example on a non-ERA5 series
+- [x] Resolve per row: `dplyr::coalesce(input anomaly_type, registry lookup)`; same for `unit`
+- [x] Abort listing variables with unresolved type; abort on types outside `absolute`/`pct_normal`/`pct_point_diff`
+- [x] Carry `long_name` through when present in `x`
+- [x] Roxygen: "Input contract" section (`variable`, `period`, `year`, `value` required; optional `anomaly_type`, `unit` = anomaly unit, `long_name`); runnable example on a non-ERA5 series
 
 ## Phase 3: cd_trend() and cd_summary()
-- [ ] `cd_trend()`: carry `anomaly_type`, `unit`, `long_name` (first value per variable/period) when present
-- [ ] `cd_summary()`: coalesce trend columns with `cd_variables()`; `Parameter` falls back to `variable`
-- [ ] Roxygen: `@param`/`@return` updated, `@seealso` to the cd_anomaly contract
-- [ ] `devtools::document()`, `lintr::lint_package()`, `pkgdown::check_pkgdown()`
+- [x] `cd_trend()`: carry `anomaly_type`, `unit`, `long_name` (first value per variable/period) when present
+- [x] `cd_summary()`: coalesce trend columns with `cd_variables()`; `Parameter` falls back to `variable`
+- [x] Roxygen: `@param`/`@return` updated, `@seealso` to the cd_anomaly contract
+- [x] `devtools::document()`, `lintr::lint_package()`, `pkgdown::check_pkgdown()`
+
+## Added during code-check (rounds 1–3)
+- [x] Registry unit used only when the resolved type is the registry's type (R1, then R2 in cd_summary)
+- [x] Shared `meta_resolve()` / `meta_check()` so every caller applies the same rules (R2 mechanism)
+- [x] `series_check()`: ungroup + one row per variable/period/year in cd_baseline, cd_anomaly, cd_compare, cd_trend (R1 grouped input; R3 found the plain ungroup pooled stacked stations silently)
+- [x] cd_trend resolves before checking (R3)
 
 ## Phase 4: Verify, release notes, PR
-- [ ] Full `devtools::test()`; mutation check — revert the abort to NA and confirm the Phase 1 error test goes red
-- [ ] Vignette recipe (`cd_anomaly → cd_trend → cd_summary`) output unchanged for ERA5 variables (compare `cd_summary()` on example catalog before/after)
+- [x] Full `devtools::test()`; mutation check — revert the abort to NA and confirm the Phase 1 error test goes red
+- [x] Vignette recipe (`cd_anomaly → cd_trend → cd_summary`) output unchanged for ERA5 variables (compare `cd_summary()` on example catalog before/after)
 - [ ] `/code-check` per commit; atomic commits `Fixes #92` on the last
 - [ ] `/planning-archive`, `/gh-pr-push` (SRED: `Relates to NewGraphEnvironment/sred-2025-2026#23`); version bump/NEWS left to `/gh-pr-merge` (minor: NA → error is a behaviour change)
 

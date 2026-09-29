@@ -9,7 +9,11 @@
 #'   Default `c(1950, 1980)`.
 #'
 #' @return A tibble with columns `variable`, `period`, `trend_start`,
-#'   `slope`, `intercept`, `mk_pvalue`, `n_years`.
+#'   `slope`, `intercept`, `mk_pvalue`, `n_years`. When `x` carries
+#'   them, `long_name` is passed through, and on anomaly input so are
+#'   `anomaly_type` and `unit` (the anomaly's unit, which does not
+#'   describe a slope of raw values) — see the input contract in
+#'   [cd_anomaly()]. [cd_summary()] reads them.
 #'
 #' @examples
 #' catalog <- cd_catalog(
@@ -35,8 +39,14 @@ cd_trend <- function(x, trend_start = c(1950, 1980)) {
     reason = "to compute Mann-Kendall and Theil-Sen trend statistics"
   )
 
+  x <- series_check(x)
   # Use anomaly column if present, otherwise value
   val_col <- if ("anomaly" %in% names(x)) "anomaly" else "value"
+  cols_meta <- if (val_col == "anomaly") c("anomaly_type", "unit", "long_name") else "long_name"
+  cols_meta <- intersect(cols_meta, names(x))
+  meta <- meta_resolve(x)
+  for (col in cols_meta) x[[col]] <- meta[[col]]
+  meta_check(x, cols_meta)
 
   combos <- expand.grid(
     variable = unique(x$variable),
@@ -59,7 +69,7 @@ cd_trend <- function(x, trend_start = c(1950, 1980)) {
     mk <- Kendall::MannKendall(y)
     sen <- zyp::zyp.sen(y ~ yr, data.frame(y = y, yr = yr))
 
-    tibble::tibble(
+    out <- tibble::tibble(
       variable = v,
       period = p,
       trend_start = ts,
@@ -68,6 +78,8 @@ cd_trend <- function(x, trend_start = c(1950, 1980)) {
       mk_pvalue = round(mk$sl[1], 4),
       n_years = nrow(dat)
     )
+    for (col in cols_meta) out[[col]] <- as.character(dat[[col]][1])
+    out
   })
 
   dplyr::bind_rows(results)

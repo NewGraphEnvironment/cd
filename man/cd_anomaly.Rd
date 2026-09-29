@@ -20,17 +20,58 @@ applies to \code{pct_normal} variables; \code{absolute} and
 }
 \value{
 A tibble with columns \code{variable}, \code{period}, \code{year},
-\code{anomaly}, \code{anomaly_type}, \code{unit}.
+\code{anomaly}, \code{anomaly_type}, \code{unit}, and \code{long_name} when \code{x} carries
+one.
 }
 \description{
-Calculates departure from a baseline for each year. Uses
-\code{\link[=cd_variables]{cd_variables()}} to determine the anomaly type: absolute deviation
-for temperature, VPD, RH, and the annual snow scalars; percent of
-normal for precipitation, soil moisture, and the monthly snow vars
-(\code{swe}, \code{snowfall}, \code{snowmelt}); percentage-point difference for
-variables that are already fractions/percentages (\code{snow_cover},
-\code{snowfall_fraction}).
+Calculates departure from a baseline for each year. The anomaly type
+decides the arithmetic: absolute deviation for temperature, VPD, RH,
+and the annual snow scalars; percent of normal for precipitation, soil
+moisture, and the monthly snow vars (\code{swe}, \code{snowfall}, \code{snowmelt});
+percentage-point difference for variables that are already
+fractions/percentages (\code{snow_cover}, \code{snowfall_fraction}).
 }
+\section{Input contract}{
+
+\code{cd_anomaly()} works on any annual series in cd's long format, not
+only the ERA5-Land variables in \code{\link[=cd_variables]{cd_variables()}} — streamflow or stream
+temperature produced by another package included. Required columns:
+
+\describe{
+\item{\code{variable}}{Series name.}
+\item{\code{period}}{Free text: a season, a month, or any window the
+producer defines (e.g. \code{"spawn"}). Nothing requires \code{\link[=cd_periods]{cd_periods()}}
+values.}
+\item{\code{year}}{Integer year.}
+\item{\code{value}}{Numeric, one row per variable, period and year —
+duplicates (two stations stacked under one \code{variable}) are an error
+in \code{\link[=cd_baseline]{cd_baseline()}}, \code{\link[=cd_anomaly]{cd_anomaly()}}, \code{\link[=cd_compare]{cd_compare()}} and \code{\link[=cd_trend]{cd_trend()}},
+not pooled.}
+}
+
+Optional columns, resolved row by row; where absent or \code{NA} they fall
+back to \code{\link[=cd_variables]{cd_variables()}}:
+
+\describe{
+\item{\code{anomaly_type}}{One of \code{"absolute"}, \code{"pct_normal"},
+\code{"pct_point_diff"}. Required for any variable not in
+\code{\link[=cd_variables]{cd_variables()}}; a variable whose type cannot be resolved is an
+error, never a silent \code{NA}.}
+\item{\code{unit}}{Unit of the \strong{anomaly}, passed through as given — the
+same meaning as \code{cd_variables()$unit}, so \code{"\%"} for a
+\code{pct_normal} series whatever the unit of \code{value}.}
+\item{\code{long_name}}{Label, carried through to \code{\link[=cd_trend]{cd_trend()}} and used
+by \code{\link[=cd_summary]{cd_summary()}}.}
+}
+
+Each variable and period must resolve to a single \code{anomaly_type},
+\code{unit} and \code{long_name}, so for a variable outside \code{\link[=cd_variables]{cd_variables()}}
+carry each on every row or on none. A registered variable that carries
+an \code{anomaly_type} different from the registry's gets no registry unit. A \code{pct_normal} series whose baseline mean is \code{0} (a dry-window
+minimum flow, say) has no percent of normal: its anomalies come back
+\code{NaN} or clamped at \code{cap_pct}, so use \code{absolute} for such series.
+}
+
 \examples{
 catalog <- cd_catalog(
   system.file("extdata", "example_catalog.json", package = "cd")
@@ -45,5 +86,14 @@ ts <- cd_extract(catalog, aoi)
 # Absolute deviation for temperature; percent of normal for precipitation
 bl <- cd_baseline(ts, baseline_years = 1951:1955)
 cd_anomaly(ts, bl)
+
+# Any series in the same long format, e.g. mean discharge over a
+# spawning window, carrying its own anomaly type and unit
+q <- data.frame(
+  variable = "q_mean", period = "spawn", year = 2001:2006,
+  value = c(12, 9, 14, 7, 6, 8),
+  anomaly_type = "pct_normal", unit = "\%", long_name = "Mean discharge"
+)
+cd_anomaly(q, cd_baseline(q, baseline_years = 2001:2003))
 
 }

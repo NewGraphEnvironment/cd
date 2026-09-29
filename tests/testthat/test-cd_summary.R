@@ -105,3 +105,35 @@ test_that("a series outside cd_variables() runs the whole chain (#92)", {
   expect_lt(cmp$difference, 0)
   expect_false(is.na(cmp$p_value))
 })
+
+test_that("cd_summary keeps a registry unit off an overridden type through the chain", {
+  skip_if_not_installed("Kendall")
+  skip_if_not_installed("zyp")
+  # prcp as "absolute" is mm, not the registry's "%" for pct_normal.
+  x <- tibble::tibble(
+    variable = "prcp", period = "annual", year = 2000:2009,
+    value = seq(100, 190, by = 10), anomaly_type = "absolute"
+  )
+  ano <- cd_anomaly(x, cd_baseline(x, 2000:2004))
+  smry <- cd_summary(cd_trend(ano, trend_start = 2000))
+  expect_equal(smry$Parameter, "Precipitation")
+  expect_true(is.na(smry$Unit))
+})
+
+test_that("the whole chain accepts grouped input (#92)", {
+  skip_if_not_installed("Kendall")
+  skip_if_not_installed("zyp")
+  x <- tibble::tibble(
+    variable = rep(c("q_mean", "q_min"), each = 10), period = "spawn",
+    year = rep(2000:2009, 2), value = c(1:10, 10:1),
+    anomaly_type = "absolute", unit = "m³/s"
+  ) |>
+    dplyr::group_by(.data$variable, .data$period)
+  ano <- cd_anomaly(x, cd_baseline(x, 2000:2004))
+  trn <- cd_trend(dplyr::group_by(ano, .data$variable), trend_start = 2000)
+  smry <- cd_summary(dplyr::group_by(trn, .data$variable))
+  expect_equal(nrow(smry), 2)
+  expect_equal(smry$Unit, c("m³/s", "m³/s"))
+  cmp <- cd_compare(x, window_a = 2005:2009, window_b = 2000:2004, test = NULL)
+  expect_equal(cmp$difference, c(5, -5))
+})

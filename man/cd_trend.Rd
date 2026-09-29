@@ -15,7 +15,11 @@ Default \code{c(1950, 1980)}.}
 }
 \value{
 A tibble with columns \code{variable}, \code{period}, \code{trend_start},
-\code{slope}, \code{intercept}, \code{mk_pvalue}, \code{n_years}.
+\code{slope}, \code{intercept}, \code{mk_pvalue}, \code{n_years}. When \code{x} carries
+them, \code{long_name} is passed through, and on anomaly input so are
+\code{anomaly_type} and \code{unit} (the anomaly's unit, which does not
+describe a slope of raw values) — see the input contract in
+\code{\link[=cd_anomaly]{cd_anomaly()}}. \code{\link[=cd_summary]{cd_summary()}} reads them.
 }
 \description{
 Runs Mann-Kendall significance test and Theil-Sen slope estimator

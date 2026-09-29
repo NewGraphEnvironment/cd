@@ -17,9 +17,17 @@ A tibble with columns \code{Parameter}, \code{Period}, \code{Slope}, \code{Years
 \verb{Total Change}, \code{Unit}, \code{p-value}, and optionally \code{Region}.
 }
 \description{
-Joins trend statistics with variable metadata from \code{\link[=cd_variables]{cd_variables()}}
-and computes Total Change (slope x years). Returns a tibble ready
-for \code{\link[DT:datatable]{DT::datatable()}} or \code{\link[gt:gt]{gt::gt()}}.
+Joins trend statistics with variable metadata and computes Total
+Change (slope x years). Returns a tibble ready for
+\code{\link[DT:datatable]{DT::datatable()}} or \code{\link[gt:gt]{gt::gt()}}.
+}
+\details{
+Labels and units come from \code{long_name} and \code{unit} columns on \code{trend}
+where present and not \code{NA} (carried by \code{\link[=cd_trend]{cd_trend()}} from the input
+contract in \code{\link[=cd_anomaly]{cd_anomaly()}}), otherwise from \code{\link[=cd_variables]{cd_variables()}} — by
+the same rules as \code{\link[=cd_anomaly]{cd_anomaly()}}, so a registered variable trended
+under a different \code{anomaly_type} gets no registry unit. A variable
+found in neither is labelled by its name, with no unit.
 }
 \examples{
 catalog <- cd_catalog(

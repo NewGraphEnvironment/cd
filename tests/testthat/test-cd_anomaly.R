@@ -181,3 +181,95 @@ test_that("cd_anomaly on zero rows returns zero rows", {
   expect_equal(nrow(ano), 0)
   expect_named(ano, c("variable", "period", "year", "anomaly", "anomaly_type", "unit"))
 })
+
+test_that("cd_anomaly errors when one series resolves to two anomaly types", {
+  ts <- tibble::tibble(
+    variable = "q_mean", period = "spawn", year = 2000:2001, value = 1:2,
+    anomaly_type = c("absolute", "pct_normal")
+  )
+  expect_error(cd_anomaly(ts, cd_baseline(ts, 2000:2001)), "q_mean/spawn")
+})
+
+test_that("cd_anomaly resolves a factor variable by name, not by level code", {
+  # factor("q_mean") has code 1; indexing a named lookup by it returned
+  # tmean's "absolute" instead of failing to resolve.
+  ts <- data.frame(
+    variable = factor("q_mean"), period = "spawn", year = 2000:2001, value = 1:2
+  )
+  expect_error(cd_anomaly(ts, cd_baseline(ts, 2000:2001)), "anomaly_type.*q_mean")
+
+  ts_prcp <- data.frame(
+    variable = factor("prcp"), period = "annual", year = 2000:2001, value = c(100, 150)
+  )
+  ano <- cd_anomaly(ts_prcp, cd_baseline(ts_prcp, 2000:2001))
+  expect_equal(unique(ano$anomaly_type), "pct_normal")
+})
+
+test_that("cd_anomaly ignores metadata columns carried on the baseline", {
+  ts <- tibble::tibble(
+    variable = "q_mean", period = "spawn", year = 2000:2001, value = c(1, 3),
+    anomaly_type = "absolute", unit = "m³/s"
+  )
+  bl <- tibble::tibble(
+    variable = "q_mean", period = "spawn", baseline_mean = 2,
+    anomaly_type = "absolute", unit = "m³/s"
+  )
+  ano <- cd_anomaly(ts, bl)
+  expect_named(ano, c("variable", "period", "year", "anomaly", "anomaly_type", "unit"))
+  expect_equal(ano$anomaly, c(-1, 1))
+})
+
+test_that("cd_anomaly does not borrow the registry unit for an overridden type", {
+  # prcp is pct_normal ("%") in the registry; as "absolute" its anomaly is mm.
+  ts <- tibble::tibble(
+    variable = "prcp", period = "annual", year = 2000:2001, value = c(100, 150),
+    anomaly_type = "absolute"
+  )
+  ano <- cd_anomaly(ts, cd_baseline(ts, 2000:2001))
+  expect_equal(ano$anomaly, c(-25, 25))
+  expect_true(all(is.na(ano$unit)))
+})
+
+test_that("cd_anomaly errors when one series carries two long_names", {
+  ts <- tibble::tibble(
+    variable = "q_mean", period = "spawn", year = 2000:2001, value = 1:2,
+    anomaly_type = "absolute", long_name = c("A", "B")
+  )
+  expect_error(cd_anomaly(ts, cd_baseline(ts, 2000:2001)), "long_name.*q_mean/spawn")
+})
+
+test_that("cd_baseline and cd_anomaly accept grouped input", {
+  ts <- tibble::tibble(
+    variable = "q_mean", period = "spawn", year = 2000:2001, value = c(1, 3),
+    anomaly_type = "absolute"
+  ) |>
+    dplyr::group_by(.data$variable, .data$period)
+  bl <- cd_baseline(ts, 2000:2001)
+  expect_equal(bl$baseline_mean, 2)
+  expect_equal(cd_anomaly(ts, bl)$anomaly, c(-1, 1))
+})
+
+test_that("cd_anomaly fills a partly-NA long_name for a registered variable", {
+  ts <- tibble::tibble(
+    variable = "tmean", period = "annual", year = 2000:2003, value = 1:4,
+    long_name = c("Mean temperature", NA, NA, NA)
+  )
+  ano <- cd_anomaly(ts, cd_baseline(ts, 2000:2003))
+  expect_equal(unique(ano$long_name), "Mean temperature")
+})
+
+test_that("stacked sites under one variable are refused, not pooled (#92)", {
+  skip_if_not_installed("Kendall")
+  skip_if_not_installed("zyp")
+  q <- tibble::tibble(
+    station = rep(c("A", "B"), each = 10), variable = "q_mean", period = "spawn",
+    year = rep(2000:2009, 2), value = c(1:10, 101:110), anomaly_type = "absolute"
+  )
+  for (x in list(q, dplyr::group_by(q, .data$station))) {
+    expect_error(cd_baseline(x, 2000:2004), "q_mean/spawn/2000")
+    expect_error(cd_anomaly(x, tibble::tibble(variable = "q_mean", period = "spawn", baseline_mean = 1)),
+                 "More than one row per variable, period and year")
+    expect_error(cd_compare(x, 2005:2009, 2000:2004, test = NULL), "More than one row")
+    expect_error(cd_trend(x, trend_start = 2000), "More than one row")
+  }
+})
