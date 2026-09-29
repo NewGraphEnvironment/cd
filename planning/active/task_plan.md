@@ -23,13 +23,13 @@ Findings shaping it:
 - `rlang::abort()` is the package's error idiom.
 
 ## Phase 1: Tests first (fail on main)
-- [ ] `test-cd_anomaly.R`: `q_mean`/`spawn` series with `anomaly_type = "pct_normal"`, `unit = "%"` computes anomalies and passes unit through
-- [ ] `test-cd_anomaly.R`: unregistered variable with no `anomaly_type` errors, message names the variable (the #92 repro)
-- [ ] `test-cd_anomaly.R`: invalid `anomaly_type` value errors naming it; per-row NA in the column falls back to `cd_variables()`; input column overrides registry for a registered variable
-- [ ] `test-cd_anomaly.R`: `long_name` passes through when present; output shape unchanged when absent (existing expect_named stays)
-- [ ] `test-cd_trend.R`: `anomaly_type`/`unit`/`long_name` carried through when present; shape unchanged on plain `value` input
-- [ ] `test-cd_summary.R`: trend with `long_name`/`unit` columns uses them; unregistered variable with none → `Parameter` = variable name, `Unit` = NA (label is cosmetic — no error); registered variables unchanged
-- [ ] End-to-end test: non-ERA5 series with `period = "spawn"` through `cd_baseline → cd_anomaly → cd_trend → cd_summary` (and `cd_compare`)
+- [x] `test-cd_anomaly.R`: `q_mean`/`spawn` series with `anomaly_type = "pct_normal"`, `unit = "%"` computes anomalies and passes unit through
+- [x] `test-cd_anomaly.R`: unregistered variable with no `anomaly_type` errors, message names the variable (the #92 repro)
+- [x] `test-cd_anomaly.R`: invalid `anomaly_type` value errors naming it; per-row NA in the column falls back to `cd_variables()`; input column overrides registry for a registered variable
+- [x] `test-cd_anomaly.R`: `long_name` passes through when present; output shape unchanged when absent (existing expect_named stays)
+- [x] `test-cd_trend.R`: `anomaly_type`/`unit`/`long_name` carried through when present; shape unchanged on plain `value` input
+- [x] `test-cd_summary.R`: trend with `long_name`/`unit` columns uses them; unregistered variable with none → `Parameter` = variable name, `Unit` = NA (label is cosmetic — no error); registered variables unchanged
+- [x] End-to-end test: non-ERA5 series with `period = "spawn"` through `cd_baseline → cd_anomaly → cd_trend → cd_summary` (and `cd_compare`)
 
 ## Phase 2: cd_anomaly()
 - [ ] Resolve per row: `dplyr::coalesce(input anomaly_type, registry lookup)`; same for `unit`

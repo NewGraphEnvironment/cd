@@ -65,3 +65,21 @@ test_that("cd_trend skips combos with < 3 years", {
 
   expect_equal(nrow(trn), 0)
 })
+
+test_that("cd_trend carries anomaly_type, unit and long_name through (#92)", {
+  skip_if_not_installed("Kendall")
+  skip_if_not_installed("zyp")
+  x <- tibble::tibble(
+    variable = "q_mean", period = "spawn", year = 2000:2009,
+    anomaly = seq(-5, 13, by = 2), anomaly_type = "pct_normal", unit = "%",
+    long_name = "Mean discharge"
+  )
+  trn <- cd_trend(x, trend_start = 2000)
+  expect_named(trn, c(
+    "variable", "period", "trend_start", "slope", "intercept", "mk_pvalue",
+    "n_years", "anomaly_type", "unit", "long_name"
+  ))
+  expect_equal(trn$unit, "%")
+  expect_equal(trn$long_name, "Mean discharge")
+  expect_equal(trn$anomaly_type, "pct_normal")
+})

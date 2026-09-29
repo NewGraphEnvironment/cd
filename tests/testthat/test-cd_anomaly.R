@@ -94,3 +94,90 @@ test_that("cd_anomaly handles multiple variables", {
   expect_equal(tmean_ano, c(-1, 0, 1))
   expect_equal(prcp_ano, c(0, 50, 100))
 })
+
+# Series outside cd_variables() (#92) -------------------------------------
+
+test_that("cd_anomaly uses anomaly_type and unit carried on the input", {
+  ts <- tibble::tibble(
+    variable = "q_mean", period = "spawn", year = 2000:2002,
+    value = c(10, 15, 5), anomaly_type = "pct_normal", unit = "%"
+  )
+  bl <- cd_baseline(ts, baseline_years = 2000:2002)
+  ano <- cd_anomaly(ts, bl)
+
+  expect_named(ano, c("variable", "period", "year", "anomaly", "anomaly_type", "unit"))
+  expect_equal(ano$anomaly, c(0, 50, -50))
+  expect_equal(unique(ano$anomaly_type), "pct_normal")
+  expect_equal(unique(ano$unit), "%")
+})
+
+test_that("cd_anomaly errors naming a variable whose type cannot be resolved", {
+  x <- data.frame(variable = "q_mean", period = "spawn", year = 2000:2001, value = 1:2)
+  expect_error(
+    cd_anomaly(x, cd_baseline(x, 2000:2001)),
+    "anomaly_type.*q_mean"
+  )
+})
+
+test_that("cd_anomaly errors on an anomaly_type outside the supported set", {
+  ts <- tibble::tibble(
+    variable = "q_mean", period = "spawn", year = 2000:2001,
+    value = 1:2, anomaly_type = "ratio"
+  )
+  expect_error(cd_anomaly(ts, cd_baseline(ts, 2000:2001)), "ratio")
+})
+
+test_that("cd_anomaly falls back to cd_variables() row by row", {
+  # NA in the carried column resolves from the registry; a registered
+  # variable's carried type overrides the registry.
+  ts <- tibble::tibble(
+    variable = c("tmean", "tmean", "prcp", "prcp", "q_mean", "q_mean"),
+    period = "annual",
+    year = rep(2000:2001, 3),
+    value = c(10, 12, 100, 150, 4, 6),
+    anomaly_type = c(NA, NA, "absolute", "absolute", "absolute", "absolute"),
+    unit = c(NA, NA, "mm", "mm", NA, NA)
+  )
+  ano <- cd_anomaly(ts, cd_baseline(ts, 2000:2001))
+
+  expect_equal(ano$anomaly_type[ano$variable == "tmean"], c("absolute", "absolute"))
+  expect_equal(ano$unit[ano$variable == "tmean"], c("°C", "°C"))
+  expect_equal(ano$anomaly[ano$variable == "prcp"], c(-25, 25))
+  expect_equal(unique(ano$unit[ano$variable == "prcp"]), "mm")
+  expect_equal(ano$anomaly[ano$variable == "q_mean"], c(-1, 1))
+  expect_true(all(is.na(ano$unit[ano$variable == "q_mean"])))
+})
+
+test_that("cd_anomaly carries long_name through when present", {
+  ts <- tibble::tibble(
+    variable = "q_mean", period = "spawn", year = 2000:2001, value = c(1, 3),
+    anomaly_type = "absolute", unit = "m³/s", long_name = "Mean discharge"
+  )
+  ano <- cd_anomaly(ts, cd_baseline(ts, 2000:2001))
+  expect_named(
+    ano,
+    c("variable", "period", "year", "anomaly", "anomaly_type", "unit", "long_name")
+  )
+  expect_equal(unique(ano$long_name), "Mean discharge")
+})
+
+test_that("cd_anomaly accepts factor metadata columns", {
+  ts <- data.frame(
+    variable = factor("q_mean"), period = factor("spawn"), year = 2000:2001,
+    value = c(1, 3), anomaly_type = factor("absolute")
+  )
+  ano <- cd_anomaly(ts, cd_baseline(ts, 2000:2001))
+  expect_equal(ano$anomaly, c(-1, 1))
+  expect_equal(unique(ano$anomaly_type), "absolute")
+})
+
+test_that("cd_anomaly on zero rows returns zero rows", {
+  ts <- tibble::tibble(
+    variable = character(), period = character(), year = integer(),
+    value = numeric()
+  )
+  bl <- tibble::tibble(variable = character(), period = character(), baseline_mean = numeric())
+  ano <- cd_anomaly(ts, bl)
+  expect_equal(nrow(ano), 0)
+  expect_named(ano, c("variable", "period", "year", "anomaly", "anomaly_type", "unit"))
+})
