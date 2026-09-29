@@ -65,3 +65,61 @@ test_that("cd_trend skips combos with < 3 years", {
 
   expect_equal(nrow(trn), 0)
 })
+
+test_that("cd_trend carries anomaly_type, unit and long_name through (#92)", {
+  skip_if_not_installed("Kendall")
+  skip_if_not_installed("zyp")
+  x <- tibble::tibble(
+    variable = "q_mean", period = "spawn", year = 2000:2009,
+    anomaly = seq(-5, 13, by = 2), anomaly_type = "pct_normal", unit = "%",
+    long_name = "Mean discharge"
+  )
+  trn <- cd_trend(x, trend_start = 2000)
+  expect_named(trn, c(
+    "variable", "period", "trend_start", "slope", "intercept", "mk_pvalue",
+    "n_years", "anomaly_type", "unit", "long_name"
+  ))
+  expect_equal(trn$unit, "%")
+  expect_equal(trn$long_name, "Mean discharge")
+  expect_equal(trn$anomaly_type, "pct_normal")
+})
+
+test_that("cd_trend on raw values carries long_name but not the anomaly unit (#92)", {
+  skip_if_not_installed("Kendall")
+  skip_if_not_installed("zyp")
+  x <- tibble::tibble(
+    variable = "q_mean", period = "spawn", year = 2000:2009,
+    value = 1:10, anomaly_type = "pct_normal", unit = "%",
+    long_name = "Mean discharge"
+  )
+  trn <- cd_trend(x, trend_start = 2000)
+  expect_named(trn, c(
+    "variable", "period", "trend_start", "slope", "intercept", "mk_pvalue",
+    "n_years", "long_name"
+  ))
+})
+
+test_that("cd_trend errors when one series carries two long_names (#92)", {
+  skip_if_not_installed("Kendall")
+  skip_if_not_installed("zyp")
+  x <- tibble::tibble(
+    variable = "q_mean", period = "spawn", year = 2000:2009, value = 1:10,
+    long_name = rep(c("A", "B"), 5)
+  )
+  expect_error(cd_trend(x, trend_start = 2000), "long_name.*q_mean/spawn")
+})
+
+test_that("cd_trend resolves partly-NA metadata before checking it (#92)", {
+  skip_if_not_installed("Kendall")
+  skip_if_not_installed("zyp")
+  x <- tibble::tibble(
+    variable = "tmean", period = "annual", year = 2000:2009, value = 1:10,
+    long_name = c("Mean temperature", rep(NA, 9))
+  )
+  expect_equal(cd_trend(x, trend_start = 2000)$long_name, "Mean temperature")
+  ano <- tibble::tibble(
+    variable = "tmean", period = "annual", year = 2000:2009, anomaly = 1:10,
+    unit = c("°C", rep(NA, 9))
+  )
+  expect_equal(cd_trend(ano, trend_start = 2000)$unit, "°C")
+})

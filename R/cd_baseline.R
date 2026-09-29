@@ -41,6 +41,7 @@ cd_baseline <- function(x, baseline_years = 1981:2010) {
   }
 
   x |>
+    series_check() |>
     dplyr::filter(.data$year %in% baseline_years) |>
     dplyr::summarise(
       baseline_mean = mean(.data$value, na.rm = TRUE),

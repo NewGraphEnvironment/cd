@@ -31,6 +31,8 @@ The historical `cd_fetch()` / `cd_derive()` R-side producer functions still ship
 
 **Key design decision:** Raw climate values on STAC (not pre-computed anomalies). All baseline/anomaly/trend computation consumer-side for maximum flexibility over reference periods and comparison windows.
 
+**The consumer chain is not ERA5-only.** `cd_baseline()` → `cd_anomaly()` → `cd_trend()` → `cd_summary()` / `cd_compare()` take any series in the long format (`variable`, `period`, `year`, `value`, optional `anomaly_type`/`unit`/`long_name`) — other packages (wet's streamflow) target it. The contract lives in `?cd_anomaly`; the rules live in three helpers in `R/cd_anomaly.R` (`series_check`, `meta_resolve`, `meta_check`). Call them from any new consumer function rather than reading `cd_variables()` directly — per-function copies are what three review rounds kept finding broken (#92).
+
 ## Function Prefix
 
 All functions use `cd_*` prefix. Naming convention: `noun_verb` (e.g., `cd_cog_write` not `cd_write_cog`).

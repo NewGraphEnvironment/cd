@@ -1,0 +1,12 @@
+# Progress — cd_anomaly() and cd_summary(): accept series outside cd_variables() (#92)
+
+## Session 2026-09-28
+
+- Plan-mode exploration — phases approved by user; two forks settled at the gate (unit = anomaly unit; cd_trend pass-through)
+- Created branch `92-cd-anomaly-series-outside-cd-variables` off main
+- Scaffolded PWF baseline from issue #92 with approved phases
+- Next: start Phase 1
+- Phase 1: tests for input-carried `anomaly_type`/`unit`/`long_name`, unresolved-type error, invalid type, row-wise fallback, factor columns, zero rows, cd_trend pass-through, cd_summary fallback, and an end-to-end non-ERA5 chain with `period = "spawn"`. All new expectations fail on main (red confirmed before implementation).
+- Phases 2–3: `cd_anomaly()` resolves `anomaly_type`/`unit`/`long_name` from input then registry and aborts on unresolved/invalid/mixed; `cd_trend()` passes metadata; `cd_summary()` uses it. Plan review folded in (factor lookup, baseline join suffixes).
+- Code-check: 3 rounds, 10 findings fixed, two of them inside earlier fixes; ended by enumeration. Shared helpers `series_check`/`meta_resolve`/`meta_check`. Filed #93 (plots).
+- Tests 278 pass; 21 mutations all red; vignette trend tables reproduce.

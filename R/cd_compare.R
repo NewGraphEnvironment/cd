@@ -72,6 +72,7 @@ cd_compare <- function(x,
                        test = "t") {
   method <- match.arg(method, c("mean_diff", "pct_change"))
   if (!is.null(test)) test <- match.arg(test, c("t", "wilcox"))
+  x <- series_check(x)
 
   mean_a <- x |>
     dplyr::filter(.data$year %in% window_a) |>
