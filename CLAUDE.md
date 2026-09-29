@@ -686,6 +686,9 @@ When a test mocks a downloader's reader and supplies fixture files, also mock th
 ### testthat 3e `expect_message()` returns the condition, not the expression's value
 Assign inside the call, `expect_message(h <- f(x), "msg")`, never `h <- expect_message(f(x), "msg")`.
 
+### `c()` dispatches on its first argument, so `c(NULL, <Date>)` is a plain number
+Put a Date first when `c()` combines an optional piece with Dates: `c(NULL, <Date>)` takes the default method and returns a bare day count.
+
 # Code Check — Shell
 Tool-level traps in bash, sed, git and `gh`, and in the host toolchain those commands depend on.
 
