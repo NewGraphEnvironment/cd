@@ -9,11 +9,13 @@
 #'   Default `c(1950, 1980)`.
 #'
 #' @return A tibble with columns `variable`, `period`, `trend_start`,
-#'   `slope`, `intercept`, `mk_pvalue`, `n_years`. When `x` carries
-#'   them, `long_name` is passed through, and on anomaly input so are
-#'   `anomaly_type` and `unit` (the anomaly's unit, which does not
-#'   describe a slope of raw values) — see the input contract in
-#'   [cd_anomaly()]. [cd_summary()] reads them.
+#'   `slope`, `intercept`, `mk_pvalue`, `n_years`, and `trend_on`
+#'   (`"value"` or `"anomaly"`, the column the trend was run on). When
+#'   `x` carries them, `anomaly_type`, `unit` and `long_name` are passed
+#'   through — see the input contract in [cd_anomaly()]. `unit` is the
+#'   anomaly's unit, so on raw values it is kept only for `absolute` and
+#'   `pct_point_diff` series, where it is also the unit of the values.
+#'   [cd_summary()] reads them.
 #'
 #' @examples
 #' catalog <- cd_catalog(
@@ -42,9 +44,10 @@ cd_trend <- function(x, trend_start = c(1950, 1980)) {
   x <- series_check(x)
   # Use anomaly column if present, otherwise value
   val_col <- if ("anomaly" %in% names(x)) "anomaly" else "value"
-  cols_meta <- if (val_col == "anomaly") c("anomaly_type", "unit", "long_name") else "long_name"
-  cols_meta <- intersect(cols_meta, names(x))
-  meta <- meta_resolve(x)
+  cols_meta <- intersect(c("anomaly_type", "unit", "long_name"), names(x))
+  # On raw values the anomaly's unit describes the slope only for absolute and
+  # pct_point_diff series; trend_on tells cd_summary() which rule applies (#97)
+  meta <- meta_resolve(x, raw = val_col == "value")
   for (col in cols_meta) x[[col]] <- meta[[col]]
   meta_check(x, cols_meta)
 
@@ -76,7 +79,8 @@ cd_trend <- function(x, trend_start = c(1950, 1980)) {
       slope = round(sen$coefficients[2], 4),
       intercept = round(sen$coefficients[1], 4),
       mk_pvalue = round(mk$sl[1], 4),
-      n_years = nrow(dat)
+      n_years = nrow(dat),
+      trend_on = val_col
     )
     for (col in cols_meta) out[[col]] <- as.character(dat[[col]][1])
     out

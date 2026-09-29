@@ -9,7 +9,11 @@
 #' contract in [cd_anomaly()]), otherwise from [cd_variables()] — by
 #' the same rules as [cd_anomaly()], so a registered variable trended
 #' under a different `anomaly_type` gets no registry unit. A variable
-#' found in neither is labelled by its name, with no unit.
+#' found in neither is labelled by its name, with no unit. On a trend of
+#' raw values (`trend_on == "value"`) `Unit` is shown only for `absolute`
+#' and `pct_point_diff` series — the anomaly unit of a `pct_normal`
+#' series is `"%"`, which does not describe a slope in mm — so it agrees
+#' with the axis label of [cd_plot_timeseries()] on the same series.
 #'
 #' @param trend A tibble from [cd_trend()].
 #' @param region_name Optional character label for the AOI. If provided,
@@ -38,7 +42,7 @@
 #' @export
 cd_summary <- function(trend, region_name = NULL) {
   trend <- dplyr::ungroup(trend)
-  meta <- meta_resolve(trend)
+  meta <- meta_resolve(trend, raw = col_or_na(trend, "trend_on") %in% "value")
   labels_param <- dplyr::coalesce(meta$long_name, as.character(trend$variable))
   labels_unit <- meta$unit
 

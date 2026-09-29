@@ -40,9 +40,9 @@ trend lines. Positive and negative anomalies are colored differently.
 }
 \details{
 The y-axis label is \code{long_name} and \code{unit} from \code{x} where present and
-not \code{NA}, otherwise from \code{\link[=cd_variables]{cd_variables()}} — for anomalies, resolved by
-the same rules as \code{\link[=cd_summary]{cd_summary()}} (see the input contract in
-\code{\link[=cd_anomaly]{cd_anomaly()}}) — else the plotted column's name. \code{unit} is the
+not \code{NA}, otherwise from \code{\link[=cd_variables]{cd_variables()}} — resolved by the same rules
+as \code{\link[=cd_summary]{cd_summary()}} (see the input contract in \code{\link[=cd_anomaly]{cd_anomaly()}}) — else the
+plotted column's name. \code{unit} is the
 anomaly's unit, so on raw \code{value} input it is shown only where the
 anomaly type is \code{absolute} or \code{pct_point_diff}, whose anomaly unit is
 the unit of the values.

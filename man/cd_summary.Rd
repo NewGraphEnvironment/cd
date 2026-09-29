@@ -27,7 +27,11 @@ where present and not \code{NA} (carried by \code{\link[=cd_trend]{cd_trend()}} 
 contract in \code{\link[=cd_anomaly]{cd_anomaly()}}), otherwise from \code{\link[=cd_variables]{cd_variables()}} — by
 the same rules as \code{\link[=cd_anomaly]{cd_anomaly()}}, so a registered variable trended
 under a different \code{anomaly_type} gets no registry unit. A variable
-found in neither is labelled by its name, with no unit.
+found in neither is labelled by its name, with no unit. On a trend of
+raw values (\code{trend_on == "value"}) \code{Unit} is shown only for \code{absolute}
+and \code{pct_point_diff} series — the anomaly unit of a \code{pct_normal}
+series is \code{"\%"}, which does not describe a slope in mm — so it agrees
+with the axis label of \code{\link[=cd_plot_timeseries]{cd_plot_timeseries()}} on the same series.
 }
 \examples{
 catalog <- cd_catalog(

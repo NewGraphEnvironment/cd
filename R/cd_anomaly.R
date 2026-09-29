@@ -35,8 +35,8 @@
 #'   \item{`unit`}{Unit of the **anomaly**, passed through as given — the
 #'     same meaning as `cd_variables()$unit`, so `"%"` for a
 #'     `pct_normal` series whatever the unit of `value`. Used by
-#'     [cd_summary()] and [cd_plot_timeseries()]; on raw values the plot
-#'     shows it only for `absolute` and `pct_point_diff` series.}
+#'     [cd_summary()] and [cd_plot_timeseries()]; on raw values both
+#'     show it only for `absolute` and `pct_point_diff` series.}
 #'   \item{`long_name`}{Label, carried through to [cd_trend()] and
 #'     [cd_compare()] and used by [cd_summary()], [cd_plot_timeseries()]
 #'     and [cd_plot_comparison()].}
@@ -163,7 +163,9 @@ series_check <- function(x) {
 #' carried type that overrides it (prcp as "absolute") gets no registry unit.
 #' `unit` is the anomaly's unit; `raw = TRUE` keeps it only where that is also
 #' the unit of the values (`absolute`, `pct_point_diff`), for callers labelling
-#' raw values. The one place these rules live; every consumer calls it.
+#' raw values. `raw` is recycled row by row, so a table mixing raw-value and
+#' anomaly trends resolves each row by its own. The one place these rules live;
+#' every consumer calls it.
 #' @noRd
 meta_resolve <- function(x, raw = FALSE) {
   vars <- cd_variables()
@@ -174,9 +176,8 @@ meta_resolve <- function(x, raw = FALSE) {
     missing = NA_character_
   )
   unit <- dplyr::coalesce(col_or_na(x, "unit"), unit_registry)
-  if (raw) {
-    unit[!anomaly_type %in% c("absolute", "pct_point_diff")] <- NA_character_
-  }
+  raw <- rep_len(raw, length(unit))
+  unit[raw & !anomaly_type %in% c("absolute", "pct_point_diff")] <- NA_character_
   list(
     anomaly_type = anomaly_type,
     unit = unit,
