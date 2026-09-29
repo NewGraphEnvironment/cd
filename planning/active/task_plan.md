@@ -9,7 +9,7 @@
 3. Add `series_check()` on the plotted slice — duplicate years currently stack into one bar silently. One line; CLAUDE.md asks every consumer to call the helpers.
 
 ## Phase 1: cd_plot_timeseries() resolves labels via meta_resolve()
-- [ ] Failing tests in `tests/testthat/test-cd_plot_timeseries.R` (assert `p$labels$y`, ggplot2 4.0.3 keeps it):
+- [x] Failing tests in `tests/testthat/test-cd_plot_timeseries.R` (assert `p$labels$y`, ggplot2 4.0.3 keeps it):
   - series outside `cd_variables()` carrying `long_name`/`unit` → `"Mean discharge (%)"`
   - registered `tmean`, no carried columns → `"Mean temperature (°C)"` (regression)
   - `prcp` carried as `anomaly_type = "absolute"` with no `unit` → `"Precipitation"` (no registry unit — the rule #92's review caught)
@@ -19,8 +19,8 @@
   - two `long_name` values within the plotted series → error (`meta_check`)
   - duplicate year in the plotted series → error (`series_check`)
   - raw `value` input: `prcp` → `"Precipitation"`, `tmean` → `"Mean temperature (°C)"`
-- [ ] Replace the `var_info` lookup (`R/cd_plot_timeseries.R`) with `series_check()` + `meta_resolve()` + `meta_check()` on the filtered slice; label = resolved long_name, else `val_col` as today (the issue's "else the column name") plus ` (unit)` when unit non-NA
-- [ ] roxygen: document label resolution (point at `?cd_anomaly` contract), `devtools::document()`
+- [x] Replace the `var_info` lookup (`R/cd_plot_timeseries.R`) with `series_check()` + `meta_resolve()` + `meta_check()` on the filtered slice; label = resolved long_name, else `val_col` as today (the issue's "else the column name") plus ` (unit)` when unit non-NA
+- [x] roxygen: document label resolution (point at `?cd_anomaly` contract), `devtools::document()`
 
 ## Phase 2: cd_compare() passes long_name; cd_plot_comparison() facets by it
 - [ ] Failing tests: `cd_compare()` on input with `long_name` returns a `long_name` column; without it, no column (regression); conflicting `long_name` within a series errors; registered variable with `NA` long_name gets registry name

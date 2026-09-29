@@ -3,9 +3,18 @@
 #' Creates a bar chart of anomalies over time with optional Theil-Sen
 #' trend lines. Positive and negative anomalies are colored differently.
 #'
+#' The y-axis label is `long_name` and `unit` from `x` where present and
+#' not `NA`, otherwise from [cd_variables()] — for anomalies, resolved by
+#' the same rules as [cd_summary()] (see the input contract in
+#' [cd_anomaly()]) — else the plotted column's name. `unit` is the
+#' anomaly's unit, so on raw `value` input it is shown only where the
+#' anomaly type is `absolute` or `pct_point_diff`, whose anomaly unit is
+#' the unit of the values.
+#'
 #' @param x A tibble from [cd_anomaly()] with columns `variable`,
-#'   `period`, `year`, `anomaly`. Also works with [cd_extract()] output
-#'   (uses `value` column).
+#'   `period`, `year`, `anomaly`, optionally `anomaly_type`, `unit` and
+#'   `long_name`. Also works with [cd_extract()] output (uses `value`
+#'   column). One row per year in the plotted series.
 #' @param variable Character. Which variable to plot. Default uses
 #'   the first variable in `x`.
 #' @param period Character. Which period to plot. Default `"annual"`.
@@ -42,17 +51,21 @@ cd_plot_timeseries <- function(x,
   val_col <- if ("anomaly" %in% names(x)) "anomaly" else "value"
   if (is.null(variable)) variable <- x$variable[1]
 
-  dat <- x[x$variable == variable & x$period == period, ]
+  dat <- x[which(x$variable == variable & x$period == period), ]
   if (nrow(dat) == 0) {
     rlang::abort(paste0("No data for variable='", variable, "', period='", period, "'"))
   }
+  dat <- series_check(dat)
 
   dat$fill <- ifelse(dat[[val_col]] >= 0, "pos", "neg")
 
-  # Variable metadata for labels
-  vars <- cd_variables()
-  var_info <- vars[vars$variable == variable, ]
-  y_label <- if (nrow(var_info) > 0) paste0(var_info$long_name, " (", var_info$unit, ")") else val_col
+  # Labels: carried columns first, then cd_variables(), as in cd_summary()
+  meta <- meta_resolve(dat, raw = val_col == "value")
+  cols_meta <- intersect(c("anomaly_type", "unit", "long_name"), names(dat))
+  for (col in cols_meta) dat[[col]] <- meta[[col]]
+  meta_check(dat, cols_meta)
+  y_label <- dplyr::coalesce(meta$long_name[1], val_col)
+  if (!is.na(meta$unit[1])) y_label <- paste0(y_label, " (", meta$unit[1], ")")
 
   p <- ggplot2::ggplot(dat, ggplot2::aes(x = .data$year, y = .data[[val_col]], fill = .data$fill)) +
     ggplot2::geom_col(width = 0.8, show.legend = FALSE) +

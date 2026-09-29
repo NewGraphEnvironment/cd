@@ -22,7 +22,18 @@
 - `cd_compare()` output carries no metadata; `cd_trend()` passes only `long_name` on raw-value input (`R/cd_trend.R:44-49`) — the rule mirrored for `cd_compare()`.
 - ggplot2 4.0.3 installed: `p$labels$y` still returns a `labs()`-set label, so tests assert on it.
 
+## Review triage (Phase 1 code-check rounds 1-3 + plan review)
+
+- Plan review: `review-plan.md`. Round findings: `review-round{1,2,3}.md`.
+- Round 1 Clean. Rounds 2 and 3 + plan review #5: `x[lgl, ]` on NA `variable`/`period` makes all-NA rows -> wrong label (first row) or a false duplicate error. Fixed: `which()`. Mutant (revert) -> 1 test red.
+- Round 3 mechanism + plan review #3/#4: three places decide whether the anomaly unit describes raw values (cd_trend drops, cd_summary re-fills from registry, plot inline rule). Rule moved into `meta_resolve(x, raw = TRUE)`: unit kept only for `absolute`/`pct_point_diff`; unresolved type drops a carried unit. Mutant -> 2 tests red. cd_trend/cd_summary alignment filed as cd#97 (out of #93's scope: changes cd_summary output for raw trends).
+- Plan review #1: shared long_name merged facets in cd_plot_comparison (probed 2 vars -> 1 facet). Fixed in Phase 2 by appending ` (variable)` to shared labels.
+- Plan review #2: vpd registry unit "Pa", data hPa. Filed cd#96.
+- Plan review #6: behaviour changes for existing callers go in the PR body (NEWS at merge).
+- Pre-existing, not touched: `labels["a"]` rownames warning in cd_plot_comparison; `cd_plot_comparison(cmp[0,])` errors.
+
 ## Errors Encountered
 
 | Error | Resolution |
 |-------|------------|
+| First mutation run PASSed: `git checkout -- .` inside the scratch copy reset its tests to HEAD, and the sed pattern did not match | Copy current R/ and tests/ into the copy, no checkout; substitute with python `str.replace`; assert the fix line is gone before running |

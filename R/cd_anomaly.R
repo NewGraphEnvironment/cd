@@ -158,9 +158,11 @@ series_check <- function(x) {
 #' Resolve series metadata row by row: carried column first, then
 #' cd_variables(). The registry's unit belongs to the registry's type, so a
 #' carried type that overrides it (prcp as "absolute") gets no registry unit.
-#' The one place these rules live; cd_anomaly() and cd_summary() both call it.
+#' `unit` is the anomaly's unit; `raw = TRUE` keeps it only where that is also
+#' the unit of the values (`absolute`, `pct_point_diff`), for callers labelling
+#' raw values. The one place these rules live; every consumer calls it.
 #' @noRd
-meta_resolve <- function(x) {
+meta_resolve <- function(x, raw = FALSE) {
   vars <- cd_variables()
   idx <- match(as.character(x$variable), vars$variable)
   anomaly_type <- dplyr::coalesce(col_or_na(x, "anomaly_type"), vars$anomaly_type[idx])
@@ -168,9 +170,13 @@ meta_resolve <- function(x) {
     anomaly_type == vars$anomaly_type[idx], vars$unit[idx], NA_character_,
     missing = NA_character_
   )
+  unit <- dplyr::coalesce(col_or_na(x, "unit"), unit_registry)
+  if (raw) {
+    unit[!anomaly_type %in% c("absolute", "pct_point_diff")] <- NA_character_
+  }
   list(
     anomaly_type = anomaly_type,
-    unit = dplyr::coalesce(col_or_na(x, "unit"), unit_registry),
+    unit = unit,
     long_name = dplyr::coalesce(col_or_na(x, "long_name"), vars$long_name[idx])
   )
 }
