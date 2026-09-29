@@ -53,7 +53,7 @@ Findings shaping it:
 - [x] Full `devtools::test()`; mutation check — revert the abort to NA and confirm the Phase 1 error test goes red
 - [x] Vignette recipe (`cd_anomaly → cd_trend → cd_summary`) output unchanged for ERA5 variables (compare `cd_summary()` on example catalog before/after)
 - [x] `/code-check` per commit; atomic commits `Fixes #92` on the last
-- [ ] `/planning-archive`, `/gh-pr-push` (SRED: `Relates to NewGraphEnvironment/sred-2025-2026#23`); version bump/NEWS left to `/gh-pr-merge` (minor: NA → error is a behaviour change)
+- [x] `/planning-archive`, `/gh-pr-push` (PR #94) (SRED: `Relates to NewGraphEnvironment/sred-2025-2026#23`); version bump/NEWS left to `/gh-pr-merge` (minor: NA → error is a behaviour change)
 
 ## Validation
 - [x] Tests pass

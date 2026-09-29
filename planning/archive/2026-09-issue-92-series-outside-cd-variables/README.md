@@ -13,4 +13,4 @@
 
 `planning/archive/2026-09-issue-92-series-outside-cd-variables/review-*.md`
 
-Closed by: commit e3d9cae / PR (see branch 92-cd-anomaly-series-outside-cd-variables)
+Closed by: commit e3d9cae / PR #94
