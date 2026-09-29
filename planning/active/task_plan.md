@@ -23,15 +23,16 @@
 - [x] roxygen: document label resolution (point at `?cd_anomaly` contract), `devtools::document()`
 
 ## Phase 2: cd_compare() passes long_name; cd_plot_comparison() facets by it
-- [ ] Failing tests: `cd_compare()` on input with `long_name` returns a `long_name` column; without it, no column (regression); conflicting `long_name` within a series errors; registered variable with `NA` long_name gets registry name
-- [ ] `R/cd_compare.R`: mirror `cd_trend()` — resolve + `meta_check(x, "long_name")` when the column is present, join one `long_name` per variable/period onto `out` (appended last); update `@return`
-- [ ] Failing tests in `test-cd_plot_comparison.R`: facet labels (`p$data$param`) use carried `long_name` for an unregistered variable; registry name for `tmean`; variable name when neither
-- [ ] `R/cd_plot_comparison.R`: replace `par_labels` lookup with `dplyr::coalesce(meta_resolve(x)$long_name, variable)`; update `@param x` doc
-- [ ] Update the `cd_anomaly()` Input contract `long_name` item to name `cd_compare()` and the two plots as readers; `devtools::document()`
+- [x] Failing tests: `cd_compare()` on input with `long_name` returns a `long_name` column; without it, no column (regression); conflicting `long_name` within a series errors; registered variable with `NA` long_name gets registry name
+- [x] `R/cd_compare.R`: mirror `cd_trend()` — resolve + `meta_check(x, "long_name")` when the column is present, join one `long_name` per variable/period onto `out` (appended last); update `@return`
+- [x] Failing tests in `test-cd_plot_comparison.R`: facet labels (`p$data$param`) use carried `long_name` for an unregistered variable; registry name for `tmean`; variable name when neither
+- [x] `R/cd_plot_comparison.R`: replace `par_labels` lookup with `dplyr::coalesce(meta_resolve(x)$long_name, variable)`; update `@param x` doc
+- [x] Plan review #1 fix: a long_name shared by several variables gets ` (variable)` appended so facets do not merge
+- [x] Update the `cd_anomaly()` Input contract `long_name` item to name `cd_compare()` and the two plots as readers; `devtools::document()`
 
 ## Phase 3: Verify + wrap
-- [ ] `devtools::test()` all green; `lintr::lint_package()`; `pkgdown::check_pkgdown()`
-- [ ] Render check of vignette plot chunks unaffected (registered vars → same labels) — quick `cd_plot_timeseries(ano, "prcp")` against `inst/vignette-data/peace-fwcp.rds`
+- [x] `devtools::test()` all green; `lintr::lint_package()`; `pkgdown::check_pkgdown()` (fails on pre-existing DESCRIPTION URL; no new exports)
+- [x] Render check of vignette plot chunks unaffected (both vignettes rendered in full) (registered vars → same labels) — quick `cd_plot_timeseries(ano, "prcp")` against `inst/vignette-data/peace-fwcp.rds`
 - [ ] `/code-check` per commit; `/planning-archive`; `/gh-pr-push` (SRED tag in PR body)
 
 ## Validation

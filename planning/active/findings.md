@@ -32,6 +32,17 @@
 - Plan review #6: behaviour changes for existing callers go in the PR body (NEWS at merge).
 - Pre-existing, not touched: `labels["a"]` rownames warning in cd_plot_comparison; `cd_plot_comparison(cmp[0,])` errors.
 
+## Review triage (Phase 2 code-check rounds 1-3)
+
+- `review-p2-round{1,2,3}.md`. R1 Clean (join cannot duplicate: meta_check runs first; vignette/data-raw consumers unaffected).
+- R2 (inside the plan-review #1 fix): single-pass ` (variable)` suffix could equal another variable's real label and re-merge facets (`c("Q","Q","Q (a)")`). Mechanism: a display label used as an identity key. Fixed structurally: facet key = variable + label, labeller shows the label, levels in label order. Mutant (facet on label) -> red.
+- R2: no fixture separated per-variable from per-row dedupe (per-row mutant stayed green). Added one-variable-two-periods fixture; mutant -> red.
+- R2: cd_summary() rows indistinguishable for stations sharing a long_name (predates branch) -> filed cd#98.
+- Enumeration (terminal): every grouping/join/facet/match/split key in consumer R/ is variable/period/year except the one fixed facet site (10 sites; confirmed independently by R3).
+- R3: identical strip text still possible with a contrived long_name equal to another's suffixed label; data never merges. Accepted; comment and @param softened.
+- Lint: no new lints on touched files vs main (object_usage `meta_*` warnings are lintr resolving the stale installed package). `pkgdown::check_pkgdown()` fails on DESCRIPTION URL missing the pkgdown url — pre-existing, DESCRIPTION untouched.
+- Both vignettes render (load_all in a scratch copy).
+
 ## Errors Encountered
 
 | Error | Resolution |

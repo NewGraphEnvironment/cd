@@ -59,9 +59,12 @@ back to \code{\link[=cd_variables]{cd_variables()}}:
 error, never a silent \code{NA}.}
 \item{\code{unit}}{Unit of the \strong{anomaly}, passed through as given — the
 same meaning as \code{cd_variables()$unit}, so \code{"\%"} for a
-\code{pct_normal} series whatever the unit of \code{value}.}
-\item{\code{long_name}}{Label, carried through to \code{\link[=cd_trend]{cd_trend()}} and used
-by \code{\link[=cd_summary]{cd_summary()}}.}
+\code{pct_normal} series whatever the unit of \code{value}. Used by
+\code{\link[=cd_summary]{cd_summary()}} and \code{\link[=cd_plot_timeseries]{cd_plot_timeseries()}}; on raw values the plot
+shows it only for \code{absolute} and \code{pct_point_diff} series.}
+\item{\code{long_name}}{Label, carried through to \code{\link[=cd_trend]{cd_trend()}} and
+\code{\link[=cd_compare]{cd_compare()}} and used by \code{\link[=cd_summary]{cd_summary()}}, \code{\link[=cd_plot_timeseries]{cd_plot_timeseries()}}
+and \code{\link[=cd_plot_comparison]{cd_plot_comparison()}}.}
 }
 
 Each variable and period must resolve to a single \code{anomaly_type},

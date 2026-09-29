@@ -34,9 +34,12 @@
 #'     error, never a silent `NA`.}
 #'   \item{`unit`}{Unit of the **anomaly**, passed through as given — the
 #'     same meaning as `cd_variables()$unit`, so `"%"` for a
-#'     `pct_normal` series whatever the unit of `value`.}
-#'   \item{`long_name`}{Label, carried through to [cd_trend()] and used
-#'     by [cd_summary()].}
+#'     `pct_normal` series whatever the unit of `value`. Used by
+#'     [cd_summary()] and [cd_plot_timeseries()]; on raw values the plot
+#'     shows it only for `absolute` and `pct_point_diff` series.}
+#'   \item{`long_name`}{Label, carried through to [cd_trend()] and
+#'     [cd_compare()] and used by [cd_summary()], [cd_plot_timeseries()]
+#'     and [cd_plot_comparison()].}
 #' }
 #'
 #' Each variable and period must resolve to a single `anomaly_type`,

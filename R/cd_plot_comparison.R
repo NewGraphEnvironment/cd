@@ -5,7 +5,11 @@
 #' cumulative change (e.g., "recent decade vs pre-warming").
 #'
 #' @param x A tibble from [cd_compare()] with columns `variable`,
-#'   `period`, `mean_a`, `mean_b`, `difference`.
+#'   `period`, `mean_a`, `mean_b`, `difference`, optionally
+#'   `long_name`. Facets are labelled by `long_name` where present and
+#'   not `NA`, otherwise by [cd_variables()], otherwise by `variable`;
+#'   a label shared by several variables gets the variable name appended.
+#'   Each variable gets its own facet whatever the labels.
 #' @param title Optional plot title.
 #' @param labels Named character vector of length 2 for window labels.
 #'   Default `c(a = "Recent", b = "Historical")`.
@@ -27,13 +31,26 @@ cd_plot_comparison <- function(x,
     reason = "to create comparison plots"
   )
 
-  vars <- cd_variables()
-  par_labels <- stats::setNames(vars$long_name, vars$variable)
+  # Facet labels: carried long_name, then cd_variables(), then the name.
+  # A label shared by several variables (one long_name, many stations)
+  # carries the variable name too, so their facets read differently.
+  x$param <- dplyr::coalesce(meta_resolve(x)$long_name, as.character(x$variable))
+  lab <- unique(data.frame(variable = as.character(x$variable), param = x$param))
+  shared <- x$param %in% lab$param[duplicated(lab$param)]
+  x$param[shared] <- paste0(x$param[shared], " (", x$variable[shared], ")")
+  # Facet on variable and label together, never the label alone, so no
+  # label, however it collides, can put two variables in one facet.
+  # Levels in label order, as faceting by label gave.
+  key <- paste(x$variable, x$param, sep = "\u001f")
+  x$facet <- factor(key, levels = unique(key[order(x$param, as.character(x$variable))]))
+  facet_labels <- stats::setNames(x$param, key)
 
   # Reshape for plotting
   plot_dat <- rbind(
     data.frame(
       variable = x$variable,
+      param = x$param,
+      facet = x$facet,
       period = x$period,
       window = labels["a"],
       value = x$mean_a,
@@ -41,17 +58,13 @@ cd_plot_comparison <- function(x,
     ),
     data.frame(
       variable = x$variable,
+      param = x$param,
+      facet = x$facet,
       period = x$period,
       window = labels["b"],
       value = x$mean_b,
       stringsAsFactors = FALSE
     )
-  )
-
-  plot_dat$param <- ifelse(
-    plot_dat$variable %in% names(par_labels),
-    unname(par_labels[plot_dat$variable]),
-    plot_dat$variable
   )
   plot_dat$label <- stringr::str_to_title(plot_dat$period)
   plot_dat$window <- factor(plot_dat$window, levels = labels)
@@ -63,7 +76,8 @@ cd_plot_comparison <- function(x,
                  color = .data$window, shape = .data$window)) +
     ggplot2::geom_point(size = 3) +
     ggplot2::scale_color_manual(values = color_vals) +
-    ggplot2::facet_wrap(~ .data$param, scales = "free_x") +
+    ggplot2::facet_wrap(~ .data$facet, scales = "free_x",
+                        labeller = ggplot2::as_labeller(facet_labels)) +
     ggplot2::labs(
       x = NULL, y = NULL, color = "Window", shape = "Window",
       title = title

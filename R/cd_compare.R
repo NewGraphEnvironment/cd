@@ -41,8 +41,10 @@
 #'   batched warning.
 #'
 #' @return A tibble with columns `variable`, `period`, `mean_a`,
-#'   `mean_b`, `difference`, `method`, and (when `test` is
-#'   non-NULL) `p_value`.
+#'   `mean_b`, `difference`, `method`, (when `test` is non-NULL)
+#'   `p_value`, and `long_name` when `x` carries one — resolved as in
+#'   [cd_trend()] (see the input contract in [cd_anomaly()]) and read by
+#'   [cd_plot_comparison()].
 #'
 #' @examples
 #' catalog <- cd_catalog(
@@ -73,6 +75,11 @@ cd_compare <- function(x,
   method <- match.arg(method, c("mean_diff", "pct_change"))
   if (!is.null(test)) test <- match.arg(test, c("t", "wilcox"))
   x <- series_check(x)
+  # Raw values, so only long_name passes through, as in cd_trend()
+  cols_meta <- intersect("long_name", names(x))
+  meta <- meta_resolve(x)
+  for (col in cols_meta) x[[col]] <- meta[[col]]
+  meta_check(x, cols_meta)
 
   mean_a <- x |>
     dplyr::filter(.data$year %in% window_a) |>
@@ -123,6 +130,14 @@ cd_compare <- function(x,
       ), call. = FALSE)
     }
     out$p_value <- p
+  }
+
+  if (length(cols_meta) > 0) {
+    out <- dplyr::left_join(
+      out,
+      dplyr::distinct(x[c("variable", "period", cols_meta)]),
+      by = c("variable", "period")
+    )
   }
 
   out
