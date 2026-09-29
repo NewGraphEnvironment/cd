@@ -1,9 +1,7 @@
 # Format trend results as a reporting table
 
-Joins trend statistics with variable metadata from
-[`cd_variables()`](https://newgraphenvironment.github.io/cd/reference/cd_variables.md)
-and computes Total Change (slope x years). Returns a tibble ready for
-`DT::datatable()` or
+Joins trend statistics with variable metadata and computes Total Change
+(slope x years). Returns a tibble ready for `DT::datatable()` or
 [`gt::gt()`](https://gt.rstudio.com/reference/gt.html).
 
 ## Usage
@@ -28,6 +26,21 @@ cd_summary(trend, region_name = NULL)
 
 A tibble with columns `Parameter`, `Period`, `Slope`, `Years`,
 `Total Change`, `Unit`, `p-value`, and optionally `Region`.
+
+## Details
+
+Labels and units come from `long_name` and `unit` columns on `trend`
+where present and not `NA` (carried by
+[`cd_trend()`](https://newgraphenvironment.github.io/cd/reference/cd_trend.md)
+from the input contract in
+[`cd_anomaly()`](https://newgraphenvironment.github.io/cd/reference/cd_anomaly.md)),
+otherwise from
+[`cd_variables()`](https://newgraphenvironment.github.io/cd/reference/cd_variables.md)
+— by the same rules as
+[`cd_anomaly()`](https://newgraphenvironment.github.io/cd/reference/cd_anomaly.md),
+so a registered variable trended under a different `anomaly_type` gets
+no registry unit. A variable found in neither is labelled by its name,
+with no unit.
 
 ## Examples
 

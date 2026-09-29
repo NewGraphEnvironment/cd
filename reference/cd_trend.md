@@ -28,7 +28,13 @@ cd_trend(x, trend_start = c(1950, 1980))
 ## Value
 
 A tibble with columns `variable`, `period`, `trend_start`, `slope`,
-`intercept`, `mk_pvalue`, `n_years`.
+`intercept`, `mk_pvalue`, `n_years`. When `x` carries them, `long_name`
+is passed through, and on anomaly input so are `anomaly_type` and `unit`
+(the anomaly's unit, which does not describe a slope of raw values) —
+see the input contract in
+[`cd_anomaly()`](https://newgraphenvironment.github.io/cd/reference/cd_anomaly.md).
+[`cd_summary()`](https://newgraphenvironment.github.io/cd/reference/cd_summary.md)
+reads them.
 
 ## Examples
 
@@ -53,8 +59,9 @@ cd_trend(ts, trend_start = 1951)
 bl <- cd_baseline(ts, baseline_years = 1951:1955)
 ano <- cd_anomaly(ts, bl)
 cd_trend(ano, trend_start = 1951)
-#> # A tibble: 1 × 7
-#>   variable period trend_start slope intercept mk_pvalue n_years
-#>   <chr>    <chr>        <dbl> <dbl>     <dbl>     <dbl>   <int>
-#> 1 tmean    annual        1951 0.128     -251.     0.592      10
+#> # A tibble: 1 × 9
+#>   variable period trend_start slope intercept mk_pvalue n_years anomaly_type
+#>   <chr>    <chr>        <dbl> <dbl>     <dbl>     <dbl>   <int> <chr>       
+#> 1 tmean    annual        1951 0.128     -251.     0.592      10 absolute    
+#> # ℹ 1 more variable: unit <chr>
 ```
