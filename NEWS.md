@@ -1,3 +1,14 @@
+# cd 0.5.0 (2026-09-29)
+
+* The consumer chain now works on any annual series in cd's long format, not only the ERA5-Land variables in `cd_variables()`. Streamflow and stream temperature from other packages are included. `cd_anomaly()` used to return a silent `NA` for any variable outside the registry. It now takes `anomaly_type`, `unit` and `long_name` from the input where present, falls back to `cd_variables()` row by row, and raises an error naming any variable whose type it cannot resolve. `unit` means the anomaly's unit, as it always has in `cd_variables()`. `cd_trend()` carries the metadata through (`anomaly_type` and `unit` only when trending anomalies) and `cd_summary()` uses it. The contract is documented under "Input contract" in `?cd_anomaly`.
+
+  Behaviour changes for existing callers:
+  - `cd_trend()` on `cd_anomaly()` output gains `anomaly_type` and `unit` columns.
+  - Input with more than one row per variable, period and year is now an error in `cd_baseline()`, `cd_anomaly()`, `cd_compare()` and `cd_trend()`. Before, two stations stacked under one `variable` were silently averaged together.
+  - Grouped input is accepted.
+
+  ERA5 results are unchanged: the regional trend tables in both vignettes reproduce exactly. ([#94](https://github.com/NewGraphEnvironment/cd/pull/94))
+
 # cd 0.4.3 (2026-09-07)
 
 * Producer-side only — no change to any exported function. Fixes what four independent review rounds found in the 0.4.1 and 0.4.2 changes, which had shipped on self-review alone.
