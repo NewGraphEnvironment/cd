@@ -124,11 +124,14 @@ error, never a silent <code>NA</code>.</p></dd>
 <dt><code>unit</code></dt>
 <dd><p>Unit of the <strong>anomaly</strong>, passed through as given — the
 same meaning as <code>cd_variables()$unit</code>, so <code>"%"</code> for a
-<code>pct_normal</code> series whatever the unit of <code>value</code>.</p></dd>
+<code>pct_normal</code> series whatever the unit of <code>value</code>. Used by
+<code><a href="cd_summary.html">cd_summary()</a></code> and <code><a href="cd_plot_timeseries.html">cd_plot_timeseries()</a></code>; on raw values the plot
+shows it only for <code>absolute</code> and <code>pct_point_diff</code> series.</p></dd>
 
 <dt><code>long_name</code></dt>
-<dd><p>Label, carried through to <code><a href="cd_trend.html">cd_trend()</a></code> and used
-by <code><a href="cd_summary.html">cd_summary()</a></code>.</p></dd>
+<dd><p>Label, carried through to <code><a href="cd_trend.html">cd_trend()</a></code> and
+<code><a href="cd_compare.html">cd_compare()</a></code> and used by <code><a href="cd_summary.html">cd_summary()</a></code>, <code><a href="cd_plot_timeseries.html">cd_plot_timeseries()</a></code>
+and <code><a href="cd_plot_comparison.html">cd_plot_comparison()</a></code>.</p></dd>
 
 
 </dl><p>Each variable and period must resolve to a single <code>anomaly_type</code>,

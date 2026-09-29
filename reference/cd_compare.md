@@ -50,7 +50,13 @@ cd_compare(
 ## Value
 
 A tibble with columns `variable`, `period`, `mean_a`, `mean_b`,
-`difference`, `method`, and (when `test` is non-NULL) `p_value`.
+`difference`, `method`, (when `test` is non-NULL) `p_value`, and
+`long_name` when `x` carries one — resolved as in
+[`cd_trend()`](https://newgraphenvironment.github.io/cd/reference/cd_trend.md)
+(see the input contract in
+[`cd_anomaly()`](https://newgraphenvironment.github.io/cd/reference/cd_anomaly.md))
+and read by
+[`cd_plot_comparison()`](https://newgraphenvironment.github.io/cd/reference/cd_plot_comparison.md).
 
 ## Details
 

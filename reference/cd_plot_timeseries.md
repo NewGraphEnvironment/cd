@@ -22,9 +22,10 @@ cd_plot_timeseries(
 
   A tibble from
   [`cd_anomaly()`](https://newgraphenvironment.github.io/cd/reference/cd_anomaly.md)
-  with columns `variable`, `period`, `year`, `anomaly`. Also works with
+  with columns `variable`, `period`, `year`, `anomaly`, optionally
+  `anomaly_type`, `unit` and `long_name`. Also works with
   [`cd_extract()`](https://newgraphenvironment.github.io/cd/reference/cd_extract.md)
-  output (uses `value` column).
+  output (uses `value` column). One row per year in the plotted series.
 
 - variable:
 
@@ -54,6 +55,19 @@ cd_plot_timeseries(
 
 A [ggplot2::ggplot](https://ggplot2.tidyverse.org/reference/ggplot.html)
 object.
+
+## Details
+
+The y-axis label is `long_name` and `unit` from `x` where present and
+not `NA`, otherwise from
+[`cd_variables()`](https://newgraphenvironment.github.io/cd/reference/cd_variables.md)
+— for anomalies, resolved by the same rules as
+[`cd_summary()`](https://newgraphenvironment.github.io/cd/reference/cd_summary.md)
+(see the input contract in
+[`cd_anomaly()`](https://newgraphenvironment.github.io/cd/reference/cd_anomaly.md))
+— else the plotted column's name. `unit` is the anomaly's unit, so on
+raw `value` input it is shown only where the anomaly type is `absolute`
+or `pct_point_diff`, whose anomaly unit is the unit of the values.
 
 ## Examples
 

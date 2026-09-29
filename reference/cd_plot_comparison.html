@@ -58,7 +58,11 @@ cumulative change (e.g., "recent decade vs pre-warming").</p>
 
 <dl><dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
 <dd><p>A tibble from <code><a href="cd_compare.html">cd_compare()</a></code> with columns <code>variable</code>,
-<code>period</code>, <code>mean_a</code>, <code>mean_b</code>, <code>difference</code>.</p></dd>
+<code>period</code>, <code>mean_a</code>, <code>mean_b</code>, <code>difference</code>, optionally
+<code>long_name</code>. Facets are labelled by <code>long_name</code> where present and
+not <code>NA</code>, otherwise by <code><a href="cd_variables.html">cd_variables()</a></code>, otherwise by <code>variable</code>;
+a label shared by several variables gets the variable name appended.
+Each variable gets its own facet whatever the labels.</p></dd>
 
 
 <dt id="arg-title">title<a class="anchor" aria-label="anchor" href="#arg-title"></a></dt>

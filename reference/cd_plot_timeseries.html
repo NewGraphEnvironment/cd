@@ -62,8 +62,9 @@ trend lines. Positive and negative anomalies are colored differently.</p>
 
 <dl><dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
 <dd><p>A tibble from <code><a href="cd_anomaly.html">cd_anomaly()</a></code> with columns <code>variable</code>,
-<code>period</code>, <code>year</code>, <code>anomaly</code>. Also works with <code><a href="cd_extract.html">cd_extract()</a></code> output
-(uses <code>value</code> column).</p></dd>
+<code>period</code>, <code>year</code>, <code>anomaly</code>, optionally <code>anomaly_type</code>, <code>unit</code> and
+<code>long_name</code>. Also works with <code><a href="cd_extract.html">cd_extract()</a></code> output (uses <code>value</code>
+column). One row per year in the plotted series.</p></dd>
 
 
 <dt id="arg-variable">variable<a class="anchor" aria-label="anchor" href="#arg-variable"></a></dt>
@@ -91,6 +92,16 @@ bar colors. Default <code>c(pos = "#d73027", neg = "#4575b4")</code>.</p></dd>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>A <a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot2::ggplot</a> object.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>The y-axis label is <code>long_name</code> and <code>unit</code> from <code>x</code> where present and
+not <code>NA</code>, otherwise from <code><a href="cd_variables.html">cd_variables()</a></code> — for anomalies, resolved by
+the same rules as <code><a href="cd_summary.html">cd_summary()</a></code> (see the input contract in
+<code><a href="cd_anomaly.html">cd_anomaly()</a></code>) — else the plotted column's name. <code>unit</code> is the
+anomaly's unit, so on raw <code>value</code> input it is shown only where the
+anomaly type is <code>absolute</code> or <code>pct_point_diff</code>, whose anomaly unit is
+the unit of the values.</p>
     </div>
 
     <div class="section level2">

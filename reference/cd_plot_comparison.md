@@ -16,7 +16,13 @@ cd_plot_comparison(x, title = NULL, labels = c(a = "Recent", b = "Historical"))
 
   A tibble from
   [`cd_compare()`](https://newgraphenvironment.github.io/cd/reference/cd_compare.md)
-  with columns `variable`, `period`, `mean_a`, `mean_b`, `difference`.
+  with columns `variable`, `period`, `mean_a`, `mean_b`, `difference`,
+  optionally `long_name`. Facets are labelled by `long_name` where
+  present and not `NA`, otherwise by
+  [`cd_variables()`](https://newgraphenvironment.github.io/cd/reference/cd_variables.md),
+  otherwise by `variable`; a label shared by several variables gets the
+  variable name appended. Each variable gets its own facet whatever the
+  labels.
 
 - title:
 

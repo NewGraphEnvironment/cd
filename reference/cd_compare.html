@@ -95,8 +95,10 @@ batched warning.</p></dd>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>A tibble with columns <code>variable</code>, <code>period</code>, <code>mean_a</code>,
-<code>mean_b</code>, <code>difference</code>, <code>method</code>, and (when <code>test</code> is
-non-NULL) <code>p_value</code>.</p>
+<code>mean_b</code>, <code>difference</code>, <code>method</code>, (when <code>test</code> is non-NULL)
+<code>p_value</code>, and <code>long_name</code> when <code>x</code> carries one — resolved as in
+<code><a href="cd_trend.html">cd_trend()</a></code> (see the input contract in <code><a href="cd_anomaly.html">cd_anomaly()</a></code>) and read by
+<code><a href="cd_plot_comparison.html">cd_plot_comparison()</a></code>.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
