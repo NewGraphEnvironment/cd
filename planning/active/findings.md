@@ -40,7 +40,21 @@ what the trend ran on is required (`trend_on`), plus carrying the columns so a c
 Every existing trend in the vignettes and `inst/vignette-data/*.rds` runs on anomalies,
 so reading a missing `trend_on` as anomaly keeps them unchanged — no regeneration.
 
+## Mutation check (2026-09-29)
+
+Each half of the fix restored in a scratch copy, `devtools::test(filter = "cd_trend|cd_summary")`:
+
+| mutant | result |
+|---|---|
+| `cd_summary()` ignores `trend_on` (`meta_resolve(trend)`) | FAIL 5 |
+| `cd_trend()` drops carried `anomaly_type`/`unit` on raw input | FAIL 8 |
+| `meta_resolve()` uses `raw[1]` only (not row by row) | FAIL 1 (the `bind_rows` test) |
+
+Full suite: `[ FAIL 0 | WARN 6 | PASS 346 ]`; the 6 warnings are in
+`test-cd_plot_comparison.R` and are present on main.
+
 ## Errors Encountered
 
 | Error | Resolution |
 |-------|------------|
+| `diff -q` printed git-diff usage | `diff` is shadowed by a git wrapper in this shell; use `cmp -s` |

@@ -15,11 +15,13 @@ Default \code{c(1950, 1980)}.}
 }
 \value{
 A tibble with columns \code{variable}, \code{period}, \code{trend_start},
-\code{slope}, \code{intercept}, \code{mk_pvalue}, \code{n_years}. When \code{x} carries
-them, \code{long_name} is passed through, and on anomaly input so are
-\code{anomaly_type} and \code{unit} (the anomaly's unit, which does not
-describe a slope of raw values) — see the input contract in
-\code{\link[=cd_anomaly]{cd_anomaly()}}. \code{\link[=cd_summary]{cd_summary()}} reads them.
+\code{slope}, \code{intercept}, \code{mk_pvalue}, \code{n_years}, and \code{trend_on}
+(\code{"value"} or \code{"anomaly"}, the column the trend was run on). When
+\code{x} carries them, \code{anomaly_type}, \code{unit} and \code{long_name} are passed
+through — see the input contract in \code{\link[=cd_anomaly]{cd_anomaly()}}. \code{unit} is the
+anomaly's unit, so on raw values it is kept only for \code{absolute} and
+\code{pct_point_diff} series, where it is also the unit of the values.
+\code{\link[=cd_summary]{cd_summary()}} reads them.
 }
 \description{
 Runs Mann-Kendall significance test and Theil-Sen slope estimator

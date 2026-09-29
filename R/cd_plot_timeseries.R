@@ -4,9 +4,9 @@
 #' trend lines. Positive and negative anomalies are colored differently.
 #'
 #' The y-axis label is `long_name` and `unit` from `x` where present and
-#' not `NA`, otherwise from [cd_variables()] — for anomalies, resolved by
-#' the same rules as [cd_summary()] (see the input contract in
-#' [cd_anomaly()]) — else the plotted column's name. `unit` is the
+#' not `NA`, otherwise from [cd_variables()] — resolved by the same rules
+#' as [cd_summary()] (see the input contract in [cd_anomaly()]) — else the
+#' plotted column's name. `unit` is the
 #' anomaly's unit, so on raw `value` input it is shown only where the
 #' anomaly type is `absolute` or `pct_point_diff`, whose anomaly unit is
 #' the unit of the values.

@@ -75,7 +75,7 @@ cd_compare <- function(x,
   method <- match.arg(method, c("mean_diff", "pct_change"))
   if (!is.null(test)) test <- match.arg(test, c("t", "wilcox"))
   x <- series_check(x)
-  # Raw values, so only long_name passes through, as in cd_trend()
+  # Only long_name passes through: the unit of `difference` depends on `method`
   cols_meta <- intersect("long_name", names(x))
   meta <- meta_resolve(x)
   for (col in cols_meta) x[[col]] <- meta[[col]]

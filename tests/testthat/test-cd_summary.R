@@ -137,3 +137,80 @@ test_that("the whole chain accepts grouped input (#92)", {
   cmp <- cd_compare(x, window_a = 2005:2009, window_b = 2000:2004, test = NULL)
   expect_equal(cmp$difference, c(5, -5))
 })
+
+# Raw-value trends (#97) ---------------------------------------------------
+
+raw_series <- function(v, ...) {
+  tibble::tibble(variable = v, period = "annual", year = 2000:2009,
+                 value = seq(100, 190, by = 10), ...)
+}
+
+test_that("cd_summary gives a raw-value trend no anomaly unit (#97)", {
+  skip_if_not_installed("Kendall")
+  skip_if_not_installed("zyp")
+  smry <- function(x) cd_summary(cd_trend(x, trend_start = 2000))
+  # prcp's registry unit is "%", the unit of its anomaly, not of mm
+  expect_true(is.na(smry(raw_series("prcp"))$Unit))
+  expect_true(is.na(smry(raw_series("soil_moisture"))$Unit))
+  expect_equal(smry(raw_series("tmean"))$Unit, "°C")
+  expect_equal(
+    smry(raw_series("q_mean", anomaly_type = "absolute", unit = "m3/s"))$Unit,
+    "m3/s"
+  )
+  expect_equal(
+    smry(raw_series("prcp", anomaly_type = "absolute", unit = "mm"))$Unit,
+    "mm"
+  )
+})
+
+test_that("cd_summary's Unit matches cd_plot_timeseries()'s label (#97)", {
+  skip_if_not_installed("Kendall")
+  skip_if_not_installed("zyp")
+  skip_if_not_installed("ggplot2")
+  plot_unit <- function(x) {
+    y <- cd_plot_timeseries(x)$labels$y
+    if (grepl("\\)$", y)) sub("^.* \\((.*)\\)$", "\\1", y) else NA_character_
+  }
+  cases <- list(
+    raw_series("prcp"),
+    raw_series("tmean"),
+    raw_series("snow_cover"),
+    raw_series("swe"),
+    raw_series("q_mean", unit = "%", long_name = "Mean discharge"),
+    raw_series("q_mean", anomaly_type = "absolute", unit = "m3/s"),
+    raw_series("q_mean", anomaly_type = "pct_normal", unit = "%"),
+    raw_series("prcp", anomaly_type = "absolute", unit = "mm"),
+    raw_series("prcp", anomaly_type = "absolute")
+  )
+  for (x in cases) {
+    # an unregistered series with no anomaly_type has no anomaly to take
+    typed <- "anomaly_type" %in% names(x) || x$variable[1] %in% cd_variables()$variable
+    for (on in if (typed) c("value", "anomaly") else "value") {
+      if (on == "anomaly") x <- cd_anomaly(x, cd_baseline(x, 2000:2004))
+      label <- paste(c(on, unlist(x[1, intersect(c("variable", "anomaly_type", "unit"), names(x))])),
+                     collapse = " ")
+      expect_identical(
+        cd_summary(cd_trend(x, trend_start = 2000))$Unit, plot_unit(x),
+        info = label
+      )
+    }
+  }
+})
+
+test_that("cd_summary resolves raw and anomaly trends row by row (#97)", {
+  skip_if_not_installed("Kendall")
+  skip_if_not_installed("zyp")
+  x <- raw_series("prcp")
+  ano <- cd_anomaly(x, cd_baseline(x, 2000:2004))
+  trn <- dplyr::bind_rows(cd_trend(x, 2000), cd_trend(ano, 2000))
+  expect_equal(cd_summary(trn)$Unit, c(NA, "%"))
+})
+
+test_that("cd_summary reads a trend without trend_on as an anomaly trend (#97)", {
+  # the shape of trends saved before #97, e.g. inst/vignette-data/*.rds
+  trend <- tibble::tibble(
+    variable = "prcp", period = "annual", trend_start = 1951,
+    slope = 0.05, intercept = -100, mk_pvalue = 0.4, n_years = 75
+  )
+  expect_equal(cd_summary(trend)$Unit, "%")
+})

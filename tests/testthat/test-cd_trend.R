@@ -8,7 +8,11 @@ test_that("cd_trend returns expected structure", {
   trn <- cd_trend(ts, trend_start = 1951)
 
   expect_s3_class(trn, "tbl_df")
-  expect_named(trn, c("variable", "period", "trend_start", "slope", "intercept", "mk_pvalue", "n_years"))
+  expect_named(trn, c(
+    "variable", "period", "trend_start", "slope", "intercept", "mk_pvalue",
+    "n_years", "trend_on"
+  ))
+  expect_equal(trn$trend_on, "value")
   expect_equal(nrow(trn), 1)
   expect_equal(trn$n_years, 10)
   expect_equal(trn$trend_start, 1951)
@@ -77,14 +81,15 @@ test_that("cd_trend carries anomaly_type, unit and long_name through (#92)", {
   trn <- cd_trend(x, trend_start = 2000)
   expect_named(trn, c(
     "variable", "period", "trend_start", "slope", "intercept", "mk_pvalue",
-    "n_years", "anomaly_type", "unit", "long_name"
+    "n_years", "trend_on", "anomaly_type", "unit", "long_name"
   ))
+  expect_equal(trn$trend_on, "anomaly")
   expect_equal(trn$unit, "%")
   expect_equal(trn$long_name, "Mean discharge")
   expect_equal(trn$anomaly_type, "pct_normal")
 })
 
-test_that("cd_trend on raw values carries long_name but not the anomaly unit (#92)", {
+test_that("cd_trend on raw values carries a unit only where it describes the values (#97)", {
   skip_if_not_installed("Kendall")
   skip_if_not_installed("zyp")
   x <- tibble::tibble(
@@ -95,8 +100,16 @@ test_that("cd_trend on raw values carries long_name but not the anomaly unit (#9
   trn <- cd_trend(x, trend_start = 2000)
   expect_named(trn, c(
     "variable", "period", "trend_start", "slope", "intercept", "mk_pvalue",
-    "n_years", "long_name"
+    "n_years", "trend_on", "anomaly_type", "unit", "long_name"
   ))
+  expect_equal(trn$trend_on, "value")
+  expect_equal(trn$anomaly_type, "pct_normal")
+  # "%" is the anomaly's unit, not the unit of a slope of raw values
+  expect_true(is.na(trn$unit))
+
+  x$anomaly_type <- "absolute"
+  x$unit <- "m3/s"
+  expect_equal(cd_trend(x, trend_start = 2000)$unit, "m3/s")
 })
 
 test_that("cd_trend errors when one series carries two long_names (#92)", {
@@ -122,4 +135,14 @@ test_that("cd_trend resolves partly-NA metadata before checking it (#92)", {
     unit = c("°C", rep(NA, 9))
   )
   expect_equal(cd_trend(ano, trend_start = 2000)$unit, "°C")
+})
+
+test_that("cd_trend errors when a raw series carries two units (#97)", {
+  skip_if_not_installed("Kendall")
+  skip_if_not_installed("zyp")
+  x <- tibble::tibble(
+    variable = "q_mean", period = "annual", year = 2000:2009, value = 1:10,
+    anomaly_type = "absolute", unit = rep(c("m3/s", "L/s"), 5)
+  )
+  expect_error(cd_trend(x, trend_start = 2000), "unit.*q_mean/annual")
 })

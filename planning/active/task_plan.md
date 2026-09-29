@@ -31,29 +31,29 @@ read as anomaly — today's behaviour, so no data regeneration.
 
 ## Phase 1: Tests first (red)
 
-- [ ] `test-cd_trend.R`: raw input returns `trend_on = "value"`, anomaly input `"anomaly"`; update the three `expect_named()` calls (lines 11, 78, 96)
-- [ ] `test-cd_trend.R`: raw input carrying `anomaly_type`/`unit` passes them through, `unit` resolved with `raw = TRUE` (the #92 test at line 88 changes from "not carried" to "carried, masked")
-- [ ] `test-cd_summary.R`: the issue's three rows through the chain — raw prcp → `Unit` `NA`; unregistered `absolute` + `m3/s` → `"m3/s"`; prcp carried `absolute` + `mm` → `"mm"`
-- [ ] `test-cd_summary.R`: parity — for each of those series, `cd_summary()$Unit` agrees with the unit in `cd_plot_timeseries()`'s y label (`p$labels$y`)
-- [ ] `test-cd_summary.R`: a `bind_rows()` of a raw and an anomaly trend of prcp resolves per row (`NA`, `"%"`); a trend without `trend_on` keeps today's registry behaviour (existing tests cover)
+- [x] `test-cd_trend.R`: raw input returns `trend_on = "value"`, anomaly input `"anomaly"`; update the three `expect_named()` calls (lines 11, 78, 96)
+- [x] `test-cd_trend.R`: raw input carrying `anomaly_type`/`unit` passes them through, `unit` resolved with `raw = TRUE` (the #92 test at line 88 changes from "not carried" to "carried, masked")
+- [x] `test-cd_summary.R`: the issue's three rows through the chain — raw prcp → `Unit` `NA`; unregistered `absolute` + `m3/s` → `"m3/s"`; prcp carried `absolute` + `mm` → `"mm"`
+- [x] `test-cd_summary.R`: parity — for each of those series, `cd_summary()$Unit` agrees with the unit in `cd_plot_timeseries()`'s y label (`p$labels$y`)
+- [x] `test-cd_summary.R`: a `bind_rows()` of a raw and an anomaly trend of prcp resolves per row (`NA`, `"%"`); a trend without `trend_on` keeps today's registry behaviour (existing tests cover)
 
 ## Phase 2: Implementation
 
-- [ ] `R/cd_anomaly.R` `meta_resolve()`: accept `raw` as a vector (`rep_len(raw, nrow)`, mask `raw & !type %in% c("absolute","pct_point_diff")`); scalar callers unchanged
-- [ ] `R/cd_trend.R`: on raw input carry `anomaly_type`, `unit`, `long_name` (those present) with `unit` from `meta_resolve(x, raw = TRUE)`; add `trend_on`
-- [ ] `R/cd_summary.R`: `meta_resolve(trend, raw = col_or_na(trend, "trend_on") %in% "value")`
-- [ ] Restore the bug (drop the `raw =` in `cd_summary()`, and separately the carry in `cd_trend()`) and confirm the new tests go red
+- [x] `R/cd_anomaly.R` `meta_resolve()`: accept `raw` as a vector (`rep_len(raw, nrow)`, mask `raw & !type %in% c("absolute","pct_point_diff")`); scalar callers unchanged
+- [x] `R/cd_trend.R`: on raw input carry `anomaly_type`, `unit`, `long_name` (those present) with `unit` from `meta_resolve(x, raw = TRUE)`; add `trend_on`
+- [x] `R/cd_summary.R`: `meta_resolve(trend, raw = col_or_na(trend, "trend_on") %in% "value")`
+- [x] Restore the bug (drop the `raw =` in `cd_summary()`, and separately the carry in `cd_trend()`) and confirm the new tests go red
 
 ## Phase 3: Docs
 
-- [ ] `cd_trend()` `@return`: `trend_on`, and the raw-input carry (unit describes the values, only for `absolute`/`pct_point_diff`)
-- [ ] `cd_summary()` description: on raw-value trends, unit only where it describes the values — same rule as `cd_plot_timeseries()`
-- [ ] `?cd_anomaly` contract `unit` item: add `cd_summary()` to the "on raw values" sentence; `meta_resolve()` comment for vector `raw`
-- [ ] `devtools::document()`, `lintr::lint_package()`, full `devtools::test()`, `devtools::check()`
+- [x] `cd_trend()` `@return`: `trend_on`, and the raw-input carry (unit describes the values, only for `absolute`/`pct_point_diff`)
+- [x] `cd_summary()` description: on raw-value trends, unit only where it describes the values — same rule as `cd_plot_timeseries()`
+- [x] `?cd_anomaly` contract `unit` item: add `cd_summary()` to the "on raw values" sentence; `meta_resolve()` comment for vector `raw`
+- [x] `devtools::document()`, `lintr::lint_package()`, full `devtools::test()`, `devtools::check()`
 
 ## Validation
 
-- [ ] Tests pass
-- [ ] `/code-check` clean on each commit
-- [ ] PWF checkboxes match landed work
+- [x] Tests pass
+- [x] `/code-check` clean on each commit
+- [x] PWF checkboxes match landed work
 - [ ] `/planning-archive` on completion
