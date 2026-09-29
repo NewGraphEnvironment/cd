@@ -52,12 +52,12 @@ Findings shaping it:
 ## Phase 4: Verify, release notes, PR
 - [x] Full `devtools::test()`; mutation check — revert the abort to NA and confirm the Phase 1 error test goes red
 - [x] Vignette recipe (`cd_anomaly → cd_trend → cd_summary`) output unchanged for ERA5 variables (compare `cd_summary()` on example catalog before/after)
-- [ ] `/code-check` per commit; atomic commits `Fixes #92` on the last
+- [x] `/code-check` per commit; atomic commits `Fixes #92` on the last
 - [ ] `/planning-archive`, `/gh-pr-push` (SRED: `Relates to NewGraphEnvironment/sred-2025-2026#23`); version bump/NEWS left to `/gh-pr-merge` (minor: NA → error is a behaviour change)
 
 ## Validation
-- [ ] Tests pass
-- [ ] `/code-check` clean on each commit
-- [ ] PWF checkboxes match landed work
-- [ ] `/planning-archive` on completion
+- [x] Tests pass
+- [x] `/code-check` clean on each commit
+- [x] PWF checkboxes match landed work
+- [x] `/planning-archive` on completion
 
