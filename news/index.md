@@ -1,5 +1,46 @@
 # Changelog
 
+## cd 0.5.2 (2026-09-29)
+
+- [`cd_summary()`](https://newgraphenvironment.github.io/cd/reference/cd_summary.md)
+  no longer labels a trend of raw values with the anomaly unit from
+  [`cd_variables()`](https://newgraphenvironment.github.io/cd/reference/cd_variables.md).
+  A raw precipitation slope in mm read `%`, and a unit carried on an
+  `absolute` series (`m3/s`, say) was dropped.
+  [`cd_trend()`](https://newgraphenvironment.github.io/cd/reference/cd_trend.md)
+  now records what it ran on in a `trend_on` column (`"value"` or
+  `"anomaly"`). On raw input it also carries `anomaly_type` and `unit`,
+  keeping the unit only where it is also the unit of the values
+  (`absolute`, `pct_point_diff`).
+  [`cd_summary()`](https://newgraphenvironment.github.io/cd/reference/cd_summary.md)
+  applies that rule row by row, so its `Unit` column now agrees with the
+  [`cd_plot_timeseries()`](https://newgraphenvironment.github.io/cd/reference/cd_plot_timeseries.md)
+  axis label for the same series. This replaces the 0.5.0 rule that
+  `anomaly_type` and `unit` are carried only when trending anomalies.
+
+  Behaviour changes for existing callers:
+
+  - Every
+    [`cd_trend()`](https://newgraphenvironment.github.io/cd/reference/cd_trend.md)
+    result gains a `trend_on` column.
+  - [`cd_summary()`](https://newgraphenvironment.github.io/cd/reference/cd_summary.md)
+    `Unit` on raw-value trends: `pct_normal` series (prcp,
+    soil_moisture, swe, snowfall, snowmelt) go from `%` to `NA`, and a
+    unit carried on an `absolute` series is now shown.
+  - [`cd_trend()`](https://newgraphenvironment.github.io/cd/reference/cd_trend.md)
+    on raw input now errors when `anomaly_type` or `unit` varies within
+    one series, as
+    [`cd_plot_timeseries()`](https://newgraphenvironment.github.io/cd/reference/cd_plot_timeseries.md)
+    already did.
+  - A trend table without `trend_on`, such as one saved before this
+    release, is read as an anomaly trend, as before.
+
+  Follow-ups filed from review:
+  [\#101](https://github.com/NewGraphEnvironment/cd/issues/101),
+  [\#102](https://github.com/NewGraphEnvironment/cd/issues/102),
+  [\#103](https://github.com/NewGraphEnvironment/cd/issues/103).
+  ([\#104](https://github.com/NewGraphEnvironment/cd/pull/104))
+
 ## cd 0.5.1 (2026-09-29)
 
 - [`cd_plot_timeseries()`](https://newgraphenvironment.github.io/cd/reference/cd_plot_timeseries.md)

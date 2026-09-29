@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">cd</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,6 +36,20 @@
       <small>Source: <a href="https://github.com/NewGraphEnvironment/cd/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.5.2" id="cd-052-2026-09-29">cd 0.5.2 (2026-09-29)<a class="anchor" aria-label="anchor" href="#cd-052-2026-09-29"></a></h2>
+<ul><li>
+<p><code><a href="../reference/cd_summary.html">cd_summary()</a></code> no longer labels a trend of raw values with the anomaly unit from <code><a href="../reference/cd_variables.html">cd_variables()</a></code>. A raw precipitation slope in mm read <code>%</code>, and a unit carried on an <code>absolute</code> series (<code>m3/s</code>, say) was dropped. <code><a href="../reference/cd_trend.html">cd_trend()</a></code> now records what it ran on in a <code>trend_on</code> column (<code>"value"</code> or <code>"anomaly"</code>). On raw input it also carries <code>anomaly_type</code> and <code>unit</code>, keeping the unit only where it is also the unit of the values (<code>absolute</code>, <code>pct_point_diff</code>). <code><a href="../reference/cd_summary.html">cd_summary()</a></code> applies that rule row by row, so its <code>Unit</code> column now agrees with the <code><a href="../reference/cd_plot_timeseries.html">cd_plot_timeseries()</a></code> axis label for the same series. This replaces the 0.5.0 rule that <code>anomaly_type</code> and <code>unit</code> are carried only when trending anomalies.</p>
+<p>Behaviour changes for existing callers:</p>
+<ul><li>Every <code><a href="../reference/cd_trend.html">cd_trend()</a></code> result gains a <code>trend_on</code> column.</li>
+<li>
+<code><a href="../reference/cd_summary.html">cd_summary()</a></code> <code>Unit</code> on raw-value trends: <code>pct_normal</code> series (prcp, soil_moisture, swe, snowfall, snowmelt) go from <code>%</code> to <code>NA</code>, and a unit carried on an <code>absolute</code> series is now shown.</li>
+<li>
+<code><a href="../reference/cd_trend.html">cd_trend()</a></code> on raw input now errors when <code>anomaly_type</code> or <code>unit</code> varies within one series, as <code><a href="../reference/cd_plot_timeseries.html">cd_plot_timeseries()</a></code> already did.</li>
+<li>A trend table without <code>trend_on</code>, such as one saved before this release, is read as an anomaly trend, as before.</li>
+</ul><p>Follow-ups filed from review: <a href="https://github.com/NewGraphEnvironment/cd/issues/101" class="external-link">#101</a>, <a href="https://github.com/NewGraphEnvironment/cd/issues/102" class="external-link">#102</a>, <a href="https://github.com/NewGraphEnvironment/cd/issues/103" class="external-link">#103</a>. (<a href="https://github.com/NewGraphEnvironment/cd/pull/104" class="external-link">#104</a>)</p>
+</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.5.1" id="cd-051-2026-09-29">cd 0.5.1 (2026-09-29)<a class="anchor" aria-label="anchor" href="#cd-051-2026-09-29"></a></h2>
 <ul><li>
