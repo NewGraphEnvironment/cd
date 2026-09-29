@@ -1,5 +1,47 @@
 # Changelog
 
+## cd 0.5.0 (2026-09-29)
+
+- The consumer chain now works on any annual series in cd’s long format,
+  not only the ERA5-Land variables in
+  [`cd_variables()`](https://newgraphenvironment.github.io/cd/reference/cd_variables.md).
+  Streamflow and stream temperature from other packages are included.
+  [`cd_anomaly()`](https://newgraphenvironment.github.io/cd/reference/cd_anomaly.md)
+  used to return a silent `NA` for any variable outside the registry. It
+  now takes `anomaly_type`, `unit` and `long_name` from the input where
+  present, falls back to
+  [`cd_variables()`](https://newgraphenvironment.github.io/cd/reference/cd_variables.md)
+  row by row, and raises an error naming any variable whose type it
+  cannot resolve. `unit` means the anomaly’s unit, as it always has in
+  [`cd_variables()`](https://newgraphenvironment.github.io/cd/reference/cd_variables.md).
+  [`cd_trend()`](https://newgraphenvironment.github.io/cd/reference/cd_trend.md)
+  carries the metadata through (`anomaly_type` and `unit` only when
+  trending anomalies) and
+  [`cd_summary()`](https://newgraphenvironment.github.io/cd/reference/cd_summary.md)
+  uses it. The contract is documented under “Input contract” in
+  [`?cd_anomaly`](https://newgraphenvironment.github.io/cd/reference/cd_anomaly.md).
+
+  Behaviour changes for existing callers:
+
+  - [`cd_trend()`](https://newgraphenvironment.github.io/cd/reference/cd_trend.md)
+    on
+    [`cd_anomaly()`](https://newgraphenvironment.github.io/cd/reference/cd_anomaly.md)
+    output gains `anomaly_type` and `unit` columns.
+  - Input with more than one row per variable, period and year is now an
+    error in
+    [`cd_baseline()`](https://newgraphenvironment.github.io/cd/reference/cd_baseline.md),
+    [`cd_anomaly()`](https://newgraphenvironment.github.io/cd/reference/cd_anomaly.md),
+    [`cd_compare()`](https://newgraphenvironment.github.io/cd/reference/cd_compare.md)
+    and
+    [`cd_trend()`](https://newgraphenvironment.github.io/cd/reference/cd_trend.md).
+    Before, two stations stacked under one `variable` were silently
+    averaged together.
+  - Grouped input is accepted.
+
+  ERA5 results are unchanged: the regional trend tables in both
+  vignettes reproduce exactly.
+  ([\#94](https://github.com/NewGraphEnvironment/cd/pull/94))
+
 ## cd 0.4.3 (2026-09-07)
 
 - Producer-side only — no change to any exported function. Fixes what

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">cd</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,6 +36,18 @@
       <small>Source: <a href="https://github.com/NewGraphEnvironment/cd/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.5.0" id="cd-050-2026-09-29">cd 0.5.0 (2026-09-29)<a class="anchor" aria-label="anchor" href="#cd-050-2026-09-29"></a></h2>
+<ul><li>
+<p>The consumer chain now works on any annual series in cd’s long format, not only the ERA5-Land variables in <code><a href="../reference/cd_variables.html">cd_variables()</a></code>. Streamflow and stream temperature from other packages are included. <code><a href="../reference/cd_anomaly.html">cd_anomaly()</a></code> used to return a silent <code>NA</code> for any variable outside the registry. It now takes <code>anomaly_type</code>, <code>unit</code> and <code>long_name</code> from the input where present, falls back to <code><a href="../reference/cd_variables.html">cd_variables()</a></code> row by row, and raises an error naming any variable whose type it cannot resolve. <code>unit</code> means the anomaly’s unit, as it always has in <code><a href="../reference/cd_variables.html">cd_variables()</a></code>. <code><a href="../reference/cd_trend.html">cd_trend()</a></code> carries the metadata through (<code>anomaly_type</code> and <code>unit</code> only when trending anomalies) and <code><a href="../reference/cd_summary.html">cd_summary()</a></code> uses it. The contract is documented under “Input contract” in <code><a href="../reference/cd_anomaly.html">?cd_anomaly</a></code>.</p>
+<p>Behaviour changes for existing callers:</p>
+<ul><li>
+<code><a href="../reference/cd_trend.html">cd_trend()</a></code> on <code><a href="../reference/cd_anomaly.html">cd_anomaly()</a></code> output gains <code>anomaly_type</code> and <code>unit</code> columns.</li>
+<li>Input with more than one row per variable, period and year is now an error in <code><a href="../reference/cd_baseline.html">cd_baseline()</a></code>, <code><a href="../reference/cd_anomaly.html">cd_anomaly()</a></code>, <code><a href="../reference/cd_compare.html">cd_compare()</a></code> and <code><a href="../reference/cd_trend.html">cd_trend()</a></code>. Before, two stations stacked under one <code>variable</code> were silently averaged together.</li>
+<li>Grouped input is accepted.</li>
+</ul><p>ERA5 results are unchanged: the regional trend tables in both vignettes reproduce exactly. (<a href="https://github.com/NewGraphEnvironment/cd/pull/94" class="external-link">#94</a>)</p>
+</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.4.3" id="cd-043-2026-09-07">cd 0.4.3 (2026-09-07)<a class="anchor" aria-label="anchor" href="#cd-043-2026-09-07"></a></h2>
 <ul><li>
