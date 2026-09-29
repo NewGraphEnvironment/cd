@@ -15,8 +15,9 @@ cd_plot_timeseries(
 }
 \arguments{
 \item{x}{A tibble from \code{\link[=cd_anomaly]{cd_anomaly()}} with columns \code{variable},
-\code{period}, \code{year}, \code{anomaly}. Also works with \code{\link[=cd_extract]{cd_extract()}} output
-(uses \code{value} column).}
+\code{period}, \code{year}, \code{anomaly}, optionally \code{anomaly_type}, \code{unit} and
+\code{long_name}. Also works with \code{\link[=cd_extract]{cd_extract()}} output (uses \code{value}
+column). One row per year in the plotted series.}
 
 \item{variable}{Character. Which variable to plot. Default uses
 the first variable in \code{x}.}
@@ -36,6 +37,15 @@ A \link[ggplot2:ggplot]{ggplot2::ggplot} object.
 \description{
 Creates a bar chart of anomalies over time with optional Theil-Sen
 trend lines. Positive and negative anomalies are colored differently.
+}
+\details{
+The y-axis label is \code{long_name} and \code{unit} from \code{x} where present and
+not \code{NA}, otherwise from \code{\link[=cd_variables]{cd_variables()}} — for anomalies, resolved by
+the same rules as \code{\link[=cd_summary]{cd_summary()}} (see the input contract in
+\code{\link[=cd_anomaly]{cd_anomaly()}}) — else the plotted column's name. \code{unit} is the
+anomaly's unit, so on raw \code{value} input it is shown only where the
+anomaly type is \code{absolute} or \code{pct_point_diff}, whose anomaly unit is
+the unit of the values.
 }
 \examples{
 \dontrun{

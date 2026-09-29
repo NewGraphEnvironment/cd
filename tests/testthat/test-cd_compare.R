@@ -164,3 +164,64 @@ test_that("cd_compare per-row p_values on multi-variable input", {
   expect_lt(cmp$p_value[cmp$variable == "tmean"], 0.001)
   expect_gt(cmp$p_value[cmp$variable == "prcp"], 0.05)
 })
+
+# long_name pass-through (#93) ---------------------------------------------
+
+q_ts <- function(...) {
+  tibble::tibble(
+    variable = "q_mean", period = "spawn", year = 2001:2010,
+    value = c(10, 12, 9, 11, 10, 6, 7, 5, 8, 6), ...
+  )
+}
+
+test_that("cd_compare passes a carried long_name through, last", {
+  cmp <- cd_compare(q_ts(long_name = "Mean discharge"),
+                    window_a = 2006:2010, window_b = 2001:2005, test = NULL)
+  expect_named(cmp, c("variable", "period", "mean_a", "mean_b", "difference", "method", "long_name"))
+  expect_identical(cmp$long_name, "Mean discharge")
+})
+
+test_that("cd_compare adds no long_name column when the input carries none", {
+  cmp <- cd_compare(q_ts(), window_a = 2006:2010, window_b = 2001:2005, test = NULL)
+  expect_false("long_name" %in% names(cmp))
+})
+
+test_that("cd_compare fills an NA long_name from cd_variables()", {
+  ts <- q_ts(long_name = NA_character_)
+  ts$variable <- "tmean"
+  cmp <- cd_compare(ts, window_a = 2006:2010, window_b = 2001:2005, test = NULL)
+  expect_identical(cmp$long_name, "Mean temperature")
+})
+
+test_that("cd_compare errors on two long_names within a series", {
+  ts <- q_ts(long_name = rep(c("Mean discharge", "Discharge"), each = 5))
+  expect_error(
+    cd_compare(ts, window_a = 2006:2010, window_b = 2001:2005, test = NULL),
+    "long_name"
+  )
+})
+
+test_that("cd_compare keeps one long_name per series across several variables", {
+  ts <- rbind(q_ts(long_name = "Mean discharge"),
+              transform(q_ts(long_name = "Peak discharge"), variable = "q_max"))
+  cmp <- cd_compare(ts, window_a = 2006:2010, window_b = 2001:2005, test = NULL)
+  expect_equal(nrow(cmp), 2)
+  expect_identical(cmp$long_name[cmp$variable == "q_max"], "Peak discharge")
+  expect_identical(cmp$long_name[cmp$variable == "q_mean"], "Mean discharge")
+})
+
+test_that("cd_compare appends long_name after p_value", {
+  expect_warning(
+    cmp <- cd_compare(q_ts(long_name = "Mean discharge"),
+                      window_a = 2006:2010, window_b = 2001:2005),
+    "p_value set to NA"
+  )
+  expect_identical(utils::tail(names(cmp), 2), c("p_value", "long_name"))
+})
+
+test_that("cd_compare accepts a partly NA long_name that matches the registry", {
+  ts <- q_ts(long_name = rep(c("Mean temperature", NA), each = 5))
+  ts$variable <- "tmean"
+  cmp <- cd_compare(ts, window_a = 2006:2010, window_b = 2001:2005, test = NULL)
+  expect_identical(cmp$long_name, "Mean temperature")
+})

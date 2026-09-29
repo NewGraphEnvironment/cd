@@ -8,7 +8,11 @@ cd_plot_comparison(x, title = NULL, labels = c(a = "Recent", b = "Historical"))
 }
 \arguments{
 \item{x}{A tibble from \code{\link[=cd_compare]{cd_compare()}} with columns \code{variable},
-\code{period}, \code{mean_a}, \code{mean_b}, \code{difference}.}
+\code{period}, \code{mean_a}, \code{mean_b}, \code{difference}, optionally
+\code{long_name}. Facets are labelled by \code{long_name} where present and
+not \code{NA}, otherwise by \code{\link[=cd_variables]{cd_variables()}}, otherwise by \code{variable};
+a label shared by several variables gets the variable name appended.
+Each variable gets its own facet whatever the labels.}
 
 \item{title}{Optional plot title.}
 

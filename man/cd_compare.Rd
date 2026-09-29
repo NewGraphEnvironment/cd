@@ -35,8 +35,10 @@ batched warning.}
 }
 \value{
 A tibble with columns \code{variable}, \code{period}, \code{mean_a},
-\code{mean_b}, \code{difference}, \code{method}, and (when \code{test} is
-non-NULL) \code{p_value}.
+\code{mean_b}, \code{difference}, \code{method}, (when \code{test} is non-NULL)
+\code{p_value}, and \code{long_name} when \code{x} carries one — resolved as in
+\code{\link[=cd_trend]{cd_trend()}} (see the input contract in \code{\link[=cd_anomaly]{cd_anomaly()}}) and read by
+\code{\link[=cd_plot_comparison]{cd_plot_comparison()}}.
 }
 \description{
 Computes the mean value for two user-defined time windows, the
