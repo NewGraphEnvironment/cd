@@ -9,16 +9,16 @@
 - Summaries bound together (one per region) can differ in having `Start`, as #98 already documents for `Trend on`.
 
 ## Phase 1: Failing tests (`tests/testthat/test-cd_summary.R`)
-- [ ] Two starts (`cd_trend(raw_series("tmean"), c(2000, 2004))`) → `Start` after `Period`, values match `trend_start`, `Parameter/Period/Start` unique
-- [ ] One start → no `Start` column (existing shape tests still pass; add explicit case)
-- [ ] No `trend_start` column at all, and a 0-row table → no `Start`, no error
-- [ ] `NA` start beside a real one → `Start` present, `NA` shown
-- [ ] Mixed scales × two starts × region → order `Parameter, Period, Trend on, Start, …, Region`; rows unique on all four identifiers
+- [x] Two starts (`cd_trend(raw_series("tmean"), c(2000, 2004))`) → `Start` after `Period`, values match `trend_start`, `Parameter/Period/Start` unique
+- [x] One start → no `Start` column (existing shape tests still pass; add explicit case)
+- [x] No `trend_start` column at all, and a 0-row table → no `Start`, no error
+- [x] `NA` start beside a real one → `Start` present, `NA` shown
+- [x] Mixed scales × two starts × region → order `Parameter, Period, Trend on, Start, …, Region`; rows unique on all four identifiers
 
 ## Phase 2: Implement
-- [ ] `cd_summary()`: add the `Start` block after the `Trend on` block, `.after` = `Trend on` if present else `Period`
-- [ ] Roxygen: extend the "Rows are kept distinguishable" paragraph and `@return`; add an example `cd_summary(cd_trend(ts, trend_start = c(1951, 1956)))` (example data spans 1951–1960)
-- [ ] `devtools::document()`
+- [x] `cd_summary()`: add the `Start` block after the `Trend on` block, `.after` = `Trend on` if present else `Period`
+- [x] Roxygen: extend the "Rows are kept distinguishable" paragraph and `@return`; add an example `cd_summary(cd_trend(ts, trend_start = c(1951, 1956)))` (example data spans 1951–1960)
+- [x] `devtools::document()`
 
 ## Phase 3: Docs + vignettes
 - [ ] `CLAUDE.md` "A trend table can mix scales" paragraph: one sentence that `cd_summary()` also names the window (`Start`) when starts differ

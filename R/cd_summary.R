@@ -21,10 +21,17 @@
 #' raw-value and anomaly trends, such as
 #' `dplyr::bind_rows(cd_trend(x), cd_trend(ano))`, gains a `Trend on` column
 #' (`"Value"` or `"Anomaly"`; a missing or `NA` `trend_on` reads as
-#' `"Anomaly"`). A table on one scale has no such column. Both are decided
-#' within one call, so summaries bound together (one per region, each with
-#' its `region_name`) can differ in suffixes, and a `Trend on` column present
-#' in only some of them is `NA` for the rest.
+#' `"Anomaly"`). A table on one scale has no such column. Likewise a table
+#' holding several trend windows, such as
+#' `cd_trend(x, trend_start = c(1951, 1981))`, gains a `Start` column: the
+#' start year asked of [cd_trend()], not the first year with data. It is
+#' added when the table as a whole holds more than one `trend_start` (an `NA`
+#' counts as one), so binding a 1991 trend of one station to a 2000 trend of
+#' another adds it too; a table with one window, or no `trend_start` column,
+#' has none. All three are decided within one call, so summaries
+#' bound together (one per region, each with its `region_name`) can differ in
+#' suffixes, and a `Trend on` or `Start` column present in only some of them
+#' is `NA` for the rest.
 #'
 #' @param trend A tibble from [cd_trend()].
 #' @param region_name Optional character label for the AOI. If provided,
@@ -33,6 +40,8 @@
 #' @return A tibble with columns `Parameter`, `Period`, `Slope`, `Years`,
 #'   `Total Change`, `Unit`, `p-value`, and optionally `Region`. When `trend`
 #'   mixes raw-value and anomaly trends, a `Trend on` column follows `Period`.
+#'   When it holds more than one `trend_start`, a `Start` column follows
+#'   `Period` (or `Trend on`).
 #'
 #' @examples
 #' catalog <- cd_catalog(
@@ -50,6 +59,9 @@
 #'
 #' # Add region label for multi-AOI reports
 #' cd_summary(trn, region_name = "Example AOI")
+#'
+#' # Two trend windows: a Start column says which row is which
+#' cd_summary(cd_trend(ts, trend_start = c(1951, 1956)))
 #'
 #' @export
 cd_summary <- function(trend, region_name = NULL) {
@@ -80,6 +92,15 @@ cd_summary <- function(trend, region_name = NULL) {
   if (length(unique(on_value)) > 1) {
     out <- tibble::add_column(
       out, `Trend on` = dplyr::if_else(on_value, "Value", "Anomaly"), .after = "Period"
+    )
+  }
+
+  # Trends over several windows (cd_trend(x, trend_start = c(1951, 1981)))
+  # otherwise differ only by Years. An NA start counts as a window of its own.
+  if (length(unique(col_or_na(trend, "trend_start"))) > 1) {
+    out <- tibble::add_column(
+      out, Start = trend$trend_start,
+      .after = if ("Trend on" %in% names(out)) "Trend on" else "Period"
     )
   }
 

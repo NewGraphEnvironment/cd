@@ -24,3 +24,15 @@ Found by the plan review for #98.
 
 | Error | Resolution |
 |-------|------------|
+
+## Plan review (Plan agent, 2026-09-30) — no blockers
+
+Folded in: roxygen now says `Start` is the *requested* start year (not first data year) and is decided over the whole table (a 1991 trend of one station bound to a 2000 trend of another gains `Start`); grouped input with several starts tested.
+
+Not acted on, with reasons:
+- Factor/character `trend_start` is copied unchanged, so per-region summaries with mixed types fail in `bind_rows`. `cd_trend()` always emits numeric; a hand-built factor start is out of contract.
+- Rows still collide for anomaly runs against different baselines (baseline not stored), for tables bound across AOIs before summarising, and for periods differing only in case. None is a `trend_start` problem.
+- `cd_trend()` returning a 0x0 tibble breaks `cd_summary()` — already filed as #101.
+- Vignette tables list all 1951 rows then all 1981 rows (grid order), so comparing windows means scrolling 59 rows. Handled in Phase 3 (hidden chunk only).
+
+Pre-existing, not touched: 6 test warnings in `test-cd_plot_comparison.R` ("row names were found from a short variable"); `pkgdown::check_pkgdown()` aborts on main too (DESCRIPTION URL lacks the github.io url — custom domain); `object_usage_linter` flags `col_or_na` in `R/cd_summary.R` on main's line too.
