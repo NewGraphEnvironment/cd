@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">cd</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,6 +36,18 @@
       <small>Source: <a href="https://github.com/NewGraphEnvironment/cd/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.5.3" id="cd-053-2026-09-29">cd 0.5.3 (2026-09-29)<a class="anchor" aria-label="anchor" href="#cd-053-2026-09-29"></a></h2>
+<ul><li>
+<p><code>cd_plot_timeseries(trend =)</code> now draws only trend lines on the plotted scale. A table holding both raw-value and anomaly trends of a series, such as <code>bind_rows(cd_trend(x), cd_trend(ano))</code>, drew the raw line (in mm, say) over the anomaly bars. The overlay now keeps rows whose <code>trend_on</code> names the plotted column. It warns when rows match the series but none is on that scale. It orders rows by <code>trend_start</code>, so the earliest start is always the dashed line, as the vignette captions say.</p>
+<p>Behaviour changes for existing callers:</p>
+<ul><li>A trend on the other scale is skipped with a warning. For example, <code>cd_plot_timeseries(ano, trend = cd_trend(ts))</code> now draws nothing, where it drew the raw line on the anomaly axis.</li>
+<li>A trend table without <code>trend_on</code>, whether hand-built or saved before 0.5.2, still draws, on either scale. <code><a href="../reference/cd_summary.html">cd_summary()</a></code> instead reads such rows as anomaly trends.</li>
+<li>Trend rows whose <code>variable</code> or <code>period</code> is <code>NA</code> are no longer drawn as an empty line. They no longer take the dashed style either.</li>
+<li>The earliest <code>trend_start</code> is dashed whatever the row order.</li>
+</ul><p>(<a href="https://github.com/NewGraphEnvironment/cd/issues/103" class="external-link">#103</a>, <a href="https://github.com/NewGraphEnvironment/cd/pull/105" class="external-link">#105</a>)</p>
+</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.5.2" id="cd-052-2026-09-29">cd 0.5.2 (2026-09-29)<a class="anchor" aria-label="anchor" href="#cd-052-2026-09-29"></a></h2>
 <ul><li>
