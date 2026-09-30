@@ -72,7 +72,9 @@ Default <code>c(1950, 1980)</code>.</p></dd>
 through — see the input contract in <code><a href="cd_anomaly.html">cd_anomaly()</a></code>. <code>unit</code> is the
 anomaly's unit, so on raw values it is kept only for <code>absolute</code> and
 <code>pct_point_diff</code> series, where it is also the unit of the values.
-<code><a href="cd_summary.html">cd_summary()</a></code> reads them.</p>
+<code><a href="cd_summary.html">cd_summary()</a></code> reads them. A combination with fewer than 3 years in
+its window gives no row; when none has 3, the result is a zero-row
+tibble with the same columns.</p>
     </div>
 
     <div class="section level2">

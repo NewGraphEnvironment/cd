@@ -37,7 +37,9 @@ input contract in
 `absolute` and `pct_point_diff` series, where it is also the unit of the
 values.
 [`cd_summary()`](https://newgraphenvironment.github.io/cd/reference/cd_summary.md)
-reads them.
+reads them. A combination with fewer than 3 years in its window gives no
+row; when none has 3, the result is a zero-row tibble with the same
+columns.
 
 ## Examples
 
