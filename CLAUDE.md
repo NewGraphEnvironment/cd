@@ -33,6 +33,8 @@ The historical `cd_fetch()` / `cd_derive()` R-side producer functions still ship
 
 **The consumer chain is not ERA5-only.** `cd_baseline()` → `cd_anomaly()` → `cd_trend()` → `cd_summary()` / `cd_compare()` take any series in the long format (`variable`, `period`, `year`, `value`, optional `anomaly_type`/`unit`/`long_name`) — other packages (wet's streamflow) target it. The contract lives in `?cd_anomaly`; the rules live in three helpers in `R/cd_anomaly.R` (`series_check`, `meta_resolve`, `meta_check`). Call them from any new consumer function rather than reading `cd_variables()` directly — per-function copies are what three review rounds kept finding broken (#92).
 
+**A trend table can mix scales.** Since #97 every `cd_trend()` row carries `trend_on` (`"value"` / `"anomaly"`), and `bind_rows(cd_trend(x), cd_trend(ano))` is a legal input. Any consumer of a trend table reads it with `col_or_na(trend, "trend_on")`: a missing or `NA` `trend_on` (hand-built tables, tables saved before 0.5.2) must not error. `cd_summary()` reads a missing `trend_on` as anomaly; `cd_plot_timeseries()` draws it on either scale (#103).
+
 ## Function Prefix
 
 All functions use `cd_*` prefix. Naming convention: `noun_verb` (e.g., `cd_cog_write` not `cd_write_cog`).
