@@ -11,8 +11,9 @@ cd_plot_comparison(x, title = NULL, labels = c(a = "Recent", b = "Historical"))
 \code{period}, \code{mean_a}, \code{mean_b}, \code{difference}, optionally
 \code{long_name}. Facets are labelled by \code{long_name} where present and
 not \code{NA}, otherwise by \code{\link[=cd_variables]{cd_variables()}}, otherwise by \code{variable};
-a label shared by several variables gets the variable name appended.
-Each variable gets its own facet whatever the labels.}
+a label shared by several variables gets the variable name appended,
+as in \code{\link[=cd_summary]{cd_summary()}}. Each variable gets its own facet whatever the
+labels.}
 
 \item{title}{Optional plot title.}
 

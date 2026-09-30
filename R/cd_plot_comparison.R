@@ -8,8 +8,9 @@
 #'   `period`, `mean_a`, `mean_b`, `difference`, optionally
 #'   `long_name`. Facets are labelled by `long_name` where present and
 #'   not `NA`, otherwise by [cd_variables()], otherwise by `variable`;
-#'   a label shared by several variables gets the variable name appended.
-#'   Each variable gets its own facet whatever the labels.
+#'   a label shared by several variables gets the variable name appended,
+#'   as in [cd_summary()]. Each variable gets its own facet whatever the
+#'   labels.
 #' @param title Optional plot title.
 #' @param labels Named character vector of length 2 for window labels.
 #'   Default `c(a = "Recent", b = "Historical")`.
@@ -34,10 +35,10 @@ cd_plot_comparison <- function(x,
   # Facet labels: carried long_name, then cd_variables(), then the name.
   # A label shared by several variables (one long_name, many stations)
   # carries the variable name too, so their facets read differently.
-  x$param <- dplyr::coalesce(meta_resolve(x)$long_name, as.character(x$variable))
-  lab <- unique(data.frame(variable = as.character(x$variable), param = x$param))
-  shared <- x$param %in% lab$param[duplicated(lab$param)]
-  x$param[shared] <- paste0(x$param[shared], " (", x$variable[shared], ")")
+  x$param <- label_disambiguate(
+    x$variable,
+    dplyr::coalesce(meta_resolve(x)$long_name, as.character(x$variable))
+  )
   # Facet on variable and label together, never the label alone, so no
   # label, however it collides, can put two variables in one facet.
   # Levels in label order, as faceting by label gave.

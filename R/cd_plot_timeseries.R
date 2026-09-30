@@ -9,7 +9,9 @@
 #' plotted column's name. `unit` is the
 #' anomaly's unit, so on raw `value` input it is shown only where the
 #' anomaly type is `absolute` or `pct_point_diff`, whose anomaly unit is
-#' the unit of the values.
+#' the unit of the values. Unlike [cd_summary()], a `long_name` shared by
+#' several variables is not suffixed with the variable: the plot shows one
+#' variable, so name a station in `title`.
 #'
 #' @param x A tibble from [cd_anomaly()] with columns `variable`,
 #'   `period`, `year`, `anomaly`, optionally `anomaly_type`, `unit` and

@@ -14,7 +14,8 @@ adds a \code{Region} column.}
 }
 \value{
 A tibble with columns \code{Parameter}, \code{Period}, \code{Slope}, \code{Years},
-\verb{Total Change}, \code{Unit}, \code{p-value}, and optionally \code{Region}.
+\verb{Total Change}, \code{Unit}, \code{p-value}, and optionally \code{Region}. When \code{trend}
+mixes raw-value and anomaly trends, a \verb{Trend on} column follows \code{Period}.
 }
 \description{
 Joins trend statistics with variable metadata and computes Total
@@ -32,6 +33,17 @@ raw values (\code{trend_on == "value"}) \code{Unit} is shown only for \code{abso
 and \code{pct_point_diff} series — the anomaly unit of a \code{pct_normal}
 series is \code{"\%"}, which does not describe a slope in mm — so it agrees
 with the axis label of \code{\link[=cd_plot_timeseries]{cd_plot_timeseries()}} on the same series.
+
+Rows are kept distinguishable. A \code{long_name} shared by several variables
+(one label on many stations) gets the variable name appended, as in
+\code{\link[=cd_plot_comparison]{cd_plot_comparison()}}: \code{"Mean discharge (q_site1)"}. A table holding both
+raw-value and anomaly trends, such as
+\code{dplyr::bind_rows(cd_trend(x), cd_trend(ano))}, gains a \verb{Trend on} column
+(\code{"Value"} or \code{"Anomaly"}; a missing or \code{NA} \code{trend_on} reads as
+\code{"Anomaly"}). A table on one scale has no such column. Both are decided
+within one call, so summaries bound together (one per region, each with
+its \code{region_name}) can differ in suffixes, and a \verb{Trend on} column present
+in only some of them is \code{NA} for the rest.
 }
 \examples{
 catalog <- cd_catalog(

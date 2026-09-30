@@ -15,12 +15,24 @@
 #' series is `"%"`, which does not describe a slope in mm — so it agrees
 #' with the axis label of [cd_plot_timeseries()] on the same series.
 #'
+#' Rows are kept distinguishable. A `long_name` shared by several variables
+#' (one label on many stations) gets the variable name appended, as in
+#' [cd_plot_comparison()]: `"Mean discharge (q_site1)"`. A table holding both
+#' raw-value and anomaly trends, such as
+#' `dplyr::bind_rows(cd_trend(x), cd_trend(ano))`, gains a `Trend on` column
+#' (`"Value"` or `"Anomaly"`; a missing or `NA` `trend_on` reads as
+#' `"Anomaly"`). A table on one scale has no such column. Both are decided
+#' within one call, so summaries bound together (one per region, each with
+#' its `region_name`) can differ in suffixes, and a `Trend on` column present
+#' in only some of them is `NA` for the rest.
+#'
 #' @param trend A tibble from [cd_trend()].
 #' @param region_name Optional character label for the AOI. If provided,
 #'   adds a `Region` column.
 #'
 #' @return A tibble with columns `Parameter`, `Period`, `Slope`, `Years`,
-#'   `Total Change`, `Unit`, `p-value`, and optionally `Region`.
+#'   `Total Change`, `Unit`, `p-value`, and optionally `Region`. When `trend`
+#'   mixes raw-value and anomaly trends, a `Trend on` column follows `Period`.
 #'
 #' @examples
 #' catalog <- cd_catalog(
@@ -43,7 +55,10 @@
 cd_summary <- function(trend, region_name = NULL) {
   trend <- dplyr::ungroup(trend)
   meta <- meta_resolve(trend, raw = col_or_na(trend, "trend_on") %in% "value")
-  labels_param <- dplyr::coalesce(meta$long_name, as.character(trend$variable))
+  labels_param <- label_disambiguate(
+    trend$variable,
+    dplyr::coalesce(meta$long_name, as.character(trend$variable))
+  )
   labels_unit <- meta$unit
 
   out <- trend |>
@@ -57,6 +72,16 @@ cd_summary <- function(trend, region_name = NULL) {
       `p-value` = .data$mk_pvalue
     ) |>
     dplyr::select("Parameter", "Period", "Slope", "Years", "Total Change", "Unit", "p-value")
+
+  # A table mixing raw-value and anomaly trends of one series would otherwise
+  # give rows that differ by Unit at most. Same rule as Unit: only "value" is
+  # a raw-value trend; anything else, NA included, reads as anomaly.
+  on_value <- col_or_na(trend, "trend_on") %in% "value"
+  if (length(unique(on_value)) > 1) {
+    out <- tibble::add_column(
+      out, `Trend on` = dplyr::if_else(on_value, "Value", "Anomaly"), .after = "Period"
+    )
+  }
 
   if (!is.null(region_name)) {
     out$Region <- region_name

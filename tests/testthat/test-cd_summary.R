@@ -214,3 +214,99 @@ test_that("cd_summary reads a trend without trend_on as an anomaly trend (#97)",
   )
   expect_equal(cd_summary(trend)$Unit, "%")
 })
+
+# Stations sharing a long_name (#98) ----------------------------------------
+
+station_trend <- function(...) {
+  tibble::tibble(
+    variable = c("q_site1", "q_site2", "q_site1"), period = c("annual", "annual", "spawn"),
+    trend_start = 2000, slope = c(0.1, -0.2, 0.3), intercept = 0, mk_pvalue = 0.05,
+    n_years = 20, ...
+  )
+}
+
+test_that("cd_summary tells apart stations that share a long_name (#98)", {
+  smry <- cd_summary(station_trend(long_name = "Mean discharge", unit = "m3/s"))
+  expect_equal(
+    smry$Parameter,
+    c("Mean discharge (q_site1)", "Mean discharge (q_site2)", "Mean discharge (q_site1)")
+  )
+})
+
+test_that("cd_summary labels shared long_names as cd_plot_comparison() does (#98)", {
+  skip_if_not_installed("ggplot2")
+  cmp <- tibble::tibble(
+    variable = c("q_site1", "q_site2"), period = "annual",
+    mean_a = 1:2, mean_b = 2:3, difference = -1, method = "mean_diff",
+    long_name = "Mean discharge"
+  )
+  p <- suppressWarnings(cd_plot_comparison(cmp))
+  smry <- cd_summary(station_trend(long_name = "Mean discharge")[1:2, ])
+  expect_setequal(smry$Parameter, unique(p$data$param))
+})
+
+test_that("cd_summary adds no suffix to registered variables (#98)", {
+  # registry long_names are unique, so no ERA5 row is ever suffixed
+  expect_equal(anyDuplicated(cd_variables()$long_name), 0)
+  vars <- cd_variables()$variable
+  trend <- tibble::tibble(
+    variable = rep(vars, 2), period = rep(c("annual", "winter"), each = length(vars)),
+    trend_start = 1951, slope = 0.1, intercept = 0, mk_pvalue = 0.1, n_years = 70
+  )
+  expect_false(any(grepl("\\(", cd_summary(trend)$Parameter)))
+})
+
+# Tables mixing raw-value and anomaly trends (#98) -------------------------
+
+cols_summary <- c("Parameter", "Period", "Slope", "Years", "Total Change", "Unit", "p-value")
+
+test_that("cd_summary adds Trend on when a table mixes scales (#98)", {
+  skip_if_not_installed("Kendall")
+  skip_if_not_installed("zyp")
+  # tmean is absolute: raw and anomaly rows share Parameter, Period and Unit
+  x <- raw_series("tmean")
+  ano <- cd_anomaly(x, cd_baseline(x, 2000:2004))
+  smry <- cd_summary(dplyr::bind_rows(cd_trend(x, 2000), cd_trend(ano, 2000)),
+                     region_name = "AOI")
+  expect_named(smry, c("Parameter", "Period", "Trend on", cols_summary[-(1:2)], "Region"))
+  expect_equal(smry$`Trend on`, c("Value", "Anomaly"))
+  expect_equal(smry$Unit, c("°C", "°C"))
+  expect_equal(anyDuplicated(smry[c("Parameter", "Period", "Trend on")]), 0)
+})
+
+test_that("cd_summary adds no Trend on column to a table on one scale (#98)", {
+  skip_if_not_installed("Kendall")
+  skip_if_not_installed("zyp")
+  x <- raw_series("tmean")
+  ano <- cd_anomaly(x, cd_baseline(x, 2000:2004))
+  expect_named(cd_summary(cd_trend(x, 2000)), cols_summary)
+  expect_named(cd_summary(cd_trend(ano, 2000)), cols_summary)
+  # no trend_on at all, as in tables saved before 0.5.2
+  expect_named(cd_summary(station_trend()), cols_summary)
+  expect_named(cd_summary(station_trend()[0, ]), cols_summary)
+})
+
+test_that("cd_summary reads an NA trend_on as Anomaly in Trend on (#98)", {
+  smry <- cd_summary(station_trend(trend_on = c("value", NA, "anomaly")))
+  expect_equal(smry$`Trend on`, c("Value", "Anomaly", "Anomaly"))
+})
+
+test_that("cd_summary keeps stations x scales x region distinct (#98)", {
+  skip_if_not_installed("Kendall")
+  skip_if_not_installed("zyp")
+  x <- dplyr::bind_rows(
+    raw_series("q_site1", anomaly_type = "absolute", unit = "m3/s", long_name = "Mean discharge"),
+    raw_series("q_site2", anomaly_type = "absolute", unit = "m3/s", long_name = "Mean discharge")
+  )
+  ano <- cd_anomaly(x, cd_baseline(x, 2000:2004))
+  smry <- cd_summary(dplyr::bind_rows(cd_trend(x, 2000), cd_trend(ano, 2000)), region_name = "AOI")
+  expect_equal(nrow(smry), 4)
+  expect_equal(anyDuplicated(smry[c("Parameter", "Period", "Trend on")]), 0)
+  expect_setequal(smry$Parameter, c("Mean discharge (q_site1)", "Mean discharge (q_site2)"))
+  expect_identical(names(smry)[ncol(smry)], "Region")
+})
+
+test_that("cd_summary reads any trend_on other than value as Anomaly (#98)", {
+  smry <- cd_summary(station_trend(trend_on = c("value", "anomalies", "anomaly")))
+  expect_equal(smry$`Trend on`, c("Value", "Anomaly", "Anomaly"))
+})

@@ -273,3 +273,61 @@ test_that("stacked sites under one variable are refused, not pooled (#92)", {
     expect_error(cd_trend(x, trend_start = 2000), "More than one row")
   }
 })
+
+# label_disambiguate() (#98) ------------------------------------------------
+
+test_that("label_disambiguate appends the variable to a label several variables share", {
+  expect_identical(
+    label_disambiguate(c("q_site1", "q_site2", "q_site1"), rep("Mean discharge", 3)),
+    c("Mean discharge (q_site1)", "Mean discharge (q_site2)", "Mean discharge (q_site1)")
+  )
+})
+
+test_that("label_disambiguate leaves unique labels and single variables alone", {
+  expect_identical(
+    label_disambiguate(c("tmean", "prcp"), c("Mean temperature", "Precipitation")),
+    c("Mean temperature", "Precipitation")
+  )
+  # one variable over several periods is not a collision
+  expect_identical(label_disambiguate(c("tmean", "tmean"), c("T", "T")), c("T", "T"))
+  expect_identical(label_disambiguate(character(0), character(0)), character(0))
+})
+
+test_that("label_disambiguate ends with one distinct label per variable when a suffix collides", {
+  out <- label_disambiguate(c("a", "b", "c", "a"), c("Q", "Q", "Q (a)", "Q"))
+  expect_identical(out, c("Q (a) (a)", "Q (b)", "Q (a) (c)", "Q (a) (a)"))
+  pairs <- unique(data.frame(v = c("a", "b", "c", "a"), l = out))
+  expect_false(anyDuplicated(pairs$l) > 0)
+})
+
+test_that("label_disambiguate reads a factor variable by name", {
+  expect_identical(
+    label_disambiguate(factor(c("q2", "q1")), c("Q", "Q")),
+    c("Q (q2)", "Q (q1)")
+  )
+})
+
+test_that("label_disambiguate handles one variable carrying different labels by period", {
+  expect_identical(
+    label_disambiguate(c("a", "a", "b"), c("X", "Y", "X")),
+    c("X (a)", "Y", "X (b)")
+  )
+})
+
+test_that("label_disambiguate settles a collision chain longer than the variable count", {
+  # two variables, three passes: a carries three labels across periods
+  out <- label_disambiguate(c("a", "e", "e", "e"), c("Q", "Q", "Q (a)", "Q (a) (a)"))
+  expect_identical(out, c("Q (a) (a) (a)", "Q (e)", "Q (a) (e)", "Q (a) (a) (e)"))
+})
+
+test_that("label_disambiguate aborts rather than return a label two variables share", {
+  expect_error(
+    label_disambiguate(c("a", "b", "c"), c("Q", "Q", "Q (a)"), max_passes = 1),
+    "still shared: Q \\(a\\)"
+  )
+  # a variable name built to collide never settles, at any bound
+  expect_error(
+    label_disambiguate(c("a", "a) (a", "a) (a"), c("Q", "Q", "Q (a)")),
+    "still shared"
+  )
+})
