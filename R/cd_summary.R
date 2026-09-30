@@ -22,9 +22,9 @@
 #' `dplyr::bind_rows(cd_trend(x), cd_trend(ano))`, gains a `Trend on` column
 #' (`"Value"` or `"Anomaly"`; a missing or `NA` `trend_on` reads as
 #' `"Anomaly"`). A table on one scale has no such column. Both are decided
-#' within one call, so tables summarised separately and then bound together
-#' (one per region, say) can differ in suffixes and columns; bind the trend
-#' tables first and summarise once.
+#' within one call, so summaries bound together (one per region, each with
+#' its `region_name`) can differ in suffixes, and a `Trend on` column present
+#' in only some of them is `NA` for the rest.
 #'
 #' @param trend A tibble from [cd_trend()].
 #' @param region_name Optional character label for the AOI. If provided,

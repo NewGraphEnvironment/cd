@@ -314,6 +314,12 @@ test_that("label_disambiguate handles one variable carrying different labels by 
   )
 })
 
+test_that("label_disambiguate settles a collision chain longer than the variable count", {
+  # two variables, three passes: a carries three labels across periods
+  out <- label_disambiguate(c("a", "e", "e", "e"), c("Q", "Q", "Q (a)", "Q (a) (a)"))
+  expect_identical(out, c("Q (a) (a) (a)", "Q (e)", "Q (a) (e)", "Q (a) (a) (e)"))
+})
+
 test_that("label_disambiguate aborts rather than return a label two variables share", {
   expect_error(
     label_disambiguate(c("a", "b", "c"), c("Q", "Q", "Q (a)"), max_passes = 1),

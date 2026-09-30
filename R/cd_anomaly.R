@@ -188,13 +188,15 @@ meta_resolve <- function(x, raw = FALSE) {
 #' Make labels tell variables apart: a label shared by several variables (one
 #' long_name on many stations) gets ` (variable)` appended. Repeated because a
 #' suffixed label can meet another variable's own label (`c("Q", "Q", "Q (a)")`);
-#' each pass lengthens only the labels still shared. Ordinary names settle within
-#' one pass per variable; names built to collide (parentheses in `variable`) might
-#' not, so a label still shared after `max_passes` aborts rather than printing two
+#' each pass lengthens only the labels still shared. A chain of such collisions
+#' can be as long as the distinct (variable, label) pairs, not the variables —
+#' one variable may carry a different label per period — so that is the bound.
+#' A label still shared after `max_passes` aborts rather than printing two
 #' variables under one name. The one place the rule lives; every consumer that
 #' prints labels calls it.
 #' @noRd
-label_disambiguate <- function(variable, label, max_passes = length(unique(variable))) {
+label_disambiguate <- function(variable, label,
+                               max_passes = nrow(unique(data.frame(v = as.character(variable), l = label)))) {
   variable <- as.character(variable)
   shared_find <- function(label) {
     lab <- unique(data.frame(variable = variable, label = label))

@@ -41,3 +41,16 @@ column (changes every existing table, both vignettes' kables) and over suffixing
 
 | Error | Resolution |
 |-------|------------|
+
+## label_disambiguate() pass bound — enumeration (2026-09-30)
+
+Code-check round 1 showed the first bound (`n_distinct(variable)`) was reasoned, not measured:
+`label_disambiguate(c("a","e","e","e"), c("Q","Q","Q (a)","Q (a) (a)"))` aborted after two
+passes and settles at three, because one variable can carry a different label per period. The
+bound is now the number of distinct (variable, label) pairs.
+
+Enumeration (`label_disambiguate_enum.R`): every set of 1–4 distinct pairs over variables
+`a`, `b`, `a) (b` and 12 labels built by chaining their suffixes to depth 2 — 66,711 sets.
+**0 aborts, 0 labels shared by two variables.** 969 sets merge two labels of *one* variable
+(`a` carrying `Q` and `Q (a)` in different periods both print `Q (a)`); those rows still differ
+by `Period`, and the one-pass rule on main does the same. Accepted.

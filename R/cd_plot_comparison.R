@@ -9,8 +9,8 @@
 #'   `long_name`. Facets are labelled by `long_name` where present and
 #'   not `NA`, otherwise by [cd_variables()], otherwise by `variable`;
 #'   a label shared by several variables gets the variable name appended,
-#'   as in [cd_summary()], until each variable's label is its own. Each
-#'   variable gets its own facet whatever the labels.
+#'   as in [cd_summary()]. Each variable gets its own facet whatever the
+#'   labels.
 #' @param title Optional plot title.
 #' @param labels Named character vector of length 2 for window labels.
 #'   Default `c(a = "Recent", b = "Historical")`.

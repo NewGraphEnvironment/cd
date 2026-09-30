@@ -11,5 +11,5 @@ Verdict: sound, no blockers. Findings and disposition:
 | 5 | Gap | NA `variable` not refused by `series_check()`; shared label gets `" (NA)"` | Accepted: honest output; noted here |
 | 6 | Gap | Suffixes/columns decided per call; separately summarised tables bound together differ | Documented in `cd_summary()` details |
 | 7 | — | Grouped input fine | No change |
-| 8 | Note | Several `trend_start` values → rows differ only by `Years` | Filed as follow-up issue |
+| 8 | Note | Several `trend_start` values → rows differ only by `Years` | Filed as #106 |
 | — | Acceptance | Combined stations × scales × region test | Added |

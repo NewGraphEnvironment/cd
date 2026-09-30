@@ -41,9 +41,9 @@ raw-value and anomaly trends, such as
 \code{dplyr::bind_rows(cd_trend(x), cd_trend(ano))}, gains a \verb{Trend on} column
 (\code{"Value"} or \code{"Anomaly"}; a missing or \code{NA} \code{trend_on} reads as
 \code{"Anomaly"}). A table on one scale has no such column. Both are decided
-within one call, so tables summarised separately and then bound together
-(one per region, say) can differ in suffixes and columns; bind the trend
-tables first and summarise once.
+within one call, so summaries bound together (one per region, each with
+its \code{region_name}) can differ in suffixes, and a \verb{Trend on} column present
+in only some of them is \code{NA} for the rest.
 }
 \examples{
 catalog <- cd_catalog(
