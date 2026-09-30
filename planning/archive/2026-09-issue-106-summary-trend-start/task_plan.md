@@ -26,13 +26,13 @@
 - [x] Hidden `trend-table` chunk orders rows by variable, period, start so each 1951/1981 pair is adjacent (plan review: grid order put 59 rows between them)
 
 ## Phase 4: Verify
-- [ ] `devtools::test()` all green; `lintr::lint_package()` clean; `pkgdown::check_pkgdown()`
-- [ ] `/code-check` on each commit (with Plan-agent review of the task_plan run concurrently after baseline)
+- [x] `devtools::test()` all green (410 pass); `lintr::lint_package()` clean on changed code; `pkgdown::check_pkgdown()` aborts identically on main (DESCRIPTION URL) — pre-existing, not from this branch
+- [x] `/code-check` on each commit (with Plan-agent review of the task_plan run concurrently after baseline)
 
 NEWS/version bump left to `/gh-pr-merge`, as for #98.
 
 ## Validation
-- [ ] Tests pass
-- [ ] `/code-check` clean on each commit
-- [ ] PWF checkboxes match landed work
-- [ ] `/planning-archive` on completion
+- [x] Tests pass
+- [x] `/code-check` clean on each commit
+- [x] PWF checkboxes match landed work
+- [x] `/planning-archive` on completion
