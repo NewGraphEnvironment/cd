@@ -222,8 +222,11 @@ cd::cd_summary(trn)
 ```
 
 ```{r trend-table, echo = FALSE}
+# Each variable and period's 1951 and 1981 windows on adjacent rows
+trn_tbl <- trn[order(match(trn$variable, unique(trn$variable)),
+                     match(trn$period, unique(trn$period)), trn$trend_start), ]
 kableExtra::kable_styling(
-  knitr::kable(cd::cd_summary(trn), label = NA,
+  knitr::kable(cd::cd_summary(trn_tbl), label = NA,
     caption = "Trend statistics for all variables and periods, FWCP Peace Region."),
   bootstrap_options = c("striped", "hover", "condensed")
 ) |>

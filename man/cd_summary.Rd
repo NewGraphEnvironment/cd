@@ -16,6 +16,8 @@ adds a \code{Region} column.}
 A tibble with columns \code{Parameter}, \code{Period}, \code{Slope}, \code{Years},
 \verb{Total Change}, \code{Unit}, \code{p-value}, and optionally \code{Region}. When \code{trend}
 mixes raw-value and anomaly trends, a \verb{Trend on} column follows \code{Period}.
+When it holds more than one \code{trend_start}, a \code{Start} column follows
+\code{Period} (or \verb{Trend on}).
 }
 \description{
 Joins trend statistics with variable metadata and computes Total
@@ -40,10 +42,17 @@ Rows are kept distinguishable. A \code{long_name} shared by several variables
 raw-value and anomaly trends, such as
 \code{dplyr::bind_rows(cd_trend(x), cd_trend(ano))}, gains a \verb{Trend on} column
 (\code{"Value"} or \code{"Anomaly"}; a missing or \code{NA} \code{trend_on} reads as
-\code{"Anomaly"}). A table on one scale has no such column. Both are decided
-within one call, so summaries bound together (one per region, each with
-its \code{region_name}) can differ in suffixes, and a \verb{Trend on} column present
-in only some of them is \code{NA} for the rest.
+\code{"Anomaly"}). A table on one scale has no such column. Likewise a table
+holding several trend windows, such as
+\code{cd_trend(x, trend_start = c(1951, 1981))}, gains a \code{Start} column: the
+start year asked of \code{\link[=cd_trend]{cd_trend()}}, not the first year with data. It is
+added when the table as a whole holds more than one \code{trend_start} (an \code{NA}
+counts as one), so binding a 1991 trend of one station to a 2000 trend of
+another adds it too; a table with one window, or no \code{trend_start} column,
+has none. All three are decided within one call, so summaries
+bound together (one per region, each with its \code{region_name}) can differ in
+suffixes, and a \verb{Trend on} or \code{Start} column present in only some of them
+is \code{NA} for the rest.
 }
 \examples{
 catalog <- cd_catalog(
@@ -61,5 +70,8 @@ cd_summary(trn)
 
 # Add region label for multi-AOI reports
 cd_summary(trn, region_name = "Example AOI")
+
+# Two trend windows: a Start column says which row is which
+cd_summary(cd_trend(ts, trend_start = c(1951, 1956)))
 
 }

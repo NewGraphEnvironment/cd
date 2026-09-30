@@ -310,3 +310,58 @@ test_that("cd_summary reads any trend_on other than value as Anomaly (#98)", {
   smry <- cd_summary(station_trend(trend_on = c("value", "anomalies", "anomaly")))
   expect_equal(smry$`Trend on`, c("Value", "Anomaly", "Anomaly"))
 })
+
+# Tables holding several trend windows (#106) -----------------------------
+
+test_that("cd_summary adds Start when a table holds several trend_start (#106)", {
+  skip_if_not_installed("Kendall")
+  skip_if_not_installed("zyp")
+  trn <- cd_trend(raw_series("tmean"), trend_start = c(2000, 2004))
+  smry <- cd_summary(trn)
+  expect_named(smry, c("Parameter", "Period", "Start", cols_summary[-(1:2)]))
+  expect_equal(smry$Start, trn$trend_start)
+  expect_equal(smry$Years, c(10, 6))
+  expect_equal(anyDuplicated(smry[c("Parameter", "Period", "Start")]), 0)
+  expect_identical(cd_summary(dplyr::group_by(trn, variable)), smry)
+})
+
+test_that("cd_summary adds no Start column to a table with one trend_start (#106)", {
+  skip_if_not_installed("Kendall")
+  skip_if_not_installed("zyp")
+  expect_named(cd_summary(cd_trend(raw_series("tmean"), trend_start = 2000)), cols_summary)
+  # station_trend() has one start across three rows
+  expect_named(cd_summary(station_trend()), cols_summary)
+})
+
+test_that("cd_summary needs no trend_start column (#106)", {
+  trend <- station_trend()
+  trend$trend_start <- NULL
+  expect_named(cd_summary(trend), cols_summary)
+  expect_named(cd_summary(trend[0, ]), cols_summary)
+  expect_named(cd_summary(station_trend()[0, ]), cols_summary)
+})
+
+test_that("cd_summary shows an NA trend_start beside a real one (#106)", {
+  trend <- station_trend()
+  trend$trend_start <- c(2000, NA, 2000)
+  smry <- cd_summary(trend)
+  expect_named(smry, c("Parameter", "Period", "Start", cols_summary[-(1:2)]))
+  expect_equal(smry$Start, c(2000, NA, 2000))
+})
+
+test_that("cd_summary keeps scales x windows x region distinct (#106)", {
+  skip_if_not_installed("Kendall")
+  skip_if_not_installed("zyp")
+  x <- raw_series("tmean")
+  ano <- cd_anomaly(x, cd_baseline(x, 2000:2004))
+  smry <- cd_summary(
+    dplyr::bind_rows(cd_trend(x, c(2000, 2004)), cd_trend(ano, c(2000, 2004))),
+    region_name = "AOI"
+  )
+  expect_named(
+    smry,
+    c("Parameter", "Period", "Trend on", "Start", cols_summary[-(1:2)], "Region")
+  )
+  expect_equal(nrow(smry), 4)
+  expect_equal(anyDuplicated(smry[c("Parameter", "Period", "Trend on", "Start")]), 0)
+})
