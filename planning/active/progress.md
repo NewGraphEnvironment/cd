@@ -9,3 +9,5 @@
 - Phase 1+2: 5 failing tests (7 expectations) → `Start` block in `cd_summary()`, roxygen + example; suite 410 pass
 - Plan review landed: no blockers; three items folded in (see findings)
 - Code-check round 1: Clean (`review-round1.md`)
+- Phase 3: CLAUDE.md sentence; both vignettes render (rmarkdown, load_all) with `Parameter | Period | Start | …`, 118 rows, 0 duplicates on Parameter/Period/Start; hidden chunk puts each window pair on adjacent rows
+- Code-check rounds 2 (vignettes/docs) and 3 (adversarial row identity): both Clean; loop ended at round 3 with no finding inside a fix

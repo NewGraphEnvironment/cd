@@ -21,8 +21,9 @@
 - [x] `devtools::document()`
 
 ## Phase 3: Docs + vignettes
-- [ ] `CLAUDE.md` "A trend table can mix scales" paragraph: one sentence that `cd_summary()` also names the window (`Start`) when starts differ
-- [ ] Render the `trend-table` chunk of both vignettes from their committed `.rds` and confirm `Start` appears and rows are unique (no data regen needed — `trn` already carries `trend_start`)
+- [x] `CLAUDE.md` "A trend table can mix scales" paragraph: one sentence that `cd_summary()` also names the window (`Start`) when starts differ
+- [x] Render the `trend-table` chunk of both vignettes from their committed `.rds` and confirm `Start` appears and rows are unique (no data regen needed — `trn` already carries `trend_start`)
+- [x] Hidden `trend-table` chunk orders rows by variable, period, start so each 1951/1981 pair is adjacent (plan review: grid order put 59 rows between them)
 
 ## Phase 4: Verify
 - [ ] `devtools::test()` all green; `lintr::lint_package()` clean; `pkgdown::check_pkgdown()`
