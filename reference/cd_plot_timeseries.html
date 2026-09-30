@@ -77,7 +77,13 @@ the first variable in <code>x</code>.</p></dd>
 
 
 <dt id="arg-trend">trend<a class="anchor" aria-label="anchor" href="#arg-trend"></a></dt>
-<dd><p>Optional tibble from <code><a href="cd_trend.html">cd_trend()</a></code> to overlay trend lines.</p></dd>
+<dd><p>Optional tibble from <code><a href="cd_trend.html">cd_trend()</a></code> to overlay trend lines.
+Only rows whose <code>trend_on</code> names the plotted column (<code>anomaly</code> or
+<code>value</code>) are drawn, so a table holding trends on both scales draws
+only the one that fits the bars, and warns when none does. Rows with
+no <code>trend_on</code>, or <code>NA</code>, are drawn whatever the plotted column (unlike
+<code><a href="cd_summary.html">cd_summary()</a></code>, which reads them as anomaly trends). The earliest
+<code>trend_start</code> is drawn dashed, later ones solid.</p></dd>
 
 
 <dt id="arg-title">title<a class="anchor" aria-label="anchor" href="#arg-title"></a></dt>

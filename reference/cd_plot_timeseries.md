@@ -40,7 +40,14 @@ cd_plot_timeseries(
 
   Optional tibble from
   [`cd_trend()`](https://newgraphenvironment.github.io/cd/reference/cd_trend.md)
-  to overlay trend lines.
+  to overlay trend lines. Only rows whose `trend_on` names the plotted
+  column (`anomaly` or `value`) are drawn, so a table holding trends on
+  both scales draws only the one that fits the bars, and warns when none
+  does. Rows with no `trend_on`, or `NA`, are drawn whatever the plotted
+  column (unlike
+  [`cd_summary()`](https://newgraphenvironment.github.io/cd/reference/cd_summary.md),
+  which reads them as anomaly trends). The earliest `trend_start` is
+  drawn dashed, later ones solid.
 
 - title:
 
