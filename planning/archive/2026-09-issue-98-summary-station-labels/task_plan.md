@@ -46,6 +46,6 @@ NEWS + version bump are left to `/gh-pr-merge`, per the repo workflow (0.5.4, pa
 ## Validation
 
 - [x] Tests pass
-- [ ] `/code-check` clean on each commit
-- [ ] PWF checkboxes match landed work
-- [ ] `/planning-archive` on completion
+- [x] `/code-check` clean on each commit — run once over the whole branch (3 rounds + enumeration) rather than per commit; fixes landed as follow-up commits
+- [x] PWF checkboxes match landed work
+- [x] `/planning-archive` on completion
