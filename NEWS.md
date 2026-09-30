@@ -1,3 +1,15 @@
+# cd 0.5.4 (2026-09-30)
+
+* `cd_summary()` keeps rows distinguishable. A `long_name` shared by several variables, such as one "Mean discharge" on many stations, now gets the variable appended: `Mean discharge (q_site1)`, `Mean discharge (q_site2)`. This is the rule `cd_plot_comparison()` already used, now in one internal helper that both functions call. A trend table holding both raw-value and anomaly trends, such as `bind_rows(cd_trend(x), cd_trend(ano))`, gains a `Trend on` column (`Value` or `Anomaly`) after `Period`. It uses the same rule as `Unit`, so a missing or `NA` `trend_on` reads as `Anomaly`.
+
+  Behaviour changes for existing callers:
+  - `cd_summary()` `Parameter` gains ` (variable)` wherever several variables share a label. Registered ERA5 variables are unaffected, because their long_names are unique.
+  - `cd_summary()` gains a `Trend on` column only when the input mixes scales. A table on one scale keeps its shape.
+  - `cd_plot_comparison()`: where a suffixed label equals another variable's own label (`long_name = c("Q", "Q", "Q (a)")`), the facets now read `Q (a) (a)`, `Q (b)`, `Q (a) (c)`. Previously two of them both read `Q (a)`.
+  - A variable name built to collide (`a) (a` beside `a`) gives labels that never settle. `cd_summary()` and `cd_plot_comparison()` now abort on it and ask for the variables to be renamed. `cd_plot_comparison()` used to plot it.
+
+  Follow-up filed: [#106](https://github.com/NewGraphEnvironment/cd/issues/106). ([#98](https://github.com/NewGraphEnvironment/cd/issues/98), [#108](https://github.com/NewGraphEnvironment/cd/pull/108))
+
 # cd 0.5.3 (2026-09-29)
 
 * `cd_plot_timeseries(trend =)` now draws only trend lines on the plotted scale. A table holding both raw-value and anomaly trends of a series, such as `bind_rows(cd_trend(x), cd_trend(ano))`, drew the raw line (in mm, say) over the anomaly bars. The overlay now keeps rows whose `trend_on` names the plotted column. It warns when rows match the series but none is on that scale. It orders rows by `trend_start`, so the earliest start is always the dashed line, as the vignette captions say.
