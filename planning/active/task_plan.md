@@ -6,14 +6,14 @@
 #93 handled the same case in `cd_plot_comparison()`: a label shared by several variables gets ` (variable)` appended, and facets key on variable + label so nothing can merge.
 
 ## Phase 1: Lift the shared-label rule into one helper
-- [ ] Add `label_disambiguate(variable, label)` to `R/cd_anomaly.R` beside the other series
+- [x] Add `label_disambiguate(variable, label)` to `R/cd_anomaly.R` beside the other series
       helpers (`@noRd`): a label shared by more than one distinct variable gets
       ` (variable)` appended. Repeat (bounded by the number of distinct variables) until no
       label is shared by two variables, so a contrived collision (`long_name = c("Q", "Q",
       "Q (a)")`) still ends distinct — a table has no hidden facet key to fall back on.
-- [ ] `cd_plot_comparison()` calls the helper in place of its inline three lines; facet key
+- [x] `cd_plot_comparison()` calls the helper in place of its inline three lines; facet key
       logic unchanged. Existing plot tests stay green (the collision test asserts facets only).
-- [ ] Unit tests for the helper in `tests/testthat/test-cd_anomaly.R`: shared → suffixed,
+- [x] Unit tests for the helper in `tests/testthat/test-cd_anomaly.R`: shared → suffixed,
       unique → untouched, one variable over several periods → no suffix, the collision case →
       one distinct label per variable, `NA` handling not reachable (callers coalesce first).
 

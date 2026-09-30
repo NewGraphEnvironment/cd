@@ -185,6 +185,24 @@ meta_resolve <- function(x, raw = FALSE) {
   )
 }
 
+#' Make labels tell variables apart: a label shared by several variables (one
+#' long_name on many stations) gets ` (variable)` appended. Repeated because a
+#' suffixed label can meet another variable's own label (`c("Q", "Q", "Q (a)")`);
+#' each pass lengthens only the labels still shared, and the loop is bounded by
+#' the number of variables. The one place the rule lives; every consumer that
+#' prints labels calls it.
+#' @noRd
+label_disambiguate <- function(variable, label) {
+  variable <- as.character(variable)
+  for (i in seq_along(unique(variable))) {
+    lab <- unique(data.frame(variable = variable, label = label))
+    shared <- label %in% lab$label[duplicated(lab$label)]
+    if (!any(shared)) break
+    label[shared] <- paste0(label[shared], " (", variable[shared], ")")
+  }
+  label
+}
+
 #' Abort unless each variable/period carries one value of each metadata
 #' column present in `x` (NA counts as a value). `x` must be ungrouped.
 #' @noRd
