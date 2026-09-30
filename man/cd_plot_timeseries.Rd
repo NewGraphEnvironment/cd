@@ -24,7 +24,13 @@ the first variable in \code{x}.}
 
 \item{period}{Character. Which period to plot. Default \code{"annual"}.}
 
-\item{trend}{Optional tibble from \code{\link[=cd_trend]{cd_trend()}} to overlay trend lines.}
+\item{trend}{Optional tibble from \code{\link[=cd_trend]{cd_trend()}} to overlay trend lines.
+Only rows whose \code{trend_on} names the plotted column (\code{anomaly} or
+\code{value}) are drawn, so a table holding trends on both scales draws
+only the one that fits the bars, and warns when none does. Rows with
+no \code{trend_on}, or \code{NA}, are drawn whatever the plotted column (unlike
+\code{\link[=cd_summary]{cd_summary()}}, which reads them as anomaly trends). The earliest
+\code{trend_start} is drawn dashed, later ones solid.}
 
 \item{title}{Optional plot title.}
 

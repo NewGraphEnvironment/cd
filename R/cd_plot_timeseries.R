@@ -19,6 +19,12 @@
 #'   the first variable in `x`.
 #' @param period Character. Which period to plot. Default `"annual"`.
 #' @param trend Optional tibble from [cd_trend()] to overlay trend lines.
+#'   Only rows whose `trend_on` names the plotted column (`anomaly` or
+#'   `value`) are drawn, so a table holding trends on both scales draws
+#'   only the one that fits the bars, and warns when none does. Rows with
+#'   no `trend_on`, or `NA`, are drawn whatever the plotted column (unlike
+#'   [cd_summary()], which reads them as anomaly trends). The earliest
+#'   `trend_start` is drawn dashed, later ones solid.
 #' @param title Optional plot title.
 #' @param colors Named character vector of length 2 for positive/negative
 #'   bar colors. Default `c(pos = "#d73027", neg = "#4575b4")`.
@@ -78,7 +84,19 @@ cd_plot_timeseries <- function(x,
 
   # Overlay trend lines
   if (!is.null(trend)) {
-    trn_dat <- trend[trend$variable == variable & trend$period == period, ]
+    trn_dat <- trend[which(trend$variable == variable & trend$period == period), ]
+    # Only trends on the plotted scale; a table without trend_on (hand-built, or
+    # from before #97) is drawn on either (#103)
+    on_scale <- col_or_na(trn_dat, "trend_on") %in% c(NA, val_col)
+    if (nrow(trn_dat) > 0 && !any(on_scale)) {
+      rlang::warn(paste0(
+        "No trend for variable='", variable, "', period='", period,
+        "' is on the plotted scale (trend_on = '", val_col, "'); none drawn."
+      ))
+    }
+    trn_dat <- trn_dat[on_scale, ]
+    # Earliest start first, so it takes the dashed line
+    if (nrow(trn_dat) > 1) trn_dat <- trn_dat[order(trn_dat$trend_start), ]
     for (i in seq_len(nrow(trn_dat))) {
       slope <- trn_dat$slope[i]
       intercept <- trn_dat$intercept[i]
