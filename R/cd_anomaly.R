@@ -194,8 +194,8 @@ meta_resolve <- function(x, raw = FALSE) {
 #' it held for every small input enumerated in #98. A variable name built to
 #' collide (`"a) (a"` beside `"a"`) can make labels that never settle, so a label
 #' still shared after `max_passes` aborts rather than printing two variables
-#' under one name. The one place the rule lives; every consumer that
-#' prints labels calls it.
+#' under one name. The one place the rule lives; every consumer that labels
+#' several variables side by side (a table, facets) calls it.
 #' @noRd
 label_disambiguate <- function(variable, label,
                                max_passes = nrow(unique(data.frame(v = as.character(variable), l = label)))) {

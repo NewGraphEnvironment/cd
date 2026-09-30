@@ -51,7 +51,9 @@ as \code{\link[=cd_summary]{cd_summary()}} (see the input contract in \code{\lin
 plotted column's name. \code{unit} is the
 anomaly's unit, so on raw \code{value} input it is shown only where the
 anomaly type is \code{absolute} or \code{pct_point_diff}, whose anomaly unit is
-the unit of the values.
+the unit of the values. Unlike \code{\link[=cd_summary]{cd_summary()}}, a \code{long_name} shared by
+several variables is not suffixed with the variable: the plot shows one
+variable, so name a station in \code{title}.
 }
 \examples{
 \dontrun{
