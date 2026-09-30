@@ -1,3 +1,12 @@
+# cd 0.5.6 (2026-09-30)
+
+* `cd_trend()` returns a typed empty table when no series is long enough. A trend in which every variable and period had fewer than 3 years in its window came back as a 0 x 0 tibble, so `cd_summary()` on it failed with `Column 'period' not found` and `cd_plot_timeseries(trend = )` warned about uninitialised columns. It is now a zero-row tibble with every column `cd_trend()` documents, and `cd_summary()` returns an empty table.
+
+  Behaviour changes for existing callers:
+  - `slope` and `intercept` no longer carry the names `"yr"` and `"Intercept"` that the Theil-Sen fit attached.
+
+  ([#101](https://github.com/NewGraphEnvironment/cd/issues/101), [#110](https://github.com/NewGraphEnvironment/cd/pull/110))
+
 # cd 0.5.5 (2026-09-30)
 
 * `cd_summary()` names the trend window. A trend table holding several `trend_start` values, such as `cd_trend(x, trend_start = c(1951, 1981))`, gave two rows per variable and period that differed only by `Years`. It now gains a `Start` column, holding the start year asked of `cd_trend()`, after `Period` (or after `Trend on`). Both vignettes' trend tables had 59 such row pairs. They now show `Start`, and each 1951/1981 pair sits on adjacent rows.
