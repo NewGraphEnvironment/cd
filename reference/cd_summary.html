@@ -68,7 +68,8 @@ adds a <code>Region</code> column.</p></dd>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>A tibble with columns <code>Parameter</code>, <code>Period</code>, <code>Slope</code>, <code>Years</code>,
-<code>Total Change</code>, <code>Unit</code>, <code>p-value</code>, and optionally <code>Region</code>.</p>
+<code>Total Change</code>, <code>Unit</code>, <code>p-value</code>, and optionally <code>Region</code>. When <code>trend</code>
+mixes raw-value and anomaly trends, a <code>Trend on</code> column follows <code>Period</code>.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
@@ -82,6 +83,16 @@ raw values (<code>trend_on == "value"</code>) <code>Unit</code> is shown only fo
 and <code>pct_point_diff</code> series — the anomaly unit of a <code>pct_normal</code>
 series is <code>"%"</code>, which does not describe a slope in mm — so it agrees
 with the axis label of <code><a href="cd_plot_timeseries.html">cd_plot_timeseries()</a></code> on the same series.</p>
+<p>Rows are kept distinguishable. A <code>long_name</code> shared by several variables
+(one label on many stations) gets the variable name appended, as in
+<code><a href="cd_plot_comparison.html">cd_plot_comparison()</a></code>: <code>"Mean discharge (q_site1)"</code>. A table holding both
+raw-value and anomaly trends, such as
+<code>dplyr::bind_rows(cd_trend(x), cd_trend(ano))</code>, gains a <code>Trend on</code> column
+(<code>"Value"</code> or <code>"Anomaly"</code>; a missing or <code>NA</code> <code>trend_on</code> reads as
+<code>"Anomaly"</code>). A table on one scale has no such column. Both are decided
+within one call, so summaries bound together (one per region, each with
+its <code>region_name</code>) can differ in suffixes, and a <code>Trend on</code> column present
+in only some of them is <code>NA</code> for the rest.</p>
     </div>
 
     <div class="section level2">

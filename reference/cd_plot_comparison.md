@@ -21,8 +21,9 @@ cd_plot_comparison(x, title = NULL, labels = c(a = "Recent", b = "Historical"))
   present and not `NA`, otherwise by
   [`cd_variables()`](https://newgraphenvironment.github.io/cd/reference/cd_variables.md),
   otherwise by `variable`; a label shared by several variables gets the
-  variable name appended. Each variable gets its own facet whatever the
-  labels.
+  variable name appended, as in
+  [`cd_summary()`](https://newgraphenvironment.github.io/cd/reference/cd_summary.md).
+  Each variable gets its own facet whatever the labels.
 
 - title:
 

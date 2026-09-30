@@ -75,6 +75,10 @@ not `NA`, otherwise from
 — else the plotted column's name. `unit` is the anomaly's unit, so on
 raw `value` input it is shown only where the anomaly type is `absolute`
 or `pct_point_diff`, whose anomaly unit is the unit of the values.
+Unlike
+[`cd_summary()`](https://newgraphenvironment.github.io/cd/reference/cd_summary.md),
+a `long_name` shared by several variables is not suffixed with the
+variable: the plot shows one variable, so name a station in `title`.
 
 ## Examples
 

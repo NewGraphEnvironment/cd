@@ -25,7 +25,9 @@ cd_summary(trend, region_name = NULL)
 ## Value
 
 A tibble with columns `Parameter`, `Period`, `Slope`, `Years`,
-`Total Change`, `Unit`, `p-value`, and optionally `Region`.
+`Total Change`, `Unit`, `p-value`, and optionally `Region`. When `trend`
+mixes raw-value and anomaly trends, a `Trend on` column follows
+`Period`.
 
 ## Details
 
@@ -46,6 +48,18 @@ of a `pct_normal` series is `"%"`, which does not describe a slope in mm
 — so it agrees with the axis label of
 [`cd_plot_timeseries()`](https://newgraphenvironment.github.io/cd/reference/cd_plot_timeseries.md)
 on the same series.
+
+Rows are kept distinguishable. A `long_name` shared by several variables
+(one label on many stations) gets the variable name appended, as in
+[`cd_plot_comparison()`](https://newgraphenvironment.github.io/cd/reference/cd_plot_comparison.md):
+`"Mean discharge (q_site1)"`. A table holding both raw-value and anomaly
+trends, such as `dplyr::bind_rows(cd_trend(x), cd_trend(ano))`, gains a
+`Trend on` column (`"Value"` or `"Anomaly"`; a missing or `NA`
+`trend_on` reads as `"Anomaly"`). A table on one scale has no such
+column. Both are decided within one call, so summaries bound together
+(one per region, each with its `region_name`) can differ in suffixes,
+and a `Trend on` column present in only some of them is `NA` for the
+rest.
 
 ## Examples
 
