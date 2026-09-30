@@ -1,3 +1,15 @@
+# cd 0.5.3 (2026-09-29)
+
+* `cd_plot_timeseries(trend =)` now draws only trend lines on the plotted scale. A table holding both raw-value and anomaly trends of a series, such as `bind_rows(cd_trend(x), cd_trend(ano))`, drew the raw line (in mm, say) over the anomaly bars. The overlay now keeps rows whose `trend_on` names the plotted column. It warns when rows match the series but none is on that scale. It orders rows by `trend_start`, so the earliest start is always the dashed line, as the vignette captions say.
+
+  Behaviour changes for existing callers:
+  - A trend on the other scale is skipped with a warning. For example, `cd_plot_timeseries(ano, trend = cd_trend(ts))` now draws nothing, where it drew the raw line on the anomaly axis.
+  - A trend table without `trend_on`, whether hand-built or saved before 0.5.2, still draws, on either scale. `cd_summary()` instead reads such rows as anomaly trends.
+  - Trend rows whose `variable` or `period` is `NA` are no longer drawn as an empty line. They no longer take the dashed style either.
+  - The earliest `trend_start` is dashed whatever the row order.
+
+  ([#103](https://github.com/NewGraphEnvironment/cd/issues/103), [#105](https://github.com/NewGraphEnvironment/cd/pull/105))
+
 # cd 0.5.2 (2026-09-29)
 
 * `cd_summary()` no longer labels a trend of raw values with the anomaly unit from `cd_variables()`. A raw precipitation slope in mm read `%`, and a unit carried on an `absolute` series (`m3/s`, say) was dropped. `cd_trend()` now records what it ran on in a `trend_on` column (`"value"` or `"anomaly"`). On raw input it also carries `anomaly_type` and `unit`, keeping the unit only where it is also the unit of the values (`absolute`, `pct_point_diff`). `cd_summary()` applies that rule row by row, so its `Unit` column now agrees with the `cd_plot_timeseries()` axis label for the same series. This replaces the 0.5.0 rule that `anomaly_type` and `unit` are carried only when trending anomalies.
