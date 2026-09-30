@@ -1,5 +1,29 @@
 # Changelog
 
+## cd 0.5.5 (2026-09-30)
+
+- [`cd_summary()`](https://newgraphenvironment.github.io/cd/reference/cd_summary.md)
+  names the trend window. A trend table holding several `trend_start`
+  values, such as `cd_trend(x, trend_start = c(1951, 1981))`, gave two
+  rows per variable and period that differed only by `Years`. It now
+  gains a `Start` column, holding the start year asked of
+  [`cd_trend()`](https://newgraphenvironment.github.io/cd/reference/cd_trend.md),
+  after `Period` (or after `Trend on`). Both vignettes’ trend tables had
+  59 such row pairs. They now show `Start`, and each 1951/1981 pair sits
+  on adjacent rows.
+
+  Behaviour changes for existing callers:
+
+  - [`cd_summary()`](https://newgraphenvironment.github.io/cd/reference/cd_summary.md)
+    gains a `Start` column only when the table holds more than one
+    `trend_start`, counted over the whole table, with an `NA` counting
+    as one. A single-window table keeps its shape. As with `Trend on`,
+    per-region summaries bound together can differ in having it, and it
+    is `NA` for those that lack it.
+
+  ([\#106](https://github.com/NewGraphEnvironment/cd/issues/106),
+  [\#109](https://github.com/NewGraphEnvironment/cd/pull/109))
+
 ## cd 0.5.4 (2026-09-30)
 
 - [`cd_summary()`](https://newgraphenvironment.github.io/cd/reference/cd_summary.md)

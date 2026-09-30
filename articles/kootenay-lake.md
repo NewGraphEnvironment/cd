@@ -196,126 +196,126 @@ trn      <- cd::cd_trend(ano, trend_start = c(1951, 1981))
 cd::cd_summary(trn)
 ```
 
-| Parameter | Period | Slope | Years | Total Change | Unit | p-value |
-|:---|:---|---:|---:|---:|:---|---:|
-| Precipitation | Annual | -0.120 | 75 | -9.0 | % | 0.0206 |
-| Relative humidity | Annual | -0.040 | 75 | -3.0 | % | 0.0006 |
-| Snow cover | Annual | -0.073 | 75 | -5.5 | % | 0.0004 |
-| Snowfall | Annual | -0.272 | 75 | -20.4 | % | 0.0057 |
-| Snowfall fraction | Annual | -0.102 | 75 | -7.7 | % | 0.0038 |
-| Snowmelt | Annual | -0.254 | 75 | -19.0 | % | 0.0038 |
-| Day of 50% melt | Annual | -0.200 | 75 | -15.0 | day | 0.0003 |
-| Peak weekly melt rate | Annual | -0.225 | 75 | -16.9 | mm/wk | 0.0316 |
-| Soil moisture | Annual | -0.029 | 75 | -2.2 | % | 0.0404 |
-| Snow water equivalent | Annual | -0.376 | 75 | -28.2 | % | 0.0013 |
-| Annual peak snow water equivalent | Annual | -1.650 | 75 | -123.7 | mm | 0.0042 |
-| Maximum temperature | Annual | 0.024 | 75 | 1.8 | °C | 0.0000 |
-| Mean temperature | Annual | 0.026 | 75 | 2.0 | °C | 0.0000 |
-| Minimum temperature | Annual | 0.027 | 75 | 2.0 | °C | 0.0000 |
-| Vapour pressure deficit | Annual | 0.012 | 75 | 0.9 | Pa | 0.0000 |
-| Precipitation | Fall | 0.016 | 75 | 1.2 | % | 0.9126 |
-| Relative humidity | Fall | -0.042 | 75 | -3.2 | % | 0.0174 |
-| Snow cover | Fall | -0.052 | 75 | -3.9 | % | 0.1971 |
-| Snowfall | Fall | -0.193 | 75 | -14.5 | % | 0.2237 |
-| Snowmelt | Fall | -0.081 | 75 | -6.1 | % | 0.7281 |
-| Soil moisture | Fall | -0.069 | 75 | -5.2 | % | 0.0576 |
-| Snow water equivalent | Fall | -0.066 | 75 | -4.9 | % | 0.8333 |
-| Maximum temperature | Fall | 0.018 | 75 | 1.4 | °C | 0.0161 |
-| Mean temperature | Fall | 0.025 | 75 | 1.8 | °C | 0.0004 |
-| Minimum temperature | Fall | 0.029 | 75 | 2.2 | °C | 0.0000 |
-| Vapour pressure deficit | Fall | 0.008 | 75 | 0.6 | Pa | 0.0088 |
-| Precipitation | Spring | 0.190 | 75 | 14.2 | % | 0.0854 |
-| Relative humidity | Spring | -0.019 | 75 | -1.4 | % | 0.1509 |
-| Snow cover | Spring | -0.084 | 75 | -6.3 | % | 0.0000 |
-| Snowfall | Spring | -0.177 | 75 | -13.3 | % | 0.2453 |
-| Snowmelt | Spring | 0.126 | 75 | 9.5 | % | 0.2763 |
-| Soil moisture | Spring | 0.029 | 75 | 2.2 | % | 0.0400 |
-| Snow water equivalent | Spring | -0.377 | 75 | -28.3 | % | 0.0025 |
-| Maximum temperature | Spring | 0.028 | 75 | 2.1 | °C | 0.0002 |
-| Mean temperature | Spring | 0.028 | 75 | 2.1 | °C | 0.0000 |
-| Minimum temperature | Spring | 0.026 | 75 | 1.9 | °C | 0.0000 |
-| Vapour pressure deficit | Spring | 0.008 | 75 | 0.6 | Pa | 0.0000 |
-| Precipitation | Summer | -0.168 | 75 | -12.6 | % | 0.1458 |
-| Relative humidity | Summer | -0.075 | 75 | -5.6 | % | 0.0146 |
-| Snow cover | Summer | -0.137 | 75 | -10.3 | % | 0.0008 |
-| Snowfall | Summer | -0.622 | 75 | -46.7 | % | 0.0334 |
-| Snowmelt | Summer | -0.861 | 75 | -64.5 | % | 0.0011 |
-| Soil moisture | Summer | -0.090 | 75 | -6.8 | % | 0.0018 |
-| Snow water equivalent | Summer | -0.838 | 75 | -62.8 | % | 0.0019 |
-| Maximum temperature | Summer | 0.038 | 75 | 2.8 | °C | 0.0000 |
-| Mean temperature | Summer | 0.039 | 75 | 2.9 | °C | 0.0000 |
-| Minimum temperature | Summer | 0.040 | 75 | 3.0 | °C | 0.0000 |
-| Vapour pressure deficit | Summer | 0.028 | 75 | 2.1 | Pa | 0.0003 |
-| Precipitation | Winter | -0.342 | 75 | -25.7 | % | 0.0053 |
-| Relative humidity | Winter | 0.002 | 75 | 0.1 | % | 0.9417 |
-| Snow cover | Winter | 0.000 | 75 | 0.0 | % | 0.0304 |
-| Snowfall | Winter | -0.361 | 75 | -27.1 | % | 0.0043 |
-| Snowmelt | Winter | 0.592 | 75 | 44.4 | % | 0.0772 |
-| Soil moisture | Winter | 0.008 | 75 | 0.6 | % | 0.6020 |
-| Snow water equivalent | Winter | -0.307 | 75 | -23.0 | % | 0.0013 |
-| Maximum temperature | Winter | 0.021 | 75 | 1.6 | °C | 0.0031 |
-| Mean temperature | Winter | 0.017 | 75 | 1.3 | °C | 0.0275 |
-| Minimum temperature | Winter | 0.014 | 75 | 1.0 | °C | 0.0906 |
-| Vapour pressure deficit | Winter | 0.001 | 75 | 0.1 | Pa | 0.0007 |
-| Precipitation | Annual | -0.138 | 45 | -6.2 | % | 0.1866 |
-| Relative humidity | Annual | -0.088 | 45 | -4.0 | % | 0.0000 |
-| Snow cover | Annual | -0.018 | 45 | -0.8 | % | 0.6740 |
-| Snowfall | Annual | 0.106 | 45 | 4.8 | % | 0.5507 |
-| Snowfall fraction | Annual | 0.127 | 45 | 5.7 | % | 0.1345 |
-| Snowmelt | Annual | -0.014 | 45 | -0.6 | % | 0.9454 |
-| Day of 50% melt | Annual | -0.063 | 45 | -2.8 | day | 0.7767 |
-| Peak weekly melt rate | Annual | -0.175 | 45 | -7.9 | mm/wk | 0.4513 |
-| Soil moisture | Annual | -0.095 | 45 | -4.3 | % | 0.0037 |
-| Snow water equivalent | Annual | 0.020 | 45 | 0.9 | % | 0.9143 |
-| Annual peak snow water equivalent | Annual | 0.460 | 45 | 20.7 | mm | 0.7468 |
-| Maximum temperature | Annual | 0.032 | 45 | 1.4 | °C | 0.0016 |
-| Mean temperature | Annual | 0.034 | 45 | 1.5 | °C | 0.0009 |
-| Minimum temperature | Annual | 0.032 | 45 | 1.4 | °C | 0.0011 |
-| Vapour pressure deficit | Annual | 0.024 | 45 | 1.1 | Pa | 0.0000 |
-| Precipitation | Fall | 0.075 | 45 | 3.4 | % | 0.7617 |
-| Relative humidity | Fall | -0.060 | 45 | -2.7 | % | 0.1153 |
-| Snow cover | Fall | 0.028 | 45 | 1.2 | % | 0.8068 |
-| Snowfall | Fall | -0.127 | 45 | -5.7 | % | 0.7468 |
-| Snowmelt | Fall | 0.727 | 45 | 32.7 | % | 0.2000 |
-| Soil moisture | Fall | -0.125 | 45 | -5.6 | % | 0.0906 |
-| Snow water equivalent | Fall | 0.164 | 45 | 7.4 | % | 0.7321 |
-| Maximum temperature | Fall | 0.028 | 45 | 1.2 | °C | 0.0227 |
-| Mean temperature | Fall | 0.036 | 45 | 1.6 | °C | 0.0007 |
-| Minimum temperature | Fall | 0.044 | 45 | 2.0 | °C | 0.0001 |
-| Vapour pressure deficit | Fall | 0.014 | 45 | 0.6 | Pa | 0.0617 |
-| Precipitation | Spring | -0.033 | 45 | -1.5 | % | 0.8679 |
-| Relative humidity | Spring | -0.081 | 45 | -3.7 | % | 0.0067 |
-| Snow cover | Spring | -0.027 | 45 | -1.2 | % | 0.6740 |
-| Snowfall | Spring | -0.004 | 45 | -0.2 | % | 0.9922 |
-| Snowmelt | Spring | 0.062 | 45 | 2.8 | % | 0.7917 |
-| Soil moisture | Spring | -0.028 | 45 | -1.3 | % | 0.4281 |
-| Snow water equivalent | Spring | 0.020 | 45 | 0.9 | % | 0.9143 |
-| Maximum temperature | Spring | 0.007 | 45 | 0.3 | °C | 0.6884 |
-| Mean temperature | Spring | 0.008 | 45 | 0.3 | °C | 0.6041 |
-| Minimum temperature | Spring | 0.005 | 45 | 0.2 | °C | 0.7174 |
-| Vapour pressure deficit | Spring | 0.010 | 45 | 0.4 | Pa | 0.0264 |
-| Precipitation | Summer | -1.064 | 45 | -47.9 | % | 0.0004 |
-| Relative humidity | Summer | -0.225 | 45 | -10.1 | % | 0.0004 |
-| Snow cover | Summer | -0.030 | 45 | -1.4 | % | 0.5906 |
-| Snowfall | Summer | -0.500 | 45 | -22.5 | % | 0.4002 |
-| Snowmelt | Summer | -0.169 | 45 | -7.6 | % | 0.5906 |
-| Soil moisture | Summer | -0.215 | 45 | -9.7 | % | 0.0000 |
-| Snow water equivalent | Summer | -0.120 | 45 | -5.4 | % | 0.5906 |
-| Maximum temperature | Summer | 0.056 | 45 | 2.5 | °C | 0.0001 |
-| Mean temperature | Summer | 0.054 | 45 | 2.4 | °C | 0.0000 |
-| Minimum temperature | Summer | 0.046 | 45 | 2.1 | °C | 0.0001 |
-| Vapour pressure deficit | Summer | 0.066 | 45 | 3.0 | Pa | 0.0001 |
-| Precipitation | Winter | 0.207 | 45 | 9.3 | % | 0.3630 |
-| Relative humidity | Winter | 0.020 | 45 | 0.9 | % | 0.3527 |
-| Snow cover | Winter | 0.000 | 45 | 0.0 | % | 0.0087 |
-| Snowfall | Winter | 0.232 | 45 | 10.4 | % | 0.3630 |
-| Snowmelt | Winter | 0.357 | 45 | 16.1 | % | 0.6382 |
-| Soil moisture | Winter | 0.025 | 45 | 1.1 | % | 0.4572 |
-| Snow water equivalent | Winter | 0.039 | 45 | 1.7 | % | 0.8988 |
-| Maximum temperature | Winter | 0.017 | 45 | 0.8 | °C | 0.2444 |
-| Mean temperature | Winter | 0.021 | 45 | 1.0 | °C | 0.1932 |
-| Minimum temperature | Winter | 0.024 | 45 | 1.1 | °C | 0.2141 |
-| Vapour pressure deficit | Winter | 0.000 | 45 | 0.0 | Pa | 0.7767 |
+| Parameter | Period | Start | Slope | Years | Total Change | Unit | p-value |
+|:---|:---|---:|---:|---:|---:|:---|---:|
+| Precipitation | Annual | 1951 | -0.120 | 75 | -9.0 | % | 0.0206 |
+| Precipitation | Annual | 1981 | -0.138 | 45 | -6.2 | % | 0.1866 |
+| Precipitation | Fall | 1951 | 0.016 | 75 | 1.2 | % | 0.9126 |
+| Precipitation | Fall | 1981 | 0.075 | 45 | 3.4 | % | 0.7617 |
+| Precipitation | Spring | 1951 | 0.190 | 75 | 14.2 | % | 0.0854 |
+| Precipitation | Spring | 1981 | -0.033 | 45 | -1.5 | % | 0.8679 |
+| Precipitation | Summer | 1951 | -0.168 | 75 | -12.6 | % | 0.1458 |
+| Precipitation | Summer | 1981 | -1.064 | 45 | -47.9 | % | 0.0004 |
+| Precipitation | Winter | 1951 | -0.342 | 75 | -25.7 | % | 0.0053 |
+| Precipitation | Winter | 1981 | 0.207 | 45 | 9.3 | % | 0.3630 |
+| Relative humidity | Annual | 1951 | -0.040 | 75 | -3.0 | % | 0.0006 |
+| Relative humidity | Annual | 1981 | -0.088 | 45 | -4.0 | % | 0.0000 |
+| Relative humidity | Fall | 1951 | -0.042 | 75 | -3.2 | % | 0.0174 |
+| Relative humidity | Fall | 1981 | -0.060 | 45 | -2.7 | % | 0.1153 |
+| Relative humidity | Spring | 1951 | -0.019 | 75 | -1.4 | % | 0.1509 |
+| Relative humidity | Spring | 1981 | -0.081 | 45 | -3.7 | % | 0.0067 |
+| Relative humidity | Summer | 1951 | -0.075 | 75 | -5.6 | % | 0.0146 |
+| Relative humidity | Summer | 1981 | -0.225 | 45 | -10.1 | % | 0.0004 |
+| Relative humidity | Winter | 1951 | 0.002 | 75 | 0.1 | % | 0.9417 |
+| Relative humidity | Winter | 1981 | 0.020 | 45 | 0.9 | % | 0.3527 |
+| Snow cover | Annual | 1951 | -0.073 | 75 | -5.5 | % | 0.0004 |
+| Snow cover | Annual | 1981 | -0.018 | 45 | -0.8 | % | 0.6740 |
+| Snow cover | Fall | 1951 | -0.052 | 75 | -3.9 | % | 0.1971 |
+| Snow cover | Fall | 1981 | 0.028 | 45 | 1.2 | % | 0.8068 |
+| Snow cover | Spring | 1951 | -0.084 | 75 | -6.3 | % | 0.0000 |
+| Snow cover | Spring | 1981 | -0.027 | 45 | -1.2 | % | 0.6740 |
+| Snow cover | Summer | 1951 | -0.137 | 75 | -10.3 | % | 0.0008 |
+| Snow cover | Summer | 1981 | -0.030 | 45 | -1.4 | % | 0.5906 |
+| Snow cover | Winter | 1951 | 0.000 | 75 | 0.0 | % | 0.0304 |
+| Snow cover | Winter | 1981 | 0.000 | 45 | 0.0 | % | 0.0087 |
+| Snowfall | Annual | 1951 | -0.272 | 75 | -20.4 | % | 0.0057 |
+| Snowfall | Annual | 1981 | 0.106 | 45 | 4.8 | % | 0.5507 |
+| Snowfall | Fall | 1951 | -0.193 | 75 | -14.5 | % | 0.2237 |
+| Snowfall | Fall | 1981 | -0.127 | 45 | -5.7 | % | 0.7468 |
+| Snowfall | Spring | 1951 | -0.177 | 75 | -13.3 | % | 0.2453 |
+| Snowfall | Spring | 1981 | -0.004 | 45 | -0.2 | % | 0.9922 |
+| Snowfall | Summer | 1951 | -0.622 | 75 | -46.7 | % | 0.0334 |
+| Snowfall | Summer | 1981 | -0.500 | 45 | -22.5 | % | 0.4002 |
+| Snowfall | Winter | 1951 | -0.361 | 75 | -27.1 | % | 0.0043 |
+| Snowfall | Winter | 1981 | 0.232 | 45 | 10.4 | % | 0.3630 |
+| Snowfall fraction | Annual | 1951 | -0.102 | 75 | -7.7 | % | 0.0038 |
+| Snowfall fraction | Annual | 1981 | 0.127 | 45 | 5.7 | % | 0.1345 |
+| Snowmelt | Annual | 1951 | -0.254 | 75 | -19.0 | % | 0.0038 |
+| Snowmelt | Annual | 1981 | -0.014 | 45 | -0.6 | % | 0.9454 |
+| Snowmelt | Fall | 1951 | -0.081 | 75 | -6.1 | % | 0.7281 |
+| Snowmelt | Fall | 1981 | 0.727 | 45 | 32.7 | % | 0.2000 |
+| Snowmelt | Spring | 1951 | 0.126 | 75 | 9.5 | % | 0.2763 |
+| Snowmelt | Spring | 1981 | 0.062 | 45 | 2.8 | % | 0.7917 |
+| Snowmelt | Summer | 1951 | -0.861 | 75 | -64.5 | % | 0.0011 |
+| Snowmelt | Summer | 1981 | -0.169 | 45 | -7.6 | % | 0.5906 |
+| Snowmelt | Winter | 1951 | 0.592 | 75 | 44.4 | % | 0.0772 |
+| Snowmelt | Winter | 1981 | 0.357 | 45 | 16.1 | % | 0.6382 |
+| Day of 50% melt | Annual | 1951 | -0.200 | 75 | -15.0 | day | 0.0003 |
+| Day of 50% melt | Annual | 1981 | -0.063 | 45 | -2.8 | day | 0.7767 |
+| Peak weekly melt rate | Annual | 1951 | -0.225 | 75 | -16.9 | mm/wk | 0.0316 |
+| Peak weekly melt rate | Annual | 1981 | -0.175 | 45 | -7.9 | mm/wk | 0.4513 |
+| Soil moisture | Annual | 1951 | -0.029 | 75 | -2.2 | % | 0.0404 |
+| Soil moisture | Annual | 1981 | -0.095 | 45 | -4.3 | % | 0.0037 |
+| Soil moisture | Fall | 1951 | -0.069 | 75 | -5.2 | % | 0.0576 |
+| Soil moisture | Fall | 1981 | -0.125 | 45 | -5.6 | % | 0.0906 |
+| Soil moisture | Spring | 1951 | 0.029 | 75 | 2.2 | % | 0.0400 |
+| Soil moisture | Spring | 1981 | -0.028 | 45 | -1.3 | % | 0.4281 |
+| Soil moisture | Summer | 1951 | -0.090 | 75 | -6.8 | % | 0.0018 |
+| Soil moisture | Summer | 1981 | -0.215 | 45 | -9.7 | % | 0.0000 |
+| Soil moisture | Winter | 1951 | 0.008 | 75 | 0.6 | % | 0.6020 |
+| Soil moisture | Winter | 1981 | 0.025 | 45 | 1.1 | % | 0.4572 |
+| Snow water equivalent | Annual | 1951 | -0.376 | 75 | -28.2 | % | 0.0013 |
+| Snow water equivalent | Annual | 1981 | 0.020 | 45 | 0.9 | % | 0.9143 |
+| Snow water equivalent | Fall | 1951 | -0.066 | 75 | -4.9 | % | 0.8333 |
+| Snow water equivalent | Fall | 1981 | 0.164 | 45 | 7.4 | % | 0.7321 |
+| Snow water equivalent | Spring | 1951 | -0.377 | 75 | -28.3 | % | 0.0025 |
+| Snow water equivalent | Spring | 1981 | 0.020 | 45 | 0.9 | % | 0.9143 |
+| Snow water equivalent | Summer | 1951 | -0.838 | 75 | -62.8 | % | 0.0019 |
+| Snow water equivalent | Summer | 1981 | -0.120 | 45 | -5.4 | % | 0.5906 |
+| Snow water equivalent | Winter | 1951 | -0.307 | 75 | -23.0 | % | 0.0013 |
+| Snow water equivalent | Winter | 1981 | 0.039 | 45 | 1.7 | % | 0.8988 |
+| Annual peak snow water equivalent | Annual | 1951 | -1.650 | 75 | -123.7 | mm | 0.0042 |
+| Annual peak snow water equivalent | Annual | 1981 | 0.460 | 45 | 20.7 | mm | 0.7468 |
+| Maximum temperature | Annual | 1951 | 0.024 | 75 | 1.8 | °C | 0.0000 |
+| Maximum temperature | Annual | 1981 | 0.032 | 45 | 1.4 | °C | 0.0016 |
+| Maximum temperature | Fall | 1951 | 0.018 | 75 | 1.4 | °C | 0.0161 |
+| Maximum temperature | Fall | 1981 | 0.028 | 45 | 1.2 | °C | 0.0227 |
+| Maximum temperature | Spring | 1951 | 0.028 | 75 | 2.1 | °C | 0.0002 |
+| Maximum temperature | Spring | 1981 | 0.007 | 45 | 0.3 | °C | 0.6884 |
+| Maximum temperature | Summer | 1951 | 0.038 | 75 | 2.8 | °C | 0.0000 |
+| Maximum temperature | Summer | 1981 | 0.056 | 45 | 2.5 | °C | 0.0001 |
+| Maximum temperature | Winter | 1951 | 0.021 | 75 | 1.6 | °C | 0.0031 |
+| Maximum temperature | Winter | 1981 | 0.017 | 45 | 0.8 | °C | 0.2444 |
+| Mean temperature | Annual | 1951 | 0.026 | 75 | 2.0 | °C | 0.0000 |
+| Mean temperature | Annual | 1981 | 0.034 | 45 | 1.5 | °C | 0.0009 |
+| Mean temperature | Fall | 1951 | 0.025 | 75 | 1.8 | °C | 0.0004 |
+| Mean temperature | Fall | 1981 | 0.036 | 45 | 1.6 | °C | 0.0007 |
+| Mean temperature | Spring | 1951 | 0.028 | 75 | 2.1 | °C | 0.0000 |
+| Mean temperature | Spring | 1981 | 0.008 | 45 | 0.3 | °C | 0.6041 |
+| Mean temperature | Summer | 1951 | 0.039 | 75 | 2.9 | °C | 0.0000 |
+| Mean temperature | Summer | 1981 | 0.054 | 45 | 2.4 | °C | 0.0000 |
+| Mean temperature | Winter | 1951 | 0.017 | 75 | 1.3 | °C | 0.0275 |
+| Mean temperature | Winter | 1981 | 0.021 | 45 | 1.0 | °C | 0.1932 |
+| Minimum temperature | Annual | 1951 | 0.027 | 75 | 2.0 | °C | 0.0000 |
+| Minimum temperature | Annual | 1981 | 0.032 | 45 | 1.4 | °C | 0.0011 |
+| Minimum temperature | Fall | 1951 | 0.029 | 75 | 2.2 | °C | 0.0000 |
+| Minimum temperature | Fall | 1981 | 0.044 | 45 | 2.0 | °C | 0.0001 |
+| Minimum temperature | Spring | 1951 | 0.026 | 75 | 1.9 | °C | 0.0000 |
+| Minimum temperature | Spring | 1981 | 0.005 | 45 | 0.2 | °C | 0.7174 |
+| Minimum temperature | Summer | 1951 | 0.040 | 75 | 3.0 | °C | 0.0000 |
+| Minimum temperature | Summer | 1981 | 0.046 | 45 | 2.1 | °C | 0.0001 |
+| Minimum temperature | Winter | 1951 | 0.014 | 75 | 1.0 | °C | 0.0906 |
+| Minimum temperature | Winter | 1981 | 0.024 | 45 | 1.1 | °C | 0.2141 |
+| Vapour pressure deficit | Annual | 1951 | 0.012 | 75 | 0.9 | Pa | 0.0000 |
+| Vapour pressure deficit | Annual | 1981 | 0.024 | 45 | 1.1 | Pa | 0.0000 |
+| Vapour pressure deficit | Fall | 1951 | 0.008 | 75 | 0.6 | Pa | 0.0088 |
+| Vapour pressure deficit | Fall | 1981 | 0.014 | 45 | 0.6 | Pa | 0.0617 |
+| Vapour pressure deficit | Spring | 1951 | 0.008 | 75 | 0.6 | Pa | 0.0000 |
+| Vapour pressure deficit | Spring | 1981 | 0.010 | 45 | 0.4 | Pa | 0.0264 |
+| Vapour pressure deficit | Summer | 1951 | 0.028 | 75 | 2.1 | Pa | 0.0003 |
+| Vapour pressure deficit | Summer | 1981 | 0.066 | 45 | 3.0 | Pa | 0.0001 |
+| Vapour pressure deficit | Winter | 1951 | 0.001 | 75 | 0.1 | Pa | 0.0007 |
+| Vapour pressure deficit | Winter | 1981 | 0.000 | 45 | 0.0 | Pa | 0.7767 |
 
 Trend statistics for all variables and periods, Kootenay Lake Region.
 {.table .table .table-striped .table-hover .table-condensed

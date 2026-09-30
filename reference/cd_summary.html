@@ -11,7 +11,7 @@ DT::datatable() or gt::gt()."><meta property="og:image" content="https://newgrap
 
     <a class="navbar-brand me-2" href="../index.html">cd</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.5</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -69,7 +69,9 @@ adds a <code>Region</code> column.</p></dd>
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>A tibble with columns <code>Parameter</code>, <code>Period</code>, <code>Slope</code>, <code>Years</code>,
 <code>Total Change</code>, <code>Unit</code>, <code>p-value</code>, and optionally <code>Region</code>. When <code>trend</code>
-mixes raw-value and anomaly trends, a <code>Trend on</code> column follows <code>Period</code>.</p>
+mixes raw-value and anomaly trends, a <code>Trend on</code> column follows <code>Period</code>.
+When it holds more than one <code>trend_start</code>, a <code>Start</code> column follows
+<code>Period</code> (or <code>Trend on</code>).</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
@@ -89,10 +91,17 @@ with the axis label of <code><a href="cd_plot_timeseries.html">cd_plot_timeserie
 raw-value and anomaly trends, such as
 <code>dplyr::bind_rows(cd_trend(x), cd_trend(ano))</code>, gains a <code>Trend on</code> column
 (<code>"Value"</code> or <code>"Anomaly"</code>; a missing or <code>NA</code> <code>trend_on</code> reads as
-<code>"Anomaly"</code>). A table on one scale has no such column. Both are decided
-within one call, so summaries bound together (one per region, each with
-its <code>region_name</code>) can differ in suffixes, and a <code>Trend on</code> column present
-in only some of them is <code>NA</code> for the rest.</p>
+<code>"Anomaly"</code>). A table on one scale has no such column. Likewise a table
+holding several trend windows, such as
+<code>cd_trend(x, trend_start = c(1951, 1981))</code>, gains a <code>Start</code> column: the
+start year asked of <code><a href="cd_trend.html">cd_trend()</a></code>, not the first year with data. It is
+added when the table as a whole holds more than one <code>trend_start</code> (an <code>NA</code>
+counts as one), so binding a 1991 trend of one station to a 2000 trend of
+another adds it too; a table with one window, or no <code>trend_start</code> column,
+has none. All three are decided within one call, so summaries
+bound together (one per region, each with its <code>region_name</code>) can differ in
+suffixes, and a <code>Trend on</code> or <code>Start</code> column present in only some of them
+is <code>NA</code> for the rest.</p>
     </div>
 
     <div class="section level2">
@@ -120,6 +129,14 @@ in only some of them is <code>NA</code> for the rest.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   Parameter        Period Slope Years `Total Change` Unit  `p-value` Region     </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> Mean temperature Annual 0.128    10            1.3 °C        0.592 Example AOI</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Two trend windows: a Start column says which row is which</span></span></span>
+<span class="r-in"><span><span class="fu">cd_summary</span><span class="op">(</span><span class="fu"><a href="cd_trend.html">cd_trend</a></span><span class="op">(</span><span class="va">ts</span>, trend_start <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1951</span>, <span class="fl">1956</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 2 × 8</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Parameter        Period Start Slope Years `Total Change` Unit  `p-value`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> Mean temperature Annual  <span style="text-decoration: underline;">1</span>951 0.128    10            1.3 °C        0.592</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> Mean temperature Annual  <span style="text-decoration: underline;">1</span>956 0.543     5            2.7 °C        0.462</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

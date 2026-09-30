@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">cd</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.5</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,6 +36,16 @@
       <small>Source: <a href="https://github.com/NewGraphEnvironment/cd/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.5.5" id="cd-055-2026-09-30">cd 0.5.5 (2026-09-30)<a class="anchor" aria-label="anchor" href="#cd-055-2026-09-30"></a></h2>
+<ul><li>
+<p><code><a href="../reference/cd_summary.html">cd_summary()</a></code> names the trend window. A trend table holding several <code>trend_start</code> values, such as <code>cd_trend(x, trend_start = c(1951, 1981))</code>, gave two rows per variable and period that differed only by <code>Years</code>. It now gains a <code>Start</code> column, holding the start year asked of <code><a href="../reference/cd_trend.html">cd_trend()</a></code>, after <code>Period</code> (or after <code>Trend on</code>). Both vignettes’ trend tables had 59 such row pairs. They now show <code>Start</code>, and each 1951/1981 pair sits on adjacent rows.</p>
+<p>Behaviour changes for existing callers:</p>
+<ul><li>
+<code><a href="../reference/cd_summary.html">cd_summary()</a></code> gains a <code>Start</code> column only when the table holds more than one <code>trend_start</code>, counted over the whole table, with an <code>NA</code> counting as one. A single-window table keeps its shape. As with <code>Trend on</code>, per-region summaries bound together can differ in having it, and it is <code>NA</code> for those that lack it.</li>
+</ul><p>(<a href="https://github.com/NewGraphEnvironment/cd/issues/106" class="external-link">#106</a>, <a href="https://github.com/NewGraphEnvironment/cd/pull/109" class="external-link">#109</a>)</p>
+</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.5.4" id="cd-054-2026-09-30">cd 0.5.4 (2026-09-30)<a class="anchor" aria-label="anchor" href="#cd-054-2026-09-30"></a></h2>
 <ul><li>

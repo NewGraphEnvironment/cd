@@ -27,7 +27,8 @@ cd_summary(trend, region_name = NULL)
 A tibble with columns `Parameter`, `Period`, `Slope`, `Years`,
 `Total Change`, `Unit`, `p-value`, and optionally `Region`. When `trend`
 mixes raw-value and anomaly trends, a `Trend on` column follows
-`Period`.
+`Period`. When it holds more than one `trend_start`, a `Start` column
+follows `Period` (or `Trend on`).
 
 ## Details
 
@@ -56,10 +57,18 @@ Rows are kept distinguishable. A `long_name` shared by several variables
 trends, such as `dplyr::bind_rows(cd_trend(x), cd_trend(ano))`, gains a
 `Trend on` column (`"Value"` or `"Anomaly"`; a missing or `NA`
 `trend_on` reads as `"Anomaly"`). A table on one scale has no such
-column. Both are decided within one call, so summaries bound together
-(one per region, each with its `region_name`) can differ in suffixes,
-and a `Trend on` column present in only some of them is `NA` for the
-rest.
+column. Likewise a table holding several trend windows, such as
+`cd_trend(x, trend_start = c(1951, 1981))`, gains a `Start` column: the
+start year asked of
+[`cd_trend()`](https://newgraphenvironment.github.io/cd/reference/cd_trend.md),
+not the first year with data. It is added when the table as a whole
+holds more than one `trend_start` (an `NA` counts as one), so binding a
+1991 trend of one station to a 2000 trend of another adds it too; a
+table with one window, or no `trend_start` column, has none. All three
+are decided within one call, so summaries bound together (one per
+region, each with its `region_name`) can differ in suffixes, and a
+`Trend on` or `Start` column present in only some of them is `NA` for
+the rest.
 
 ## Examples
 
@@ -87,4 +96,12 @@ cd_summary(trn, region_name = "Example AOI")
 #>   Parameter        Period Slope Years `Total Change` Unit  `p-value` Region     
 #>   <chr>            <chr>  <dbl> <int>          <dbl> <chr>     <dbl> <chr>      
 #> 1 Mean temperature Annual 0.128    10            1.3 °C        0.592 Example AOI
+
+# Two trend windows: a Start column says which row is which
+cd_summary(cd_trend(ts, trend_start = c(1951, 1956)))
+#> # A tibble: 2 × 8
+#>   Parameter        Period Start Slope Years `Total Change` Unit  `p-value`
+#>   <chr>            <chr>  <dbl> <dbl> <int>          <dbl> <chr>     <dbl>
+#> 1 Mean temperature Annual  1951 0.128    10            1.3 °C        0.592
+#> 2 Mean temperature Annual  1956 0.543     5            2.7 °C        0.462
 ```
