@@ -68,6 +68,47 @@ test_that("cd_trend skips combos with < 3 years", {
   trn <- cd_trend(ts, trend_start = 1959)
 
   expect_equal(nrow(trn), 0)
+  # A typed empty table, not 0 x 0, so consumers can read its columns (#101)
+  expect_s3_class(trn, "tbl_df")
+  expect_named(trn, c(
+    "variable", "period", "trend_start", "slope", "intercept", "mk_pvalue",
+    "n_years", "trend_on"
+  ))
+  expect_type(trn$variable, "character")
+  expect_type(trn$trend_on, "character")
+  expect_type(trn$slope, "double")
+  expect_type(trn$n_years, "integer")
+})
+
+test_that("cd_trend keeps the carried metadata columns when no series is long enough (#101)", {
+  skip_if_not_installed("Kendall")
+  skip_if_not_installed("zyp")
+  x <- tibble::tibble(
+    variable = "q_mean", period = "spawn", year = 2000:2001,
+    anomaly = c(-5, 5), anomaly_type = "pct_normal", unit = "%",
+    long_name = "Mean discharge"
+  )
+  trn <- cd_trend(x, trend_start = 2000)
+  expect_equal(nrow(trn), 0)
+  expect_named(trn, c(
+    "variable", "period", "trend_start", "slope", "intercept", "mk_pvalue",
+    "n_years", "trend_on", "anomaly_type", "unit", "long_name"
+  ))
+  expect_type(trn$long_name, "character")
+})
+
+test_that("cd_trend on a zero-row input returns the typed empty table (#101)", {
+  skip_if_not_installed("Kendall")
+  skip_if_not_installed("zyp")
+  ts <- tibble::tibble(
+    variable = "tmean", period = "annual", year = 1951:1960, value = seq(0, 9)
+  )
+  trn <- cd_trend(ts[0, ], trend_start = 1951)
+  expect_equal(nrow(trn), 0)
+  expect_named(trn, c(
+    "variable", "period", "trend_start", "slope", "intercept", "mk_pvalue",
+    "n_years", "trend_on"
+  ))
 })
 
 test_that("cd_trend carries anomaly_type, unit and long_name through (#92)", {
@@ -145,4 +186,45 @@ test_that("cd_trend errors when a raw series carries two units (#97)", {
     anomaly_type = "absolute", unit = rep(c("m3/s", "L/s"), 5)
   )
   expect_error(cd_trend(x, trend_start = 2000), "unit.*q_mean/annual")
+})
+
+test_that("cd_trend's empty result has the same column types as a full one (#101)", {
+  skip_if_not_installed("Kendall")
+  skip_if_not_installed("zyp")
+  x <- tibble::tibble(
+    variable = "q_mean", period = "spawn", year = 2000:2009,
+    anomaly = seq(-5, 13, by = 2), anomaly_type = "pct_normal", unit = "%",
+    long_name = "Mean discharge"
+  )
+  full <- cd_trend(x, trend_start = 2000)
+  expect_equal(nrow(full), 1)
+  expect_identical(cd_trend(x, trend_start = 2009), full[0, ])
+})
+
+test_that("cd_trend keeps a factor variable and period a factor, empty or not (#101)", {
+  skip_if_not_installed("Kendall")
+  skip_if_not_installed("zyp")
+  x <- tibble::tibble(
+    variable = factor("tmean"), period = factor("annual"), year = 2000:2009,
+    value = as.numeric(1:10)
+  )
+  full <- cd_trend(x, trend_start = 2000)
+  expect_s3_class(full$variable, "factor")
+  expect_s3_class(full$period, "factor")
+  empty <- cd_trend(x, trend_start = 2009)
+  expect_equal(nrow(empty), 0)
+  expect_s3_class(empty$variable, "factor")
+  expect_s3_class(empty$period, "factor")
+})
+
+test_that("cd_trend with no trend_start still returns the full column set (#101)", {
+  skip_if_not_installed("Kendall")
+  skip_if_not_installed("zyp")
+  x <- tibble::tibble(variable = "tmean", period = "annual", year = 2000:2009, value = 1:10)
+  trn <- cd_trend(x, trend_start = NULL)
+  expect_equal(nrow(trn), 0)
+  expect_named(trn, c(
+    "variable", "period", "trend_start", "slope", "intercept", "mk_pvalue",
+    "n_years", "trend_on"
+  ))
 })

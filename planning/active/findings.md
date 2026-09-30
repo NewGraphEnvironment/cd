@@ -38,3 +38,4 @@ Reproduced on main's code (v0.5.1) and on the #97 branch. Found by the `/code-ch
 
 | Error | Resolution |
 |-------|------------|
+| Mutation check reported "0 lines mutated" while tests went red | `diff` is a shell function in this profile; used `/usr/bin/diff` |
