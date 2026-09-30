@@ -79,6 +79,8 @@ test_that("cd_plot_comparison never puts two variables in one facet, even when l
   expect_false(anyDuplicated(facet_vars$facet) > 0)
   b <- suppressWarnings(ggplot2::ggplot_build(p))
   expect_equal(nrow(b$layout$layout), 3)
+  # labels, not just facets, are distinct per variable (#98)
+  expect_setequal(unique(p$data$param), c("Q (a) (a)", "Q (b)", "Q (a) (c)"))
 })
 
 test_that("cd_plot_comparison adds no suffix to one variable compared over several periods", {

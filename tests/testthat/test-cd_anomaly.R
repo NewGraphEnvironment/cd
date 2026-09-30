@@ -306,3 +306,17 @@ test_that("label_disambiguate reads a factor variable by name", {
     c("Q (q2)", "Q (q1)")
   )
 })
+
+test_that("label_disambiguate handles one variable carrying different labels by period", {
+  expect_identical(
+    label_disambiguate(c("a", "a", "b"), c("X", "Y", "X")),
+    c("X (a)", "Y", "X (b)")
+  )
+})
+
+test_that("label_disambiguate aborts rather than return a label two variables share", {
+  expect_error(
+    label_disambiguate(c("a", "b", "c"), c("Q", "Q", "Q (a)"), max_passes = 1),
+    "still shared: Q \\(a\\)"
+  )
+})

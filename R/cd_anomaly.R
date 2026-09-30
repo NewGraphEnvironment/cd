@@ -188,17 +188,30 @@ meta_resolve <- function(x, raw = FALSE) {
 #' Make labels tell variables apart: a label shared by several variables (one
 #' long_name on many stations) gets ` (variable)` appended. Repeated because a
 #' suffixed label can meet another variable's own label (`c("Q", "Q", "Q (a)")`);
-#' each pass lengthens only the labels still shared, and the loop is bounded by
-#' the number of variables. The one place the rule lives; every consumer that
+#' each pass lengthens only the labels still shared. Ordinary names settle within
+#' one pass per variable; names built to collide (parentheses in `variable`) might
+#' not, so a label still shared after `max_passes` aborts rather than printing two
+#' variables under one name. The one place the rule lives; every consumer that
 #' prints labels calls it.
 #' @noRd
-label_disambiguate <- function(variable, label) {
+label_disambiguate <- function(variable, label, max_passes = length(unique(variable))) {
   variable <- as.character(variable)
-  for (i in seq_along(unique(variable))) {
+  shared_find <- function(label) {
     lab <- unique(data.frame(variable = variable, label = label))
-    shared <- label %in% lab$label[duplicated(lab$label)]
-    if (!any(shared)) break
+    label %in% lab$label[duplicated(lab$label)]
+  }
+  for (i in seq_len(max_passes)) {
+    shared <- shared_find(label)
+    if (!any(shared)) return(label)
     label[shared] <- paste0(label[shared], " (", variable[shared], ")")
+  }
+  shared <- shared_find(label)
+  if (any(shared)) {
+    rlang::abort(paste0(
+      "Could not give each variable its own label; still shared: ",
+      paste(utils::head(unique(label[shared]), 5), collapse = ", "),
+      ". Rename the variables or give them distinct `long_name`s."
+    ))
   }
   label
 }
