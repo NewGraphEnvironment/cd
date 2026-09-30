@@ -37,15 +37,15 @@
       `Trend on` column; `devtools::document()`.
 
 ## Phase 4: Docs
-- [ ] `CLAUDE.md` consumer-chain paragraph: the helpers in `R/cd_anomaly.R` are now four
+- [x] `CLAUDE.md` consumer-chain paragraph: the helpers in `R/cd_anomaly.R` are now four
       (add `label_disambiguate`) — any new consumer that prints labels calls it.
-- [ ] Full `devtools::test()`, `lintr::lint_package()`, `pkgdown::check_pkgdown()` (no new export).
+- [x] Full `devtools::test()`, `lintr::lint_package()`, `pkgdown::check_pkgdown()` (no new export).
 
 NEWS + version bump are left to `/gh-pr-merge`, per the repo workflow (0.5.4, patch).
 
 ## Validation
 
-- [ ] Tests pass
+- [x] Tests pass
 - [ ] `/code-check` clean on each commit
 - [ ] PWF checkboxes match landed work
 - [ ] `/planning-archive` on completion
