@@ -26,12 +26,12 @@ one code path.
 - [x] `/code-check`, commit with checkbox flips, `Fixes #101`
 
 ## Phase 3: Wrap up
-- [ ] `devtools::check()` clean
+- [x] `devtools::check()` — 0 errors; 1 warning + 8 notes all pre-existing (no VignetteBuilder, .Rbuildignore gaps #100/#107, `.data` bindings, unused `sf`)
 - [ ] `/planning-archive`, `/gh-pr-push` (SRED line in PR body). Merge is a separate instruction.
 
 ## Validation
 
-- [ ] Tests pass
-- [ ] `/code-check` clean on each commit
+- [x] Tests pass
+- [x] `/code-check` clean on each commit
 - [ ] PWF checkboxes match landed work
 - [ ] `/planning-archive` on completion
