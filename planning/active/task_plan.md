@@ -26,14 +26,14 @@
       for the same variables.
 
 ## Phase 3: cd_summary() carries the scale when a table mixes them
-- [ ] Scale = `coalesce(col_or_na(trend, "trend_on"), "anomaly")` (missing/NA read as anomaly,
-      as `cd_summary()` already does for units). When it has more than one distinct value, add
+- [x] Scale = `col_or_na(trend, "trend_on") %in% "value"` — the `Unit` rule; anything else,
+      NA included, reads as anomaly (plan review #3). When it has more than one distinct value, add
       `Trend on` (`"Value"`/`"Anomaly"`) after `Period`; otherwise the output shape is unchanged.
-- [ ] Tests: mixed table (`bind_rows(cd_trend(x), cd_trend(ano))` for tmean — identical Unit,
+- [x] Tests: mixed table (`bind_rows(cd_trend(x), cd_trend(ano))` for tmean — identical Unit,
       the case the issue names) → `Trend on` present with `c("Value", "Anomaly")`; single-scale
       and no-`trend_on` tables → `expect_named()` unchanged; value + `NA` trend_on → column
       present, NA row reads `"Anomaly"`; `region_name` still last.
-- [ ] Roxygen: `@return` and description name both the ` (variable)` suffix and the conditional
+- [x] Roxygen: `@return` and description name both the ` (variable)` suffix and the conditional
       `Trend on` column; `devtools::document()`.
 
 ## Phase 4: Docs

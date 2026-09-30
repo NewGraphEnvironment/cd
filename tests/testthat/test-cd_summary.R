@@ -255,3 +255,58 @@ test_that("cd_summary adds no suffix to registered variables (#98)", {
   )
   expect_false(any(grepl("\\(", cd_summary(trend)$Parameter)))
 })
+
+# Tables mixing raw-value and anomaly trends (#98) -------------------------
+
+cols_summary <- c("Parameter", "Period", "Slope", "Years", "Total Change", "Unit", "p-value")
+
+test_that("cd_summary adds Trend on when a table mixes scales (#98)", {
+  skip_if_not_installed("Kendall")
+  skip_if_not_installed("zyp")
+  # tmean is absolute: raw and anomaly rows share Parameter, Period and Unit
+  x <- raw_series("tmean")
+  ano <- cd_anomaly(x, cd_baseline(x, 2000:2004))
+  smry <- cd_summary(dplyr::bind_rows(cd_trend(x, 2000), cd_trend(ano, 2000)),
+                     region_name = "AOI")
+  expect_named(smry, c("Parameter", "Period", "Trend on", cols_summary[-(1:2)], "Region"))
+  expect_equal(smry$`Trend on`, c("Value", "Anomaly"))
+  expect_equal(smry$Unit, c("°C", "°C"))
+  expect_equal(anyDuplicated(smry[c("Parameter", "Period", "Trend on")]), 0)
+})
+
+test_that("cd_summary adds no Trend on column to a table on one scale (#98)", {
+  skip_if_not_installed("Kendall")
+  skip_if_not_installed("zyp")
+  x <- raw_series("tmean")
+  ano <- cd_anomaly(x, cd_baseline(x, 2000:2004))
+  expect_named(cd_summary(cd_trend(x, 2000)), cols_summary)
+  expect_named(cd_summary(cd_trend(ano, 2000)), cols_summary)
+  # no trend_on at all, as in tables saved before 0.5.2
+  expect_named(cd_summary(station_trend()), cols_summary)
+  expect_named(cd_summary(station_trend()[0, ]), cols_summary)
+})
+
+test_that("cd_summary reads an NA trend_on as Anomaly in Trend on (#98)", {
+  smry <- cd_summary(station_trend(trend_on = c("value", NA, "anomaly")))
+  expect_equal(smry$`Trend on`, c("Value", "Anomaly", "Anomaly"))
+})
+
+test_that("cd_summary keeps stations x scales x region distinct (#98)", {
+  skip_if_not_installed("Kendall")
+  skip_if_not_installed("zyp")
+  x <- dplyr::bind_rows(
+    raw_series("q_site1", anomaly_type = "absolute", unit = "m3/s", long_name = "Mean discharge"),
+    raw_series("q_site2", anomaly_type = "absolute", unit = "m3/s", long_name = "Mean discharge")
+  )
+  ano <- cd_anomaly(x, cd_baseline(x, 2000:2004))
+  smry <- cd_summary(dplyr::bind_rows(cd_trend(x, 2000), cd_trend(ano, 2000)), region_name = "AOI")
+  expect_equal(nrow(smry), 4)
+  expect_equal(anyDuplicated(smry[c("Parameter", "Period", "Trend on")]), 0)
+  expect_setequal(smry$Parameter, c("Mean discharge (q_site1)", "Mean discharge (q_site2)"))
+  expect_identical(names(smry)[ncol(smry)], "Region")
+})
+
+test_that("cd_summary reads any trend_on other than value as Anomaly (#98)", {
+  smry <- cd_summary(station_trend(trend_on = c("value", "anomalies", "anomaly")))
+  expect_equal(smry$`Trend on`, c("Value", "Anomaly", "Anomaly"))
+})
