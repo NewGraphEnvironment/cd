@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">cd</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.4</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,6 +36,21 @@
       <small>Source: <a href="https://github.com/NewGraphEnvironment/cd/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.5.4" id="cd-054-2026-09-30">cd 0.5.4 (2026-09-30)<a class="anchor" aria-label="anchor" href="#cd-054-2026-09-30"></a></h2>
+<ul><li>
+<p><code><a href="../reference/cd_summary.html">cd_summary()</a></code> keeps rows distinguishable. A <code>long_name</code> shared by several variables, such as one “Mean discharge” on many stations, now gets the variable appended: <code>Mean discharge (q_site1)</code>, <code>Mean discharge (q_site2)</code>. This is the rule <code><a href="../reference/cd_plot_comparison.html">cd_plot_comparison()</a></code> already used, now in one internal helper that both functions call. A trend table holding both raw-value and anomaly trends, such as <code>bind_rows(cd_trend(x), cd_trend(ano))</code>, gains a <code>Trend on</code> column (<code>Value</code> or <code>Anomaly</code>) after <code>Period</code>. It uses the same rule as <code>Unit</code>, so a missing or <code>NA</code> <code>trend_on</code> reads as <code>Anomaly</code>.</p>
+<p>Behaviour changes for existing callers:</p>
+<ul><li>
+<code><a href="../reference/cd_summary.html">cd_summary()</a></code> <code>Parameter</code> gains <code>(variable)</code> wherever several variables share a label. Registered ERA5 variables are unaffected, because their long_names are unique.</li>
+<li>
+<code><a href="../reference/cd_summary.html">cd_summary()</a></code> gains a <code>Trend on</code> column only when the input mixes scales. A table on one scale keeps its shape.</li>
+<li>
+<code><a href="../reference/cd_plot_comparison.html">cd_plot_comparison()</a></code>: where a suffixed label equals another variable’s own label (<code>long_name = c("Q", "Q", "Q (a)")</code>), the facets now read <code>Q (a) (a)</code>, <code>Q (b)</code>, <code>Q (a) (c)</code>. Previously two of them both read <code>Q (a)</code>.</li>
+<li>A variable name built to collide (<code>a) (a</code> beside <code>a</code>) gives labels that never settle. <code><a href="../reference/cd_summary.html">cd_summary()</a></code> and <code><a href="../reference/cd_plot_comparison.html">cd_plot_comparison()</a></code> now abort on it and ask for the variables to be renamed. <code><a href="../reference/cd_plot_comparison.html">cd_plot_comparison()</a></code> used to plot it.</li>
+</ul><p>Follow-up filed: <a href="https://github.com/NewGraphEnvironment/cd/issues/106" class="external-link">#106</a>. (<a href="https://github.com/NewGraphEnvironment/cd/issues/98" class="external-link">#98</a>, <a href="https://github.com/NewGraphEnvironment/cd/pull/108" class="external-link">#108</a>)</p>
+</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.5.3" id="cd-053-2026-09-29">cd 0.5.3 (2026-09-29)<a class="anchor" aria-label="anchor" href="#cd-053-2026-09-29"></a></h2>
 <ul><li>

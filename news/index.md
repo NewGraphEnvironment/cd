@@ -1,5 +1,47 @@
 # Changelog
 
+## cd 0.5.4 (2026-09-30)
+
+- [`cd_summary()`](https://newgraphenvironment.github.io/cd/reference/cd_summary.md)
+  keeps rows distinguishable. A `long_name` shared by several variables,
+  such as one “Mean discharge” on many stations, now gets the variable
+  appended: `Mean discharge (q_site1)`, `Mean discharge (q_site2)`. This
+  is the rule
+  [`cd_plot_comparison()`](https://newgraphenvironment.github.io/cd/reference/cd_plot_comparison.md)
+  already used, now in one internal helper that both functions call. A
+  trend table holding both raw-value and anomaly trends, such as
+  `bind_rows(cd_trend(x), cd_trend(ano))`, gains a `Trend on` column
+  (`Value` or `Anomaly`) after `Period`. It uses the same rule as
+  `Unit`, so a missing or `NA` `trend_on` reads as `Anomaly`.
+
+  Behaviour changes for existing callers:
+
+  - [`cd_summary()`](https://newgraphenvironment.github.io/cd/reference/cd_summary.md)
+    `Parameter` gains `(variable)` wherever several variables share a
+    label. Registered ERA5 variables are unaffected, because their
+    long_names are unique.
+  - [`cd_summary()`](https://newgraphenvironment.github.io/cd/reference/cd_summary.md)
+    gains a `Trend on` column only when the input mixes scales. A table
+    on one scale keeps its shape.
+  - [`cd_plot_comparison()`](https://newgraphenvironment.github.io/cd/reference/cd_plot_comparison.md):
+    where a suffixed label equals another variable’s own label
+    (`long_name = c("Q", "Q", "Q (a)")`), the facets now read
+    `Q (a) (a)`, `Q (b)`, `Q (a) (c)`. Previously two of them both read
+    `Q (a)`.
+  - A variable name built to collide (`a) (a` beside `a`) gives labels
+    that never settle.
+    [`cd_summary()`](https://newgraphenvironment.github.io/cd/reference/cd_summary.md)
+    and
+    [`cd_plot_comparison()`](https://newgraphenvironment.github.io/cd/reference/cd_plot_comparison.md)
+    now abort on it and ask for the variables to be renamed.
+    [`cd_plot_comparison()`](https://newgraphenvironment.github.io/cd/reference/cd_plot_comparison.md)
+    used to plot it.
+
+  Follow-up filed:
+  [\#106](https://github.com/NewGraphEnvironment/cd/issues/106).
+  ([\#98](https://github.com/NewGraphEnvironment/cd/issues/98),
+  [\#108](https://github.com/NewGraphEnvironment/cd/pull/108))
+
 ## cd 0.5.3 (2026-09-29)
 
 - `cd_plot_timeseries(trend =)` now draws only trend lines on the
