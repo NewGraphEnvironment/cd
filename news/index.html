@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">cd</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,6 +36,16 @@
       <small>Source: <a href="https://github.com/NewGraphEnvironment/cd/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.5.6" id="cd-056-2026-09-30">cd 0.5.6 (2026-09-30)<a class="anchor" aria-label="anchor" href="#cd-056-2026-09-30"></a></h2>
+<ul><li>
+<p><code><a href="../reference/cd_trend.html">cd_trend()</a></code> returns a typed empty table when no series is long enough. A trend in which every variable and period had fewer than 3 years in its window came back as a 0 x 0 tibble, so <code><a href="../reference/cd_summary.html">cd_summary()</a></code> on it failed with <code>Column 'period' not found</code> and <code>cd_plot_timeseries(trend = )</code> warned about uninitialised columns. It is now a zero-row tibble with every column <code><a href="../reference/cd_trend.html">cd_trend()</a></code> documents, and <code><a href="../reference/cd_summary.html">cd_summary()</a></code> returns an empty table.</p>
+<p>Behaviour changes for existing callers:</p>
+<ul><li>
+<code>slope</code> and <code>intercept</code> no longer carry the names <code>"yr"</code> and <code>"Intercept"</code> that the Theil-Sen fit attached.</li>
+</ul><p>(<a href="https://github.com/NewGraphEnvironment/cd/issues/101" class="external-link">#101</a>, <a href="https://github.com/NewGraphEnvironment/cd/pull/110" class="external-link">#110</a>)</p>
+</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.5.5" id="cd-055-2026-09-30">cd 0.5.5 (2026-09-30)<a class="anchor" aria-label="anchor" href="#cd-055-2026-09-30"></a></h2>
 <ul><li>

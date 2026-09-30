@@ -1,5 +1,28 @@
 # Changelog
 
+## cd 0.5.6 (2026-09-30)
+
+- [`cd_trend()`](https://newgraphenvironment.github.io/cd/reference/cd_trend.md)
+  returns a typed empty table when no series is long enough. A trend in
+  which every variable and period had fewer than 3 years in its window
+  came back as a 0 x 0 tibble, so
+  [`cd_summary()`](https://newgraphenvironment.github.io/cd/reference/cd_summary.md)
+  on it failed with `Column 'period' not found` and
+  `cd_plot_timeseries(trend = )` warned about uninitialised columns. It
+  is now a zero-row tibble with every column
+  [`cd_trend()`](https://newgraphenvironment.github.io/cd/reference/cd_trend.md)
+  documents, and
+  [`cd_summary()`](https://newgraphenvironment.github.io/cd/reference/cd_summary.md)
+  returns an empty table.
+
+  Behaviour changes for existing callers:
+
+  - `slope` and `intercept` no longer carry the names `"yr"` and
+    `"Intercept"` that the Theil-Sen fit attached.
+
+  ([\#101](https://github.com/NewGraphEnvironment/cd/issues/101),
+  [\#110](https://github.com/NewGraphEnvironment/cd/pull/110))
+
 ## cd 0.5.5 (2026-09-30)
 
 - [`cd_summary()`](https://newgraphenvironment.github.io/cd/reference/cd_summary.md)
