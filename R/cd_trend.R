@@ -15,7 +15,9 @@
 #'   through — see the input contract in [cd_anomaly()]. `unit` is the
 #'   anomaly's unit, so on raw values it is kept only for `absolute` and
 #'   `pct_point_diff` series, where it is also the unit of the values.
-#'   [cd_summary()] reads them.
+#'   [cd_summary()] reads them. A combination with fewer than 3 years in
+#'   its window gives no row; when none has 3, the result is a zero-row
+#'   tibble with the same columns.
 #'
 #' @examples
 #' catalog <- cd_catalog(
@@ -76,8 +78,8 @@ cd_trend <- function(x, trend_start = c(1950, 1980)) {
       variable = v,
       period = p,
       trend_start = ts,
-      slope = round(sen$coefficients[2], 4),
-      intercept = round(sen$coefficients[1], 4),
+      slope = round(unname(sen$coefficients[2]), 4),
+      intercept = round(unname(sen$coefficients[1]), 4),
       mk_pvalue = round(mk$sl[1], 4),
       n_years = nrow(dat),
       trend_on = val_col
@@ -86,5 +88,19 @@ cd_trend <- function(x, trend_start = c(1950, 1980)) {
     out
   })
 
-  dplyr::bind_rows(results)
+  # Bound under a typed zero-row template, so a trend with no series long
+  # enough keeps its columns rather than becoming a 0 x 0 tibble (#101). Key
+  # types come from combos, as the rows' do, so a factor variable stays one
+  template <- tibble::tibble(
+    variable = combos$variable[0],
+    period = combos$period[0],
+    trend_start = if (is.null(trend_start)) numeric() else trend_start[0],
+    slope = numeric(),
+    intercept = numeric(),
+    mk_pvalue = numeric(),
+    n_years = integer(),
+    trend_on = character()
+  )
+  for (col in cols_meta) template[[col]] <- character()
+  dplyr::bind_rows(template, results)
 }

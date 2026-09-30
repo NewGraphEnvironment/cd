@@ -21,7 +21,9 @@ A tibble with columns \code{variable}, \code{period}, \code{trend_start},
 through — see the input contract in \code{\link[=cd_anomaly]{cd_anomaly()}}. \code{unit} is the
 anomaly's unit, so on raw values it is kept only for \code{absolute} and
 \code{pct_point_diff} series, where it is also the unit of the values.
-\code{\link[=cd_summary]{cd_summary()}} reads them.
+\code{\link[=cd_summary]{cd_summary()}} reads them. A combination with fewer than 3 years in
+its window gives no row; when none has 3, the result is a zero-row
+tibble with the same columns.
 }
 \description{
 Runs Mann-Kendall significance test and Theil-Sen slope estimator

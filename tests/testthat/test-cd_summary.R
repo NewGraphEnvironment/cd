@@ -365,3 +365,18 @@ test_that("cd_summary keeps scales x windows x region distinct (#106)", {
   expect_equal(nrow(smry), 4)
   expect_equal(anyDuplicated(smry[c("Parameter", "Period", "Trend on", "Start")]), 0)
 })
+
+test_that("cd_summary on a trend with no series long enough is an empty table (#101)", {
+  skip_if_not_installed("Kendall")
+  skip_if_not_installed("zyp")
+  x <- tibble::tibble(variable = "tmean", period = "annual", year = 2000:2001, value = 1:2)
+  out <- cd_summary(cd_trend(x, trend_start = 2000))
+  expect_equal(nrow(out), 0)
+  expect_named(out, c("Parameter", "Period", "Slope", "Years", "Total Change", "Unit", "p-value"))
+
+  out <- cd_summary(cd_trend(x, trend_start = 2000), region_name = "Example")
+  expect_equal(nrow(out), 0)
+  expect_named(out, c(
+    "Parameter", "Period", "Slope", "Years", "Total Change", "Unit", "p-value", "Region"
+  ))
+})

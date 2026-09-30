@@ -231,3 +231,14 @@ test_that("cd_plot_timeseries dashes the earliest trend_start whatever the row o
   expect_identical(ggplot2::layer_data(p, idx[1])$x[1], 1951)
   expect_identical(p$layers[[idx[2]]]$aes_params$linetype, "solid")
 })
+
+test_that("cd_plot_timeseries takes a trend with no series long enough, silently (#101)", {
+  skip_if_not_installed("Kendall")
+  skip_if_not_installed("zyp")
+  dat <- tibble::tibble(
+    variable = "tmean", period = "annual", year = 1951:1960, anomaly = seq(-2, 3, length.out = 10)
+  )
+  trn <- cd_trend(dat, trend_start = 1959)
+  expect_no_warning(p <- cd_plot_timeseries(dat, trend = trn))
+  expect_s3_class(p, "ggplot")
+})
