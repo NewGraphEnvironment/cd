@@ -691,6 +691,9 @@ Assign inside the call, `expect_message(h <- f(x), "msg")`, never `h <- expect_m
 ### `c()` dispatches on its first argument, so `c(NULL, <Date>)` is a plain number
 Put a Date first when `c()` combines an optional piece with Dates: `c(NULL, <Date>)` takes the default method and returns a bare day count.
 
+### `bind_rows()` of all-`NULL` is a 0 x 0 tibble, and a typed template must take its types from the rows' source
+Bind per-group results under a zero-row template so an all-dropped result keeps its columns, and build that template's key columns from the same object the rows are built from (`combos$variable[0]`, not `character()`).
+
 # Code Check — Shell
 Tool-level traps in bash, sed, git and `gh`, and in the host toolchain those commands depend on.
 
