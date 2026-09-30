@@ -214,3 +214,44 @@ test_that("cd_summary reads a trend without trend_on as an anomaly trend (#97)",
   )
   expect_equal(cd_summary(trend)$Unit, "%")
 })
+
+# Stations sharing a long_name (#98) ----------------------------------------
+
+station_trend <- function(...) {
+  tibble::tibble(
+    variable = c("q_site1", "q_site2", "q_site1"), period = c("annual", "annual", "spawn"),
+    trend_start = 2000, slope = c(0.1, -0.2, 0.3), intercept = 0, mk_pvalue = 0.05,
+    n_years = 20, ...
+  )
+}
+
+test_that("cd_summary tells apart stations that share a long_name (#98)", {
+  smry <- cd_summary(station_trend(long_name = "Mean discharge", unit = "m3/s"))
+  expect_equal(
+    smry$Parameter,
+    c("Mean discharge (q_site1)", "Mean discharge (q_site2)", "Mean discharge (q_site1)")
+  )
+})
+
+test_that("cd_summary labels shared long_names as cd_plot_comparison() does (#98)", {
+  skip_if_not_installed("ggplot2")
+  cmp <- tibble::tibble(
+    variable = c("q_site1", "q_site2"), period = "annual",
+    mean_a = 1:2, mean_b = 2:3, difference = -1, method = "mean_diff",
+    long_name = "Mean discharge"
+  )
+  p <- suppressWarnings(cd_plot_comparison(cmp))
+  smry <- cd_summary(station_trend(long_name = "Mean discharge")[1:2, ])
+  expect_setequal(smry$Parameter, unique(p$data$param))
+})
+
+test_that("cd_summary adds no suffix to registered variables (#98)", {
+  # registry long_names are unique, so no ERA5 row is ever suffixed
+  expect_equal(anyDuplicated(cd_variables()$long_name), 0)
+  vars <- cd_variables()$variable
+  trend <- tibble::tibble(
+    variable = rep(vars, 2), period = rep(c("annual", "winter"), each = length(vars)),
+    trend_start = 1951, slope = 0.1, intercept = 0, mk_pvalue = 0.1, n_years = 70
+  )
+  expect_false(any(grepl("\\(", cd_summary(trend)$Parameter)))
+})

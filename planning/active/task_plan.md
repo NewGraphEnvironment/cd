@@ -18,8 +18,8 @@
       one distinct label per variable, `NA` handling not reachable (callers coalesce first).
 
 ## Phase 2: cd_summary() disambiguates stations
-- [ ] `cd_summary()` passes `labels_param` through `label_disambiguate()`.
-- [ ] Tests in `test-cd_summary.R`: two stations, one `long_name` → `"Mean discharge (q_site1)"`,
+- [x] `cd_summary()` passes `labels_param` through `label_disambiguate()`.
+- [x] Tests in `test-cd_summary.R`: two stations, one `long_name` → `"Mean discharge (q_site1)"`,
       `"Mean discharge (q_site2)"`; registered ERA5 variables unchanged (registry long_names are
       unique — assert `anyDuplicated(cd_variables()$long_name) == 0` so the premise is pinned);
       one variable over several periods gets no suffix; labels match `cd_plot_comparison()`

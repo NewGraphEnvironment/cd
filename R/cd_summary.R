@@ -43,7 +43,10 @@
 cd_summary <- function(trend, region_name = NULL) {
   trend <- dplyr::ungroup(trend)
   meta <- meta_resolve(trend, raw = col_or_na(trend, "trend_on") %in% "value")
-  labels_param <- dplyr::coalesce(meta$long_name, as.character(trend$variable))
+  labels_param <- label_disambiguate(
+    trend$variable,
+    dplyr::coalesce(meta$long_name, as.character(trend$variable))
+  )
   labels_unit <- meta$unit
 
   out <- trend |>
