@@ -54,3 +54,8 @@ Enumeration (`label_disambiguate_enum.R`): every set of 1–4 distinct pairs ove
 **0 aborts, 0 labels shared by two variables.** 969 sets merge two labels of *one* variable
 (`a` carrying `Q` and `Q (a)` in different periods both print `Q (a)`); those rows still differ
 by `Period`, and the one-pass rule on main does the same. Accepted.
+
+Bound of the enumeration: its names were `a`, `b`, `a) (b`. Round 2 found a shape outside it —
+variables `a` and `a) (a`, with `a) (a` labelled `Q` and `Q (a)` — that never settles at any
+bound (tried to 50). It aborts with "Rename the variables…"; `cd_plot_comparison()` plotted it on
+main. Needs a name built to collide; accepted, pinned by a test, stated in the helper comment.

@@ -190,9 +190,11 @@ meta_resolve <- function(x, raw = FALSE) {
 #' suffixed label can meet another variable's own label (`c("Q", "Q", "Q (a)")`);
 #' each pass lengthens only the labels still shared. A chain of such collisions
 #' can be as long as the distinct (variable, label) pairs, not the variables —
-#' one variable may carry a different label per period — so that is the bound.
-#' A label still shared after `max_passes` aborts rather than printing two
-#' variables under one name. The one place the rule lives; every consumer that
+#' one variable may carry a different label per period — so that is the bound;
+#' it held for every small input enumerated in #98. A variable name built to
+#' collide (`"a) (a"` beside `"a"`) can make labels that never settle, so a label
+#' still shared after `max_passes` aborts rather than printing two variables
+#' under one name. The one place the rule lives; every consumer that
 #' prints labels calls it.
 #' @noRd
 label_disambiguate <- function(variable, label,

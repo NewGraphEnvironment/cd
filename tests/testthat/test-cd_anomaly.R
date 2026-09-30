@@ -325,4 +325,9 @@ test_that("label_disambiguate aborts rather than return a label two variables sh
     label_disambiguate(c("a", "b", "c"), c("Q", "Q", "Q (a)"), max_passes = 1),
     "still shared: Q \\(a\\)"
   )
+  # a variable name built to collide never settles, at any bound
+  expect_error(
+    label_disambiguate(c("a", "a) (a", "a) (a"), c("Q", "Q", "Q (a)")),
+    "still shared"
+  )
 })
