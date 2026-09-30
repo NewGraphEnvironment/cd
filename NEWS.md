@@ -1,3 +1,12 @@
+# cd 0.5.5 (2026-09-30)
+
+* `cd_summary()` names the trend window. A trend table holding several `trend_start` values, such as `cd_trend(x, trend_start = c(1951, 1981))`, gave two rows per variable and period that differed only by `Years`. It now gains a `Start` column, holding the start year asked of `cd_trend()`, after `Period` (or after `Trend on`). Both vignettes' trend tables had 59 such row pairs. They now show `Start`, and each 1951/1981 pair sits on adjacent rows.
+
+  Behaviour changes for existing callers:
+  - `cd_summary()` gains a `Start` column only when the table holds more than one `trend_start`, counted over the whole table, with an `NA` counting as one. A single-window table keeps its shape. As with `Trend on`, per-region summaries bound together can differ in having it, and it is `NA` for those that lack it.
+
+  ([#106](https://github.com/NewGraphEnvironment/cd/issues/106), [#109](https://github.com/NewGraphEnvironment/cd/pull/109))
+
 # cd 0.5.4 (2026-09-30)
 
 * `cd_summary()` keeps rows distinguishable. A `long_name` shared by several variables, such as one "Mean discharge" on many stations, now gets the variable appended: `Mean discharge (q_site1)`, `Mean discharge (q_site2)`. This is the rule `cd_plot_comparison()` already used, now in one internal helper that both functions call. A trend table holding both raw-value and anomaly trends, such as `bind_rows(cd_trend(x), cd_trend(ano))`, gains a `Trend on` column (`Value` or `Anomaly`) after `Period`. It uses the same rule as `Unit`, so a missing or `NA` `trend_on` reads as `Anomaly`.
