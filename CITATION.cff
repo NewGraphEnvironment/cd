@@ -8,7 +8,7 @@ message: 'To cite package "cd" in publications use:'
 type: software
 license: MIT
 title: 'cd: Climate Departure Analysis from ERA5-Land Reanalysis'
-version: 0.5.2
+version: 0.5.3
 doi: 10.32614/CRAN.package.cd
 abstract: Compute climate anomalies from ERA5-Land reanalysis data for custom areas
   of interest. Producer functions download ERA5-Land monthly means, derive variables
