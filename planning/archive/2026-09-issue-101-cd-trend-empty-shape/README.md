@@ -15,4 +15,4 @@ The existing test for short series asserted only `nrow == 0`, which the 0 x 0 sa
 which is why this was never caught. Each new guard was shown to fail against its own
 restored defect.
 
-Closed by: commit 8892556 / PR (see branch `101-cd-trend-no-series-long-enough-gives-a-0`)
+Closed by: commit 8892556 / PR #110
