@@ -4,3 +4,14 @@
 ^pkgdown$
 ^\.github$
 ^\.git$
+^CLAUDE\.md$
+^planning$
+^scripts$
+^data-raw$
+^dev$
+^logs$
+^\.claude$
+^\.lintr$
+^CITATION\.cff$
+^data$
+^research$
