@@ -22,4 +22,4 @@ locally; rerun with `_R_CHECK_FORCE_SUGGESTS_=false`. The two remaining NOTEs pr
 work (#111). A reviewer's side finding, an unread 4.9 MB `inst/extdata/context_kotl.gpkg`,
 was confirmed and filed as #112. Details in `findings.md`.
 
-Closed by: commit f42f30e
+Closed by: commit f42f30e / PR #113
