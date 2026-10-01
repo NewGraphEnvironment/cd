@@ -1,4 +1,5 @@
 test_that("cd_extract returns expected structure", {
+  skip_if_not_installed("sf")
   catalog <- cd_catalog(
     system.file("extdata", "example_catalog.json", package = "cd")
   )
@@ -17,6 +18,7 @@ test_that("cd_extract returns expected structure", {
 })
 
 test_that("cd_extract values are numeric and non-NA", {
+  skip_if_not_installed("sf")
   catalog <- cd_catalog(
     system.file("extdata", "example_catalog.json", package = "cd")
   )
@@ -31,6 +33,7 @@ test_that("cd_extract values are numeric and non-NA", {
 })
 
 test_that("cd_extract filters by years", {
+  skip_if_not_installed("sf")
   catalog <- cd_catalog(
     system.file("extdata", "example_catalog.json", package = "cd")
   )
@@ -45,6 +48,7 @@ test_that("cd_extract filters by years", {
 })
 
 test_that("cd_extract cache = TRUE matches cache = FALSE for local COGs", {
+  skip_if_not_installed("sf")
   catalog <- cd_catalog(
     system.file("extdata", "example_catalog.json", package = "cd")
   )
@@ -59,6 +63,7 @@ test_that("cd_extract cache = TRUE matches cache = FALSE for local COGs", {
 })
 
 test_that("cd_extract filters by variables", {
+  skip_if_not_installed("sf")
   catalog <- cd_catalog(
     system.file("extdata", "example_catalog.json", package = "cd")
   )

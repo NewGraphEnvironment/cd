@@ -1,4 +1,5 @@
 test_that("cd_crop returns cropped SpatRaster from sf AOI", {
+  skip_if_not_installed("sf")
   href <- system.file("extdata", "example_climate.tif", package = "cd")
   aoi <- sf::st_read(
     system.file("extdata", "example_aoi.gpkg", package = "cd"),
@@ -23,6 +24,7 @@ test_that("cd_crop accepts SpatVector AOI", {
 })
 
 test_that("cd_crop preserves band names", {
+  skip_if_not_installed("sf")
   href <- system.file("extdata", "example_climate.tif", package = "cd")
   aoi <- sf::st_read(
     system.file("extdata", "example_aoi.gpkg", package = "cd"),
@@ -34,6 +36,7 @@ test_that("cd_crop preserves band names", {
 })
 
 test_that("cd_crop with cache = TRUE passes a local href straight through", {
+  skip_if_not_installed("sf")
   href <- system.file("extdata", "example_climate.tif", package = "cd")
   aoi <- sf::st_read(
     system.file("extdata", "example_aoi.gpkg", package = "cd"),

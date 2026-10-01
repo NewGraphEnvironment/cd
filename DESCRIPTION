@@ -33,6 +33,7 @@ Suggests:
     Kendall,
     knitr,
     rmarkdown,
+    sf,
     testthat (>= 3.0.0),
     tidyterra,
     withr,
@@ -44,7 +45,6 @@ Imports:
     jsonlite,
     rappdirs,
     rlang,
-    sf,
     stringr,
     terra,
     tibble
