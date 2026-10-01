@@ -1,5 +1,22 @@
 # Changelog
 
+## cd 0.5.8 (2026-10-01)
+
+- `sf` moves from Imports to Suggests, so installing cd no longer
+  installs sf. No cd function calls sf:
+  [`cd_crop()`](https://newgraphenvironment.github.io/cd/reference/cd_crop.md)
+  and
+  [`cd_extract()`](https://newgraphenvironment.github.io/cd/reference/cd_extract.md)
+  still accept an `sf` AOI, which
+  [`terra::vect()`](https://rspatial.github.io/terra/reference/vect.html)
+  converts, loading sf itself. The examples, README and vignettes read
+  AOIs with
+  [`sf::st_read()`](https://r-spatial.github.io/sf/reference/st_read.html),
+  so install sf to follow them. The `.data` and `.env` pronouns are now
+  imported from rlang, and `R CMD check` reports no NOTEs.
+  ([\#111](https://github.com/NewGraphEnvironment/cd/issues/111),
+  [\#114](https://github.com/NewGraphEnvironment/cd/pull/114))
+
 ## cd 0.5.7 (2026-10-01)
 
 - The package tarball now ships only the package. `.Rbuildignore` had
