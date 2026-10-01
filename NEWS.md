@@ -1,3 +1,7 @@
+# cd 0.5.7 (2026-10-01)
+
+* The package tarball now ships only the package. `.Rbuildignore` had held its six scaffold lines, so every build and every install from GitHub carried `planning/`, `scripts/`, `data-raw/`, `dev/`, `logs/`, `.claude/`, `CLAUDE.md`, `CITATION.cff` and `.lintr`: 307 files where 92 belong. `R CMD check` drops the "hidden files", "portable file names" and "CITATION file in a non-standard place" NOTEs. ([#100](https://github.com/NewGraphEnvironment/cd/issues/100), [#113](https://github.com/NewGraphEnvironment/cd/pull/113))
+
 # cd 0.5.6 (2026-09-30)
 
 * `cd_trend()` returns a typed empty table when no series is long enough. A trend in which every variable and period had fewer than 3 years in its window came back as a 0 x 0 tibble, so `cd_summary()` on it failed with `Column 'period' not found` and `cd_plot_timeseries(trend = )` warned about uninitialised columns. It is now a zero-row tibble with every column `cd_trend()` documents, and `cd_summary()` returns an empty table.
