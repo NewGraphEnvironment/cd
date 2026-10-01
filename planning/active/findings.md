@@ -49,3 +49,30 @@ entry (`^research$` matches nothing — no such directory yet). Kept top-level a
 (`.gitignore` is dropped later by R's built-in excludes). Over every tracked file outside the
 excluded directories, the only matches are `.Rbuildignore .lintr CITATION.cff CLAUDE.md
 LICENSE.md _pkgdown.yml` — all intended; nothing under `R/ man/ tests/ inst/ vignettes/`.
+
+## Phase 2 — build and check, before vs after (2026-10-01, R 4.5.2)
+
+Both tarballs built with `R CMD build --no-build-vignettes --no-manual` from clean copies:
+before = `git archive` of `1e5b450` (v0.5.6 + CLAUDE.md sync), after = `git checkout-index`
+of the staged tree (`.Rbuildignore` byte-identical to `f42f30e`, checked with `cmp`).
+
+| | files | size | top-level entries |
+|---|---|---|---|
+| before | 307 | 7.90 MB | + planning 201, scripts 20, data-raw 16, logs 5, dev 2, .claude 2, CLAUDE.md, CITATION.cff, .lintr |
+| after | 92 | 7.15 MB | DESCRIPTION NAMESPACE NEWS.md README.md LICENSE R man tests inst vignettes |
+
+`R CMD check --no-manual --ignore-vignettes` (`_R_CHECK_FORCE_SUGGESTS_=false` — Suggests
+`aws.s3`, `ecmwfr` not installed here; the first attempt without it stopped at "package
+dependencies" on both tarballs): **5 NOTEs → 2**, tests pass in both. Gone: "hidden files
+and directories" (`.lintr`, `.claude`, `.gitkeep`s), "portable file names" (three
+`planning/archive/` paths over 100 bytes), "CITATION file in a non-standard place"
+(`CITATION.cff`). Remaining, pre-existing and unrelated — unused `sf` import and
+`.data`/`.env` globals — filed as #111.
+
+Code-check round 3 also built from the real working tree (untracked + ignored files
+included): identical listing, so `logs/*.log` (~2.3 MB), `data/backfill`, `data/update` and
+`scripts/__pycache__` no longer reach a local build. It ran `/gh-pr-merge`'s shipped-change
+pathspec loop against the new `.Rbuildignore`: `v0.5.6..HEAD` (CLAUDE.md sync, CITATION.cff
+bot commit, PWF baseline) now reports nothing shipped; with the old file it listed all three.
+Side finding, verified with `git grep`: `inst/extdata/context_kotl.gpkg` (4.9 MB) is read by
+nothing — filed as #112.

@@ -18,12 +18,12 @@ datasets), so `^data$` is safe. No test, vignette or R file reads any excluded d
       against `ls -A` + `git ls-files`
 
 ## Phase 2: Verify by building, not by reading
-- [ ] `git archive` the branch into the scratchpad, `R CMD build --no-build-vignettes --no-manual`,
+- [x] `git archive` the branch into the scratchpad, `R CMD build --no-build-vignettes --no-manual`,
       `tar tzf | cut -d/ -f2 | sort | uniq -c` — expect only `DESCRIPTION NAMESPACE NEWS.md
       README.md LICENSE R man tests inst vignettes` (+ `build/` if produced)
-- [ ] `R CMD check --no-manual --ignore-vignettes` on the before and after tarballs; record the
+- [x] `R CMD check --no-manual --ignore-vignettes` on the before and after tarballs; record the
       "hidden files" / "portable file names" / "top-level files" NOTEs disappearing
-- [ ] Record before/after counts and NOTE diff in `findings.md`
+- [x] Record before/after counts and NOTE diff in `findings.md`
 
 ## Phase 3: Wrap up
 - [ ] `/planning-archive` with archive README (Measurement + Evidence)
@@ -31,7 +31,7 @@ datasets), so `^data$` is safe. No test, vignette or R file reads any excluded d
 
 ## Validation
 
-- [ ] Tests pass
-- [ ] `/code-check` clean on each commit
+- [x] Tests pass
+- [x] `/code-check` clean on each commit
 - [ ] PWF checkboxes match landed work
 - [ ] `/planning-archive` on completion
