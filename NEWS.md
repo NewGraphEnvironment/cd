@@ -1,3 +1,7 @@
+# cd 0.5.8 (2026-10-01)
+
+* `sf` moves from Imports to Suggests, so installing cd no longer installs sf. No cd function calls sf: `cd_crop()` and `cd_extract()` still accept an `sf` AOI, which `terra::vect()` converts, loading sf itself. The examples, README and vignettes read AOIs with `sf::st_read()`, so install sf to follow them. The `.data` and `.env` pronouns are now imported from rlang, and `R CMD check` reports no NOTEs. ([#111](https://github.com/NewGraphEnvironment/cd/issues/111), [#114](https://github.com/NewGraphEnvironment/cd/pull/114))
+
 # cd 0.5.7 (2026-10-01)
 
 * The package tarball now ships only the package. `.Rbuildignore` had held its six scaffold lines, so every build and every install from GitHub carried `planning/`, `scripts/`, `data-raw/`, `dev/`, `logs/`, `.claude/`, `CLAUDE.md`, `CITATION.cff` and `.lintr`: 307 files where 92 belong. `R CMD check` drops the "hidden files", "portable file names" and "CITATION file in a non-standard place" NOTEs. ([#100](https://github.com/NewGraphEnvironment/cd/issues/100), [#113](https://github.com/NewGraphEnvironment/cd/pull/113))
