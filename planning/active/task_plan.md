@@ -10,11 +10,11 @@ Every tarball built from this repo — and every install from GitHub — carries
 datasets), so `^data$` is safe. No test, vignette or R file reads any excluded directory at runtime.
 
 ## Phase 1: Exclude internal top-level entries
-- [ ] Append to `.Rbuildignore`, one live regex per line, no comments:
+- [x] Append to `.Rbuildignore`, one live regex per line, no comments:
       `^CLAUDE\.md$`, `^planning$`, `^scripts$`, `^data-raw$`, `^dev$`, `^logs$`,
       `^\.claude$`, `^\.lintr$`, `^CITATION\.cff$`, `^data$`, `^research$`
       (`^research$` pre-emptively, per the planning convention; `^README\.Rmd$` omitted — no such file)
-- [ ] Check each pattern matches its target and nothing else with `tools:::inRbuildignore()`
+- [x] Check each pattern matches its target and nothing else with `tools:::inRbuildignore()`
       against `ls -A` + `git ls-files`
 
 ## Phase 2: Verify by building, not by reading

@@ -40,3 +40,12 @@ Measured 2026-09-30 (from #107, closed as a duplicate of this issue): `R CMD bui
 
 | Error | Resolution |
 |-------|------------|
+
+## Phase 1 — pattern check (2026-10-01)
+
+`tools:::inRbuildignore()` against `ls -A`: each new pattern matches exactly its one top-level
+entry (`^research$` matches nothing — no such directory yet). Kept top-level after the change:
+`.gitignore DESCRIPTION inst LICENSE man NAMESPACE NEWS.md R README.md tests vignettes`
+(`.gitignore` is dropped later by R's built-in excludes). Over every tracked file outside the
+excluded directories, the only matches are `.Rbuildignore .lintr CITATION.cff CLAUDE.md
+LICENSE.md _pkgdown.yml` — all intended; nothing under `R/ man/ tests/ inst/ vignettes/`.
