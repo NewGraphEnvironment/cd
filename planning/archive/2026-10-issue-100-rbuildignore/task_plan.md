@@ -26,12 +26,12 @@ datasets), so `^data$` is safe. No test, vignette or R file reads any excluded d
 - [x] Record before/after counts and NOTE diff in `findings.md`
 
 ## Phase 3: Wrap up
-- [ ] `/planning-archive` with archive README (Measurement + Evidence)
+- [x] `/planning-archive` with archive README (Measurement + Evidence)
 - [ ] `/gh-pr-push` — `Fixes #100`, SRED line in body. NEWS + version bump left to `/gh-pr-merge`
 
 ## Validation
 
 - [x] Tests pass
 - [x] `/code-check` clean on each commit
-- [ ] PWF checkboxes match landed work
-- [ ] `/planning-archive` on completion
+- [x] PWF checkboxes match landed work
+- [x] `/planning-archive` on completion
