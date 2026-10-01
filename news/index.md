@@ -1,5 +1,16 @@
 # Changelog
 
+## cd 0.5.7 (2026-10-01)
+
+- The package tarball now ships only the package. `.Rbuildignore` had
+  held its six scaffold lines, so every build and every install from
+  GitHub carried `planning/`, `scripts/`, `data-raw/`, `dev/`, `logs/`,
+  `.claude/`, `CLAUDE.md`, `CITATION.cff` and `.lintr`: 307 files where
+  92 belong. `R CMD check` drops the “hidden files”, “portable file
+  names” and “CITATION file in a non-standard place” NOTEs.
+  ([\#100](https://github.com/NewGraphEnvironment/cd/issues/100),
+  [\#113](https://github.com/NewGraphEnvironment/cd/pull/113))
+
 ## cd 0.5.6 (2026-09-30)
 
 - [`cd_trend()`](https://newgraphenvironment.github.io/cd/reference/cd_trend.md)
