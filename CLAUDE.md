@@ -443,6 +443,11 @@ want. This is cancellation **within one push**, which is never what you want.
 *4 lines of evidence for this rule are in `conventions/ci-monitoring.md`, which `/code-check` reads in full.*
 
 
+## A push `paths:` filter skips an empty commit, and dispatch and schedule run only from the default branch
+Before planning to re-run a workflow on a feature branch, check how it is triggered. An empty commit (`git commit --allow-empty`) changes no files, so a `push` trigger with a `paths:` filter skips it, and the skip is silent: no run is created, so nothing reports anything. `workflow_dispatch` only works for a workflow file already on the default branch, and `schedule` only fires from there. So a branch-only workflow is re-run in one of three ways: push trigger with no `paths:` (the branch filter scopes it), `gh run rerun <id>`, or a commit that touches a filtered path.
+
+*1 line of evidence for this rule is in `conventions/ci-monitoring.md`, which `/code-check` reads in full.*
+
 # Code Check — R
 Traps in R: the language and base/utils behaviour, package internals (`R CMD build`, `.Rbuildignore`, roxygen, lintr, `data-raw/`, testthat, pak), and the DBI/duckdb/arrow data layer.
 
@@ -696,6 +701,12 @@ Bind per-group results under a zero-row template so an all-dropped result keeps 
 
 ### `sample.int(prob =)` without replacement is not a probability-proportional draw, so weighting its result again double-counts
 Draw a subsample to be design-weighted **uniformly** (`sample.int(n, k)`), or keep every unit.
+
+### `system2(stdout = TRUE)` warns on a non-zero exit instead of raising, so a `tryCatch(error =)` around it never fires
+Read the exit status off the result: `st <- attr(out, "status")`, which is `NULL` on success.
+
+### Forked `parallel::mclapply()` workers segfault in `glm.fit` under macOS Accelerate BLAS
+Fit models in parallel on socket workers (`parallel::makeCluster()` with `parLapply()`), not forks: with R linked to Accelerate's vecLib, `mclapply` children segfault inside `glm.fit` (`address 0x110, cause 'invalid permissions'`), and `mclapply` returns try-errors with a warning rather than stopping.
 
 # Code Check — Shell
 Tool-level traps in bash, sed, git and `gh`, and in the host toolchain those commands depend on.
@@ -1036,6 +1047,9 @@ Clamp a LidarBC DEM or DSM to plausible elevations before any aggregate: `terra:
 
 ### bcdata returns a column whose values are all missing as character, not numeric
 Coerce every field you do arithmetic on (`as.numeric(v$PROJ_AGE_1)`) right after `bcdata::collect()`.
+
+### The BC WFS caps an un-paged `GetFeature` at 10,000 features and still answers HTTP 200
+Hold any raw WFS read to the server's own count.
 
 # Code Check Conventions
 Structured checklist for reviewing diffs before commit.
