@@ -32,7 +32,7 @@ Found by a code-check reviewer while verifying #100's tarball contents, and conf
 ## Validation
 - [x] Tests pass
 - [x] `/code-check` clean on each commit
-- [ ] PWF checkboxes match landed work
-- [ ] `/planning-archive` on completion (README carries the before/after measurement)
+- [x] PWF checkboxes match landed work
+- [x] `/planning-archive` on completion (README carries the before/after measurement)
 
 NEWS line and version bump are left to `/gh-pr-merge` (patch release).
