@@ -1,5 +1,15 @@
 # Changelog
 
+## cd 0.5.9 (2026-10-02)
+
+- The installed package is 4.7 MB smaller, about 38%. It no longer ships
+  `inst/extdata/context_kotl.gpkg`, a 4.9 MB layer set that nothing has
+  read since the KOTL vignette was removed in 0.1.4. The Kootenay Lake
+  vignette’s `context_kootenay_lake.gpkg` covers its layers and area.
+  `example_aoi_kotl.gpkg`, which the README uses, stays.
+  ([\#112](https://github.com/NewGraphEnvironment/cd/issues/112),
+  [\#115](https://github.com/NewGraphEnvironment/cd/pull/115))
+
 ## cd 0.5.8 (2026-10-01)
 
 - `sf` moves from Imports to Suggests, so installing cd no longer
