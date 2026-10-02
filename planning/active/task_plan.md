@@ -16,22 +16,22 @@ Found by a code-check reviewer while verifying #100's tarball contents, and conf
 **Decision taken in this plan (recommended): delete the producer script too**, rather than mark it superseded. A kept script for a deleted output is a trap — running it recreates the 4.9 MB file under `inst/extdata/` — and git history keeps the recipe. `example_aoi_kotl.R` stays (README asset).
 
 ## Phase 1: Baseline measurement
-- [ ] Build tarball from `git archive HEAD` (`R CMD build --no-build-vignettes --no-manual`), record tarball size and installed `inst/extdata` size — same method as #100's archive README
+- [x] Build tarball from `git archive HEAD` (`R CMD build --no-build-vignettes --no-manual`), record tarball size and installed `inst/extdata` size — same method as #100's archive README
 
 ## Phase 2: Remove the asset and its producer
-- [ ] `git rm inst/extdata/context_kotl.gpkg data-raw/example_context_kotl.R`
-- [ ] `data-raw/example_context_fwcp_peace.R:3`: repoint "Same recipe as example_context_kotl.R" at `example_context_kootenay_lake.R` (the live sibling)
-- [ ] `git grep -n context_kotl -- ':(exclude)planning'` returns nothing
+- [x] `git rm inst/extdata/context_kotl.gpkg data-raw/example_context_kotl.R`
+- [x] `data-raw/example_context_fwcp_peace.R:3`: repoint "Same recipe as example_context_kotl.R" at `example_context_kootenay_lake.R` (the live sibling)
+- [x] `git grep -n context_kotl -- ':(exclude)planning'` returns nothing
 
 ## Phase 3: Verify
-- [ ] Rebuild tarball, compare size before/after; record both in `findings.md`
-- [ ] `devtools::test()` passes
-- [ ] `R CMD check --no-manual --ignore-vignettes` on the tarball (`_R_CHECK_FORCE_SUGGESTS_=false`) — no new NOTEs vs v0.5.8
-- [ ] README example still resolves `example_aoi_kotl.gpkg` via `system.file()`
+- [x] Rebuild tarball, compare size before/after; record both in `findings.md`
+- [x] `devtools::test()` passes
+- [x] `R CMD check --no-manual --ignore-vignettes` on the tarball (`_R_CHECK_FORCE_SUGGESTS_=false`) — no new NOTEs vs v0.5.8
+- [x] README example still resolves `example_aoi_kotl.gpkg` via `system.file()`
 
 ## Validation
-- [ ] Tests pass
-- [ ] `/code-check` clean on each commit
+- [x] Tests pass
+- [x] `/code-check` clean on each commit
 - [ ] PWF checkboxes match landed work
 - [ ] `/planning-archive` on completion (README carries the before/after measurement)
 
