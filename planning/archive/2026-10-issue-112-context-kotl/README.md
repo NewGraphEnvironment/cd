@@ -11,4 +11,4 @@ R 4.5.2. `R CMD build --no-build-vignettes --no-manual` on `git archive` of `048
 
 The issue's "loses 4.9 MB" holds for installed size. The gpkg compresses, so the download shrinks by 3.3 MB. After-tarball `R CMD check --no-manual --ignore-vignettes`: Status OK, 0 NOTEs. `devtools::test()`: PASS 436, FAIL 0. The reproduce commands are in `findings.md`.
 
-Closed by: commit 1d17163 / PR TBD
+Closed by: commit 1d17163 / PR #115
