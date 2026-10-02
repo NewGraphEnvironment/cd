@@ -1,6 +1,6 @@
 # Fetch spatial context layers for FWCP Peace vignette from fwapg
 #
-# Same recipe as example_context_kotl.R but tuned for the much larger
+# Same recipe as example_context_kootenay_lake.R but tuned for the much larger
 # Peace region: bigger lake threshold, higher minimum stream order to
 # keep map density reasonable, town list relevant to the Peace.
 #
