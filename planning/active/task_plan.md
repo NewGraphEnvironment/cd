@@ -50,7 +50,7 @@ Direct point reads from the EDH Zarr are too slow (201 s for one point × 20 yea
 - [ ] `--dry-run` reports the daily target and published year and builds nothing. Run it locally and once on CI (`gh workflow run`) after merge.
 
 ## Phase 5: Docs and record
-- [ ] Update `CLAUDE.md`: architecture (the daily cube as a second product), the scripts list, the EDH gotchas (the cube uses UTC−8, while monthly tmax/tmin are still UTC per #37), and the consumer chain (`cd_extract_daily()` sits outside the long-format chain).
+- [x] Update `CLAUDE.md`: architecture (the daily cube as a second product), the scripts list, the EDH gotchas (the cube uses UTC−8, while monthly tmax/tmin are still UTC per #37), and the consumer chain (`cd_extract_daily()` sits outside the long-format chain).
 - [ ] `findings.md` gets the measurement table above plus the Phase 2 layout and validation numbers; that's the archive README's Measurement/Evidence.
 - [x] ~~Draft an upstream GDAL issue for the `bitround` decode refusal~~ — not needed: the refusal was GDAL 3.8.5 (sf); GDAL 3.13 reads the filter (findings.md)
 

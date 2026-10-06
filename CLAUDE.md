@@ -24,6 +24,8 @@ R package for climate departure analysis from ERA5-Land reanalysis data. Compute
 
 The cron is monthly but the **unit of publication is a whole calendar year** — both backfillers write only when a year has all 12 months, and `pipeline_update_edh.R` derives its target from the annual `tmean` COG's band names. With ERA5-Land's 2-3 month latency that means the catalog advances roughly once a year, and the other ~11 monthly runs correctly do nothing. They are not free, though: `.compute()` precedes the 12-month check, so each one fetches and discards a partial year (#84).
 
+**Second product: the daily air-temperature cube (#116).** `scripts/backfill_edh_daily.py` turns the same hourly `t2m` into local-day (fixed UTC−8) tmean/tmax/tmin and writes the published COGs itself (`write_cog()` in `_lib.py`, 16 px pixel-interleaved tiles so a point read fetches one ~125 KB tile) to `data/backfill/daily/{var}_daily_{YYYY}.tif`, 365/366 bands named `YYYY-MM-DD`. They publish to `s3://stac-era5-land/daily/` via `cd_s3_push(dir, prefix = "daily")` and are **not in `catalog.json`** — `cd_stac_catalog()` lists non-recursively — so `cd_catalog()`/`cd_extract()` never see them. `pipeline_update_edh.R` STEP D extends the cube on its own clock, before the annual path's early exits: a local year needs the first 8 hours of the next UTC year, so the cube trails the annual COGs by about a month. A daily failure lets the annual path run, then exits non-zero via `finish()`. The STEP D probe treats a missing year as an error only when none of the last four years is published — a never-built cube is a local 2-hour backfill, not a CI job. Why a cube rather than reading the Zarr: one point × 20 years took 201 s through xarray (chunks `[2880 h, 64, 64]`, so a point costs its whole tile), and terra/GDAL 3.13 is slower still — 39 s for 48 hours of one point. GDAL 3.8.5 (the one sf links) cannot read the store at all: it refuses the `bitround` filter. Measured 2026-10-06, `planning/archive/*issue-116*`. `cd_s3_push()` syncs `--size-only`, so a rebuilt year whose byte size happens not to change is not re-uploaded.
+
 The historical `cd_fetch()` / `cd_derive()` R-side producer functions still ship (with tests) for users who want a CDS-based fallback, but are not what runs in CI. See v0.1.0 / #36 for the migration history.
 
 **Consumer** (user-facing, local R):
@@ -37,7 +39,7 @@ The historical `cd_fetch()` / `cd_derive()` R-side producer functions still ship
 
 ## Function Prefix
 
-All functions use `cd_*` prefix. Naming convention: `noun_verb` (e.g., `cd_cog_write` not `cd_write_cog`).
+All functions use `cd_*` prefix. Naming convention: `noun_verb` (e.g., `cd_cog_write` not `cd_write_cog`). Exceptions where a family should sort together: `cd_plot_*`, and `cd_extract_daily()` beside `cd_extract()` (chosen at the #116 plan gate).
 
 ## EDH (DestinE Earth Data Hub)
 
@@ -49,7 +51,8 @@ Key gotchas:
 - Temperature in Kelvin (subtract 273.15)
 - Precipitation in m/day (× 1000 × days_in_month → mm/month)
 - Snow accumulation variables (`snowfall`, `snowmelt`) reset at 06:00 UTC each day — diff-and-clamp logic lives in `scripts/backfill_edh_snow.py` (#48)
-- tmax/tmin daily aggregation currently uses UTC-day boundaries, not local-time — known limitation tracked at #37
+- tmax/tmin daily aggregation for the **monthly** COGs currently uses UTC-day boundaries, not local-time — known limitation tracked at #37. The **daily cube** (#116) uses local days at a fixed UTC−8 (`LOCAL_OFFSET_H` in `_lib.py`); the two are not interchangeable at the day level
+- xarray keeps source attrs through `resample()` and arithmetic, and `rio.to_raster()` writes every attr as a file tag — reset `attrs` before writing, or a °C raster says `units=K` (#116, code-check round 1)
 
 ## Climate Variables (15 total since v0.2.0)
 
@@ -104,6 +107,8 @@ Configurable via `cd_seasons()`. Default: standard meteorological (DJF, MAM, JJA
 - `scripts/backfill_edh_all.py` — all 7 core climate variables (tmean, tmax, tmin, prcp, dewpoint→VPD/RH, soil moisture)
 - `scripts/backfill_edh_tmax_tmin.py` — separate tmax/tmin path (hourly → UTC-day max/min); see #37
 - `scripts/backfill_edh_snow.py` — 4 snow natives + 4 derived (#48); handles ECMWF accumulation reset
+- `scripts/backfill_edh_daily.py` — daily local-day tmean/tmax/tmin cube (#116); `--check` prints `latest_complete=YYYY` for STEP D
+- `scripts/test_lib.py` — offline tests for `_lib.py` (`uv run scripts/test_lib.py`); local only, no workflow runs it
 - `scripts/_lib.py` — shared safeguards (single-instance pgrep guard, exponential backoff, atomic write, timestamped logging, EDH token loader)
 - `scripts/pipeline_stage3_edh.R` — monthly TIFs → COGs + STAC + S3 push
 - `scripts/pipeline_update_edh.R` — monthly GH Action entry point (incremental)
