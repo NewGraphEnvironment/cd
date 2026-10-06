@@ -42,7 +42,7 @@ Direct point reads from the EDH Zarr are too slow (201 s for one point × 20 yea
 - [x] `devtools::document()`, `lintr`, `devtools::test()`, `pkgdown::check_pkgdown()`. — no lints in new files; 51 fixture expectations; `R CMD check` 0/0/0; `check_pkgdown()` fails on a pre-existing DESCRIPTION URL error untouched by this branch
 
 ## Phase 4: Monthly update wiring
-- [ ] `pipeline_update_edh.R`: a daily check independent of the annual early exit.
+- [x] `pipeline_update_edh.R`: a daily check independent of the annual early exit. — STEP D, before STEP 1; `finish()` makes a daily failure exit non-zero after the annual path runs
   - Daily target = latest *Y* with `local_year_complete`.
   - Published = HEAD `daily/tmean_daily_{Y}.tif`, probing back from the target.
   - Build missing years via `backfill_edh_daily.py`, convert with the Phase 2 helper, and push `daily/`.
