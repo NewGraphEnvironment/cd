@@ -81,4 +81,9 @@ Raw hourly `t2m` at the cell (54.0 N, −123.0) for UTC 2002-01-01T08:00 – 200
 | Error | Resolution |
 |-------|------------|
 | `ABORT: another backfill_edh_daily is running` with the reported pid already gone | `preflight_single_instance()` matches the agent's wrapping shell, whose command line contains the script name (pre-existing behaviour, all backfillers). Launch through a runner script whose own argv lacks the name. |
+| `ClientPayloadError: Response payload is not completed` killed the backfill at 1975 | `with_retry()` now retries `aiohttp.ClientError`; resumed — outputs are idempotent |
 | `TypeError: open_group() got an unexpected keyword argument 'zarr_format'` | Probe pinned `zarr<3`; current xarray needs zarr 3. uv also reused the cached env for the same script name — copy to a new filename to force a fresh env. |
+
+## Backfill interruption: aiohttp payload truncation (2026-10-06)
+
+The first full run died at 1975 on `aiohttp.client_exceptions.ClientPayloadError: Response payload is not completed (received 13184157 of 14254193 bytes)`. `with_retry()` caught only `OSError`/`ConnectionError`/`TimeoutError`, and aiohttp's errors subclass none of them — so one truncated chunk ended a multi-hour run (and would end a CI STEP D run the same way). Fixed by adding `aiohttp.ClientError` (looked up in `sys.modules`, so `_lib.py` still loads without aiohttp). Reviewer probes: the error reaches `.compute()` unwrapped through fsspec, zarr 3 and dask. **Accepted cost:** a persistent 401/403 is now retried (+70 s per call, ~350 s per year in the snow backfiller's nested retries) before it surfaces; the monthly CI's STEP 0 auth probe catches a bad token before any Python runs. A retry re-fetches the whole year (pre-existing; per-chunk retry would be the cheaper layer if truncations turn out frequent).

@@ -94,6 +94,24 @@ def preflight_single_instance(name: str) -> None:
                  f"Kill them first: kill {' '.join(str(p) for p in pids)}")
 
 
+def _transient_errors() -> tuple:
+    """Exception types worth another attempt.
+
+    aiohttp's errors (fsspec's HTTP transport) do not subclass OSError, so a
+    truncated chunk -- `ClientPayloadError: Response payload is not
+    completed` -- used to escape the retry and kill a whole backfill run
+    (seen 2026-10-06 at year 1975 of the #116 daily cube). Looked up from
+    sys.modules rather than imported, so this file still loads where aiohttp
+    is not installed (test_lib.py).
+    """
+    errs = (OSError, ConnectionError, TimeoutError)
+    aiohttp = sys.modules.get("aiohttp")
+    client_error = getattr(aiohttp, "ClientError", None)
+    if isinstance(client_error, type):
+        errs = errs + (client_error,)
+    return errs
+
+
 def with_retry(
     fn: Callable[[], T],
     *,
@@ -104,15 +122,15 @@ def with_retry(
     """Run `fn()` with exponential backoff on transient errors.
 
     EDH is chunk-based (no job queue), so network blips are the main
-    failure mode. Retry on OSError / ConnectionError / TimeoutError
-    (covers fsspec/aiohttp transients). Let other errors (KeyError,
+    failure mode. Retry on OSError / ConnectionError / TimeoutError and
+    aiohttp.ClientError (see `_transient_errors()`). Let other errors (KeyError,
     ValueError, RuntimeError) propagate — those are bugs, not transient.
     """
     delay = initial_delay
     for i in range(1, attempts + 1):
         try:
             return fn()
-        except (OSError, ConnectionError, TimeoutError) as e:
+        except _transient_errors() as e:
             if i == attempts:
                 raise
             log(f"  {what} failed (attempt {i}/{attempts}): "

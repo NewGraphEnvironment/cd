@@ -31,6 +31,7 @@ from _lib import (  # noqa: E402
     local_year_complete,
     local_year_window,
     months_available,
+    with_retry,
     write_cog,
 )
 
@@ -221,6 +222,48 @@ LOCAL_CASES.append(("COG: deg C tagged, no GRIB tags, dates kept, no leftovers",
                     cog_roundtrip))
 
 
+def retry_aiohttp_payload() -> bool:
+    """A truncated aiohttp payload is retried; a ValueError is not.
+
+    Stands a fake `aiohttp` module in sys.modules, since test_lib.py does not
+    install aiohttp -- with_retry() looks the class up there, not by import.
+    """
+    import types
+    fake = types.ModuleType("aiohttp")
+
+    class ClientError(Exception):
+        pass
+
+    class ClientPayloadError(ClientError):
+        pass
+
+    fake.ClientError = ClientError
+    saved = sys.modules.get("aiohttp")
+    sys.modules["aiohttp"] = fake
+    try:
+        calls = []
+
+        def flaky():
+            calls.append(1)
+            if len(calls) < 3:
+                raise ClientPayloadError("Response payload is not completed")
+            return "ok"
+
+        recovered = with_retry(flaky, initial_delay=0, what="test") == "ok" and len(calls) == 3
+        bug_propagates = raises(ValueError, lambda: with_retry(
+            lambda: (_ for _ in ()).throw(ValueError("bug")), initial_delay=0))
+        return recovered and bug_propagates
+    finally:
+        if saved is None:
+            sys.modules.pop("aiohttp", None)
+        else:
+            sys.modules["aiohttp"] = saved
+
+
+LOCAL_CASES.append(("with_retry retries a truncated aiohttp payload, not a bug",
+                    retry_aiohttp_payload))
+
+
 def main() -> int:
     failures = 0
     for name, ds, year, expected in CASES:
@@ -230,7 +273,13 @@ def main() -> int:
         print(f"  {'ok  ' if ok else 'FAIL'}  {name:38s} year={year}  "
               f"got={got} expected={expected}")
     for name, check in LOCAL_CASES:
-        ok = bool(check())
+        # A case that raises is a failure to report, not a reason to abort
+        # the rest of the suite.
+        try:
+            ok = bool(check())
+        except Exception as e:  # noqa: BLE001
+            print(f"        {name}: raised {type(e).__name__}: {e}")
+            ok = False
         failures += not ok
         print(f"  {'ok  ' if ok else 'FAIL'}  {name}")
     n = len(CASES) + len(LOCAL_CASES)
