@@ -23,7 +23,7 @@ Direct point reads from the EDH Zarr are too slow (201 s for one point × 20 yea
 - [ ] Push `daily/` to S3; HEAD-check a sample of keys.
 
 ## Phase 3: Consumer, `cd_extract_daily()` (built in parallel with the Phase 2 backfill)
-- [ ] Tests first, `tests/testthat/test-cd_extract_daily.R`, against a synthetic fixture built in a helper: a small terra grid with known values per (cell, day) and some NA "ocean" cells, written as `{var}_daily_{Y}.tif` in a temp dir. Cases:
+- [x] Tests first, `tests/testthat/test-cd_extract_daily.R`, against a synthetic fixture built in a helper: a small terra grid with known values per (cell, day) and some NA "ocean" cells, written as `{var}_daily_{Y}.tif` in a temp dir. Cases:
   - columns and types
   - `from`/`to` crossing a year boundary
   - two points sharing a cell → same `cell`
@@ -33,13 +33,13 @@ Direct point reads from the EDH Zarr are too slow (201 s for one point × 20 yea
   - a year not published → clear abort naming it
   - a point off the grid → abort
   - zero-row result keeps every column
-- [ ] `R/cd_extract_daily.R`: `cd_extract_daily(points, from, to, variables = c("tmean","tmax","tmin"), id = "id", source = cd_daily_source(), cache = <per Phase 2>)`.
+- [x] `R/cd_extract_daily.R`: `cd_extract_daily(points, from, to, variables = c("tmean","tmax","tmin"), id = "id", source = cd_daily_source(), cache = <per Phase 2>)`.
   - Returns a tibble: `id`, `date` (Date), `variable`, `value` (°C), `cell`, `cell_x`, `cell_y`, `cell_moved`.
   - Cell choice is computed once from the land mask (band 1, first year); then one `terra::extract()` per variable-year over all cells.
   - Reuses `cd_remote_head()`/`cd_cache_fetch()` from `R/cd_cache_fetch.R`. Source URL comes from `getOption("cd.daily_url", …/daily)`.
-- [ ] Example data: `data-raw/example_daily.R` crops two years of the real cube around the example AOI into `inst/extdata/example_daily/`, for a runnable `@examples`.
+- [x] Example data: `data-raw/example_daily.R` crops two years of the real cube around the example AOI into `inst/extdata/example_daily/`, for a runnable `@examples`.
 - [ ] Live test against S3, under `skip_on_ci()` + `skip_if_offline()`.
-- [ ] `devtools::document()`, `lintr`, `devtools::test()`, `pkgdown::check_pkgdown()`.
+- [x] `devtools::document()`, `lintr`, `devtools::test()`, `pkgdown::check_pkgdown()`. — no lints in new files; 51 fixture expectations; `R CMD check` 0/0/0; `check_pkgdown()` fails on a pre-existing DESCRIPTION URL error untouched by this branch
 
 ## Phase 4: Monthly update wiring
 - [ ] `pipeline_update_edh.R`: a daily check independent of the annual early exit.
