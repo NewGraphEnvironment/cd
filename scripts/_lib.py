@@ -14,6 +14,9 @@ needs the same safeguards against its own failure modes:
     idempotency check.
   - `months_available(ds, year)` — how many months of a year the store
     holds, from the time coordinate alone (no data transfer).
+  - `local_year_window()`, `local_year_complete()`, `local_daily()` —
+    local-day (UTC-8) aggregation for the daily cube (#116).
+  - `write_cog(da, out_path, band_names)` — atomic COG write, daily-cube layout.
   - `log(msg)` — timestamped print, flushed.
   - `get_token()` — EDH token from env or `~/.Renviron`.
 
@@ -36,11 +39,14 @@ import os
 import shutil
 import subprocess
 import sys
+import tempfile
 import time
 from pathlib import Path
 from typing import Callable, Iterable, Optional, Sequence, TypeVar
 
+import pandas as pd
 import rasterio
+import rasterio.shutil
 import rioxarray  # noqa: F401 — registers .rio accessor on xarray DataArrays
 import xarray as xr
 
@@ -143,6 +149,86 @@ def months_available(ds: xr.Dataset, year: int) -> int:
     return len(set(vt.dt.month.values.tolist()))
 
 
+# Pacific standard time. A fixed offset, not a zone: it ignores daylight time
+# and the MST corner of eastern BC, which is #37's Option A and enough for
+# degree-day work (#116). Every caller that builds local days uses this one
+# value, so the published cube and its completeness check cannot disagree.
+LOCAL_OFFSET_H: int = -8
+
+
+def local_year_window(year: int, offset_h: int = LOCAL_OFFSET_H) -> tuple:
+    """First and last UTC hour of a local-time calendar year.
+
+    With offset -8, local 1 Jan 00:00 is 08:00 UTC, so the year runs from
+    `Y-01-01T08:00` to `Y+1-01-01T07:00` inclusive. The last local day
+    therefore needs the first hours of the following UTC year.
+    """
+    start = pd.Timestamp(f"{year}-01-01") - pd.Timedelta(hours=offset_h)
+    end = pd.Timestamp(f"{year + 1}-01-01") - pd.Timedelta(hours=offset_h + 1)
+    return start, end
+
+
+def local_year_complete(
+    ds: xr.Dataset, year: int, offset_h: int = LOCAL_OFFSET_H
+) -> bool:
+    """Whether the store holds every hour of `year`'s local days.
+
+    Reads the time coordinate only, so it costs no data transfer (#84): call
+    it before anything that computes. Complete means the window from
+    `local_year_window()` is present at exactly 24 distinct hours per day,
+    so a store ending on 31 Dec 23:00 UTC is NOT complete for that year:
+    local 31 Dec runs until 1 Jan 07:00 UTC.
+    """
+    start, end = local_year_window(year, offset_h)
+    vt = ds.valid_time.sel(valid_time=slice(start, end)).values
+    n_days = 366 if pd.Timestamp(f"{year}-12-31").dayofyear == 366 else 365
+    if len(vt) != 24 * n_days or len(set(vt.tolist())) != len(vt):
+        return False
+    return pd.Timestamp(vt.min()) == start and pd.Timestamp(vt.max()) == end
+
+
+def local_daily(
+    hourly: xr.DataArray, offset_h: int = LOCAL_OFFSET_H
+) -> dict:
+    """Hourly 2 m temperature (K) to local-day mean, max and min (deg C).
+
+    `hourly` is one local year of `t2m`, sliced to `local_year_window()`.
+    Shifting the time coordinate by the offset before resampling makes each
+    `1D` bin a local day, which is the whole fix #37 describes: a UTC day
+    splits BC's afternoon peak (22-00 UTC) across two days.
+
+    Returns a dict of lazy DataArrays keyed `tmean`, `tmax`, `tmin`, each
+    labelled by local date.
+    """
+    local = hourly.assign_coords(
+        valid_time=hourly.valid_time + pd.Timedelta(hours=offset_h)
+    )
+    # resample() builds a contiguous grid from first to last stamp, so input
+    # that starts mid-day or has a hole yields short or NaN days without a
+    # word. Refuse anything but whole local days of 24 hours each.
+    vt = pd.DatetimeIndex(local.valid_time.values)
+    n_days = len(vt) // 24
+    if (len(vt) == 0 or len(vt) % 24 or vt[0] != vt[0].normalize()
+            or vt[-1] != vt[0] + pd.Timedelta(hours=24 * n_days - 1)
+            or not vt.is_unique):
+        raise ValueError(
+            "local_daily() needs whole local days of 24 hourly steps; slice "
+            "the input to local_year_window() first."
+        )
+    days = local.resample(valid_time="1D")
+    out = {
+        "tmean": days.mean() - 273.15,
+        "tmax": days.max() - 273.15,
+        "tmin": days.min() - 273.15,
+    }
+    # xarray keeps the source attrs through resample and arithmetic, and
+    # rio.to_raster() writes every attr as a file tag: without this the cube
+    # says `units=K` over values in deg C, plus GRIB tags for the global grid.
+    for da in out.values():
+        da.attrs = {"units": "degC"}
+    return out
+
+
 def write_geotiff(
     da: xr.DataArray,
     out_path: Path,
@@ -177,6 +263,41 @@ def write_geotiff(
         if tmp_path.exists():
             tmp_path.unlink()
         raise
+
+
+def write_cog(
+    da: xr.DataArray,
+    out_path: Path,
+    band_names: Sequence[str],
+    blocksize: int = 16,
+) -> None:
+    """Write a (valid_time, latitude, longitude) DataArray as a COG.
+
+    Goes through `write_geotiff()` (which sets the CRS, the -180..180
+    longitudes and the band descriptions) to a temporary GeoTIFF, then copies
+    that to the COG driver, so the descriptions carry over. Atomic like
+    `write_geotiff()`: the COG appears under its final name only when whole.
+
+    Layout chosen by measurement for the daily cube (#116): 16 px tiles,
+    pixel-interleaved, so one point's 365 days sit in one ~125 KB tile and a
+    remote point read fetches only that. DEFLATE with the floating-point
+    predictor; no overviews, since nothing reads this grid zoomed out.
+    """
+    # Stage beside, not inside, the output directory: that directory is what
+    # gets synced to S3, and a run killed hard (SIGKILL, OOM) skips `finally`.
+    # Same filesystem, so the final os.replace() stays atomic.
+    stage = Path(tempfile.mkdtemp(prefix=".cog_stage_", dir=out_path.parent.parent))
+    tmp_tif = stage / "src.tif"
+    tmp_cog = stage / "cog.tif"
+    try:
+        write_geotiff(da, tmp_tif, band_names=band_names)
+        rasterio.shutil.copy(
+            tmp_tif, tmp_cog, driver="COG", compress="DEFLATE",
+            predictor="YES", blocksize=blocksize, overviews="NONE",
+        )
+        os.replace(tmp_cog, out_path)
+    finally:
+        shutil.rmtree(stage, ignore_errors=True)
 
 
 def log(msg: str) -> None:
