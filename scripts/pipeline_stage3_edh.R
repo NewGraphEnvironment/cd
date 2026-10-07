@@ -64,10 +64,10 @@ log_msg <- function(...) {
 # -- Step 1: Aggregate to seasonal/annual COGs --------------------------------
 log_msg("=== STEP 1: Aggregate monthly -> seasonal/annual COGs ===")
 
-# COGs written by THIS run. cog_dir persists between runs, so a file merely
-# present there may be a stale copy from an earlier run, and the guard before
-# the catalog must not count it.
-written <- character()
+# COGs written by THIS run, with their band names (years). cog_dir persists
+# between runs, so a file merely present there may be a stale copy from an
+# earlier run, and the guard before the catalog must not count it.
+written <- list()
 
 all_vars <- names(agg_methods)
 
@@ -114,7 +114,7 @@ for (var in all_vars) {
     multi <- rast(year_layers)
     names(multi) <- names(year_layers)
     cd_cog_write(multi, cog_path, overwrite = TRUE)
-    written <- c(written, basename(cog_path))
+    written[[basename(cog_path)]] <- names(multi)
     log_msg(sprintf("    wrote %s (%d years)", basename(cog_path), nlyr(multi)))
   }
 }
@@ -158,7 +158,7 @@ for (var in annual_vars) {
   multi <- rast(year_layers)
   names(multi) <- names(year_layers)
   cd_cog_write(multi, cog_path, overwrite = TRUE)
-  written <- c(written, basename(cog_path))
+  written[[basename(cog_path)]] <- names(multi)
   log_msg(sprintf("    wrote %s (%d years)", basename(cog_path), nlyr(multi)))
 }
 
@@ -173,7 +173,7 @@ expected_cogs <- c(
   as.vector(outer(names(agg_methods), c("annual", names(seasons)), paste, sep = "_")),
   paste0(annual_vars, "_annual")
 )
-missing_cogs <- setdiff(paste0(expected_cogs, ".tif"), written)
+missing_cogs <- setdiff(paste0(expected_cogs, ".tif"), names(written))
 if (length(missing_cogs) > 0) {
   stop("Refusing to build the catalog: ", length(missing_cogs), " of ",
        length(expected_cogs), " COGs not written by this run (",
@@ -181,6 +181,33 @@ if (length(missing_cogs) > 0) {
        if (length(missing_cogs) > 5) ", ..." else "", "). ",
        "Publishing would replace live data with a partial or stale set.",
        call. = FALSE)
+}
+# Years, too: a COG missing a year (a skipped monthly file) or ending before
+# the live data (local inputs older than what CI has appended since) would
+# replace live years with nothing, and the push cannot be undone.
+spans <- unique(lapply(written, as.integer))
+if (length(spans) != 1) {
+  stop("Refusing to build the catalog: the COGs written this run do not share ",
+       "one span of years.", call. = FALSE)
+}
+years_written <- spans[[1]]
+if (anyNA(years_written) ||
+    !identical(years_written, seq(min(years_written), max(years_written)))) {
+  stop("Refusing to build the catalog: the years written this run are not ",
+       "contiguous (a monthly file was skipped).", call. = FALSE)
+}
+live_latest <- tryCatch({
+  live <- cd_catalog()
+  href <- live$href[live$variable == "tmean" & live$period == "annual"]
+  max(as.integer(names(rast(paste0("/vsicurl/", href)))))
+}, error = function(e) {
+  stop("Refusing to build the catalog: could not read the live tmean_annual ",
+       "COG to check its years (", conditionMessage(e), ").", call. = FALSE)
+})
+if (max(years_written) < live_latest) {
+  stop("Refusing to build the catalog: this run ends at ", max(years_written),
+       " but the live COGs reach ", live_latest, "; publishing would drop ",
+       "those years.", call. = FALSE)
 }
 
 log_msg("=== STEP 2: Build STAC catalog ===")
