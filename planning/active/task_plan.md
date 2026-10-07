@@ -53,5 +53,5 @@ until the repair is published.
 
 - [x] Tests pass
 - [x] `/code-check` clean on each commit
-- [ ] PWF checkboxes match landed work
+- [x] PWF checkboxes match landed work
 - [ ] `/planning-archive` on completion
