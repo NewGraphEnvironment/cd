@@ -19,8 +19,8 @@ Direct point reads from the EDH Zarr are too slow (201 s for one point × 20 yea
 - [x] One-year build (2002), then measure layout options (size and point-extract time over `/vsicurl/`); choose the COG creation options.
 - [x] ~~Daily TIF → COG via an R helper in `scripts/_lib.R` + STEP 1c in `pipeline_stage3_edh.R`~~ — dropped after plan review #6 (`_lib.R` is pure-function only, and stage 3 would rebuild every monthly COG). The COG is written in Python by `write_cog()`; `data/backfill/daily/` is the publish directory.
 - [x] **Independent check:** take the probe's raw hourly series at (54.0, −123.0) for 2002, resample in pandas with a −8 h shift, and compare it to the cube cell. Exact match is expected; record it in findings.
-- [ ] Full backfill 1950–2025, run in the background. Spot-check counts: 228 files, 365/366 bands each, no all-NA band.
-- [ ] Push `daily/` to S3; HEAD-check a sample of keys.
+- [x] Full backfill 1950–2025, run in the background. — done; 228 files, all checks pass (findings.md) Spot-check counts: 228 files, 365/366 bands each, no all-NA band.
+- [x] Push `daily/` to S3; HEAD-check a sample of keys. — 1950–2024 by hand, 2025 by a live STEP D run; 228 objects
 
 ## Phase 3: Consumer, `cd_extract_daily()` (built in parallel with the Phase 2 backfill)
 - [x] Tests first, `tests/testthat/test-cd_extract_daily.R`, against a synthetic fixture built in a helper: a small terra grid with known values per (cell, day) and some NA "ocean" cells, written as `{var}_daily_{Y}.tif` in a temp dir. Cases:
@@ -38,7 +38,7 @@ Direct point reads from the EDH Zarr are too slow (201 s for one point × 20 yea
   - Cell choice is computed once from the land mask (band 1, first year); then one `terra::extract()` per variable-year over all cells.
   - Reuses `cd_remote_head()`/`cd_cache_fetch()` from `R/cd_cache_fetch.R`. Source URL comes from `getOption("cd.daily_url", …/daily)`.
 - [x] Example data: `data-raw/example_daily.R` crops two years of the real cube around the example AOI into `inst/extdata/example_daily/`, for a runnable `@examples`.
-- [ ] Live test against S3, under `skip_on_ci()` + `skip_if_offline()`.
+- [x] Live test against S3, under `skip_on_ci()` + `skip_if_offline()`. — 4/4 against the published cube
 - [x] `devtools::document()`, `lintr`, `devtools::test()`, `pkgdown::check_pkgdown()`. — no lints in new files; 51 fixture expectations; `R CMD check` 0/0/0; `check_pkgdown()` fails on a pre-existing DESCRIPTION URL error untouched by this branch
 
 ## Phase 4: Monthly update wiring

@@ -87,3 +87,22 @@ Raw hourly `t2m` at the cell (54.0 N, −123.0) for UTC 2002-01-01T08:00 – 200
 ## Backfill interruption: aiohttp payload truncation (2026-10-06)
 
 The first full run died at 1975 on `aiohttp.client_exceptions.ClientPayloadError: Response payload is not completed (received 13184157 of 14254193 bytes)`. `with_retry()` caught only `OSError`/`ConnectionError`/`TimeoutError`, and aiohttp's errors subclass none of them — so one truncated chunk ended a multi-hour run (and would end a CI STEP D run the same way). Fixed by adding `aiohttp.ClientError` (looked up in `sys.modules`, so `_lib.py` still loads without aiohttp). Reviewer probes: the error reaches `.compute()` unwrapped through fsspec, zarr 3 and dask. **Accepted cost:** a persistent 401/403 is now retried (+70 s per call, ~350 s per year in the snow backfiller's nested retries) before it surfaces; the monthly CI's STEP 0 auth probe catches a bad token before any Python runs. A retry re-fetches the whole year (pre-existing; per-chunk retry would be the cheaper layer if truncations turn out frequent).
+
+## Published cube and consumer timings (2026-10-06, evening)
+
+**Build:** 1950–2025, 228 COGs, 2.7 GB, resumed once (see above); four transient EDH failures recovered by the retry (`ClientPayloadError` at 1980 and 2006, two `502 Bad Gateway` at 2013). Per-year build 80–207 s; EDH was slower in the afternoon. Log: `logs/backfill_daily_20261006.log` (gitignored).
+
+**Whole-cube check** (`terra`, every file): 365/366 bands dated 1 Jan – 31 Dec, identical grid, `units=degC`, values in (−60, 45) °C at Prince George; tmax ≥ tmean ≥ tmin on every day 1950–2025 at that cell (0 violations); 20,486 land cells, the same on the first and last band.
+
+**Publication and STEP D, exercised both ways:** 1950–2024 pushed with 2025 held back → `--dry-run` reported "Newest year on S3: 2024 / A live run would build and publish 2025", exit 0. A **live** `pipeline_update_edh.R` then built 2025 through STEP D (101.8 s) and published it; the annual path found 2026 incomplete from metadata and exited 0. The STEP D rebuild of 2025 is **byte-identical** to the backfill's copy for all three variables (`cmp`), so builds are deterministic. Final `--dry-run`: "Daily cube current", exit 0. Before publication the same dry run exited 1 ("no daily cube published for 2022-2025"), as designed.
+
+**`cd_extract_daily()` against the published cube** (300 random land points, `set.seed(116)`):
+
+| call | time | notes |
+|---|---|---|
+| 1 point × 2002–2025, `cache = FALSE` | 80 s | 26,298 rows; vs 201 s for 20 years straight from the Zarr |
+| 300 points × 2002–2025, `cache = TRUE`, cold | 130 s | 7,889,400 rows; 885 MB downloaded to the cache |
+| same, warm | 12 s | identical result |
+| 1 point × 3 days, `cache = FALSE`, network bytes | 262 KB | `CPL_VSIL_SHOW_NETWORK_STATS`; was the whole 17 MB file before round 3's fix |
+
+The 1-point series equals that point's rows in the 300-point extract. Live test: 4/4.
