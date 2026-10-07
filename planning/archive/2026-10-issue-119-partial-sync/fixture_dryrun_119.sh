@@ -5,7 +5,7 @@
 # check still run against the real bucket, read-only apart from STEP 0's
 # sentinel, exactly as the weekly heartbeat does. Run from the repo root.
 #
-#   planning/active/fixture_dryrun_119.sh <state>
+#   planning/archive/2026-10-issue-119-partial-sync/fixture_dryrun_119.sh <state>
 #     partial  1950-2024 common, 20 COGs ahead by 2025 -> warn, exit 0
 #     beyond   1950-2025 common, 20 COGs ahead by 2026 -> unfetched, exit 1
 #     missing  1950-2025, one COG absent               -> re-run hint, exit 1
