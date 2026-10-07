@@ -40,8 +40,8 @@ Nothing is pushed on abort (the push comes after the catalog), so the live bucke
 - [x] Same explicit catalog upload + live readback (dry-run passes `--dryrun`). Stage 3 is now stricter: a stale `.tif` in `data/backfill/cogs` is refused, not published
 
 ## Phase 4: Docs
-- [ ] CLAUDE.md: the `pipeline_update_edh.R` Scripts line and the Architecture paragraph say the update path refuses a partial catalog, as stage 3's line does
-- [ ] `findings.md`: the skip-path inventory and why strict was chosen over merge
+- [x] CLAUDE.md: the `pipeline_update_edh.R` Scripts line and the Architecture paragraph say the update path refuses a partial catalog, as stage 3's line does
+- [x] `findings.md`: the skip-path inventory and why strict was chosen over merge
 
 ## Verification
 - `Rscript scripts/test_lib.R`: all checks ok, including the 58-of-59 case; mutation table shows each guard branch fires
@@ -51,8 +51,8 @@ Nothing is pushed on abort (the push comes after the catalog), so the live bucke
 - STEP 4/5 cannot run end to end before 2026 lands on EDH. Phase 1's offline cases are the evidence that the guard works; the PR will say so
 
 ## Validation
-- [ ] Tests pass
-- [ ] `/code-check` clean on each commit
-- [ ] PWF checkboxes match landed work
+- [x] Tests pass
+- [x] `/code-check` clean on each commit
+- [x] PWF checkboxes match landed work
 - [ ] `/planning-archive` on completion
 

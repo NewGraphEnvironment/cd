@@ -113,3 +113,44 @@ same 59 items in the same order, and the only change is `end_datetime`
 live catalog would keep reporting 2025. Both pipelines now upload `catalog.json`
 explicitly, after the COG sync, so a catalog never points at COGs that are not
 up yet.
+
+## Code-check: how the loop ended (enumeration)
+
+Round 3 found a defect inside the plan-review fix. If the explicit `catalog.json`
+upload failed after the COG sync, `tmean_annual` would already hold the new year,
+every later run would exit 0, and the catalog would stay a year behind. Fixed: STEP 1
+now checks the live catalog's item years against the live COGs as well as its keys,
+and names a catalog-only repair (`catalog_repair_hint()`).
+
+Round 3's mechanism: every defect so far was a guard that checked a step *before*
+publication (a record of a write, a sync's exit status) instead of what publication
+produces. So the candidate set is every guard exit the branch adds, along with what
+each one reads. Enumerated from `git diff main` (`finish(1L)` / `stop(` on added lines):
+
+| exit | reads | proxy? |
+|---|---|---|
+| update STEP 1 live catalog | live `catalog.json` (keys + item years) vs live `tmean_annual` band names | artifact; other COGs' spans are #119 |
+| update / stage 3 `publish_problems()` | directory listing (what `cd_stac_catalog()` lists) + in-memory band names | names verified by the next row, which reads the files |
+| update / stage 3 built-catalog readback | the JSON file about to be uploaded | artifact |
+| update / stage 3 `aws s3 cp` status | wrapper exit | backed by the next row |
+| update / stage 3 live readback | the live URL, compared to the built catalog | artifact (S3 read-after-write) |
+| `cd_s3_push()` abort (existing) | sync exit; `--size-only` | sound on update (an appended year changes the size); stage 3 same-years rebuild predates this branch |
+| stage 3 live-catalog / live-years read | live URL / live COG | artifact |
+
+All 5 of stage 3's former `stop("Refusing…")` checks map onto `publish_problems()`
+branches: missing COG, spans differ, not contiguous, live-year read (kept), live year
+dropped. Nothing in the table checks a proxy without an artifact check behind it,
+so the loop ends here.
+
+## Verification run
+
+- `Rscript scripts/test_lib.R`: 54/54
+- Interop: 59 tiny COGs → real `cd_stac_catalog()` → `catalog_item_years()` →
+  `catalog_problems()` gives 0 problems. With one file removed after being recorded,
+  both guards name it (`scratchpad/interop.R`, not committed)
+- Live catalog against the new STEP 1 check: clean as 1950-2025; as 1950-2026 (the
+  stale-catalog case) all 59 items are refused
+- `pipeline_update_edh.R --dry-run`: exit 0, logs `Live catalog: the expected 59
+  items, 1950-2025`. It exits at the local-year cap, so it proves STEP 0-1 only; STEP 4-5
+  cannot run end to end before 2026 lands on EDH
+- `devtools::test()`: 491 pass, 0 fail; `lintr::lint("scripts/_lib.R")`: 0
