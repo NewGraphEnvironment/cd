@@ -152,11 +152,6 @@ the underlying data.
   methodology lit review for biogeoclimatic ecosystem classification
   (BEC) shifts under climate change, alongside the existing temperature
   / precipitation+drying / interpretation-framing methodology stacks.
-- **Local-time daily aggregation**
-  ([\#37](https://github.com/NewGraphEnvironment/cd/issues/37)) —
-  `tmax`/`tmin` currently use UTC-day. Fixing this aligns the daily
-  extremes with local solar timing for BC longitudes; ~6 h offset
-  matters for late-summer daytime maxima.
 - **Vignette templates** — `peace-fwcp` and `kootenay-lake` are
   reference implementations of the regional reporting pattern. Future
   regional vignettes follow the same structure (trends → recent vs

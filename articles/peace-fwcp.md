@@ -271,15 +271,15 @@ cd::cd_summary(trn)
 | Annual peak snow water equivalent | Annual | 1951 | -0.075 | 75 | -5.7 | mm | 0.7697 |
 | Annual peak snow water equivalent | Annual | 1981 | -0.251 | 45 | -11.3 | mm | 0.6884 |
 | Maximum temperature | Annual | 1951 | 0.027 | 75 | 2.0 | °C | 0.0000 |
-| Maximum temperature | Annual | 1981 | 0.021 | 45 | 0.9 | °C | 0.0449 |
-| Maximum temperature | Fall | 1951 | 0.013 | 75 | 1.0 | °C | 0.0659 |
-| Maximum temperature | Fall | 1981 | 0.029 | 45 | 1.3 | °C | 0.0338 |
-| Maximum temperature | Spring | 1951 | 0.025 | 75 | 1.9 | °C | 0.0007 |
-| Maximum temperature | Spring | 1981 | 0.011 | 45 | 0.5 | °C | 0.6179 |
-| Maximum temperature | Summer | 1951 | 0.026 | 75 | 2.0 | °C | 0.0004 |
-| Maximum temperature | Summer | 1981 | 0.030 | 45 | 1.3 | °C | 0.0617 |
-| Maximum temperature | Winter | 1951 | 0.045 | 75 | 3.4 | °C | 0.0000 |
-| Maximum temperature | Winter | 1981 | 0.015 | 45 | 0.7 | °C | 0.4752 |
+| Maximum temperature | Annual | 1981 | 0.021 | 45 | 0.9 | °C | 0.0564 |
+| Maximum temperature | Fall | 1951 | 0.015 | 75 | 1.1 | °C | 0.0432 |
+| Maximum temperature | Fall | 1981 | 0.030 | 45 | 1.3 | °C | 0.0227 |
+| Maximum temperature | Spring | 1951 | 0.026 | 75 | 1.9 | °C | 0.0009 |
+| Maximum temperature | Spring | 1981 | 0.008 | 45 | 0.4 | °C | 0.7028 |
+| Maximum temperature | Summer | 1951 | 0.027 | 75 | 2.0 | °C | 0.0003 |
+| Maximum temperature | Summer | 1981 | 0.030 | 45 | 1.3 | °C | 0.0674 |
+| Maximum temperature | Winter | 1951 | 0.045 | 75 | 3.4 | °C | 0.0001 |
+| Maximum temperature | Winter | 1981 | 0.013 | 45 | 0.6 | °C | 0.5638 |
 | Mean temperature | Annual | 1951 | 0.030 | 75 | 2.2 | °C | 0.0000 |
 | Mean temperature | Annual | 1981 | 0.023 | 45 | 1.0 | °C | 0.0264 |
 | Mean temperature | Fall | 1951 | 0.020 | 75 | 1.5 | °C | 0.0099 |
@@ -291,15 +291,15 @@ cd::cd_summary(trn)
 | Mean temperature | Winter | 1951 | 0.044 | 75 | 3.3 | °C | 0.0002 |
 | Mean temperature | Winter | 1981 | 0.007 | 45 | 0.3 | °C | 0.7321 |
 | Minimum temperature | Annual | 1951 | 0.032 | 75 | 2.4 | °C | 0.0000 |
-| Minimum temperature | Annual | 1981 | 0.024 | 45 | 1.1 | °C | 0.0116 |
-| Minimum temperature | Fall | 1951 | 0.025 | 75 | 1.9 | °C | 0.0027 |
-| Minimum temperature | Fall | 1981 | 0.046 | 45 | 2.1 | °C | 0.0014 |
-| Minimum temperature | Spring | 1951 | 0.027 | 75 | 2.0 | °C | 0.0001 |
-| Minimum temperature | Spring | 1981 | 0.003 | 45 | 0.1 | °C | 0.7917 |
+| Minimum temperature | Annual | 1981 | 0.024 | 45 | 1.1 | °C | 0.0141 |
+| Minimum temperature | Fall | 1951 | 0.025 | 75 | 1.9 | °C | 0.0026 |
+| Minimum temperature | Fall | 1981 | 0.046 | 45 | 2.1 | °C | 0.0016 |
+| Minimum temperature | Spring | 1951 | 0.027 | 75 | 2.1 | °C | 0.0001 |
+| Minimum temperature | Spring | 1981 | 0.003 | 45 | 0.1 | °C | 0.8068 |
 | Minimum temperature | Summer | 1951 | 0.035 | 75 | 2.6 | °C | 0.0000 |
-| Minimum temperature | Summer | 1981 | 0.036 | 45 | 1.6 | °C | 0.0015 |
-| Minimum temperature | Winter | 1951 | 0.043 | 75 | 3.3 | °C | 0.0003 |
-| Minimum temperature | Winter | 1981 | 0.005 | 45 | 0.2 | °C | 0.7917 |
+| Minimum temperature | Summer | 1981 | 0.036 | 45 | 1.6 | °C | 0.0014 |
+| Minimum temperature | Winter | 1951 | 0.044 | 75 | 3.3 | °C | 0.0005 |
+| Minimum temperature | Winter | 1981 | 0.004 | 45 | 0.2 | °C | 0.8679 |
 | Vapour pressure deficit | Annual | 1951 | 0.005 | 75 | 0.3 | Pa | 0.0008 |
 | Vapour pressure deficit | Annual | 1981 | 0.005 | 45 | 0.2 | Pa | 0.0963 |
 | Vapour pressure deficit | Fall | 1951 | 0.002 | 75 | 0.2 | Pa | 0.0323 |
@@ -402,21 +402,21 @@ cmp <- cd::cd_compare(ts)   # defaults: 2015–2025 vs 1951–1980, Welch t-test
 | swe | summer | 5.27 | 21.50 | -16.23 | -75.5 | 0.000 | 0.003 |
 | swe | winter | 192.64 | 195.91 | -3.27 | -1.7 | 0.754 | 0.913 |
 | swe_max | annual | 333.64 | 348.42 | -14.79 | -4.2 | 0.433 | 0.770 |
-| tmax | annual | 3.66 | 1.99 | 1.67 | NA | 0.000 | 0.000 |
-| tmax | fall | 3.49 | 2.55 | 0.93 | NA | 0.039 | 0.066 |
-| tmax | spring | 3.93 | 2.16 | 1.76 | NA | 0.000 | 0.001 |
-| tmax | summer | 16.62 | 15.00 | 1.62 | NA | 0.001 | 0.000 |
-| tmax | winter | -9.40 | -11.77 | 2.37 | NA | 0.001 | 0.000 |
+| tmax | annual | 3.04 | 1.36 | 1.68 | NA | 0.000 | 0.000 |
+| tmax | fall | 2.86 | 1.88 | 0.97 | NA | 0.029 | 0.043 |
+| tmax | spring | 3.37 | 1.61 | 1.76 | NA | 0.001 | 0.001 |
+| tmax | summer | 15.87 | 14.24 | 1.63 | NA | 0.001 | 0.000 |
+| tmax | winter | -9.96 | -12.30 | 2.34 | NA | 0.002 | 0.000 |
 | tmean | annual | -0.59 | -2.41 | 1.82 | NA | 0.000 | 0.000 |
 | tmean | fall | -0.32 | -1.58 | 1.26 | NA | 0.005 | 0.010 |
 | tmean | spring | -0.75 | -2.57 | 1.82 | NA | 0.000 | 0.000 |
 | tmean | summer | 11.64 | 9.76 | 1.88 | NA | 0.000 | 0.000 |
 | tmean | winter | -12.92 | -15.27 | 2.34 | NA | 0.003 | 0.000 |
-| tmin | annual | -4.12 | -6.05 | 1.93 | NA | 0.000 | 0.000 |
-| tmin | fall | -3.19 | -4.71 | 1.52 | NA | 0.001 | 0.003 |
-| tmin | spring | -4.76 | -6.49 | 1.74 | NA | 0.000 | 0.000 |
-| tmin | summer | 6.93 | 4.81 | 2.12 | NA | 0.000 | 0.000 |
-| tmin | winter | -15.47 | -17.81 | 2.33 | NA | 0.004 | 0.000 |
+| tmin | annual | -4.38 | -6.33 | 1.95 | NA | 0.000 | 0.000 |
+| tmin | fall | -3.57 | -5.13 | 1.56 | NA | 0.001 | 0.003 |
+| tmin | spring | -4.99 | -6.75 | 1.76 | NA | 0.000 | 0.000 |
+| tmin | summer | 6.83 | 4.70 | 2.13 | NA | 0.000 | 0.000 |
+| tmin | winter | -15.81 | -18.14 | 2.33 | NA | 0.004 | 0.000 |
 | vpd | annual | 2.14 | 1.86 | 0.28 | 15.1 | 0.002 | 0.001 |
 | vpd | fall | 1.48 | 1.32 | 0.16 | 12.3 | 0.065 | 0.032 |
 | vpd | spring | 2.05 | 1.67 | 0.38 | 22.8 | 0.000 | 0.000 |
@@ -686,9 +686,9 @@ solid line is the 45-year trend.
 
 | Ecoregion | tmean degC/dec | tmax degC/dec | tmin degC/dec | prcp mm/yr | prcp p | vpd hPa/dec | vpd p | prcp pct change | soil moisture pct change |
 |:---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| FAB | 0.29 | 0.26 | 0.30 | 0.032 | 0.634 | 0.061 | 0.002 | 0.8 | -1.3 |
-| CRM | 0.29 | 0.25 | 0.30 | 0.077 | 0.253 | 0.045 | 0.001 | 4.1 | -0.5 |
-| OMM | 0.32 | 0.29 | 0.34 | 0.052 | 0.421 | 0.054 | 0.000 | 2.5 | -0.7 |
+| FAB | 0.29 | 0.26 | 0.31 | 0.032 | 0.634 | 0.061 | 0.002 | 0.8 | -1.3 |
+| CRM | 0.29 | 0.26 | 0.30 | 0.077 | 0.253 | 0.045 | 0.001 | 4.1 | -0.5 |
+| OMM | 0.32 | 0.28 | 0.34 | 0.052 | 0.421 | 0.054 | 0.000 | 2.5 | -0.7 |
 | BMP | 0.30 | 0.27 | 0.33 | 0.144 | 0.023 | 0.033 | 0.003 | 6.3 | 0.3 |
 | NRM | 0.29 | 0.26 | 0.31 | 0.156 | 0.015 | 0.030 | 0.004 | 6.6 | 0.6 |
 

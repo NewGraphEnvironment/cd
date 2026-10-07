@@ -43,6 +43,18 @@ A tibble with columns:
   ERA5-Land variable name for CDS API requests, or NA for derived
   variables.
 
+## Details
+
+`tmax` and `tmin` are monthly means of the daily maximum and minimum of
+hourly 2 m temperature, over **local days** at a fixed UTC-8 (Pacific
+Standard Time, no daylight saving; an hour off in the Mountain Standard
+Time corner of eastern BC), the same days as
+[`cd_extract_daily()`](https://newgraphenvironment.github.io/cd/reference/cd_extract_daily.md).
+Before cd#37 the published layers used UTC days, which run from one
+afternoon peak to the next and read tmax about 0.5-0.8 degrees C high.
+`tmean`, `vpd`, `rh` and `soil_moisture` average hourly values over UTC
+months.
+
 ## Examples
 
 ``` r

@@ -277,15 +277,15 @@ cd::cd_summary(trn)
 | Annual peak snow water equivalent | Annual | 1951 | -1.650 | 75 | -123.7 | mm | 0.0042 |
 | Annual peak snow water equivalent | Annual | 1981 | 0.460 | 45 | 20.7 | mm | 0.7468 |
 | Maximum temperature | Annual | 1951 | 0.024 | 75 | 1.8 | °C | 0.0000 |
-| Maximum temperature | Annual | 1981 | 0.032 | 45 | 1.4 | °C | 0.0016 |
-| Maximum temperature | Fall | 1951 | 0.018 | 75 | 1.4 | °C | 0.0161 |
-| Maximum temperature | Fall | 1981 | 0.028 | 45 | 1.2 | °C | 0.0227 |
-| Maximum temperature | Spring | 1951 | 0.028 | 75 | 2.1 | °C | 0.0002 |
-| Maximum temperature | Spring | 1981 | 0.007 | 45 | 0.3 | °C | 0.6884 |
-| Maximum temperature | Summer | 1951 | 0.038 | 75 | 2.8 | °C | 0.0000 |
-| Maximum temperature | Summer | 1981 | 0.056 | 45 | 2.5 | °C | 0.0001 |
-| Maximum temperature | Winter | 1951 | 0.021 | 75 | 1.6 | °C | 0.0031 |
-| Maximum temperature | Winter | 1981 | 0.017 | 45 | 0.8 | °C | 0.2444 |
+| Maximum temperature | Annual | 1981 | 0.030 | 45 | 1.4 | °C | 0.0012 |
+| Maximum temperature | Fall | 1951 | 0.019 | 75 | 1.4 | °C | 0.0122 |
+| Maximum temperature | Fall | 1981 | 0.027 | 45 | 1.2 | °C | 0.0215 |
+| Maximum temperature | Spring | 1951 | 0.027 | 75 | 2.0 | °C | 0.0002 |
+| Maximum temperature | Spring | 1981 | 0.006 | 45 | 0.3 | °C | 0.7617 |
+| Maximum temperature | Summer | 1951 | 0.036 | 75 | 2.7 | °C | 0.0000 |
+| Maximum temperature | Summer | 1981 | 0.055 | 45 | 2.5 | °C | 0.0001 |
+| Maximum temperature | Winter | 1951 | 0.021 | 75 | 1.6 | °C | 0.0044 |
+| Maximum temperature | Winter | 1981 | 0.016 | 45 | 0.7 | °C | 0.3328 |
 | Mean temperature | Annual | 1951 | 0.026 | 75 | 2.0 | °C | 0.0000 |
 | Mean temperature | Annual | 1981 | 0.034 | 45 | 1.5 | °C | 0.0009 |
 | Mean temperature | Fall | 1951 | 0.025 | 75 | 1.8 | °C | 0.0004 |
@@ -298,14 +298,14 @@ cd::cd_summary(trn)
 | Mean temperature | Winter | 1981 | 0.021 | 45 | 1.0 | °C | 0.1932 |
 | Minimum temperature | Annual | 1951 | 0.027 | 75 | 2.0 | °C | 0.0000 |
 | Minimum temperature | Annual | 1981 | 0.032 | 45 | 1.4 | °C | 0.0011 |
-| Minimum temperature | Fall | 1951 | 0.029 | 75 | 2.2 | °C | 0.0000 |
-| Minimum temperature | Fall | 1981 | 0.044 | 45 | 2.0 | °C | 0.0001 |
-| Minimum temperature | Spring | 1951 | 0.026 | 75 | 1.9 | °C | 0.0000 |
-| Minimum temperature | Spring | 1981 | 0.005 | 45 | 0.2 | °C | 0.7174 |
+| Minimum temperature | Fall | 1951 | 0.030 | 75 | 2.3 | °C | 0.0000 |
+| Minimum temperature | Fall | 1981 | 0.046 | 45 | 2.1 | °C | 0.0001 |
+| Minimum temperature | Spring | 1951 | 0.026 | 75 | 2.0 | °C | 0.0000 |
+| Minimum temperature | Spring | 1981 | 0.004 | 45 | 0.2 | °C | 0.6598 |
 | Minimum temperature | Summer | 1951 | 0.040 | 75 | 3.0 | °C | 0.0000 |
-| Minimum temperature | Summer | 1981 | 0.046 | 45 | 2.1 | °C | 0.0001 |
-| Minimum temperature | Winter | 1951 | 0.014 | 75 | 1.0 | °C | 0.0906 |
-| Minimum temperature | Winter | 1981 | 0.024 | 45 | 1.1 | °C | 0.2141 |
+| Minimum temperature | Summer | 1981 | 0.046 | 45 | 2.1 | °C | 0.0002 |
+| Minimum temperature | Winter | 1951 | 0.014 | 75 | 1.0 | °C | 0.0941 |
+| Minimum temperature | Winter | 1981 | 0.022 | 45 | 1.0 | °C | 0.2000 |
 | Vapour pressure deficit | Annual | 1951 | 0.012 | 75 | 0.9 | Pa | 0.0000 |
 | Vapour pressure deficit | Annual | 1981 | 0.024 | 45 | 1.1 | Pa | 0.0000 |
 | Vapour pressure deficit | Fall | 1951 | 0.008 | 75 | 0.6 | Pa | 0.0088 |
@@ -408,21 +408,21 @@ cmp <- cd::cd_compare(ts)   # defaults: 2015–2025 vs 1951–1980, Welch t-test
 | swe | summer | 10.24 | 37.82 | -27.58 | -72.9 | 0.000 | 0.002 |
 | swe | winter | 247.77 | 296.54 | -48.77 | -16.4 | 0.000 | 0.001 |
 | swe_max | annual | 471.59 | 563.35 | -91.75 | -16.3 | 0.006 | 0.004 |
-| tmax | annual | 7.89 | 6.32 | 1.57 | NA | 0.000 | 0.000 |
-| tmax | fall | 7.88 | 6.91 | 0.97 | NA | 0.052 | 0.016 |
-| tmax | spring | 6.72 | 4.90 | 1.82 | NA | 0.001 | 0.000 |
-| tmax | summer | 21.16 | 18.67 | 2.49 | NA | 0.000 | 0.000 |
-| tmax | winter | -4.20 | -5.21 | 1.01 | NA | 0.041 | 0.003 |
+| tmax | annual | 7.33 | 5.78 | 1.56 | NA | 0.000 | 0.000 |
+| tmax | fall | 7.30 | 6.30 | 1.00 | NA | 0.040 | 0.012 |
+| tmax | spring | 6.30 | 4.51 | 1.79 | NA | 0.001 | 0.000 |
+| tmax | summer | 20.37 | 17.92 | 2.44 | NA | 0.000 | 0.000 |
+| tmax | winter | -4.64 | -5.63 | 0.99 | NA | 0.051 | 0.004 |
 | tmean | annual | 3.29 | 1.63 | 1.65 | NA | 0.000 | 0.000 |
 | tmean | fall | 3.49 | 2.07 | 1.42 | NA | 0.002 | 0.000 |
 | tmean | spring | 2.05 | 0.28 | 1.77 | NA | 0.000 | 0.000 |
 | tmean | summer | 15.27 | 12.75 | 2.52 | NA | 0.000 | 0.000 |
 | tmean | winter | -7.65 | -8.56 | 0.91 | NA | 0.098 | 0.028 |
-| tmin | annual | -0.69 | -2.34 | 1.66 | NA | 0.000 | 0.000 |
-| tmin | fall | -0.07 | -1.85 | 1.78 | NA | 0.000 | 0.000 |
-| tmin | spring | -2.04 | -3.60 | 1.56 | NA | 0.000 | 0.000 |
-| tmin | summer | 9.54 | 7.07 | 2.47 | NA | 0.000 | 0.000 |
-| tmin | winter | -10.18 | -10.99 | 0.81 | NA | 0.176 | 0.091 |
+| tmin | annual | -0.97 | -2.63 | 1.66 | NA | 0.000 | 0.000 |
+| tmin | fall | -0.40 | -2.25 | 1.85 | NA | 0.000 | 0.000 |
+| tmin | spring | -2.27 | -3.83 | 1.55 | NA | 0.000 | 0.000 |
+| tmin | summer | 9.33 | 6.87 | 2.45 | NA | 0.000 | 0.000 |
+| tmin | winter | -10.52 | -11.32 | 0.79 | NA | 0.188 | 0.094 |
 | vpd | annual | 3.63 | 2.81 | 0.81 | 28.8 | 0.000 | 0.000 |
 | vpd | fall | 2.67 | 2.22 | 0.46 | 20.6 | 0.060 | 0.009 |
 | vpd | spring | 2.52 | 1.98 | 0.54 | 27.5 | 0.000 | 0.000 |
@@ -737,9 +737,9 @@ the freshet midpoint shifted earlier in the year.
 
 | Ecoregion | tmean degC/dec | tmax degC/dec | tmin degC/dec | prcp mm/yr | prcp p | vpd hPa/dec | vpd p | prcp pct change | soil moisture pct change |
 |:---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| SBF | 0.30 | 0.29 | 0.30 | -0.110 | 0.061 | 0.154 | 0 | -6.6 | -2.1 |
+| SBF | 0.30 | 0.28 | 0.30 | -0.110 | 0.061 | 0.154 | 0 | -6.6 | -2.1 |
 | NCM | 0.25 | 0.23 | 0.26 | -0.121 | 0.030 | 0.108 | 0 | -6.4 | -2.1 |
-| PTR | 0.23 | 0.22 | 0.23 | -0.141 | 0.010 | 0.084 | 0 | -7.0 | -2.3 |
+| PTR | 0.23 | 0.22 | 0.24 | -0.141 | 0.010 | 0.084 | 0 | -7.0 | -2.3 |
 
 Per-ecoregion roll-up over the 75-year window (1951-present): annual
 mean, daytime maximum, and overnight minimum temperature trends (degrees

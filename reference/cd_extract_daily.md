@@ -105,13 +105,13 @@ Rows are ordered by point (input order), variable, then date.
 ## Day boundary
 
 A local day runs from 08:00 UTC to 07:00 UTC the next day: Pacific
-Standard Time, with no daylight saving. A UTC day would split BC's
-afternoon peak (22:00–00:00 UTC) across two days, biasing daily maximum
-low and minimum high, and that bias does not cancel in absolute
-thresholds such as degree-days. The fixed offset is an hour off for the
-Mountain Standard Time corner of eastern BC. The monthly `tmax`/`tmin`
-layers in the catalog are not built from this cube and still use UTC
-days (cd#37).
+Standard Time, with no daylight saving. A UTC day would run from one
+afternoon peak (22:00–00:00 UTC) to the next, so a hot afternoon would
+count toward two days and the daily maximum would read high, a bias that
+does not cancel in absolute thresholds such as degree-days. The fixed
+offset is an hour off for the Mountain Standard Time corner of eastern
+BC. The monthly `tmax`/`tmin` layers in the catalog average these same
+local days (cd#37).
 
 ## Cell choice
 
