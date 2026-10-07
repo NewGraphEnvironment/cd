@@ -64,6 +64,14 @@ must exit non-zero. Control (unmutated copy) exits 0, 67/67.
 The first harness counted FAIL lines only and reported M1 as "0 failing" — a crash
 prints none. Exit status is the signal; the FAIL count is detail.
 
+## Live dry run, STEP 1 rewritten (2026-10-07)
+
+`Rscript scripts/pipeline_update_edh.R --dry-run`, local, against the live bucket:
+59 COG headers read over `/vsicurl/` in **41 s** (08:39:18-08:40:00 by the log,
+~0.7 s each), all agreeing on 1950-2025, nothing ahead; catalog check passed; exit 0
+("No year complete in local time beyond 2025 yet"). Before this change STEP 1 read
+one COG. The cost is accepted: ~40 s a run against a weekly two-minute dry run.
+
 ## Errors Encountered
 
 | Error | Resolution |

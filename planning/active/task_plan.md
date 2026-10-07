@@ -21,11 +21,11 @@ until the repair is published.
 - [x] Mutation check: break each branch and confirm a test goes red (table in findings.md)
 
 ## Phase 2: STEP 1–2 in `pipeline_update_edh.R`
-- [ ] Replace the `tmean_row` / `r_current` read with a read of all 59 COGs' band names; unreadable COG → named problem
-- [ ] `current_years` / `latest_year` from `common`; exit 1 on `problems` with a stage-3 hint
-- [ ] Catalog check against `common`; WARNING listing `ahead` COGs
-- [ ] `partial_live` flag + `finish()` exits non-zero while it is set; dry-run branch reports and exits 0
-- [ ] Header flow comment updated
+- [x] Replace the `tmean_row` / `r_current` read with a read of all 59 COGs' band names; unreadable COG → named problem
+- [x] `current_years` / `latest_year` from `common`; exit 1 on `problems` with a stage-3 hint
+- [x] Catalog check against `common`; WARNING listing `ahead` COGs
+- [x] `partial_live` flag + `finish()` exits non-zero while it is set; dry-run branch reports and exits 0
+- [x] Header flow comment updated
 
 ## Phase 3: STEP 4–5
 - [ ] `append_to_cog()` drops already-held years and rewrites an unchanged COG; `NULL` only when nothing was handed in

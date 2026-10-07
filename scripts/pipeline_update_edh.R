@@ -6,7 +6,10 @@
 # Replaces the CDS-based pipeline_update.R.
 #
 # Flow:
-#   1. Read STAC catalog from S3 → find latest year already published
+#   1. Read the band names of all 59 live COGs → the years every one holds.
+#      A sync that died partway leaves some a year ahead; the run targets the
+#      years they all hold and step 4 appends to each only what it lacks, so
+#      the next run repairs it (#119). Then check the live STAC catalog.
 #   2. Determine target year (latest complete year available on EDH),
 #      capped at the latest complete *local* year: tmax/tmin use local days
 #      (#37), so a year is not ready until 07:00 UTC on 1 Jan of the next.
@@ -285,12 +288,21 @@ daily_dir <- "data/backfill/daily"
 daily_base <- paste0("https://", bucket, ".s3.us-west-2.amazonaws.com/daily")
 daily_vars <- c("tmean", "tmax", "tmin")
 daily_failed <- FALSE
+# Set in STEP 1 when an earlier sync left some live COGs ahead of the rest,
+# cleared once STEP 5 has published the repair (#119).
+partial_live <- FALSE
 
 # Every later exit goes through here, so a daily failure is never reported
-# as a green run by an annual path that had nothing to do.
+# as a green run by an annual path that had nothing to do, and a live run that
+# found the COGs out of step is never green until it has put them back.
 finish <- function(status = 0L) {
   if (daily_failed) {
     log_msg("Daily cube step failed (see STEP D above); exiting non-zero.")
+    status <- 1L
+  }
+  # Not on a dry run: it reports the state, and the next live run repairs it.
+  if (partial_live && !dry_run) {
+    log_msg("The live COGs are still out of step (see STEP 1); exiting non-zero.")
     status <- 1L
   }
   quit(status = status)
@@ -410,24 +422,56 @@ catalog <- tryCatch(
   }
 )
 
-# Read one COG to find latest year
-tmean_row <- catalog[catalog$variable == "tmean" & catalog$period == "annual", ]
-if (nrow(tmean_row) == 0) {
-  log_msg("No tmean_annual in catalog — run full backfill first")
-  quit(status = 1)
+# The years every live COG holds, not tmean_annual's alone (#119). A STEP 5
+# sync that dies partway leaves some COGs a year ahead, and the catalog behind
+# with the rest (cd_s3_push() aborts before it goes up). Reading one COG took
+# its end year as everyone's: either the run failed against the catalog, or it
+# fetched for hours and appended the year a second time to the COGs that had
+# it. The target is now the earliest end year, and STEP 4 appends to each COG
+# only what it lacks. Read from the bucket by name, not via the catalog's
+# hrefs, which are the same URLs (cd_stac_catalog() builds them from base_url).
+expected_cogs <- cog_expected(agg_methods, seasons, annual_vars)
+cog_base <- paste0("https://", bucket, ".s3.us-west-2.amazonaws.com")
+log_msg("Reading the band names of the ", length(expected_cogs), " live COGs...")
+read_start <- Sys.time()
+live_years <- lapply(stats::setNames(nm = expected_cogs), function(f) {
+  tryCatch(names(rast(paste0("/vsicurl/", cog_base, "/", f))),
+           error = function(e) NULL)
+})
+log_msg("  Read in ", round(as.numeric(Sys.time() - read_start, units = "secs")), "s")
+spans <- live_spans(live_years)
+if (length(spans$problems) > 0) {
+  log_msg("ERROR: the live COGs cannot be brought into step by appending a year.")
+  for (p in spans$problems) log_msg("  - ", p)
+  log_msg("  Repair: rebuild all ", length(expected_cogs),
+          " COGs with scripts/pipeline_stage3_edh.R.")
+  finish(1L)
 }
-r_current <- rast(paste0("/vsicurl/", tmean_row$href))
-current_years <- as.integer(names(r_current))
-latest_year <- max(current_years, na.rm = TRUE)
-log_msg("Latest year on S3: ", latest_year)
+current_years <- spans$common
+latest_year <- max(current_years)
+log_msg("Latest year every live COG holds: ", latest_year)
+partial_live <- length(spans$ahead) > 0
+if (partial_live) {
+  ahead_by <- vapply(spans$ahead, function(y) paste(y, collapse = ", "), character(1))
+  log_msg("WARNING: ", length(spans$ahead), " of ", length(expected_cogs),
+          " live COGs hold years the others lack; an earlier STEP 5 sync ",
+          "stopped partway (#119). This run appends those years to the rest.")
+  for (y in unique(ahead_by)) {
+    cogs <- names(ahead_by)[ahead_by == y]
+    log_msg("  also holding ", y, ": ", length(cogs), " COG(s) (",
+            paste(utils::head(cogs, 5), collapse = ", "),
+            if (length(cogs) > 5) ", ..." else "", ")")
+  }
+}
 
 # STEP 5 publishes only the full set, so a live catalog that is not the full
 # set can never be updated; say so now rather than after hours of fetching.
 # Its years are checked against the COGs too: if a run's catalog upload failed
-# after its COG sync, tmean_annual already holds the new year, every later run
+# after its COG sync, every COG already holds the new year, every later run
 # would find nothing to do, and the catalog would stay a year behind, green.
+# After a sync that died partway, the catalog spans `common`, the years every
+# COG holds, so it passes and the run repairs the COGs.
 # Before the dry-run exit, so the weekly heartbeat reports either (#89).
-expected_cogs <- cog_expected(agg_methods, seasons, annual_vars)
 live_keys <- paste(catalog$variable, catalog$period, sep = "_")
 live_items <- tryCatch(catalog_item_years(jsonlite::read_json(catalog_url)),
                        error = function(e) NULL)
@@ -442,7 +486,14 @@ if (length(key_problems) > 0) {
           length(expected_cogs), " items spanning ", min(current_years), "-",
           latest_year, "), and an incremental run cannot repair it.")
   for (p in key_problems) log_msg("  - ", p)
-  log_msg("  Repair: ", catalog_repair_hint(bucket))
+  # A catalog rebuilt from COGs that are themselves out of step would list
+  # mixed spans; those need every COG rebuilt.
+  log_msg("  Repair: ", if (partial_live) {
+    paste0("the COGs are out of step as well, so rebuild all ",
+           length(expected_cogs), " with scripts/pipeline_stage3_edh.R.")
+  } else {
+    catalog_repair_hint(bucket)
+  })
   finish(1L)
 }
 log_msg("Live catalog: the expected ", length(expected_cogs), " items, ",
@@ -481,6 +532,17 @@ if (length(candidate_years) == 0) {
   finish(0L)
 }
 log_msg("Candidate years to fetch: ", paste(candidate_years, collapse = ", "))
+# Every year a COG is ahead by must be fetched, or STEP 5 would refuse the
+# publish after the whole fetch. Published years were complete when they went
+# up, so this should never fire; when it does, say so before fetching.
+unfetched <- setdiff(unlist(spans$ahead), candidate_years)
+if (length(unfetched) > 0) {
+  log_msg("ERROR: live COGs hold ", paste(sort(unfetched), collapse = ", "),
+          ", which this run cannot fetch (not complete in local time on EDH), ",
+          "so it cannot bring the rest up to them. Rebuild all ",
+          length(expected_cogs), " with scripts/pipeline_stage3_edh.R.")
+  finish(1L)
+}
 
 # Appending local-day tmax/tmin years (#37) onto UTC-day history would put a
 # 0.5-0.8 degC step into every tmax COG. The history is local-day once
@@ -523,6 +585,12 @@ if (dry_run) {
           " via EDH, append any complete years to the ",
           length(agg_methods) + length(annual_vars),
           " variable COGs, and publish to s3://", bucket, ".")
+  if (partial_live) {
+    log_msg("WARNING: that includes ",
+            paste(sort(unique(unlist(spans$ahead))), collapse = ", "),
+            ", which some live COGs already hold; each COG gets only the years ",
+            "it lacks, repairing the partial sync found in STEP 1.")
+  }
   finish(0L)
 }
 
