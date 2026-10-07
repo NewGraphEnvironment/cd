@@ -35,9 +35,9 @@ Nothing is pushed on abort (the push comes after the catalog), so the live bucke
 - [x] (code-check round 3) STEP 1 also checks the live catalog's item years against the live COGs, so a failed catalog upload cannot leave it a year behind on green runs; failures name a catalog-only repair
 
 ## Phase 3: Stage 3 uses the same guard
-- [ ] Replace stage 3's inline `expected_cogs` and span/live-year checks (:183-225) with `cog_expected()` + `publish_problems()`. Behaviour is unchanged (required_years = live years) and the 59-COG rule now lives in one place
-- [ ] Add the same built-catalog-covers-live readback before its push
-- [ ] Same explicit catalog upload + live readback (dry-run passes `--dryrun`). Stage 3 is now stricter: a stale `.tif` in `data/backfill/cogs` is refused, not published
+- [x] Replace stage 3's inline `expected_cogs` and span/live-year checks (:183-225) with `cog_expected()` + `publish_problems()`. Behaviour is unchanged (required_years = live years) and the 59-COG rule now lives in one place
+- [x] Add the same built-catalog-covers-live readback before its push
+- [x] Same explicit catalog upload + live readback (dry-run passes `--dryrun`). Stage 3 is now stricter: a stale `.tif` in `data/backfill/cogs` is refused, not published
 
 ## Phase 4: Docs
 - [ ] CLAUDE.md: the `pipeline_update_edh.R` Scripts line and the Architecture paragraph say the update path refuses a partial catalog, as stage 3's line does
