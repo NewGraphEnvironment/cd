@@ -71,6 +71,57 @@ Separate follow-up after EDH migration. CDS-based path (#33) closed obsolete; th
   on 1 Jan of the next year, about one month later than before. The daily cube and the
   annual COGs now advance together.
 
+## Phase 3 — the bias, measured (2026-10-06)
+
+`Rscript scripts/tmax_tmin_republish.R --dry-run`: the 10 local-day COGs, built from the cube via
+`backfill_edh_tmax_tmin.py` (152 TIFs, ~40 s), against the live UTC-day COGs (backed up to
+`data/backfill/republish_37/utc_day_backup/`). New minus old, BC-mean of each year's band,
+1950-2025 (76 years); full table in `data/backfill/republish_37/diff_summary.csv`:
+
+| COG | mean shift degC | year range of shift | max abs cell | old mean | new mean |
+|---|---|---|---|---|---|
+| tmax_annual.tif | -0.639 | -0.734 .. -0.572 | 1.27 | 5.16 | 4.52 |
+| tmax_winter.tif | -0.514 | -0.680 .. -0.372 | 1.46 | -7.22 | -7.73 |
+| tmax_spring.tif | -0.627 | -0.801 .. -0.411 | 1.75 | 5.14 | 4.51 |
+| tmax_summer.tif | -0.768 | -0.906 .. -0.668 | 1.60 | 17.30 | 16.53 |
+| tmax_fall.tif | -0.646 | -0.839 .. -0.493 | 1.42 | 5.42 | 4.77 |
+| tmin_annual.tif | -0.308 | -0.387 .. -0.239 | 0.85 | -3.06 | -3.36 |
+| tmin_winter.tif | -0.415 | -0.593 .. -0.273 | 1.73 | -13.74 | -14.15 |
+| tmin_spring.tif | -0.270 | -0.390 .. -0.157 | 0.95 | -3.96 | -4.23 |
+| tmin_summer.tif | -0.147 | -0.200 .. -0.098 | 0.71 | 7.46 | 7.32 |
+| tmin_fall.tif | -0.400 | -0.576 .. -0.300 | 1.29 | -1.99 | -2.39 |
+
+**The issue had the direction backwards.** #37 predicted UTC days bias tmax low and tmin high.
+Both corrections are **negative**:
+
+- The diurnal cycle puts BC's July mean peak at 23-00 UTC (Prince George 23, Kamloops 00) and the
+  minimum at 13 UTC (05 PST), from EDH hourly t2m for 2002.
+- A UTC day therefore runs from one afternoon peak to the next (16:00-16:00 PST). Its max is the
+  larger of yesterday's late afternoon and today's peak, so a hot afternoon counts twice:
+  **UTC tmax is biased high**, by 0.51-0.77 degC by season, most in summer.
+- A UTC day holds exactly one night, so UTC tmin was the cleaner of the two windows. A local
+  midnight day holds the end of one night and the start of the next, two chances at a low, so
+  **local tmin is lower**: 0.15 (summer) to 0.42 (winter) degC. This is the same
+  time-of-observation effect a station day carries, so it matches the station convention the
+  literature compares against (Vincent 18, Karl 93: station-day, local).
+- The diurnal range (tmax - tmin) narrows by about 0.33 degC on the annual mean.
+
+**Provenance of the old values, proven.** EDH hourly t2m for 2002 run through the old UTC
+`resample("1D")` reproduces the live COG at two cells exactly: Prince George annual tmax
+9.182 (live 9.181844), Kamloops 11.846 (live 11.845894). Through local days the same hours give
+8.466 and 11.119, the new COG's values. The whole gap is the day boundary.
+
+**Trends move, not only levels.** The shift's year-to-year range (e.g. tmax_annual -0.73 to
+-0.57) means anomalies and trends change too; the plan reviewer measured 0.49 degC (1960) vs
+0.61 degC (2020) at (-125, 52), about 0.002 degC/yr against a +0.027 degC/yr tmax trend.
+
+**Open question for the user (does not block the PR; it blocks the publish):** the tmin
+correction is a choice, not a fix. Local days match the daily cube and the station convention,
+and they make tmax clean. For tmin, the UTC window was physically cleaner (one night per day).
+Recommended: local days for both (as built), documented. Alternative: tmax on local days,
+tmin on UTC days, so each variable's day boundary sits away from its own extreme. That is
+inconsistent with the cube and with stations.
+
 ## Errors Encountered
 
 | Error | Resolution |

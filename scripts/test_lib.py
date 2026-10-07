@@ -275,11 +275,14 @@ def cube_monthly_matches_hourly() -> bool:
     import tempfile
 
     rng = np.random.default_rng(37)
-    t = pd.date_range(*local_year_window(2023), freq="1h")
+    # 2024: a leap year, so 29 Feb has to survive the band-name round trip.
+    t = pd.date_range(*local_year_window(2024), freq="1h")
     lat = np.array([54.05, 53.95])
     lon = np.array([237.0, 237.1])
+    v = (273.15 + rng.normal(5, 8, (len(t), 2, 2))).astype("float32")
+    v[:, 1, 1] = np.nan  # a sea cell: the cube carries NaN, not a nodata tag
     hourly = xr.DataArray(
-        (273.15 + rng.normal(5, 8, (len(t), 2, 2))).astype("float32"),
+        v,
         coords={"valid_time": t, "latitude": lat, "longitude": lon},
         dims=("valid_time", "latitude", "longitude"),
     )
@@ -288,18 +291,23 @@ def cube_monthly_matches_hourly() -> bool:
     with tempfile.TemporaryDirectory() as tmp:
         out_dir = Path(tmp) / "daily"
         out_dir.mkdir()
-        out = out_dir / "tmax_daily_2023.tif"
+        out = out_dir / "tmax_daily_2024.tif"
         names = [str(d)[:10] for d in daily.valid_time.values]
         write_cog(daily, out, band_names=names)
         cube = read_cog_days(out)
     via_cube = monthly_from_daily(cube)
-    return (np.allclose(direct.values, via_cube.values, atol=1e-5)
+    return (np.allclose(direct.values, via_cube.values, atol=1e-5, equal_nan=True)
+            and bool(np.isnan(via_cube.values[:, 1, 1]).all())
+            and not bool(np.isnan(via_cube.values[:, 0, 0]).any())
+            and cube.sizes["valid_time"] == 366
+            and str(cube.valid_time.values[59])[:10] == "2024-02-29"
+            and via_cube.dtype == np.float32
             and np.allclose(via_cube.latitude.values, lat)
             and np.allclose(via_cube.longitude.values, lon - 360)
             and list(via_cube.dims) == ["valid_time", "latitude", "longitude"])
 
 
-LOCAL_CASES.append(("cube -> monthly equals hourly -> monthly, same grid",
+LOCAL_CASES.append(("cube -> monthly equals hourly -> monthly: grid, NaN, 29 Feb, float32",
                     cube_monthly_matches_hourly))
 
 

@@ -9,7 +9,9 @@ The EDH-based Python pipeline (`scripts/backfill_edh_tmax_tmin.py`) flags this a
 
 ## Context
 
-The published monthly-derived `tmax`/`tmin` COGs (`s3://stac-era5-land/{tmax,tmin}_{annual,winter,spring,summer,fall}.tif`, 1950-2025, written 2026-04-12) take daily max/min over UTC days. BC's afternoon peak falls 22-00 UTC, so it splits across two days: tmax reads low, tmin high. The bias does not cancel for absolute thresholds.
+The published monthly-derived `tmax`/`tmin` COGs (`s3://stac-era5-land/{tmax,tmin}_{annual,winter,spring,summer,fall}.tif`, 1950-2025, written 2026-04-12) take daily max/min over UTC days. BC's afternoon peak falls 22-00 UTC, so it splits across two days. The bias does not cancel for absolute thresholds.
+
+**Correction (measured 2026-10-06, after approval):** the issue's direction was wrong. A UTC day runs 16:00-16:00 PST, so one hot afternoon counts toward two days and UTC tmax reads **high**. Local days lower tmax by 0.51-0.77 degC (mean by season, 1950-2025). Local midnight days hold two partial nights, so tmin also goes **down**, by 0.15-0.42 degC. The live values are reproduced exactly from EDH under UTC days, so the whole gap is the day boundary. See findings.md and review-plan.md (A1, A3).
 
 What exploration found, which shapes the plan:
 
@@ -25,27 +27,30 @@ What exploration found, which shapes the plan:
 
 1. **Regenerate history from the local cube**, not by re-fetching EDH. Phase 2 checks it against the EDH-hourly path on one year.
 2. **The annual publish slips about a month for all 15 variables.** STEP 3 is capped at the latest local-complete year, so every variable still publishes together. The alternatives are a truncated last local day, or tmax/tmin trailing the other variables, which the append logic does not support.
-3. **Republish to S3 before opening the PR, with a backup first.** The vignette numbers can only be refreshed once the corrected COGs are live. The 10 current COGs are copied to `s3://stac-era5-land/_backup/tmax_tmin_utc_day/` and kept locally. `catalog.json` is not rebuilt: the years and extents do not change, and the script asserts that.
+3. ~~Republish to S3 before opening the PR~~ **Republish at merge** (changed after review O1/O2): the vignettes are refreshed from the 10 local COGs, so the PR can be reviewed before anything is published, and main never runs UTC code against local-day data. Backup first, as before. The 10 current COGs are copied to `s3://stac-era5-land/_backup/tmax_tmin_utc_day/` and kept locally. `catalog.json` is not rebuilt: the years and extents do not change, and the script asserts that.
 
 ## Phase 1: Local-month helper + offline tests
 - [x] `_lib.py`: add `monthly_from_daily(daily)`. It takes local-dated daily values, returns the monthly mean labelled by local month, and refuses anything but a whole local year (365/366 days, 12 months)
-- [x] `test_lib.py`: a 23:00 UTC peak on 31 Jan is credited to January; 00-07 UTC on 1 Jan Y belong to Y-1; a cube-shaped input and an hourly→`local_daily`→monthly input give identical monthly values; a short year is refused
+- [x] `test_lib.py`: an evening peak on 31 Jan local (as built: 02:00 UTC on 1 Feb, see findings) is credited to January; 00-07 UTC on 1 Jan Y belong to Y-1; a cube-shaped input and an hourly→`local_daily`→monthly input give identical monthly values; a short year is refused
 - [x] Mutation check: switching back to UTC days turns a case red
 
 ## Phase 2: Producer code on local days
 - [x] `backfill_edh_all.py`: compute tmax/tmin from the `local_year_window()` slice via `local_daily()` + `monthly_from_daily()`, gated on `local_year_complete()` before any compute (#84). tmean/vpd/rh/soil stay on UTC months; that is out of scope, and the shift is negligible for means
 - [x] `backfill_edh_tmax_tmin.py`: rewrite as the cube→monthly backfill: read `data/backfill/daily/{tmax,tmin}_daily_YYYY.tif`, write `data/backfill/monthly/{tmax,tmin}_YYYY.tif`; no EDH, idempotent, `--year`
-- [x] `pipeline_update_edh.R` STEP 3: cap `candidate_years` at STEP D's `latest_complete` when it is known, so an unready local year costs no fetch from either backfiller; when STEP D failed, fall back to current behaviour
+- [x] `pipeline_update_edh.R` STEP 3: cap `candidate_years` at STEP D's `latest_complete` when it is known, so an unready local year costs no fetch from either backfiller; when STEP D failed, ~~fall back to current behaviour~~ skip STEP 3 (review G5)
 - [x] Equivalence check: one year (2002) through the new `backfill_edh_all.py` path vs. the cube-derived file, max abs diff ≈ 0
 
 ## Phase 3: Regenerate and republish tmax/tmin COGs
-- [ ] Run `backfill_edh_tmax_tmin.py` for 1950-2025 (152 monthly TIFs)
-- [ ] `scripts/tmax_tmin_republish.R` (with `--dry-run`): build the 10 COGs with `cd_aggregate()` + `cd_cog_write()` and assert that band names, extent and resolution match the live COGs. It reports the old→new difference per COG (mean, by season), backs up the live 10 (local + `_backup/` prefix), uploads with `aws s3 cp` (not `--size-only` sync), then verifies each upload by ETag/size and reads one back over `/vsicurl/`
-- [ ] Record the measured bias (expected: tmax up, tmin down, largest in summer) in findings, then in `research/` if it is durable
+- [x] Run `backfill_edh_tmax_tmin.py` for 1950-2025 (152 monthly TIFs)
+- [x] `scripts/tmax_tmin_republish.R` (with `--dry-run`): build the 10 COGs with `cd_aggregate()` + `cd_cog_write()` and assert that band names, extent and resolution match the live COGs. It reports the old→new difference per COG (mean, by season), backs up the live 10 (local + `_backup/` prefix), uploads with `aws s3 cp` (not `--size-only` sync), then verifies each upload by ETag/size and reads one back over `/vsicurl/`
+- [x] Record the measured bias (signed, per COG) in findings, then in `research/` if it is durable
+- [x] Review fixes: `pipeline_stage3_edh.R` refuses a partial catalog (G7); STEP 2 skips fetching when the local-year probe fails (G5); republish asserts the single-part size (G8); cube round-trip test covers NaN, 29 Feb, float32 (G3)
+- [ ] Live publish (`tmax_tmin_republish.R` without `--dry-run`) at merge time, then the acceptance checks in review-plan.md
 
 ## Phase 4: Docs, vignettes, release notes
-- [ ] Re-run `data-raw/{peace_fwcp,kootenay_lake}_vignette_data.R`; update the quoted tmax/tmin numbers and any day-night asymmetry claims in both vignettes
+- [ ] Re-run `data-raw/{peace_fwcp,kootenay_lake}_vignette_data.R` against the 10 local COGs; assert the non-tmax/tmin rows are unchanged (O4); update the quoted tmax/tmin numbers, captions and day-night asymmetry claims in both vignettes (A2)
 - [ ] Document the day boundary (local, fixed UTC−8, no DST, MST corner an hour off) in `cd_variables()` roxygen
+- [ ] Update the stale UTC mentions: `R/cd_extract_daily.R` roxygen (+ man), `backfill_edh_daily.py`, `_lib.py` module docstring, `qa_monthly.R` (G2)
 - [ ] Update `README.md` (drop the roadmap item), `CLAUDE.md` (EDH gotcha, scripts list), the `backfill_edh_daily.py` and `_lib.py` docstrings, `research/edh_era5_land_store.md`, and NEWS (values changed; one-month publish slip; `cd_cache_clear()` if revalidation is off)
 
 ## Validation

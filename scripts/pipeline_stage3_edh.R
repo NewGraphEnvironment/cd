@@ -156,6 +156,24 @@ for (var in annual_vars) {
 }
 
 # -- Step 2: STAC catalog ------------------------------------------------------
+# The catalog lists whatever COGs are in cog_dir, and the push replaces the
+# live catalog.json, so a partial monthly_dir would publish a partial catalog.
+# That is the normal state after a single-variable regen (#37 left only tmax
+# and tmin there; scripts/tmax_tmin_republish.R is the tool for that case).
+expected_cogs <- c(
+  as.vector(outer(names(agg_methods), c("annual", names(seasons)), paste, sep = "_")),
+  paste0(annual_vars, "_annual")
+)
+missing_cogs <- setdiff(paste0(expected_cogs, ".tif"), list.files(cog_dir))
+if (length(missing_cogs) > 0) {
+  stop("Refusing to build the catalog: ", length(missing_cogs), " of ",
+       length(expected_cogs), " COGs missing from ", cog_dir, " (",
+       paste(utils::head(missing_cogs, 5), collapse = ", "),
+       if (length(missing_cogs) > 5) ", ..." else "", "). ",
+       "Publishing would replace the live catalog with a partial one.",
+       call. = FALSE)
+}
+
 log_msg("=== STEP 2: Build STAC catalog ===")
 cd_stac_catalog(
   cog_dir,

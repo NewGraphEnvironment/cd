@@ -428,16 +428,20 @@ if (latest_year >= current_year) {
 candidate_years <- seq(latest_year + 1, current_year)
 # tmax/tmin use local days (#37), so a year whose last local day is not yet on
 # EDH cannot write them, and STEP 3 would fetch the other 13 variables only to
-# discard the year. Skip it here instead. Unknown (the probe failed): fall
-# through, and the Python gate still refuses to write a short local year.
-if (!is.na(latest_local)) {
-  later <- candidate_years[candidate_years > latest_local]
-  if (length(later) > 0) {
-    log_msg("Not yet complete in local time (needs 07:00 UTC on 1 Jan of the ",
-            "next year): ", paste(later, collapse = ", "))
-  }
-  candidate_years <- candidate_years[candidate_years <= latest_local]
+# discard the year. Skip it here instead. When the probe failed, skip STEP 3
+# altogether: without it every candidate risks that discarded fetch, and the
+# run already exits non-zero through finish() because STEP D failed with it.
+if (is.na(latest_local)) {
+  log_msg("Latest complete local year unknown (STEP D probe failed); ",
+          "not fetching this run.")
+  finish(0L)
 }
+later <- candidate_years[candidate_years > latest_local]
+if (length(later) > 0) {
+  log_msg("Not yet complete in local time (needs 07:00 UTC on 1 Jan of the ",
+          "next year): ", paste(later, collapse = ", "))
+}
+candidate_years <- candidate_years[candidate_years <= latest_local]
 if (length(candidate_years) == 0) {
   log_msg("No year complete in local time beyond ", latest_year, " yet.")
   log_msg("Nothing to do.")
