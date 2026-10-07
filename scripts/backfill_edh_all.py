@@ -21,7 +21,7 @@ BC bbox, 120x260) with proper CRS tagging, so cd_extract() returns aligned
 pixels across variables.
 
 Output (per year):
-  tmax_YYYY.tif, tmin_YYYY.tif              °C    (hourly t2m → daily max/min → monthly mean)
+  tmax_YYYY.tif, tmin_YYYY.tif              °C    (hourly t2m → local-day max/min → monthly mean)
   tmean_YYYY.tif                            °C    (hourly t2m → monthly mean)
   vpd_YYYY.tif                              hPa   (Tetens from tmean + dewpoint)
   rh_YYYY.tif                               %     (from tmean + dewpoint)
@@ -29,6 +29,12 @@ Output (per year):
   soil_moisture_YYYY.tif                    m3/m3 (hourly swvl1..4 → monthly mean → 4-depth mean)
 
 Idempotent per (variable, year): skips outputs that already exist.
+
+tmax/tmin use local days (fixed UTC-8, `local_daily()` in _lib.py), the same
+days as the daily cube; a UTC day splits BC's afternoon peak across two days
+(#37). A local year ends at 07:00 UTC on 1 Jan of the next year, so tmax/tmin
+for year Y are written only once the store reaches that hour — about a month
+after the other variables could be. The other variables keep UTC months.
 
 Uses TWO EDH Zarr stores:
   - Hourly `reanalysis-era5-land-no-antartica-v0.zarr` for all state variables
@@ -44,12 +50,17 @@ import argparse
 import time
 from pathlib import Path
 
+import dask
 import numpy as np
 import xarray as xr
 
 from _lib import (
     get_token,
+    local_daily,
+    local_year_complete,
+    local_year_window,
     log,
+    monthly_from_daily,
     months_available,
     preflight_single_instance,
     with_retry,
@@ -98,6 +109,9 @@ def tetens_es(t_c):
 HOURLY_VARS = ("tmax", "tmin", "tmean", "vpd", "rh", "soil_moisture")
 DAILY_VARS = ("prcp",)
 ALL_VARS = HOURLY_VARS + DAILY_VARS
+# Hourly variables aggregated over local days, so gated on the local year
+# rather than on 12 UTC months (#37).
+LOCAL_DAY_VARS = ("tmax", "tmin")
 
 
 def outputs_for_year(year: int) -> dict:
@@ -142,6 +156,15 @@ def process_year(year: int, hourly_ds: xr.Dataset, daily_ds: xr.Dataset):
                 if v in needed:
                     log(f"  SKIP {v}: got {n_daily} months, expected 12")
                     del needed[v]
+    # A local year needs the first 8 hours of the next UTC year, which 12 UTC
+    # months do not guarantee: EDH publishes whole UTC months.
+    if (any(v in needed for v in LOCAL_DAY_VARS)
+            and not local_year_complete(hourly_ds, year)):
+        for v in LOCAL_DAY_VARS:
+            if v in needed:
+                log(f"  SKIP {v}: local year {year} not complete "
+                    f"(needs {year + 1}-01-01T07:00 UTC)")
+                del needed[v]
     if not needed:
         log(f"{year}: not complete on EDH yet — nothing fetched")
         return
@@ -152,7 +175,7 @@ def process_year(year: int, hourly_ds: xr.Dataset, daily_ds: xr.Dataset):
     # Hourly subset for the full year (all the state variables we need)
     hourly_box = bc_slice(hourly_ds, f"{year}-01-01", f"{year}-12-31T23:00")
     needed_hourly_vars = []
-    if any(v in needed for v in ("tmax", "tmin", "tmean", "vpd", "rh")):
+    if any(v in needed for v in ("tmean", "vpd", "rh")):
         needed_hourly_vars.append("t2m")
     if any(v in needed for v in ("vpd", "rh")):
         needed_hourly_vars.append("d2m")
@@ -161,25 +184,22 @@ def process_year(year: int, hourly_ds: xr.Dataset, daily_ds: xr.Dataset):
 
     hourly_sub = hourly_ds[needed_hourly_vars].sel(**hourly_box) if needed_hourly_vars else None
 
-    # -- tmax / tmin (daily max/min → monthly mean of daily stat) ------------
-    if "tmax" in needed or "tmin" in needed:
-        t2m = hourly_sub["t2m"]
-        if "tmax" in needed:
-            daily_max = t2m.resample(valid_time="1D").max()
-            monthly_tmax = (daily_max.resample(valid_time="1MS").mean() - 273.15).compute()
-            if monthly_tmax.sizes["valid_time"] == 12:
-                write_geotiff(monthly_tmax, out["tmax"])
-                log(f"  wrote {out['tmax'].name}")
-            else:
-                log(f"  SKIP tmax: got {monthly_tmax.sizes['valid_time']} months, expected 12")
-        if "tmin" in needed:
-            daily_min = t2m.resample(valid_time="1D").min()
-            monthly_tmin = (daily_min.resample(valid_time="1MS").mean() - 273.15).compute()
-            if monthly_tmin.sizes["valid_time"] == 12:
-                write_geotiff(monthly_tmin, out["tmin"])
-                log(f"  wrote {out['tmin'].name}")
-            else:
-                log(f"  SKIP tmin: got {monthly_tmin.sizes['valid_time']} months, expected 12")
+    # -- tmax / tmin (local-day max/min → monthly mean, #37) -----------------
+    # Own slice: the local year runs 08:00 UTC 1 Jan to 07:00 UTC 1 Jan next
+    # year. monthly_from_daily() refuses anything but 12 whole local months,
+    # so no post-compute month count is needed here.
+    local_vars = [v for v in LOCAL_DAY_VARS if v in needed]
+    if local_vars:
+        start, end = local_year_window(year)
+        t2m_local = hourly_ds["t2m"].sel(
+            **bc_slice(hourly_ds, start.isoformat(), end.isoformat())
+        )
+        daily = local_daily(t2m_local)
+        # One compute for both, so the year's hourly t2m is fetched once.
+        monthly = dask.compute(*[monthly_from_daily(daily[v]) for v in local_vars])
+        for v, da in zip(local_vars, monthly):
+            write_geotiff(da, out[v])
+            log(f"  wrote {out[v].name}")
 
     # -- tmean (hourly t2m → monthly mean) -----------------------------------
     if "tmean" in needed:

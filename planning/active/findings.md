@@ -54,6 +54,23 @@ Separate follow-up after EDH migration. CDS-based path (#33) closed obsolete; th
   23:00 UTC spike on the 31st is the same month either way, so it cannot tell the two apart.
   The plan's wording ("23:00 UTC on 31 Jan") was corrected to 02:00 UTC on 1 Feb.
 
+## Phase 2 (2026-10-06)
+
+- **Equivalence, measured.** `backfill_edh_all.py --year 2002` (new local-day path, live EDH,
+  115 s for tmax+tmin in one `dask.compute`) vs `backfill_edh_tmax_tmin.py --year 2002`
+  (cube -> monthly, 0.5 s): identical grid, identical NA mask (10,714 sea cells),
+  max |diff| = 1.3e-5 degC for both tmax and tmin, i.e. float32 rounding. History rebuilt
+  from the cube and new years computed in CI are the same numbers.
+  Harness: the other five 2002 outputs were stubbed with empty files so `needed` held only
+  tmax/tmin, then deleted.
+- The STEP 2 cap lives at the top level: STEP D's `--check` probe was hoisted out of
+  `daily_step()` into `latest_local`, read by both STEP D and STEP 2. When the probe fails
+  (`NA`), STEP 2 does not cap; the Python `local_year_complete()` gate still refuses a short
+  local year, so the worst case is the pre-#37 cost (a fetch that gets discarded).
+- Consequence of the gate: the annual publish of all 15 variables now waits for 07:00 UTC
+  on 1 Jan of the next year, about one month later than before. The daily cube and the
+  annual COGs now advance together.
+
 ## Errors Encountered
 
 | Error | Resolution |

@@ -7,7 +7,9 @@
 #
 # Flow:
 #   1. Read STAC catalog from S3 → find latest year already published
-#   2. Determine target year (latest complete year available on EDH)
+#   2. Determine target year (latest complete year available on EDH),
+#      capped at the latest complete *local* year: tmax/tmin use local days
+#      (#37), so a year is not ready until 07:00 UTC on 1 Jan of the next.
 #   3. If behind, call scripts/backfill_edh_all.py AND backfill_edh_snow.py
 #      for each missing year (both idempotent — Python scripts skip files
 #      that already exist).
@@ -18,10 +20,12 @@
 #
 # Before step 1, STEP D extends the daily air-temperature cube (#116) under
 # s3://<bucket>/daily/, one COG per variable-year from backfill_edh_daily.py.
-# It runs on its own clock: a local-time year needs the first 8 hours of the
-# next UTC year, so the cube trails the annual COGs by about a month, and
-# steps 1-3 exit early on most runs. A daily failure does not stop the
-# annual path; it turns the run's exit status non-zero at the end.
+# A local-time year needs the first 8 hours of the next UTC year. Since #37
+# the annual path waits for that too (monthly tmax/tmin use the same local
+# days), so the cube and the annual COGs advance together, about a month
+# after the year's last UTC month lands; steps 1-3 exit early on most runs.
+# A daily failure does not stop the annual path; it turns the run's exit
+# status non-zero at the end.
 #
 # Designed for the monthly GitHub Action (climate-update.yml). Exits
 # cleanly with status 0 if nothing new is available.
@@ -306,8 +310,10 @@ daily_published <- function(year) {
   NA
 }
 
-daily_step <- function() {
-  # Latest complete local year, from the store's time coordinate only.
+# Latest complete local year, from the store's time coordinate only, or NA
+# when the probe fails. Read twice: STEP D's target, and STEP 2's cap on the
+# annual path (#37).
+latest_local_year <- function() {
   out <- suppressWarnings(system2(
     "uv", c("run", "--quiet", "scripts/backfill_edh_daily.py", "--check"),
     stdout = TRUE
@@ -316,9 +322,19 @@ daily_step <- function() {
   if (!is.null(attr(out, "status")) || length(line) != 1L) {
     log_msg("  ERROR: backfill_edh_daily.py --check failed (exit ",
             if (is.null(attr(out, "status"))) 0L else attr(out, "status"), ")")
-    return(FALSE)
+    return(NA_integer_)
   }
-  target <- as.integer(sub("^latest_complete=", "", line))
+  as.integer(sub("^latest_complete=", "", line))
+}
+
+latest_local <- tryCatch(latest_local_year(), error = function(e) {
+  log_msg("  ERROR: ", conditionMessage(e))
+  NA_integer_
+})
+
+daily_step <- function() {
+  if (is.na(latest_local)) return(FALSE)
+  target <- latest_local
   log_msg("  Latest complete local year on EDH: ", target)
 
   # Walk back from the target to the newest published year. A few years is
@@ -410,6 +426,23 @@ if (latest_year >= current_year) {
   finish(0L)
 }
 candidate_years <- seq(latest_year + 1, current_year)
+# tmax/tmin use local days (#37), so a year whose last local day is not yet on
+# EDH cannot write them, and STEP 3 would fetch the other 13 variables only to
+# discard the year. Skip it here instead. Unknown (the probe failed): fall
+# through, and the Python gate still refuses to write a short local year.
+if (!is.na(latest_local)) {
+  later <- candidate_years[candidate_years > latest_local]
+  if (length(later) > 0) {
+    log_msg("Not yet complete in local time (needs 07:00 UTC on 1 Jan of the ",
+            "next year): ", paste(later, collapse = ", "))
+  }
+  candidate_years <- candidate_years[candidate_years <= latest_local]
+}
+if (length(candidate_years) == 0) {
+  log_msg("No year complete in local time beyond ", latest_year, " yet.")
+  log_msg("Nothing to do.")
+  finish(0L)
+}
 log_msg("Candidate years to fetch: ", paste(candidate_years, collapse = ", "))
 
 if (dry_run) {

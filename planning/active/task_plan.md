@@ -33,10 +33,10 @@ What exploration found, which shapes the plan:
 - [x] Mutation check: switching back to UTC days turns a case red
 
 ## Phase 2: Producer code on local days
-- [ ] `backfill_edh_all.py`: compute tmax/tmin from the `local_year_window()` slice via `local_daily()` + `monthly_from_daily()`, gated on `local_year_complete()` before any compute (#84). tmean/vpd/rh/soil stay on UTC months; that is out of scope, and the shift is negligible for means
-- [ ] `backfill_edh_tmax_tmin.py`: rewrite as the cube→monthly backfill: read `data/backfill/daily/{tmax,tmin}_daily_YYYY.tif`, write `data/backfill/monthly/{tmax,tmin}_YYYY.tif`; no EDH, idempotent, `--year`
-- [ ] `pipeline_update_edh.R` STEP 3: cap `candidate_years` at STEP D's `latest_complete` when it is known, so an unready local year costs no fetch from either backfiller; when STEP D failed, fall back to current behaviour
-- [ ] Equivalence check: one year (2002) through the new `backfill_edh_all.py` path vs. the cube-derived file, max abs diff ≈ 0
+- [x] `backfill_edh_all.py`: compute tmax/tmin from the `local_year_window()` slice via `local_daily()` + `monthly_from_daily()`, gated on `local_year_complete()` before any compute (#84). tmean/vpd/rh/soil stay on UTC months; that is out of scope, and the shift is negligible for means
+- [x] `backfill_edh_tmax_tmin.py`: rewrite as the cube→monthly backfill: read `data/backfill/daily/{tmax,tmin}_daily_YYYY.tif`, write `data/backfill/monthly/{tmax,tmin}_YYYY.tif`; no EDH, idempotent, `--year`
+- [x] `pipeline_update_edh.R` STEP 3: cap `candidate_years` at STEP D's `latest_complete` when it is known, so an unready local year costs no fetch from either backfiller; when STEP D failed, fall back to current behaviour
+- [x] Equivalence check: one year (2002) through the new `backfill_edh_all.py` path vs. the cube-derived file, max abs diff ≈ 0
 
 ## Phase 3: Regenerate and republish tmax/tmin COGs
 - [ ] Run `backfill_edh_tmax_tmin.py` for 1950-2025 (152 monthly TIFs)
