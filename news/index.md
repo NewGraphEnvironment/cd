@@ -1,5 +1,28 @@
 # Changelog
 
+## cd 0.6.0 (2026-10-06)
+
+- Daily air temperature at points: new
+  `cd_extract_daily(points, from, to)` returns daily mean, maximum and
+  minimum 2 m temperature (°C) for any set of BC points from 1950, for
+  stream-temperature models and degree-day work. Days are **local**
+  (fixed UTC−8), not UTC, so BC’s afternoon peak is not split across two
+  days ([\#37](https://github.com/NewGraphEnvironment/cd/issues/37)’s
+  bias, which does not cancel for absolute thresholds). Each row carries
+  the ERA5-Land cell used; a point in a sea cell moves to the nearest
+  land cell and is flagged `cell_moved`. It reads a new daily cube on S3
+  (`s3://stac-era5-land/daily/`, one COG per variable and year, outside
+  the STAC catalog), built by `scripts/backfill_edh_daily.py` and
+  extended by the monthly update about a month after each year ends. Why
+  a cube: the ERA5-Land store makes one point cost a 120-day × 6.4°
+  chunk, so one station × 20 years read directly took 201 s; from the
+  cube it is 80 s for 24 years, and 300 stations take 130 s cold, 12 s
+  warm. The monthly `tmax`/`tmin` layers still use UTC days
+  ([\#37](https://github.com/NewGraphEnvironment/cd/issues/37)).
+  Producer-side, every EDH backfiller now retries a truncated or 502
+  chunk instead of dying on it.
+  ([\#117](https://github.com/NewGraphEnvironment/cd/pull/117))
+
 ## cd 0.5.9 (2026-10-02)
 
 - The installed package is 4.7 MB smaller, about 38%. It no longer ships
