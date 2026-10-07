@@ -454,6 +454,13 @@ Before planning to re-run a workflow on a feature branch, check how it is trigge
 
 *1 line of evidence for this rule is in `conventions/ci-monitoring.md`, which `/code-check` reads in full.*
 
+## A commit pushed by the Actions token starts no workflow, so wait on the SHA you pushed
+Key a CI waiter on the SHA you pushed, never on the default branch's tip: a bot commit made with `GITHUB_TOKEN` (an `update-citation-cff` auto-commit, a docs regen) lands on top of yours and, by GitHub's design, triggers no workflow run, so a loop waiting for runs on the tip waits forever.
+
+The tip moves seconds after a release push, which is exactly when a waiter is started. The bot commit also needs no check of its own when it only touches a file the site does not publish; confirm the deploy provenance instead (the `gh-pages` subject names the SHA that was built).
+
+*1 line of evidence for this rule is in `conventions/ci-monitoring.md`, which `/code-check` reads in full.*
+
 # Code Check — R
 Traps in R: the language and base/utils behaviour, package internals (`R CMD build`, `.Rbuildignore`, roxygen, lintr, `data-raw/`, testthat, pak), and the DBI/duckdb/arrow data layer.
 
@@ -713,6 +720,24 @@ Read the exit status off the result: `st <- attr(out, "status")`, which is `NULL
 
 ### Forked `parallel::mclapply()` workers segfault in `glm.fit` under macOS Accelerate BLAS
 Fit models in parallel on socket workers (`parallel::makeCluster()` with `parLapply()`), not forks: with R linked to Accelerate's vecLib, `mclapply` children segfault inside `glm.fit` (`address 0x110, cause 'invalid permissions'`), and `mclapply` returns try-errors with a warning rather than stopping.
+
+### `c(name = x)` keeps `x`'s own name, so a value from a named vector becomes `name.X`
+Strip the name before you label it: `c(axis = unname(v[1]))` or `c(axis = v[[1]])`.
+
+### `trace(exit =)` also fires when the function raises, and `returnValue()` then has no value
+Give `returnValue()` a default and check its length: `trace(f, exit = quote(rec(returnValue(NULL))))`, then treat anything not length 1 as "no value".
+
+### `Rscript -e` supplies `--args` itself, so adding your own shifts every argument by one
+Write `Rscript -e 'expr' a b`, not `Rscript -e 'expr' --args a b`.
+
+### `read.delim()` quotes by default, so a `"` in a field silently swallows rows
+Read a TSV you wrote unquoted with `quote = "", na.strings = character(), comment.char = ""`.
+
+### duckdb in R: the query that autoloads `icu` binds unreliably, so `LOAD icu` before it
+Run `LOAD icu` on the connection before any query that needs it (`epoch()`, `year()`, a cast to `DATE` on a `TIMESTAMPTZ`), or use a function that needs no extension (`epoch_ms()`).
+
+### `fs::path()` collapses the `//` after a URL scheme, so it cannot build URLs
+Join a URL with `paste(base, key, sep = "/")` or `file.path()`, never `fs::path()`: `fs::path("https://x.ca/b", "k.tif")` is `"https:/x.ca/b/k.tif"`, because fs normalises the doubled separator, and the result is not a valid URL.
 
 # Code Check — Shell
 Tool-level traps in bash, sed, git and `gh`, and in the host toolchain those commands depend on.
@@ -1056,6 +1081,12 @@ Coerce every field you do arithmetic on (`as.numeric(v$PROJ_AGE_1)`) right after
 
 ### The BC WFS caps an un-paged `GetFeature` at 10,000 features and still answers HTTP 200
 Hold any raw WFS read to the server's own count.
+
+### bcdata's error text does not carry a WFS failure's cause, so read it from the response
+To tell a throttle from any other bcdata failure, record the status off the request itself (wrap `crul:::crul_fetch`), not from the message.
+
+### sf and terra can link different GDALs, so a probe through one says nothing about the other
+Check `sf::sf_extSoftVersion()[["GDAL"]]` and `terra::gdal()` before concluding that "GDAL" cannot read something: one R session can hold two GDALs (a CRAN binary of sf bundles its own, terra built against Homebrew links another), and a driver or codec missing from one may be present in the …
 
 # Code Check Conventions
 Structured checklist for reviewing diffs before commit.
@@ -1732,7 +1763,7 @@ would, X is not evidence.
 When the user pushes back on an inference, re-derive rather than defend. The
 conclusion often survives; the reasoning that reaches it is usually different.
 
-*5 lines of evidence for this rule are in `conventions/karpathy.md`, which `/code-check` reads in full.*
+*9 lines of evidence for this rule are in `conventions/karpathy.md`, which `/code-check` reads in full.*
 
 ### Documents that share an ancestor corroborate nothing
 
@@ -1773,7 +1804,7 @@ Five habits:
   sits in three documents is not fixed by repairing the one that was quoted; the other two
   still read as authoritative.
 
-*31 lines of evidence for this rule are in `conventions/karpathy.md`, which `/code-check` reads in full.*
+*39 lines of evidence for this rule are in `conventions/karpathy.md`, which `/code-check` reads in full.*
 
 ### "It can only be answered by testing" is a claim with an author
 
@@ -1789,6 +1820,8 @@ The claim is usually made by someone who knows the domain, at a moment before th
 looked. Not wrong so much as **unexamined**, which is what lets it survive into the
 plan. Then **bound what the probe closed**: reading a desktop plugin says nothing
 about the mobile app. An over-claimed probe is worse than none.
+
+*6 lines of evidence for this rule are in `conventions/karpathy.md`, which `/code-check` reads in full.*
 
 ### A real bug is not necessarily the reported bug
 
@@ -1915,7 +1948,7 @@ Sibling of *"An inventory is only complete relative to a boundary"* in `code-che
 step earlier: that one is about a search that was complete for the wrong scope, this is
 about never having searched the scope where the answer lived.
 
-*25 lines of evidence for this rule are in `conventions/karpathy.md`, which `/code-check` reads in full.*
+*26 lines of evidence for this rule are in `conventions/karpathy.md`, which `/code-check` reads in full.*
 
 #### The storage version: one store is not the world
 
