@@ -193,5 +193,11 @@ check(identical(iy$keys, c("tmean_annual", "swe_max_annual")) &&
         identical(iy$start, c(1950L, NA)) && identical(iy$end, c(2026L, NA)),
       "catalog_item_years reads keys and years, NA where a date is absent")
 
+h <- catalog_repair_hint("stac-era5-land")
+check(grepl("s3://stac-era5-land/catalog.json", h, fixed = TRUE) &&
+        grepl("--exclude 'daily/*'", h, fixed = TRUE) &&
+        grepl("pipeline_stage3_edh.R", h, fixed = TRUE),
+      "catalog_repair_hint names the target key, skips daily/, and the stage 3 fallback")
+
 cat(sprintf("\n%d/%d passed\n", checks - failures, checks))
 quit(status = if (failures > 0L) 1L else 0L)

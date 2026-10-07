@@ -129,8 +129,9 @@ publish_problems <- function(written, expected, on_disk, live_keys,
       problems <- c(problems, "the COGs written this run do not share one span of years")
     } else {
       yrs <- spans[[1]]
-      if (length(yrs) == 0 || anyNA(yrs) ||
-          !identical(yrs, seq(min(yrs), max(yrs)))) {
+      contiguous <- length(yrs) > 0 && !anyNA(yrs) &&
+        identical(yrs, seq(min(yrs), max(yrs)))
+      if (!contiguous) {
         problems <- c(problems, paste0(
           "the years written this run are not one contiguous, ascending run ",
           "of years (a year was skipped, or a band is not a year)"
@@ -189,10 +190,9 @@ catalog_problems <- function(keys, expected, start = NULL, end = NULL,
     hi <- max(as.integer(years))
     start <- suppressWarnings(as.integer(start))
     end <- suppressWarnings(as.integer(end))
-    off <- is.na(start) | is.na(end) | start != lo | end != hi
     if (length(start) != length(keys) || length(end) != length(keys)) {
       problems <- c(problems, "item years do not line up with the items")
-    } else if (any(off)) {
+    } else if (any(off <- is.na(start) | is.na(end) | start != lo | end != hi)) {
       problems <- c(problems, paste0(
         sum(off), " item(s) do not span ", lo, "-", hi, " (",
         show(keys[off]), ")"
@@ -207,11 +207,26 @@ catalog_problems <- function(keys, expected, start = NULL, end = NULL,
 catalog_item_years <- function(catalog_json) {
   yr <- function(x) if (is.null(x)) NA_integer_ else as.integer(substr(x, 1, 4))
   items <- catalog_json$items
+  key <- function(i) {
+    paste(i$properties$`cd:variable`, i$properties$`cd:period`, sep = "_")
+  }
   list(
-    keys = vapply(items, function(i) paste(i$properties$`cd:variable`,
-                                           i$properties$`cd:period`, sep = "_"),
-                  character(1)),
+    keys = vapply(items, key, character(1)),
     start = vapply(items, function(i) yr(i$properties$start_datetime), integer(1)),
     end = vapply(items, function(i) yr(i$properties$end_datetime), integer(1))
+  )
+}
+
+# How to rebuild the live catalog from the live COGs, for a run that finds it
+# out of step with them. Needs no backfill data: only the 59 published COGs,
+# which carry their years in their band names. A COG that is itself missing or
+# short needs scripts/pipeline_stage3_edh.R instead.
+catalog_repair_hint <- function(bucket) {
+  paste0(
+    "aws s3 sync s3://", bucket, "/ <dir> --exclude '*' --include '*.tif' ",
+    "--exclude 'daily/*' --exclude '_backup/*' --exclude '_healthcheck/*'; ",
+    "then in R cd::cd_stac_catalog('<dir>', output_path = '<dir>.json'); ",
+    "then aws s3 cp <dir>.json s3://", bucket, "/catalog.json. ",
+    "If a COG is missing or short, rebuild with scripts/pipeline_stage3_edh.R."
   )
 }

@@ -16,7 +16,10 @@
 #   4. For each variable × period, read existing COG from S3 via /vsicurl,
 #      append the new year (cd_aggregate for monthly natives; direct stack
 #      for annual-derived snow scalars), write locally, push to S3.
-#   5. Rebuild catalog, push to S3.
+#   5. Rebuild catalog, push to S3. Refused unless step 4 rewrote every COG
+#      the catalog lists, each holding the live years plus the new one: the
+#      catalog is built from this run's directory and replaces the live one,
+#      so anything step 4 skipped would vanish from it (#89).
 #
 # Before step 1, STEP D extends the daily air-temperature cube (#116) under
 # s3://<bucket>/daily/, one COG per variable-year from backfill_edh_daily.py.
@@ -78,6 +81,9 @@ catalog_url <- paste0("https://", bucket, ".s3.us-west-2.amazonaws.com/catalog.j
 monthly_dir <- "data/backfill/monthly"
 annual_dir  <- "data/backfill/annual"
 cog_dir <- "data/update/cogs"
+# Outside cog_dir, so the COG sync never carries it: it is uploaded on its own,
+# after the COGs it points at (#89).
+catalog_path <- "data/update/catalog.json"
 seasons <- cd_seasons()
 
 agg_methods <- c(
@@ -415,6 +421,33 @@ current_years <- as.integer(names(r_current))
 latest_year <- max(current_years, na.rm = TRUE)
 log_msg("Latest year on S3: ", latest_year)
 
+# STEP 5 publishes only the full set, so a live catalog that is not the full
+# set can never be updated; say so now rather than after hours of fetching.
+# Its years are checked against the COGs too: if a run's catalog upload failed
+# after its COG sync, tmean_annual already holds the new year, every later run
+# would find nothing to do, and the catalog would stay a year behind, green.
+# Before the dry-run exit, so the weekly heartbeat reports either (#89).
+expected_cogs <- cog_expected(agg_methods, seasons, annual_vars)
+live_keys <- paste(catalog$variable, catalog$period, sep = "_")
+live_items <- tryCatch(catalog_item_years(jsonlite::read_json(catalog_url)),
+                       error = function(e) NULL)
+key_problems <- if (is.null(live_items)) {
+  "could not read the live catalog's item years"
+} else {
+  catalog_problems(live_items$keys, sub("\\.tif$", "", expected_cogs),
+                   live_items$start, live_items$end, current_years)
+}
+if (length(key_problems) > 0) {
+  log_msg("ERROR: the live catalog does not describe the live COGs (",
+          length(expected_cogs), " items spanning ", min(current_years), "-",
+          latest_year, "), and an incremental run cannot repair it.")
+  for (p in key_problems) log_msg("  - ", p)
+  log_msg("  Repair: ", catalog_repair_hint(bucket))
+  finish(1L)
+}
+log_msg("Live catalog: the expected ", length(expected_cogs), " items, ",
+        min(current_years), "-", latest_year)
+
 # -- Step 2: target year ------------------------------------------------------
 # ERA5-Land has ~2-3 month latency. Try the current year — if EDH has all
 # 12 months, backfill_edh_all.py writes; otherwise it skips cleanly and we
@@ -557,12 +590,20 @@ log_msg("New years to integrate: ", paste(new_years_written, collapse = ", "))
 # -- Step 4: rebuild COGs (existing from S3 + new years) ----------------------
 log_msg("=== STEP 4: Append new years to existing COGs ===")
 
+# COGs written by THIS run, with their band names (years), for the guard
+# before STEP 5. Same shape as stage 3's.
+written <- list()
+
 # Helper: append the new years to an existing S3 COG and write locally.
 # Used for both monthly natives (after cd_aggregate) and annual derived
 # (1-band straight read) — caller computes new_layers, this checks grid
-# alignment and writes.
+# alignment and writes. Returns the written COG's band names, or NULL when
+# there was nothing to write.
 append_to_cog <- function(var, period, new_layers, existing_row) {
-  if (length(new_layers) == 0) return(invisible(NULL))
+  if (length(new_layers) == 0) {
+    log_msg("  ", var, "_", period, ": no new layers, not rewritten")
+    return(NULL)
+  }
   cog_name <- paste0(var, "_", period, ".tif")
   cog_path <- file.path(cog_dir, cog_name)
   existing_rast <- tryCatch(
@@ -583,6 +624,7 @@ append_to_cog <- function(var, period, new_layers, existing_row) {
   combined <- c(existing_rast, new_rast)
   cd_cog_write(combined, cog_path, overwrite = TRUE)
   log_msg("  Updated: ", cog_name, " (", nlyr(combined), " years total)")
+  names(combined)
 }
 
 # Monthly natives + 7 core: cd_aggregate from 12-band monthly TIFs.
@@ -598,15 +640,26 @@ for (var in all_monthly_vars) {
     new_layers <- list()
     for (yr in new_years_written) {
       mf <- file.path(monthly_dir, paste0(var, "_", yr, ".tif"))
-      if (!file.exists(mf)) next
+      if (!file.exists(mf)) {
+        log_msg("  ", var, "_", period, ": ", mf, " missing, ", yr, " skipped")
+        next
+      }
       r_m <- rast(mf)
-      if (nlyr(r_m) != 12) next
+      if (nlyr(r_m) != 12) {
+        log_msg("  ", var, "_", period, ": ", mf, " has ", nlyr(r_m),
+                " layers, not 12; ", yr, " skipped")
+        next
+      }
       periods <- cd_aggregate(r_m, method = method, seasons = seasons)
       if (period %in% names(periods)) {
         new_layers[[as.character(yr)]] <- periods[[period]]
+      } else {
+        log_msg("  ", var, "_", period, ": cd_aggregate() returned no ",
+                period, " layer; ", yr, " skipped")
       }
     }
-    append_to_cog(var, period, new_layers, existing_row)
+    bands <- append_to_cog(var, period, new_layers, existing_row)
+    if (!is.null(bands)) written[[paste0(var, "_", period, ".tif")]] <- bands
   }
 }
 
@@ -621,22 +674,90 @@ for (var in annual_vars) {
   new_layers <- list()
   for (yr in new_years_written) {
     af <- file.path(annual_dir, paste0(var, "_", yr, ".tif"))
-    if (!file.exists(af)) next
+    if (!file.exists(af)) {
+      log_msg("  ", var, "_annual: ", af, " missing, ", yr, " skipped")
+      next
+    }
     r <- rast(af)
-    if (nlyr(r) != 1) next
+    if (nlyr(r) != 1) {
+      log_msg("  ", var, "_annual: ", af, " has ", nlyr(r),
+              " layers, not 1; ", yr, " skipped")
+      next
+    }
     new_layers[[as.character(yr)]] <- r
   }
-  append_to_cog(var, "annual", new_layers, existing_row)
+  bands <- append_to_cog(var, "annual", new_layers, existing_row)
+  if (!is.null(bands)) written[[paste0(var, "_annual.tif")]] <- bands
 }
 
 # -- Step 5: rebuild catalog + push -------------------------------------------
 log_msg("=== STEP 5: Rebuild catalog + push to S3 ===")
+
+# The catalog is built from cog_dir and replaces the live one outright, so a
+# COG step 4 skipped would drop out of it while its .tif stayed on S3 with
+# nothing pointing at it (#89). No COG or catalog has been pushed yet.
+log_msg("  COGs written this run: ", length(written), " of ", length(expected_cogs))
+required_years <- union(current_years, new_years_written)
+problems <- publish_problems(
+  written,
+  expected = expected_cogs,
+  on_disk = list.files(cog_dir, pattern = "\\.tif$"),
+  live_keys = live_keys,
+  required_years = required_years
+)
+if (length(problems) > 0) {
+  log_msg("ERROR: refusing to build the catalog; no COG or catalog was published.")
+  for (p in problems) log_msg("  - ", p)
+  finish(1L)
+}
+
 cd_stac_catalog(
   cog_dir,
-  output_path = file.path(cog_dir, "catalog.json"),
+  output_path = catalog_path,
   base_url = paste0("https://", bucket, ".s3.us-west-2.amazonaws.com")
 )
+# Check the catalog that was written, not only the inputs it was built from.
+built <- catalog_item_years(jsonlite::read_json(catalog_path))
+problems <- catalog_problems(built$keys, sub("\\.tif$", "", expected_cogs),
+                             built$start, built$end, required_years)
+if (length(problems) > 0) {
+  log_msg("ERROR: the catalog built this run is not the full set; no COG or ",
+          "catalog was published.")
+  for (p in problems) log_msg("  - ", p)
+  unlink(catalog_path)
+  finish(1L)
+}
+
+# A catalog.json left in cog_dir by a run from before #89 would ride the sync.
+unlink(file.path(cog_dir, "catalog.json"))
 cd_s3_push(cog_dir, bucket = bucket, dry_run = FALSE)
+# On its own and last, for two reasons: the sync is --size-only, and a
+# healthy update changes the catalog only from end year 2025 to 2026, the same
+# byte count, so the sync would skip it; and uploaded after the COGs, it never
+# points at a COG that is not up yet.
+cat_put <- suppressWarnings(system2(
+  "aws", c("s3", "cp", shQuote(catalog_path),
+           shQuote(paste0("s3://", bucket, "/catalog.json"))),
+  stdout = TRUE, stderr = TRUE
+))
+if (!is.null(attr(cat_put, "status"))) {
+  log_msg("ERROR: COGs pushed but catalog.json upload failed (exit ",
+          attr(cat_put, "status"), "): ", paste(cat_put, collapse = " "))
+  log_msg("The live catalog still lists the previous years; the next run's ",
+          "STEP 1 will refuse until it is repaired.")
+  log_msg("Repair: ", catalog_repair_hint(bucket))
+  finish(1L)
+}
+live_after <- tryCatch(catalog_item_years(jsonlite::read_json(catalog_url)),
+                       error = function(e) NULL)
+if (!identical(live_after, built)) {
+  log_msg("ERROR: catalog.json uploaded, but the live catalog read back does ",
+          "not match the one built this run.")
+  log_msg("Repair: ", catalog_repair_hint(bucket))
+  finish(1L)
+}
+log_msg("  Live catalog: ", length(built$keys), " items, ",
+        min(required_years), "-", max(required_years))
 
 log_msg("=== UPDATE COMPLETE ===")
 log_msg("Years added: ", paste(new_years_written, collapse = ", "))
