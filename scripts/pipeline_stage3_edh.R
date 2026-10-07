@@ -64,6 +64,11 @@ log_msg <- function(...) {
 # -- Step 1: Aggregate to seasonal/annual COGs --------------------------------
 log_msg("=== STEP 1: Aggregate monthly -> seasonal/annual COGs ===")
 
+# COGs written by THIS run. cog_dir persists between runs, so a file merely
+# present there may be a stale copy from an earlier run, and the guard before
+# the catalog must not count it.
+written <- character()
+
 all_vars <- names(agg_methods)
 
 for (var in all_vars) {
@@ -109,6 +114,7 @@ for (var in all_vars) {
     multi <- rast(year_layers)
     names(multi) <- names(year_layers)
     cd_cog_write(multi, cog_path, overwrite = TRUE)
+    written <- c(written, basename(cog_path))
     log_msg(sprintf("    wrote %s (%d years)", basename(cog_path), nlyr(multi)))
   }
 }
@@ -152,25 +158,28 @@ for (var in annual_vars) {
   multi <- rast(year_layers)
   names(multi) <- names(year_layers)
   cd_cog_write(multi, cog_path, overwrite = TRUE)
+  written <- c(written, basename(cog_path))
   log_msg(sprintf("    wrote %s (%d years)", basename(cog_path), nlyr(multi)))
 }
 
 # -- Step 2: STAC catalog ------------------------------------------------------
-# The catalog lists whatever COGs are in cog_dir, and the push replaces the
-# live catalog.json, so a partial monthly_dir would publish a partial catalog.
-# That is the normal state after a single-variable regen (#37 left only tmax
-# and tmin there; scripts/tmax_tmin_republish.R is the tool for that case).
+# The catalog lists every COG in cog_dir and the push syncs all of them, so a
+# partial monthly_dir would publish a partial catalog, or stale COGs left in
+# cog_dir by an earlier run over newer live ones. A partial monthly_dir is the
+# normal state after a single-variable regen (#37 left only tmax and tmin
+# there; scripts/tmax_tmin_republish.R is the tool for that case). So every
+# COG must have been written by this run.
 expected_cogs <- c(
   as.vector(outer(names(agg_methods), c("annual", names(seasons)), paste, sep = "_")),
   paste0(annual_vars, "_annual")
 )
-missing_cogs <- setdiff(paste0(expected_cogs, ".tif"), list.files(cog_dir))
+missing_cogs <- setdiff(paste0(expected_cogs, ".tif"), written)
 if (length(missing_cogs) > 0) {
   stop("Refusing to build the catalog: ", length(missing_cogs), " of ",
-       length(expected_cogs), " COGs missing from ", cog_dir, " (",
+       length(expected_cogs), " COGs not written by this run (",
        paste(utils::head(missing_cogs, 5), collapse = ", "),
        if (length(missing_cogs) > 5) ", ..." else "", "). ",
-       "Publishing would replace the live catalog with a partial one.",
+       "Publishing would replace live data with a partial or stale set.",
        call. = FALSE)
 }
 

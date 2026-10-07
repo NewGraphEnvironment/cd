@@ -70,8 +70,15 @@ aws <- function(...) {
   list(ok = is.null(st), out = out)
 }
 
+# Present, absent, or stop. Only an explicit 404 means absent: a 403, a
+# throttle or a dropped connection read as "absent" would send both backup
+# guards down the branch that overwrites the UTC-day originals.
 s3_exists <- function(key) {
-  aws("s3api", "head-object", "--bucket", bucket, "--key", key)$ok
+  res <- aws("s3api", "head-object", "--bucket", bucket, "--key", key)
+  if (res$ok) return(TRUE)
+  if (any(grepl("(404)", res$out, fixed = TRUE))) return(FALSE)
+  stop("Could not tell whether s3://", bucket, "/", key, " exists:\n",
+       paste(res$out, collapse = "\n"), call. = FALSE)
 }
 
 s3_etag <- function(key) {
@@ -104,6 +111,14 @@ for (var in vars) {
   per_year <- lapply(years, function(yr) {
     r <- rast(file.path(monthly_dir, paste0(var, "_", yr, ".tif")))
     if (nlyr(r) != 12) stop(var, " ", yr, ": ", nlyr(r), " layers, need 12", call. = FALSE)
+    # Local-day files carry units=degC (monthly_from_daily() sets it); a
+    # pre-#37 UTC-day file carries EDH's units=K and GRIB tags. The backfills
+    # skip files that exist, so a stale one would otherwise be republished.
+    tags <- metags(r)
+    if (!identical(tags$value[tags$name == "units"], "degC")) {
+      stop(var, " ", yr, ": not a local-day file (no units=degC tag); delete it ",
+           "and re-run scripts/backfill_edh_tmax_tmin.py", call. = FALSE)
+    }
     cd_aggregate(r, method = "mean", seasons = seasons)
   })
   for (period in periods) {
@@ -182,6 +197,13 @@ diff_summary <- do.call(rbind, summary_rows)
 rownames(diff_summary) <- NULL
 write.csv(diff_summary, file.path(work_dir, "diff_summary.csv"), row.names = FALSE)
 print(format(diff_summary, digits = 3), row.names = FALSE)
+# The day boundary moves every COG by 0.15-0.77 degC (#37). A run where
+# nothing moved is rebuilding UTC-day inputs, or the live COGs are already
+# local-day; either way there is nothing to publish.
+if (all(abs(diff_summary$mean_shift_c) < 0.05)) {
+  stop("No COG moved by 0.05 degC or more: inputs are not local-day, or the live ",
+       "COGs already are. Nothing to publish.", call. = FALSE)
+}
 
 if (dry_run) {
   log_msg("=== DRY RUN: nothing uploaded. New COGs in ", new_dir, " ===")

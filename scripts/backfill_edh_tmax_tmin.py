@@ -24,8 +24,9 @@ Same output as backfill_edh_all.py writes for tmax/tmin, on the same grid,
 for pipeline_stage3_edh.R or scripts/tmax_tmin_republish.R to aggregate.
 
 Days are local at a fixed UTC-8 (`LOCAL_OFFSET_H` in _lib.py). Until #37 the
-monthly layers used UTC days, which split BC's afternoon peak (22-00 UTC)
-across two days, biasing tmax low and tmin high. Building the history from
+monthly layers used UTC days, which run from one afternoon peak (22-00 UTC)
+to the next, so a hot afternoon counted toward two days: tmax read 0.5-0.8
+degC high (research/tmax_tmin_day_boundary.md). Building the history from
 the cube costs no EDH fetch, and the monthly and daily products then agree
 by construction. New years in CI come from backfill_edh_all.py, which runs
 the same hourly -> local_daily() -> monthly_from_daily() chain; the offline
