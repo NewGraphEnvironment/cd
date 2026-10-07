@@ -30,7 +30,9 @@ from _lib import (  # noqa: E402
     local_daily,
     local_year_complete,
     local_year_window,
+    monthly_from_daily,
     months_available,
+    read_cog_days,
     with_retry,
     write_cog,
 )
@@ -220,6 +222,93 @@ def cog_roundtrip() -> bool:
 
 LOCAL_CASES.append(("COG: deg C tagged, no GRIB tags, dates kept, no leftovers",
                     cog_roundtrip))
+
+
+def monthly_at(da: xr.DataArray, month: str) -> float:
+    return float(da.sel(valid_time=month).values)
+
+
+def monthly_tmax(year: int, spikes: dict) -> xr.DataArray:
+    return monthly_from_daily(local_daily(hourly_year(year, spikes=spikes))["tmax"])
+
+
+# Monthly tmax/tmin (#37). Each spike sits where a UTC month and a local month
+# disagree, so a UTC-day aggregation credits it to the wrong month.
+MONTHLY_CASES = [
+    # 02:00 UTC on 1 Feb is 18:00 PST on 31 Jan: January's peak, not February's.
+    ("evening peak on the last local day counts for its local month",
+     lambda: (lambda m: abs(monthly_at(m, "2024-01-01") - (10 + 20 / 31)) < 1e-9
+              and abs(monthly_at(m, "2024-02-01") - 10) < 1e-9)(
+                  monthly_tmax(2024, {"2024-02-01T02:00": 303.15}))),
+    # 05:00 UTC on 1 Jan 2024 is 21:00 PST on 31 Dec 2023: last year's December.
+    ("00-07 UTC on 1 Jan belong to the previous year's December",
+     lambda: abs(monthly_at(monthly_tmax(2023, {"2024-01-01T05:00": 303.15}),
+                            "2023-12-01") - (10 + 20 / 31)) < 1e-9),
+    ("12 months labelled 1 Jan .. 1 Dec, deg C",
+     lambda: (lambda m: m.sizes["valid_time"] == 12
+              and str(m.valid_time.values[0])[:10] == "2023-01-01"
+              and str(m.valid_time.values[-1])[:10] == "2023-12-01"
+              and m.attrs == {"units": "degC"})(monthly_tmax(2023, {}))),
+    ("refuses a short year",
+     lambda: raises(ValueError, lambda: monthly_from_daily(
+         local_daily(hourly_year(2023))["tmax"].isel(valid_time=slice(0, 334))))),
+    ("refuses a year with a missing day",
+     lambda: raises(ValueError, lambda: monthly_from_daily(
+         local_daily(hourly_year(2024))["tmax"].drop_sel(
+             valid_time=pd.Timestamp("2024-07-01"))))),
+    ("refuses days spanning two years",
+     lambda: raises(ValueError, lambda: monthly_from_daily(
+         xr.concat([local_daily(hourly_year(2023))["tmax"].isel(valid_time=slice(1, None)),
+                    local_daily(hourly_year(2024))["tmax"].isel(valid_time=slice(0, 1))],
+                   dim="valid_time")))),
+]
+LOCAL_CASES.extend(MONTHLY_CASES)
+
+
+def cube_monthly_matches_hourly() -> bool:
+    """Monthly means from the written cube equal those from the hourly path.
+
+    The monthly tmax/tmin history is rebuilt from the cube while new years come
+    from hourly (backfill_edh_all.py), so the two routes must agree to float32
+    precision, on the same grid, with longitudes moved to -180..180.
+    """
+    import tempfile
+
+    rng = np.random.default_rng(37)
+    # 2024: a leap year, so 29 Feb has to survive the band-name round trip.
+    t = pd.date_range(*local_year_window(2024), freq="1h")
+    lat = np.array([54.05, 53.95])
+    lon = np.array([237.0, 237.1])
+    v = (273.15 + rng.normal(5, 8, (len(t), 2, 2))).astype("float32")
+    v[:, 1, 1] = np.nan  # a sea cell: the cube carries NaN, not a nodata tag
+    hourly = xr.DataArray(
+        v,
+        coords={"valid_time": t, "latitude": lat, "longitude": lon},
+        dims=("valid_time", "latitude", "longitude"),
+    )
+    daily = local_daily(hourly)["tmax"]
+    direct = monthly_from_daily(daily)
+    with tempfile.TemporaryDirectory() as tmp:
+        out_dir = Path(tmp) / "daily"
+        out_dir.mkdir()
+        out = out_dir / "tmax_daily_2024.tif"
+        names = [str(d)[:10] for d in daily.valid_time.values]
+        write_cog(daily, out, band_names=names)
+        cube = read_cog_days(out)
+    via_cube = monthly_from_daily(cube)
+    return (np.allclose(direct.values, via_cube.values, atol=1e-5, equal_nan=True)
+            and bool(np.isnan(via_cube.values[:, 1, 1]).all())
+            and not bool(np.isnan(via_cube.values[:, 0, 0]).any())
+            and cube.sizes["valid_time"] == 366
+            and str(cube.valid_time.values[59])[:10] == "2024-02-29"
+            and via_cube.dtype == np.float32
+            and np.allclose(via_cube.latitude.values, lat)
+            and np.allclose(via_cube.longitude.values, lon - 360)
+            and list(via_cube.dims) == ["valid_time", "latitude", "longitude"])
+
+
+LOCAL_CASES.append(("cube -> monthly equals hourly -> monthly: grid, NaN, 29 Feb, float32",
+                    cube_monthly_matches_hourly))
 
 
 def retry_aiohttp_payload() -> bool:

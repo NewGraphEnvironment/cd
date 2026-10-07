@@ -64,6 +64,11 @@ log_msg <- function(...) {
 # -- Step 1: Aggregate to seasonal/annual COGs --------------------------------
 log_msg("=== STEP 1: Aggregate monthly -> seasonal/annual COGs ===")
 
+# COGs written by THIS run, with their band names (years). cog_dir persists
+# between runs, so a file merely present there may be a stale copy from an
+# earlier run, and the guard before the catalog must not count it.
+written <- list()
+
 all_vars <- names(agg_methods)
 
 for (var in all_vars) {
@@ -93,6 +98,17 @@ for (var in all_vars) {
     for (yr in years) {
       mf <- file.path(monthly_dir, paste0(var, "_", yr, ".tif"))
       r_m <- rast(mf)
+      # tmax/tmin use local days since #37 and the files carry units=degC; a
+      # pre-#37 UTC-day file (units=K) is skipped by the backfills' existence
+      # check, so it would otherwise be published silently.
+      if (var %in% c("tmax", "tmin")) {
+        tags <- metags(r_m)
+        if (!identical(tags$value[tags$name == "units"], "degC")) {
+          stop(var, " ", yr, ": not a local-day file (no units=degC tag); ",
+               "delete it and re-run scripts/backfill_edh_tmax_tmin.py",
+               call. = FALSE)
+        }
+      }
       if (nlyr(r_m) != 12) {
         warning(sprintf("%s %d: has %d layers, need 12, skipping",
                         var, yr, nlyr(r_m)), call. = FALSE)
@@ -109,6 +125,7 @@ for (var in all_vars) {
     multi <- rast(year_layers)
     names(multi) <- names(year_layers)
     cd_cog_write(multi, cog_path, overwrite = TRUE)
+    written[[basename(cog_path)]] <- names(multi)
     log_msg(sprintf("    wrote %s (%d years)", basename(cog_path), nlyr(multi)))
   }
 }
@@ -152,10 +169,61 @@ for (var in annual_vars) {
   multi <- rast(year_layers)
   names(multi) <- names(year_layers)
   cd_cog_write(multi, cog_path, overwrite = TRUE)
+  written[[basename(cog_path)]] <- names(multi)
   log_msg(sprintf("    wrote %s (%d years)", basename(cog_path), nlyr(multi)))
 }
 
 # -- Step 2: STAC catalog ------------------------------------------------------
+# The catalog lists every COG in cog_dir and the push syncs all of them, so a
+# partial monthly_dir would publish a partial catalog, or stale COGs left in
+# cog_dir by an earlier run over newer live ones. A partial monthly_dir is the
+# normal state after a single-variable regen (#37 left only tmax and tmin
+# there; scripts/tmax_tmin_republish.R is the tool for that case). So every
+# COG must have been written by this run.
+expected_cogs <- c(
+  as.vector(outer(names(agg_methods), c("annual", names(seasons)), paste, sep = "_")),
+  paste0(annual_vars, "_annual")
+)
+missing_cogs <- setdiff(paste0(expected_cogs, ".tif"), names(written))
+if (length(missing_cogs) > 0) {
+  stop("Refusing to build the catalog: ", length(missing_cogs), " of ",
+       length(expected_cogs), " COGs not written by this run (",
+       paste(utils::head(missing_cogs, 5), collapse = ", "),
+       if (length(missing_cogs) > 5) ", ..." else "", "). ",
+       "Publishing would replace live data with a partial or stale set.",
+       call. = FALSE)
+}
+# Years, too: a COG missing a year (a skipped monthly file) or ending before
+# the live data (local inputs older than what CI has appended since) would
+# replace live years with nothing, and the push cannot be undone.
+spans <- unique(lapply(written, as.integer))
+if (length(spans) != 1) {
+  stop("Refusing to build the catalog: the COGs written this run do not share ",
+       "one span of years.", call. = FALSE)
+}
+years_written <- spans[[1]]
+if (anyNA(years_written) ||
+    !identical(years_written, seq(min(years_written), max(years_written)))) {
+  stop("Refusing to build the catalog: the years written this run are not ",
+       "contiguous (a monthly file was skipped).", call. = FALSE)
+}
+live_years <- tryCatch({
+  live <- cd_catalog()
+  href <- live$href[live$variable == "tmean" & live$period == "annual"]
+  as.integer(names(rast(paste0("/vsicurl/", href))))
+}, error = function(e) {
+  stop("Refusing to build the catalog: could not read the live tmean_annual ",
+       "COG to check its years (", conditionMessage(e), ").", call. = FALSE)
+})
+dropped <- setdiff(live_years, years_written)
+if (length(dropped) > 0) {
+  stop("Refusing to build the catalog: the live COGs hold ",
+       length(dropped), " year(s) this run did not write (",
+       paste(utils::head(dropped, 5), collapse = ", "),
+       if (length(dropped) > 5) ", ..." else "", "); publishing would drop them.",
+       call. = FALSE)
+}
+
 log_msg("=== STEP 2: Build STAC catalog ===")
 cd_stac_catalog(
   cog_dir,

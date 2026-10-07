@@ -3,162 +3,92 @@
 # requires-python = ">=3.10"
 # dependencies = [
 #   "xarray",
-#   "zarr",
-#   "fsspec",
-#   "aiohttp",
-#   "requests",
-#   "dask",
 #   "numpy",
+#   "pandas",
 #   "rioxarray",
 #   "rasterio",
 # ]
 # ///
 """
-Full-backfill EDH pipeline for tmax/tmin over BC (1950-2025).
+Monthly tmax/tmin for BC (1950-2025) from the local-day daily cube (#37).
 
-Replaces the CDS-based pipeline_tmax_tmin_hourly.R stages 1 and 2:
-  1. Pull hourly 2m_temperature from DestinE Earth Data Hub (Zarr)
-  2. Compute daily max/min, then monthly mean of daily max/min
-  3. Write per-year GeoTIFFs with 12 month-layers each, °C
+Reads the daily air-temperature cube that backfill_edh_daily.py builds from
+EDH hourly 2 m temperature, and averages each local month's daily max and min:
 
-Output drop-in replacement for data/backfill/monthly/:
-  tmax_YYYY.tif (12 layers: Jan..Dec, degrees C, EPSG:4326, BC bbox)
-  tmin_YYYY.tif (same)
+  data/backfill/daily/tmax_daily_YYYY.tif  (365/366 bands, local days, deg C)
+    -> data/backfill/monthly/tmax_YYYY.tif (12 bands Jan..Dec, deg C)
+  data/backfill/daily/tmin_daily_YYYY.tif
+    -> data/backfill/monthly/tmin_YYYY.tif
 
-The existing R script's Stage 3 (COG aggregation, STAC catalog, S3 push)
-can then run unchanged from these outputs.
+Same output as backfill_edh_all.py writes for tmax/tmin, on the same grid,
+for pipeline_stage3_edh.R or scripts/tmax_tmin_republish.R to aggregate.
 
-KNOWN LIMITATION: daily max/min is computed over UTC-day windows. For BC
-(UTC-8 winter, UTC-7 summer) the local-afternoon tmax peak can straddle
-UTC day boundaries, producing a small systematic bias vs. a local-time
-daily aggregation. This matches the behaviour of the existing R pipeline
-(scripts/pipeline_tmax_tmin_hourly.R) so outputs are comparable. CDS's
-derived-era5-land-daily-statistics product accepts a time_zone parameter
-to fix this, but we abandoned it due to rate limits (see #33).
+Days are local at a fixed UTC-8 (`LOCAL_OFFSET_H` in _lib.py). Until #37 the
+monthly layers used UTC days, which run from one afternoon peak (22-00 UTC)
+to the next, so a hot afternoon counted toward two days: tmax read 0.5-0.8
+degC high (research/tmax_tmin_day_boundary.md). Building the history from
+the cube costs no EDH fetch, and the monthly and daily products then agree
+by construction. New years in CI come from backfill_edh_all.py, which runs
+the same hourly -> local_daily() -> monthly_from_daily() chain; the offline
+suite (test_lib.py) pins that the two routes give the same values.
+
+Needs the cube on disk: `uv run scripts/backfill_edh_daily.py` builds it
+(about two hours from EDH for 76 years), or sync it down from
+s3://stac-era5-land/daily/.
 
 Idempotent — skips years whose tmax_YYYY.tif and tmin_YYYY.tif already exist.
-Partial years (in-progress current year) are caught by the `n_months != 12`
-guard and skipped with a warning.
+A year whose cube files are missing is reported and skipped.
 
 Usage:
-  uv run scripts/backfill_edh_tmax_tmin.py              # full backfill
-  uv run scripts/backfill_edh_tmax_tmin.py --year 1950  # single year test
+  uv run scripts/backfill_edh_tmax_tmin.py              # 1950-2025
+  uv run scripts/backfill_edh_tmax_tmin.py --year 1950  # one year
 """
 import argparse
+import sys
 import time
 from pathlib import Path
 
-import xarray as xr
-
-from _lib import (
-    get_token,
-    log,
-    months_available,
-    preflight_single_instance,
-    with_retry,
-    write_geotiff,
-)
-
-# -- Config --------------------------------------------------------------------
-# BC bbox, matches scripts/pipeline_tmax_tmin_hourly.R
-LAT_N, LAT_S = 60.0, 48.0
-LON_W, LON_E = -140.0, -114.0  # will translate to 0-360 for EDH
+from _lib import log, monthly_from_daily, read_cog_days, write_geotiff
 
 YEARS_DEFAULT = range(1950, 2026)
+VARS = ("tmax", "tmin")
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
+DAILY_DIR = REPO_ROOT / "data" / "backfill" / "daily"
 MONTHLY_DIR = REPO_ROOT / "data" / "backfill" / "monthly"
 
 
-# -- Main ----------------------------------------------------------------------
-def main(years):
-    preflight_single_instance("backfill_edh_tmax_tmin")
+def main(years) -> int:
     MONTHLY_DIR.mkdir(parents=True, exist_ok=True)
-
-    token = get_token()
-    zarr_url = (
-        f"https://edh:{token}@data.earthdatahub.destine.eu/era5/"
-        "reanalysis-era5-land-no-antartica-v0.zarr"
-    )
-
-    log("Opening EDH Zarr store...")
-    t0 = time.time()
-    ds = with_retry(
-        lambda: xr.open_dataset(zarr_url, chunks={}, engine="zarr"),
-        what="open hourly zarr",
-    )
-    log(f"  Opened in {time.time() - t0:.1f}s")
-
-    # Longitude convention
-    lon_min = float(ds.longitude.min())
-    if lon_min >= 0:
-        bc_west, bc_east = LON_W + 360, LON_E + 360
-    else:
-        bc_west, bc_east = LON_W, LON_E
-
+    missing = []
     for year in years:
-        tmax_out = MONTHLY_DIR / f"tmax_{year}.tif"
-        tmin_out = MONTHLY_DIR / f"tmin_{year}.tif"
-
-        if tmax_out.exists() and tmin_out.exists():
-            log(f"{year}: exists, skipping")
-            continue
-
-        # Completeness before cost: the .compute() calls below are where the
-        # lazy graph pulls from EDH, so an incomplete year must stop here
-        # rather than be downloaded and then discarded by the n_months check
-        # further down (#84). That check is NOT a backstop for this one: it
-        # counts `resample("1MS")` bins, which span min..max contiguously, so a
-        # year with an interior gap still yields 12 and passes it.
-        n_available = months_available(ds, year)
-        if n_available < 12:
-            log(f"  SKIP {year}: got {n_available} months, expected 12 "
-                f"— nothing fetched")
-            continue
-
-        log(f"{year}: fetching...")
         t_year = time.time()
-
-        # Pull entire year of hourly t2m for BC
-        hourly = ds["t2m"].sel(
-            valid_time=slice(f"{year}-01-01", f"{year}-12-31T23:00"),
-            latitude=slice(LAT_N, LAT_S),
-            longitude=slice(bc_west, bc_east),
-        )
-
-        # Daily max/min, then monthly mean of each → 12 layers per year
-        # resample labels: '1D' → daily, '1MS' → month start
-        daily_max = hourly.resample(valid_time="1D").max()
-        daily_min = hourly.resample(valid_time="1D").min()
-        monthly_tmax_lazy = daily_max.resample(valid_time="1MS").mean() - 273.15
-        monthly_tmin_lazy = daily_min.resample(valid_time="1MS").mean() - 273.15
-
-        monthly_tmax = with_retry(
-            lambda da=monthly_tmax_lazy: da.compute(),
-            what=f"compute tmax {year}",
-        )
-        monthly_tmin = with_retry(
-            lambda da=monthly_tmin_lazy: da.compute(),
-            what=f"compute tmin {year}",
-        )
-
-        n_months = monthly_tmax.sizes["valid_time"]
-        if n_months != 12:
-            log(f"  SKIP {year}: got {n_months} months, expected 12")
-            continue
-
-        write_geotiff(monthly_tmax, tmax_out)
-        write_geotiff(monthly_tmin, tmin_out)
-
-        elapsed = time.time() - t_year
-        log(f"  wrote {tmax_out.name} and {tmin_out.name} in {elapsed:.1f}s")
-
+        wrote = []
+        for var in VARS:
+            out = MONTHLY_DIR / f"{var}_{year}.tif"
+            if out.exists():
+                continue
+            src = DAILY_DIR / f"{var}_daily_{year}.tif"
+            if not src.exists():
+                missing.append(src.name)
+                log(f"{year}: no {src.name}, skipping {var}")
+                continue
+            write_geotiff(monthly_from_daily(read_cog_days(src)), out)
+            wrote.append(out.name)
+        if wrote:
+            log(f"{year}: wrote {', '.join(wrote)} in {time.time() - t_year:.1f}s")
+        else:
+            log(f"{year}: nothing to write")
+    if missing:
+        log(f"DONE with {len(missing)} cube file(s) missing — build them with "
+            "backfill_edh_daily.py")
+        return 1
     log("DONE")
+    return 0
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--year", type=int, help="Single year to backfill (for testing)")
+    parser.add_argument("--year", type=int, help="Single year (for testing)")
     args = parser.parse_args()
-    years = [args.year] if args.year else YEARS_DEFAULT
-    main(years)
+    sys.exit(main([args.year] if args.year else YEARS_DEFAULT))

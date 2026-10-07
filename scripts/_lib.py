@@ -1,8 +1,8 @@
 """Shared helpers for the cd producer-side bulk-fetch scripts.
 
-Borne out of #38 — each backfill script (currently `backfill_edh_all.py`
-and `backfill_edh_tmax_tmin.py`, eventually a snow-vars script for #48)
-needs the same safeguards against its own failure modes:
+Borne out of #38 — each EDH backfill script (`backfill_edh_all.py`,
+`backfill_edh_snow.py`, `backfill_edh_daily.py`) needs the same safeguards
+against its own failure modes:
 
   - `preflight_single_instance(name)` — pgrep guard so two runs of the
     same script can't hammer EDH concurrently. Skipped on GHA.
@@ -16,6 +16,8 @@ needs the same safeguards against its own failure modes:
     holds, from the time coordinate alone (no data transfer).
   - `local_year_window()`, `local_year_complete()`, `local_daily()` —
     local-day (UTC-8) aggregation for the daily cube (#116).
+  - `monthly_from_daily()`, `read_cog_days()` — local days to local months,
+    from hourly or from the cube, for the monthly tmax/tmin (#37).
   - `write_cog(da, out_path, band_names)` — atomic COG write, daily-cube layout.
   - `log(msg)` — timestamped print, flushed.
   - `get_token()` — EDH token from env or `~/.Renviron`.
@@ -169,8 +171,9 @@ def months_available(ds: xr.Dataset, year: int) -> int:
 
 # Pacific standard time. A fixed offset, not a zone: it ignores daylight time
 # and the MST corner of eastern BC, which is #37's Option A and enough for
-# degree-day work (#116). Every caller that builds local days uses this one
-# value, so the published cube and its completeness check cannot disagree.
+# degree-day work (#116) and the monthly tmax/tmin (#37). Every caller that
+# builds local days uses this one value, so the published cube, the monthly
+# layers and their completeness checks cannot disagree.
 LOCAL_OFFSET_H: int = -8
 
 
@@ -245,6 +248,54 @@ def local_daily(
     for da in out.values():
         da.attrs = {"units": "degC"}
     return out
+
+
+def monthly_from_daily(daily: xr.DataArray) -> xr.DataArray:
+    """Local-day values for one calendar year to their 12 monthly means.
+
+    `daily` is labelled by local date, as `local_daily()` returns it and as the
+    daily cube stores it (`read_cog_days()`), so each month is a local month:
+    the monthly tmax/tmin COGs are this applied to the cube's days (#37).
+
+    Refuses anything but every day of one calendar year. `resample("1MS")`
+    builds a contiguous grid from first to last date, so a short year would
+    come back as fewer months, or as 12 with a mean over the days present.
+    """
+    vt = pd.DatetimeIndex(daily.valid_time.values)
+    if len(vt) == 0:
+        raise ValueError("monthly_from_daily() got no days.")
+    year = vt[0].year
+    want = pd.date_range(f"{year}-01-01", f"{year}-12-31", freq="1D")
+    if not vt.equals(want):
+        raise ValueError(
+            f"monthly_from_daily() needs every day of {year} once, in order; "
+            f"got {len(vt)} days from {vt.min().date()} to {vt.max().date()}."
+        )
+    out = daily.resample(valid_time="1MS").mean()
+    out.attrs = {"units": "degC"}
+    return out
+
+
+def read_cog_days(path: Path) -> xr.DataArray:
+    """Read a daily-cube COG back as (valid_time, latitude, longitude).
+
+    The inverse of `write_cog()` for the cube's layout: band descriptions
+    (`YYYY-MM-DD`) become the time coordinate, so the result feeds
+    `monthly_from_daily()` exactly as `local_daily()` output does.
+    """
+    # Loaded and closed here: one cube year is ~45 MB, and a handle left open
+    # is torn down at interpreter exit, which prints an excepthook error.
+    with rioxarray.open_rasterio(path, masked=True) as src:
+        da = src.load()
+    names = da.attrs.get("long_name")
+    if isinstance(names, str):
+        names = (names,)
+    if names is None or len(names) != da.sizes["band"]:
+        raise ValueError(f"{path}: band descriptions missing or short.")
+    da = da.assign_coords(band=pd.DatetimeIndex(list(names)))
+    da = da.rename({"band": "valid_time", "y": "latitude", "x": "longitude"})
+    da.attrs = {}
+    return da.drop_vars("spatial_ref", errors="ignore")
 
 
 def write_geotiff(
