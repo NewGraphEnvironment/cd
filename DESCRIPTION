@@ -15,7 +15,8 @@ Description: Compute climate anomalies from ERA5-Land reanalysis data for
     anomalies for arbitrary reference periods, and run trend analysis
     (Mann-Kendall and Theil-Sen).
 License: MIT + file LICENSE
-URL: https://github.com/NewGraphEnvironment/cd
+URL: https://github.com/NewGraphEnvironment/cd,
+    https://newgraphenvironment.github.io/cd/
 BugReports: https://github.com/NewGraphEnvironment/cd/issues
 Depends:
     R (>= 4.1)
