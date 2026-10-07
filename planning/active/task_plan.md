@@ -17,10 +17,10 @@ every skip path in STEP 4 is an anomaly, and refusing to publish is the right re
 Nothing is pushed on abort (the push comes after the catalog), so the live bucket is untouched.
 
 ## Phase 1: Shared publish guard in `scripts/_lib.R` (pure, offline-testable)
-- [ ] `cog_expected(agg_methods, seasons, annual_vars)` returns the 59 `{var}_{period}.tif` names (the list stage 3 builds inline at :183)
-- [ ] `publish_problems(written, expected, live_keys, required_years)` returns a character vector of reasons not to publish, empty when clean. `written` is a named list of band names (years) per COG written this run. Checks: expected COG not written; written COG not expected (stale/extra); spans differ across COGs; span not contiguous; span missing any required year; a live catalog `{var}_{period}` key absent from what would be published
-- [ ] `scripts/test_lib.R`: one case per reason (each must produce exactly that problem), a clean case returning `character(0)`, and the issue's scenario: 58 of 59 written means a non-empty result naming the missing one
-- [ ] Restore-the-bug check: neuter each branch in a copy and confirm its test goes red (mutation table in findings.md)
+- [x] `cog_expected(agg_methods, seasons, annual_vars)` returns the 59 `{var}_{period}.tif` names (the list stage 3 builds inline at :183)
+- [x] `publish_problems(written, expected, live_keys, required_years)` returns a character vector of reasons not to publish, empty when clean. `written` is a named list of band names (years) per COG written this run. Checks: expected COG not written; written COG not expected (stale/extra); spans differ across COGs; span not contiguous; span missing any required year; a live catalog `{var}_{period}` key absent from what would be published
+- [x] `scripts/test_lib.R`: one case per reason (each must produce exactly that problem), a clean case returning `character(0)`, and the issue's scenario: 58 of 59 written means a non-empty result naming the missing one
+- [x] Restore-the-bug check: neuter each branch in a copy and confirm its test goes red (mutation table in findings.md)
 
 ## Phase 2: Wire the guard into `pipeline_update_edh.R`
 - [ ] `append_to_cog()` records `written[[cog_name]] <- names(combined)` (same shape as stage 3)
