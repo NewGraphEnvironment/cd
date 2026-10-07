@@ -1,5 +1,21 @@
 # Changelog
 
+## cd 0.6.1 (2026-10-06)
+
+- Monthly `tmax` and `tmin` now average **local days** (fixed UTC−8, as
+  [`cd_extract_daily()`](https://newgraphenvironment.github.io/cd/reference/cd_extract_daily.md)
+  does), not UTC days. A UTC day ran from one afternoon peak to the
+  next, so a hot afternoon counted twice: published tmax was 0.5-0.8 °C
+  too high (most in summer), and local-day tmin is 0.15-0.42 °C lower.
+  The published COGs for 1950-2025 are republished; anomalies and trends
+  move only slightly, since the shift is nearly constant over time. The
+  annual update now lands about a month later, when the last local day
+  of the year is available. If you set
+  `options(cd.cache_revalidate = FALSE)`, run
+  [`cd_cache_clear()`](https://newgraphenvironment.github.io/cd/reference/cd_cache_clear.md)
+  to drop cached UTC-day copies.
+  ([\#118](https://github.com/NewGraphEnvironment/cd/pull/118))
+
 ## cd 0.6.0 (2026-10-06)
 
 - Daily air temperature at points: new

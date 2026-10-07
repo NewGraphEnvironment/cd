@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">cd</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,6 +36,10 @@
       <small>Source: <a href="https://github.com/NewGraphEnvironment/cd/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.6.1" id="cd-061-2026-10-06">cd 0.6.1 (2026-10-06)<a class="anchor" aria-label="anchor" href="#cd-061-2026-10-06"></a></h2>
+<ul><li>Monthly <code>tmax</code> and <code>tmin</code> now average <strong>local days</strong> (fixed UTC−8, as <code><a href="../reference/cd_extract_daily.html">cd_extract_daily()</a></code> does), not UTC days. A UTC day ran from one afternoon peak to the next, so a hot afternoon counted twice: published tmax was 0.5-0.8 °C too high (most in summer), and local-day tmin is 0.15-0.42 °C lower. The published COGs for 1950-2025 are republished; anomalies and trends move only slightly, since the shift is nearly constant over time. The annual update now lands about a month later, when the last local day of the year is available. If you set <code>options(cd.cache_revalidate = FALSE)</code>, run <code><a href="../reference/cd_cache_clear.html">cd_cache_clear()</a></code> to drop cached UTC-day copies. (<a href="https://github.com/NewGraphEnvironment/cd/pull/118" class="external-link">#118</a>)</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.6.0" id="cd-060-2026-10-06">cd 0.6.0 (2026-10-06)<a class="anchor" aria-label="anchor" href="#cd-060-2026-10-06"></a></h2>
 <ul><li>Daily air temperature at points: new <code>cd_extract_daily(points, from, to)</code> returns daily mean, maximum and minimum 2 m temperature (°C) for any set of BC points from 1950, for stream-temperature models and degree-day work. Days are <strong>local</strong> (fixed UTC−8), not UTC, so BC’s afternoon peak is not split across two days (<a href="https://github.com/NewGraphEnvironment/cd/issues/37" class="external-link">#37</a>’s bias, which does not cancel for absolute thresholds). Each row carries the ERA5-Land cell used; a point in a sea cell moves to the nearest land cell and is flagged <code>cell_moved</code>. It reads a new daily cube on S3 (<code>s3://stac-era5-land/daily/</code>, one COG per variable and year, outside the STAC catalog), built by <code>scripts/backfill_edh_daily.py</code> and extended by the monthly update about a month after each year ends. Why a cube: the ERA5-Land store makes one point cost a 120-day × 6.4° chunk, so one station × 20 years read directly took 201 s; from the cube it is 80 s for 24 years, and 300 stations take 130 s cold, 12 s warm. The monthly <code>tmax</code>/<code>tmin</code> layers still use UTC days (<a href="https://github.com/NewGraphEnvironment/cd/issues/37" class="external-link">#37</a>). Producer-side, every EDH backfiller now retries a truncated or 502 chunk instead of dying on it. (<a href="https://github.com/NewGraphEnvironment/cd/pull/117" class="external-link">#117</a>)</li>
