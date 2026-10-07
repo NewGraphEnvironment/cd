@@ -11,6 +11,8 @@ The main lesson: **#37's premise had the direction backwards.** UTC days bias tm
 
 The dry run measured this before anything was published. An EDH probe then reproduced the live values exactly under UTC days, which proved the gap is entirely the day boundary.
 
+Local days were kept for tmin too, decided 2026-10-06. The alternative, tmin on UTC days, would have been physically cleaner (one night per day) but inconsistent with the cube and with station days.
+
 The plan review (`review-plan.md`) independently found the same sign. It also moved the publish from before the PR to merge time.
 
 Four code-check rounds (`review-round1..4.md`) hardened every guard on the irreversible writes; bucket versioning is suspended. Rounds 2 and 3 each found a defect inside the previous round's fix, so the loop ran past three rounds. Round 3 named the mechanism: guards checked a stand-in, not the live target at the moment of the write. Round 4 ended the loop by re-walking a 33-row enumeration.
