@@ -15,6 +15,15 @@ on:
         type: boolean
         default: true
 
+# One run at a time, queued rather than cancelled. Since #119 a run that finds
+# some COGs a year ahead of the rest treats it as a sync that died partway and
+# repairs it, so a run reading the bucket during another's STEP 5 sync would
+# take that sync for a failed one. The 1st of a month that is a Monday fires
+# both crons at 06:00; one waits for the other.
+concurrency:
+  group: climate-update
+  cancel-in-progress: false
+
 jobs:
   update:
     runs-on: ubuntu-latest
@@ -113,8 +122,11 @@ jobs:
         # Tradeoff, deliberate: this also fires when a human cancels a run by
         # hand, so a mistakenly-dispatched run that gets stopped will comment on
         # the failure thread. A spurious comment is cheaper than a six-hour hang
-        # that reports nothing. (There is no concurrency: key, so auto-cancels
-        # are not a source of noise here.)
+        # that reports nothing. The concurrency group never cancels a running
+        # job, but GitHub keeps one pending run per group: a third run queued
+        # behind a running and a pending one cancels the pending one before
+        # its job starts, so no step runs and nothing is filed. A live run lost
+        # that way is picked up by the next month's cron.
         if: failure() || cancelled()
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

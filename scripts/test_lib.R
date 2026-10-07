@@ -198,6 +198,92 @@ check(grepl("s3://stac-era5-land/catalog.json", h, fixed = TRUE) &&
         grepl("--exclude 'daily/*'", h, fixed = TRUE) &&
         grepl("pipeline_stage3_edh.R", h, fixed = TRUE),
       "catalog_repair_hint names the target key, skips daily/, and the stage 3 fallback")
+# Rebuilt from COGs a partial sync left out of step, the catalog lists mixed
+# spans (#119), so the hint must say when it applies.
+check(grepl("ends in the same year", h, fixed = TRUE) &&
+        grepl("end in different years", h, fixed = TRUE),
+      "catalog_repair_hint applies only when every COG ends in the same year")
+
+# -- live_spans (#119) ---------------------------------------------------------
+# Band names as terra reports them: character years.
+live59 <- stats::setNames(rep(list(as.character(1950:2025)), 59), exp59)
+ls_ok <- function(s, common, ahead = list()) {
+  length(s$problems) == 0L && identical(s$common, common) &&
+    (if (length(ahead) == 0L) length(s$ahead) == 0L else identical(s$ahead, ahead))
+}
+
+check(ls_ok(live_spans(live59), 1950:2025), "59 COGs in step: common span, nothing ahead")
+
+# The issue's shape: a sync that died after tmean_annual went up.
+part <- live59
+part[["tmean_annual.tif"]] <- as.character(1950:2026)
+check(ls_ok(live_spans(part), 1950:2025, list(tmean_annual.tif = 2026L)),
+      "tmean_annual ahead: target the year the others hold, tmean_annual listed ahead")
+
+# The shape the tmean_annual-only read could not see: tmean_annual lagging.
+lag <- lapply(live59, function(x) as.character(1950:2026))
+lag[["tmean_annual.tif"]] <- as.character(1950:2025)
+s <- live_spans(lag)
+check(length(s$problems) == 0L && identical(s$common, 1950:2025) &&
+        length(s$ahead) == 58L && !"tmean_annual.tif" %in% names(s$ahead) &&
+        all(vapply(s$ahead, identical, logical(1), 2026L)),
+      "tmean_annual lagging: common is its span, the other 58 are ahead by 2026")
+
+two_ahead <- live59
+two_ahead[["prcp_summer.tif"]] <- as.character(1950:2026)
+two_ahead[["swe_max_annual.tif"]] <- as.character(1950:2027)
+check(ls_ok(live_spans(two_ahead), 1950:2025,
+            list(prcp_summer.tif = 2026L, swe_max_annual.tif = 2026:2027)),
+      "COGs ahead by different amounts each list their own extra years")
+
+lp_one <- function(cogs, needle) {
+  s <- live_spans(cogs)
+  one(s$problems, needle) && length(s$common) == 0L && length(s$ahead) == 0L
+}
+late <- live59
+late[["rh_fall.tif"]] <- as.character(1951:2025)
+check(lp_one(late, "start in a different year") &&
+        grepl("rh_fall.tif 1951", live_spans(late)$problems, fixed = TRUE),
+      "a COG starting a year late is refused, naming it")
+gapped <- live59
+gapped[["vpd_spring.tif"]] <- as.character(setdiff(1950:2025, 1990))
+check(lp_one(gapped, "contiguous"), "a COG with a year missing inside its span is refused")
+# What appending a year a COG already holds produces: the old STEP 4 behaviour.
+dup <- live59
+dup[["tmax_annual.tif"]] <- as.character(c(1950:2026, 2026))
+check(lp_one(dup, "contiguous"), "a COG holding a year twice is refused")
+check(lp_one(lapply(live59, rev), "contiguous"), "descending band order is refused")
+nonyear <- live59
+nonyear[["tmin_winter.tif"]] <- c(as.character(1950:2025), "lyr1")
+check(lp_one(nonyear, "contiguous"), "a band that is not a year is refused")
+nonyear[["tmin_winter.tif"]] <- c(as.character(1950:2024), "2025.0")
+check(lp_one(nonyear, "contiguous"), "a band that only coerces to a year is refused")
+nonyear[["tmin_winter.tif"]] <- character(0)
+check(lp_one(nonyear, "contiguous"), "a COG with no bands is refused")
+unread <- live59
+unread["snowmelt_annual.tif"] <- list(NULL)
+check(lp_one(unread, "could not read 1 live COG") &&
+        grepl("snowmelt_annual.tif", live_spans(unread)$problems, fixed = TRUE),
+      "an unreadable COG is refused, naming it")
+# Its remedy differs (re-run, not stage 3), so the caller needs it by name.
+check(identical(live_spans(unread)$unread, "snowmelt_annual.tif") &&
+        identical(live_spans(live59)$unread, character(0)) &&
+        identical(live_spans(gapped)$unread, character(0)),
+      "unread names the unreadable COGs and nothing else")
+
+# publish_problems() on the repair's output (#119): required_years is every year
+# any live COG held, plus what the run appended.
+check(identical(pp(required = sort(unique(c(as.integer(unlist(part)), 2026L)))),
+                character(0)),
+      "a repaired set, all 59 at 1950-2026, publishes")
+rep27 <- full
+rep27[["prcp_summer.tif"]] <- as.character(1950:2027)
+check(one(pp(written = rep27, required = 1950:2027), "one span"),
+      "a COG left at 2027 by the partial sync, the rest only brought to 2026, is refused")
+p <- pp(required = 1950:2027)
+check(one(p, "lack 1 required year") && grepl("2027", p, fixed = TRUE),
+      "a live year no written COG holds (an ahead year never fetched) is refused")
+check(lp_one(list(), "no live COGs"), "no COGs read is refused")
 
 cat(sprintf("\n%d/%d passed\n", checks - failures, checks))
 quit(status = if (failures > 0L) 1L else 0L)
