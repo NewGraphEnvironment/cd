@@ -52,6 +52,7 @@ Key gotchas:
 - Precipitation in m/day (× 1000 × days_in_month → mm/month)
 - Snow accumulation variables (`snowfall`, `snowmelt`) reset at 06:00 UTC each day — diff-and-clamp logic lives in `scripts/backfill_edh_snow.py` (#48)
 - tmax/tmin daily aggregation for the **monthly** COGs currently uses UTC-day boundaries, not local-time — known limitation tracked at #37. The **daily cube** (#116) uses local days at a fixed UTC−8 (`LOCAL_OFFSET_H` in `_lib.py`); the two are not interchangeable at the day level
+- EDH fails transiently mid-run — a truncated chunk (`aiohttp.ClientPayloadError`) or a `502` on one chunk, four times in the 76-year daily build. aiohttp's errors do not subclass `OSError`, so `with_retry()` names `aiohttp.ClientError` explicitly; a retry of a year-sized `.compute()` re-fetches the whole year. Store layout and read costs: `research/edh_era5_land_store.md`
 - xarray keeps source attrs through `resample()` and arithmetic, and `rio.to_raster()` writes every attr as a file tag — reset `attrs` before writing, or a °C raster says `units=K` (#116, code-check round 1)
 
 ## Climate Variables (15 total since v0.2.0)
