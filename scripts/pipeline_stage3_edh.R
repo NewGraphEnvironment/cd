@@ -32,6 +32,9 @@ if (requireNamespace("cd", quietly = TRUE)) {
 }
 suppressMessages(library(terra))
 
+# Producer-side helpers, shared with pipeline_update_edh.R (repo-root cwd).
+source("scripts/_lib.R")
+
 args <- commandArgs(trailingOnly = TRUE)
 dry_run <- "--dry-run" %in% args
 
@@ -40,6 +43,10 @@ bucket <- "stac-era5-land"
 monthly_dir <- "data/backfill/monthly"
 annual_dir <- "data/backfill/annual"
 cog_dir <- "data/backfill/cogs"
+# Outside cog_dir, so the COG sync never carries it: it is uploaded on its own,
+# after the COGs it points at (#89).
+catalog_path <- "data/backfill/catalog.json"
+catalog_url <- paste0("https://", bucket, ".s3.us-west-2.amazonaws.com/catalog.json")
 seasons <- cd_seasons()
 
 agg_methods <- c(
@@ -179,66 +186,82 @@ for (var in annual_vars) {
 # cog_dir by an earlier run over newer live ones. A partial monthly_dir is the
 # normal state after a single-variable regen (#37 left only tmax and tmin
 # there; scripts/tmax_tmin_republish.R is the tool for that case). So every
-# COG must have been written by this run.
-expected_cogs <- c(
-  as.vector(outer(names(agg_methods), c("annual", names(seasons)), paste, sep = "_")),
-  paste0(annual_vars, "_annual")
-)
-missing_cogs <- setdiff(paste0(expected_cogs, ".tif"), names(written))
-if (length(missing_cogs) > 0) {
-  stop("Refusing to build the catalog: ", length(missing_cogs), " of ",
-       length(expected_cogs), " COGs not written by this run (",
-       paste(utils::head(missing_cogs, 5), collapse = ", "),
-       if (length(missing_cogs) > 5) ", ..." else "", "). ",
-       "Publishing would replace live data with a partial or stale set.",
-       call. = FALSE)
-}
-# Years, too: a COG missing a year (a skipped monthly file) or ending before
-# the live data (local inputs older than what CI has appended since) would
-# replace live years with nothing, and the push cannot be undone.
-spans <- unique(lapply(written, as.integer))
-if (length(spans) != 1) {
-  stop("Refusing to build the catalog: the COGs written this run do not share ",
-       "one span of years.", call. = FALSE)
-}
-years_written <- spans[[1]]
-if (anyNA(years_written) ||
-    !identical(years_written, seq(min(years_written), max(years_written)))) {
-  stop("Refusing to build the catalog: the years written this run are not ",
-       "contiguous (a monthly file was skipped).", call. = FALSE)
-}
+# COG must have been written by this run, cog_dir must hold nothing else, and
+# every COG must carry one contiguous span of years that keeps every live
+# year: the push cannot be undone. pipeline_update_edh.R runs the same guard
+# before its publish (#89).
+expected_cogs <- cog_expected(agg_methods, seasons, annual_vars)
+live <- tryCatch(cd_catalog(catalog_url), error = function(e) {
+  stop("Refusing to build the catalog: could not read the live catalog (",
+       conditionMessage(e), ").", call. = FALSE)
+})
 live_years <- tryCatch({
-  live <- cd_catalog()
   href <- live$href[live$variable == "tmean" & live$period == "annual"]
   as.integer(names(rast(paste0("/vsicurl/", href))))
 }, error = function(e) {
   stop("Refusing to build the catalog: could not read the live tmean_annual ",
        "COG to check its years (", conditionMessage(e), ").", call. = FALSE)
 })
-dropped <- setdiff(live_years, years_written)
-if (length(dropped) > 0) {
-  stop("Refusing to build the catalog: the live COGs hold ",
-       length(dropped), " year(s) this run did not write (",
-       paste(utils::head(dropped, 5), collapse = ", "),
-       if (length(dropped) > 5) ", ..." else "", "); publishing would drop them.",
-       call. = FALSE)
+problems <- publish_problems(
+  written,
+  expected = expected_cogs,
+  on_disk = list.files(cog_dir, pattern = "\\.tif$"),
+  live_keys = paste(live$variable, live$period, sep = "_"),
+  required_years = live_years
+)
+if (length(problems) > 0) {
+  stop("Refusing to build the catalog; publishing would replace live data ",
+       "with a partial or stale set:\n  - ",
+       paste(problems, collapse = "\n  - "), call. = FALSE)
 }
+years_written <- as.integer(written[[1]])
 
 log_msg("=== STEP 2: Build STAC catalog ===")
 cd_stac_catalog(
   cog_dir,
-  output_path = file.path(cog_dir, "catalog.json"),
+  output_path = catalog_path,
   base_url = paste0("https://", bucket, ".s3.us-west-2.amazonaws.com")
 )
-log_msg("  wrote ", file.path(cog_dir, "catalog.json"))
+log_msg("  wrote ", catalog_path)
+# Check the catalog that was written, not only the inputs it was built from.
+built <- catalog_item_years(jsonlite::read_json(catalog_path))
+problems <- catalog_problems(built$keys, sub("\\.tif$", "", expected_cogs),
+                             built$start, built$end, years_written)
+if (length(problems) > 0) {
+  unlink(catalog_path)
+  stop("Refusing to push: the catalog built this run is not the full set:\n  - ",
+       paste(problems, collapse = "\n  - "), call. = FALSE)
+}
 
 # -- Step 3: S3 push -----------------------------------------------------------
 log_msg("=== STEP 3: Push to S3 ===")
-if (dry_run) {
-  log_msg("  DRY RUN — showing what would be uploaded:")
-  cd_s3_push(cog_dir, bucket = bucket, dry_run = TRUE)
-} else {
-  cd_s3_push(cog_dir, bucket = bucket, dry_run = FALSE)
+# A catalog.json left in cog_dir by a run from before #89 would ride the sync.
+unlink(file.path(cog_dir, "catalog.json"))
+if (dry_run) log_msg("  DRY RUN — showing what would be uploaded:")
+cd_s3_push(cog_dir, bucket = bucket, dry_run = dry_run)
+# On its own and last: the sync is --size-only, and a rebuilt catalog can
+# differ from the live one without differing in size (an end year moving from
+# 2025 to 2026), so the sync would skip it; and uploaded after the COGs, it
+# never points at a COG that is not up yet.
+cat_put <- suppressWarnings(system2(
+  "aws", c("s3", "cp", shQuote(catalog_path),
+           shQuote(paste0("s3://", bucket, "/catalog.json")),
+           if (dry_run) "--dryrun"),
+  stdout = TRUE, stderr = TRUE
+))
+if (!is.null(attr(cat_put, "status"))) {
+  stop("COGs pushed but catalog.json upload failed (exit ",
+       attr(cat_put, "status"), "): ", paste(cat_put, collapse = " "),
+       call. = FALSE)
+}
+log_msg("  ", paste(cat_put, collapse = " "))
+if (!dry_run) {
+  live_after <- tryCatch(catalog_item_years(jsonlite::read_json(catalog_url)),
+                         error = function(e) NULL)
+  if (!identical(live_after, built)) {
+    stop("catalog.json uploaded, but the live catalog read back does not ",
+         "match the one built this run.", call. = FALSE)
+  }
 }
 
 log_msg("=== DONE ===")
