@@ -48,10 +48,10 @@ What exploration found, which shapes the plan:
 - [ ] Live publish (`tmax_tmin_republish.R` without `--dry-run`) at merge time, then the acceptance checks in review-plan.md
 
 ## Phase 4: Docs, vignettes, release notes
-- [ ] Re-run `data-raw/{peace_fwcp,kootenay_lake}_vignette_data.R` against the 10 local COGs; assert the non-tmax/tmin rows are unchanged (O4); update the quoted tmax/tmin numbers, captions and day-night asymmetry claims in both vignettes (A2)
-- [ ] Document the day boundary (local, fixed UTC−8, no DST, MST corner an hour off) in `cd_variables()` roxygen
-- [ ] Update the stale UTC mentions: `R/cd_extract_daily.R` roxygen (+ man), `backfill_edh_daily.py`, `_lib.py` module docstring, `qa_monthly.R` (G2)
-- [ ] Update `README.md` (drop the roadmap item), `CLAUDE.md` (EDH gotcha, scripts list), the `backfill_edh_daily.py` and `_lib.py` docstrings, `research/edh_era5_land_store.md`, and NEWS (values changed; one-month publish slip; `cd_cache_clear()` if revalidation is off)
+- [x] Re-run `data-raw/{peace_fwcp,kootenay_lake}_vignette_data.R` against the 10 local COGs; assert the non-tmax/tmin rows are unchanged (O4); update the quoted tmax/tmin numbers, captions and day-night asymmetry claims in both vignettes (A2)
+- [x] Document the day boundary (local, fixed UTC−8, no DST, MST corner an hour off) in `cd_variables()` roxygen
+- [x] Update the stale UTC mentions: `R/cd_extract_daily.R` roxygen (+ man; it also stated the old wrong direction), `backfill_edh_daily.py`, `_lib.py` module docstring (G2); `qa_monthly.R`'s comment is CDS-vs-EDH, not day boundary, left alone
+- [x] Update `README.md` (drop the roadmap item), `CLAUDE.md` (EDH gotcha, scripts list), the `backfill_edh_daily.py` and `_lib.py` docstrings, `research/` (new `tmax_tmin_day_boundary.md`; `edh_era5_land_store.md` needed no change), and ~~NEWS~~ the PR body (NEWS is written at release by `/gh-pr-merge`: values changed and their direction; one-month publish slip; `cd_cache_clear()` if revalidation is off)
 
 ## Validation
 - [ ] `uv run scripts/test_lib.py` passes; `devtools::test()` passes; `pkgdown::check_pkgdown()` passes

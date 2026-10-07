@@ -30,6 +30,16 @@ ERA5-Land API variable names. Covers the seven core climate variables
 plus eight snow-related variables (four monthly natives, four annual
 derived) added in v0.2.0.
 }
+\details{
+\code{tmax} and \code{tmin} are monthly means of the daily maximum and minimum of
+hourly 2 m temperature, over \strong{local days} at a fixed UTC-8 (Pacific
+Standard Time, no daylight saving; an hour off in the Mountain Standard
+Time corner of eastern BC), the same days as \code{\link[=cd_extract_daily]{cd_extract_daily()}}.
+Before cd#37 the published layers used UTC days, which run from one
+afternoon peak to the next and read tmax about 0.5-0.8 degrees C high.
+\code{tmean}, \code{vpd}, \code{rh} and \code{soil_moisture} average hourly values over UTC
+months.
+}
 \examples{
 cd_variables()
 cd_variables()$variable

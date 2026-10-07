@@ -1,8 +1,8 @@
 """Shared helpers for the cd producer-side bulk-fetch scripts.
 
-Borne out of #38 — each backfill script (currently `backfill_edh_all.py`
-and `backfill_edh_tmax_tmin.py`, eventually a snow-vars script for #48)
-needs the same safeguards against its own failure modes:
+Borne out of #38 — each EDH backfill script (`backfill_edh_all.py`,
+`backfill_edh_snow.py`, `backfill_edh_daily.py`) needs the same safeguards
+against its own failure modes:
 
   - `preflight_single_instance(name)` — pgrep guard so two runs of the
     same script can't hammer EDH concurrently. Skipped on GHA.

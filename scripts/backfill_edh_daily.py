@@ -42,8 +42,9 @@ point for 20 years took 201 s through xarray (measured 2026-10-06); R through
 terra/GDAL 3.13 is slower still (39 s for 48 hours of one point), and GDAL
 3.8.5 cannot decode the store's bitround filter at all.
 
-The monthly t2m tmax/tmin COGs are NOT built from this cube and still use
-UTC days (backfill_edh_tmax_tmin.py, #37).
+The monthly tmax/tmin COGs average these same local days (#37):
+backfill_edh_tmax_tmin.py rebuilds their history from this cube, and
+backfill_edh_all.py computes each new year by the same chain from hourly.
 
 Idempotent — skips years whose three outputs already exist. A year whose
 local window is not fully in the store (its last local day needs the first
@@ -73,7 +74,7 @@ from _lib import (
 )
 
 # -- Config --------------------------------------------------------------------
-# BC bbox, matches backfill_edh_tmax_tmin.py so the cube shares the monthly grid
+# BC bbox, matches backfill_edh_all.py so the cube shares the monthly grid
 LAT_N, LAT_S = 60.0, 48.0
 LON_W, LON_E = -140.0, -114.0  # translated to 0-360 for EDH
 

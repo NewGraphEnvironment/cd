@@ -122,6 +122,43 @@ Recommended: local days for both (as built), documented. Alternative: tmax on lo
 tmin on UTC days, so each variable's day boundary sits away from its own extreme. That is
 inconsistent with the cube and with stations.
 
+## Phase 4 — vignette data (2026-10-06)
+
+Both `data-raw/*_vignette_data.R` were run unchanged except for two substitutions made by a
+one-off wrapper (not committed): `catalog <- cd_catalog()` became `override(cd_catalog())`,
+which points the 10 tmax/tmin hrefs at `data/backfill/republish_37/local_day/`, and
+`library(cd)` became `pkgload::load_all()`, since the installed cd was 0.5.8 against 0.6.0 source.
+After the publish, the committed scripts reproduce the same files with no wrapper. Each run took
+about 2 min.
+
+- **O4 held.** For the other 13 variables every column of every `ts`/`bl`/`ano`/`trn`/`cmp`
+  table equals its old value. A strict `all.equal` flagged `ano`/`trn`, but only on row names
+  and attributes, and the new files carry columns added since they were last built
+  (`trend_on`, `anomaly_type`, `unit`, `p_value`: package drift, not #37). The tmean
+  departure TIFs rebuilt with identical values and were restored from git to avoid churn.
+- **Regional trends barely move.** The bias is nearly constant through time:
+
+  | region | var | window | slope old -> new (degC/yr) | MK p old -> new |
+  |---|---|---|---|---|
+  | Peace | tmax | 1951- | 0.0266 -> 0.0266 | <0.001 |
+  | Peace | tmin | 1951- | 0.0319 -> 0.0321 | <0.001 |
+  | Peace | tmax | 1981- | 0.0209 -> 0.0209 | **0.045 -> 0.056** |
+  | Kootenay | tmax | 1951- | 0.0244 -> 0.0245 | <0.001 |
+  | Kootenay | tmax | 1981- | **0.0317 -> 0.0301** | 0.0016 -> 0.0012 |
+  | Kootenay | tmin | 1981- | 0.0315 -> 0.0319 | 0.0011 |
+
+  Two threshold crossings, both shown only in live-rendered figures and tables, neither quoted
+  in prose: Peace's 45-year tmax trend leaves p < 0.05, and Kootenay's 45-year window flips to
+  tmin > tmax.
+- **Every hard-coded vignette claim still holds**: the quoted rates and cumulative values at
+  their stated precision, "tmin slope > tmax slope" in all 9 ecoregions and 4 WSGs (75-year),
+  and "all temperature p-values below 0.001". No prose edits needed.
+- The regen logs carry `WARNING: Error exit, tauk2. IFAULT = 10/12` from Kendall's
+  Mann-Kendall routine (6 + 2 lines). Not investigated: it is emitted by
+  `cd_trend()` on short or tied series and the run completed.
+- `pkgdown::check_pkgdown()` fails on main too (DESCRIPTION URL lacks the github.io URL);
+  out of scope.
+
 ## Errors Encountered
 
 | Error | Resolution |
