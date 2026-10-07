@@ -78,8 +78,8 @@ cog_expected <- function(agg_methods, seasons, annual_vars) {
 #                  Checked against `expected` as well as `written`, since a
 #                  record of a write is not the file.
 #   live_keys      "{variable}_{period}" for every item in the live catalog.
-#   required_years years every COG must hold: the live years, plus any this
-#                  run appended.
+#   required_years years every COG must hold: every year any live COG holds
+#                  (#119), plus any this run appended.
 publish_problems <- function(written, expected, on_disk, live_keys,
                              required_years) {
   problems <- character()
@@ -213,17 +213,20 @@ catalog_problems <- function(keys, expected, start = NULL, end = NULL,
 #   cog_years  named list, COG file name -> its band names; NULL for a COG that
 #              could not be read.
 #
-# Returns list(common, ahead, problems):
+# Returns list(common, ahead, unread, problems):
 #   common    integer years every COG holds: the shared first year through the
 #             earliest last year.
 #   ahead     named list, COG -> the years it holds beyond `common`, for the COGs
 #             a partial sync left ahead; empty when they all agree.
-#   problems  why the set cannot be repaired by appending, or character(0). A
+#   unread    names of the COGs that could not be read. A separate field because
+#             the remedy differs: re-run first, since a read can fail transiently.
+#   problems  why the set cannot be repaired by appending, or character(0): a
 #             COG that is unreadable, holds a band that is not a year, or is not
 #             one contiguous ascending run, or COGs that start in different
-#             years, all need stage 3.
+#             years. All but the first need stage 3.
 live_spans <- function(cog_years) {
-  out <- list(common = integer(), ahead = list(), problems = character())
+  out <- list(common = integer(), ahead = list(), unread = character(),
+              problems = character())
   show <- function(x) {
     paste0(paste(utils::head(x, 5), collapse = ", "),
            if (length(x) > 5) ", ..." else "")
@@ -234,6 +237,7 @@ live_spans <- function(cog_years) {
   }
 
   unread <- names(cog_years)[vapply(cog_years, is.null, logical(1))]
+  out$unread <- unread
   if (length(unread) > 0) {
     out$problems <- c(out$problems, paste0(
       "could not read ", length(unread), " live COG(s) (", show(unread), ")"
@@ -255,6 +259,9 @@ live_spans <- function(cog_years) {
     ))
   }
   years <- years[!vapply(years, is.null, logical(1))]
+  # One start year across all 59 holds because seasonal bands are named for the
+  # calendar year their months fall in, winter (DJF) for its January (#89's
+  # findings); a convention naming DJF for its December would fail here.
   starts <- vapply(years, min, integer(1))
   if (length(unique(starts)) > 1) {
     # Name the odd ones out: listing every COG would bury them past show()'s 5.
@@ -292,14 +299,18 @@ catalog_item_years <- function(catalog_json) {
 
 # How to rebuild the live catalog from the live COGs, for a run that finds it
 # out of step with them. Needs no backfill data: only the 59 published COGs,
-# which carry their years in their band names. A COG that is itself missing or
-# short needs scripts/pipeline_stage3_edh.R instead.
+# which carry their years in their band names. Only when they all end in the
+# same year: built from COGs a partial sync left out of step, the catalog
+# would list mixed spans (#119). A COG that is itself missing or short needs
+# scripts/pipeline_stage3_edh.R instead.
 catalog_repair_hint <- function(bucket) {
   paste0(
+    "if every live COG ends in the same year: ",
     "aws s3 sync s3://", bucket, "/ <dir> --exclude '*' --include '*.tif' ",
     "--exclude 'daily/*' --exclude '_backup/*' --exclude '_healthcheck/*'; ",
     "then in R cd::cd_stac_catalog('<dir>', output_path = '<dir>.json'); ",
     "then aws s3 cp <dir>.json s3://", bucket, "/catalog.json. ",
-    "If a COG is missing or short, rebuild with scripts/pipeline_stage3_edh.R."
+    "If a COG is missing or short, or they end in different years, rebuild ",
+    "with scripts/pipeline_stage3_edh.R."
   )
 }

@@ -198,6 +198,11 @@ check(grepl("s3://stac-era5-land/catalog.json", h, fixed = TRUE) &&
         grepl("--exclude 'daily/*'", h, fixed = TRUE) &&
         grepl("pipeline_stage3_edh.R", h, fixed = TRUE),
       "catalog_repair_hint names the target key, skips daily/, and the stage 3 fallback")
+# Rebuilt from COGs a partial sync left out of step, the catalog lists mixed
+# spans (#119), so the hint must say when it applies.
+check(grepl("ends in the same year", h, fixed = TRUE) &&
+        grepl("end in different years", h, fixed = TRUE),
+      "catalog_repair_hint applies only when every COG ends in the same year")
 
 # -- live_spans (#119) ---------------------------------------------------------
 # Band names as terra reports them: character years.
@@ -260,6 +265,24 @@ unread["snowmelt_annual.tif"] <- list(NULL)
 check(lp_one(unread, "could not read 1 live COG") &&
         grepl("snowmelt_annual.tif", live_spans(unread)$problems, fixed = TRUE),
       "an unreadable COG is refused, naming it")
+# Its remedy differs (re-run, not stage 3), so the caller needs it by name.
+check(identical(live_spans(unread)$unread, "snowmelt_annual.tif") &&
+        identical(live_spans(live59)$unread, character(0)) &&
+        identical(live_spans(gapped)$unread, character(0)),
+      "unread names the unreadable COGs and nothing else")
+
+# publish_problems() on the repair's output (#119): required_years is every year
+# any live COG held, plus what the run appended.
+check(identical(pp(required = sort(unique(c(as.integer(unlist(part)), 2026L)))),
+                character(0)),
+      "a repaired set, all 59 at 1950-2026, publishes")
+rep27 <- full
+rep27[["prcp_summer.tif"]] <- as.character(1950:2027)
+check(one(pp(written = rep27, required = 1950:2027), "one span"),
+      "a COG left at 2027 by the partial sync, the rest only brought to 2026, is refused")
+p <- pp(required = 1950:2027)
+check(one(p, "lack 1 required year") && grepl("2027", p, fixed = TRUE),
+      "a live year no written COG holds (an ahead year never fetched) is refused")
 check(lp_one(list(), "no live COGs"), "no COGs read is refused")
 
 cat(sprintf("\n%d/%d passed\n", checks - failures, checks))

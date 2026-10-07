@@ -34,7 +34,8 @@
 # status non-zero at the end.
 #
 # Designed for the monthly GitHub Action (climate-update.yml). Exits
-# cleanly with status 0 if nothing new is available.
+# cleanly with status 0 if nothing new is available, unless a live run found
+# the COGs out of step (step 1) and has not yet published the repair.
 #
 # Prerequisites:
 #   - EDH_TOKEN in env or ~/.Renviron
@@ -432,19 +433,65 @@ catalog <- tryCatch(
 # hrefs, which are the same URLs (cd_stac_catalog() builds them from base_url).
 expected_cogs <- cog_expected(agg_methods, seasons, annual_vars)
 cog_base <- paste0("https://", bucket, ".s3.us-west-2.amazonaws.com")
+
+# 59 reads where there was one, on every run including the weekly dry run, so
+# bound each request and retry: GDAL puts no total timeout on a /vsicurl/ read
+# by default, and one stalled request would run until the job's
+# timeout-minutes cancels it six hours later. This bounds requests, not the
+# step: GDAL 3.8 also retries timeouts, so a bucket that stalls every request
+# costs ~13 min per COG and the job is still cancelled, which the alarm reports. EMPTY_DIR stops the per-file sidecar probes (.aux.xml,
+# .ovr), which this bucket answers 403; it halved the read (41 s to 20 s).
+setGDALconfig("GDAL_HTTP_TIMEOUT", "60")
+setGDALconfig("GDAL_HTTP_MAX_RETRY", "3")
+setGDALconfig("GDAL_HTTP_RETRY_DELAY", "2")
+setGDALconfig("GDAL_DISABLE_READDIR_ON_OPEN", "EMPTY_DIR")
+# GDAL caches /vsicurl/ per process, failures included: GDAL 3.8 (what CI's
+# terra links) answers a URL whose first open failed with that failure again,
+# sending no request, so a plain retry retries nothing (code-check round 2).
+# CPL_VSIL_CURL_NON_CACHED gets past it, though on 3.8 not by bypassing the
+# cache: a handle on a matching URL clears that URL's entries when it closes,
+# and GDAL stats a /vsicurl/ path before opening it, so the stat clears the
+# failure and the open goes to the network (code-check round 3, from the
+# 3.8.4 source; probed with a 503 and with a rewritten object). A read with no
+# stat before it would still meet the stale entry. GDAL splits the value on
+# ":", so "/vsicurl/https://..." matches every https read, which took the 59
+# reads from 20 s to 236 s. So it goes on only after a read fails, and stays
+# on, so STEP 4 does not meet the cached failure either.
+uncache <- function() {
+  setGDALconfig("CPL_VSIL_CURL_NON_CACHED", paste0("/vsicurl/", cog_base))
+}
+# Band names per live COG, NULL for one still unreadable after 3 attempts.
+# GDAL's own retry covers 429, 502-504 and timeouts; this one covers what it
+# does not, such as a reset connection or a 501.
+read_live_years <- function() {
+  lapply(stats::setNames(nm = expected_cogs), function(f) {
+    for (i in 1:3) {
+      bands <- tryCatch(names(rast(paste0("/vsicurl/", cog_base, "/", f))),
+                        error = function(e) NULL)
+      if (!is.null(bands)) return(bands)
+      uncache()
+      if (i < 3) Sys.sleep(5 * i)
+    }
+    NULL
+  })
+}
 log_msg("Reading the band names of the ", length(expected_cogs), " live COGs...")
 read_start <- Sys.time()
-live_years <- lapply(stats::setNames(nm = expected_cogs), function(f) {
-  tryCatch(names(rast(paste0("/vsicurl/", cog_base, "/", f))),
-           error = function(e) NULL)
-})
+live_years <- read_live_years()
 log_msg("  Read in ", round(as.numeric(Sys.time() - read_start, units = "secs")), "s")
 spans <- live_spans(live_years)
 if (length(spans$problems) > 0) {
-  log_msg("ERROR: the live COGs cannot be brought into step by appending a year.")
+  log_msg("ERROR: could not establish the years the live COGs hold.")
   for (p in spans$problems) log_msg("  - ", p)
-  log_msg("  Repair: rebuild all ", length(expected_cogs),
-          " COGs with scripts/pipeline_stage3_edh.R.")
+  if (length(spans$unread) > 0) {
+    log_msg("  Unreadable COGs: re-run first, since a read can fail transiently. ",
+            "One that is missing from s3://", bucket, "/ needs ",
+            "scripts/pipeline_stage3_edh.R.")
+  }
+  if (length(spans$problems) > (length(spans$unread) > 0)) {
+    log_msg("  Years out of shape: appending cannot fix that; rebuild all ",
+            length(expected_cogs), " COGs with scripts/pipeline_stage3_edh.R.")
+  }
   finish(1L)
 }
 current_years <- spans$common
@@ -455,7 +502,9 @@ if (partial_live) {
   ahead_by <- vapply(spans$ahead, function(y) paste(y, collapse = ", "), character(1))
   log_msg("WARNING: ", length(spans$ahead), " of ", length(expected_cogs),
           " live COGs hold years the others lack; an earlier STEP 5 sync ",
-          "stopped partway (#119). This run appends those years to the rest.")
+          "stopped partway (#119). ",
+          if (dry_run) "A live run would append" else "This run appends",
+          " those years to the rest.")
   for (y in unique(ahead_by)) {
     cogs <- names(ahead_by)[ahead_by == y]
     log_msg("  also holding ", y, ": ", length(cogs), " COG(s) (",
@@ -526,15 +575,10 @@ if (length(later) > 0) {
           "next year): ", paste(later, collapse = ", "))
 }
 candidate_years <- candidate_years[candidate_years <= latest_local]
-if (length(candidate_years) == 0) {
-  log_msg("No year complete in local time beyond ", latest_year, " yet.")
-  log_msg("Nothing to do.")
-  finish(0L)
-}
-log_msg("Candidate years to fetch: ", paste(candidate_years, collapse = ", "))
 # Every year a COG is ahead by must be fetched, or STEP 5 would refuse the
 # publish after the whole fetch. Published years were complete when they went
-# up, so this should never fire; when it does, say so before fetching.
+# up, so this should never fire; when it does, say so before fetching, and
+# before the exit below would call it "nothing to do".
 unfetched <- setdiff(unlist(spans$ahead), candidate_years)
 if (length(unfetched) > 0) {
   log_msg("ERROR: live COGs hold ", paste(sort(unfetched), collapse = ", "),
@@ -543,6 +587,12 @@ if (length(unfetched) > 0) {
           length(expected_cogs), " with scripts/pipeline_stage3_edh.R.")
   finish(1L)
 }
+if (length(candidate_years) == 0) {
+  log_msg("No year complete in local time beyond ", latest_year, " yet.")
+  log_msg("Nothing to do.")
+  finish(0L)
+}
+log_msg("Candidate years to fetch: ", paste(candidate_years, collapse = ", "))
 
 # Appending local-day tmax/tmin years (#37) onto UTC-day history would put a
 # 0.5-0.8 degC step into every tmax COG. The history is local-day once
@@ -644,6 +694,17 @@ for (yr in candidate_years) {
   }
 }
 
+# A year some live COGs already hold that this run failed to write leaves the
+# partial sync unrepaired; stop before STEP 4 rewrites 59 COGs only for STEP 5
+# to refuse them, and before the message below blames EDH latency (#119).
+unrepaired <- setdiff(unlist(spans$ahead), new_years_written)
+if (length(unrepaired) > 0) {
+  log_msg("ERROR: could not write ", paste(sort(unrepaired), collapse = ", "),
+          ", which ", length(spans$ahead), " live COG(s) already hold (STEP 1); ",
+          "the partial sync stays unrepaired. See the STEP 3 output above.")
+  finish(1L)
+}
+
 if (length(new_years_written) == 0) {
   if (any_fetch_errored) {
     log_msg("ERROR: attempted fetch(es) errored and no new years were written.")
@@ -665,27 +726,78 @@ written <- list()
 # Helper: append the new years to an existing S3 COG and write locally.
 # Used for both monthly natives (after cd_aggregate) and annual derived
 # (1-band straight read) — caller computes new_layers, this checks grid
-# alignment and writes. Returns the written COG's band names, or NULL when
-# there was nothing to write.
-append_to_cog <- function(var, period, new_layers, existing_row) {
+# alignment and writes. Years the COG already holds are skipped (#119).
+# Returns the written COG's band names, or NULL when there was nothing to write.
+append_to_cog <- function(var, period, new_layers) {
   if (length(new_layers) == 0) {
     log_msg("  ", var, "_", period, ": no new layers, not rewritten")
     return(NULL)
   }
   cog_name <- paste0(var, "_", period, ".tif")
   cog_path <- file.path(cog_dir, cog_name)
+  # The object STEP 1 read, by the same URL, not the catalog's href.
+  cog_url <- paste0(cog_base, "/", cog_name)
   existing_rast <- tryCatch(
-    rast(paste0("/vsicurl/", existing_row$href)),
+    rast(paste0("/vsicurl/", cog_url)),
     error = function(e) stop("Failed to read existing COG: ",
-                             existing_row$href, "\nError: ", e$message,
+                             cog_url, "\nError: ", e$message,
                              call. = FALSE)
   )
+  # A sync that died partway left this COG holding some of the new years
+  # already (#119). Appending them again would duplicate the band, so skip
+  # them, but only once the held band matches what this run computed: a
+  # method change between the two runs would otherwise mix methods within
+  # one year across the 59 COGs, with nothing to show it.
+  held <- intersect(names(new_layers), names(existing_rast))
+  for (y in held) {
+    if (!isTRUE(all.equal(as.vector(values(existing_rast[[y]])),
+                          as.vector(values(new_layers[[y]])),
+                          tolerance = 1e-5))) {
+      stop(var, "_", period, ": the live COG already holds ", y,
+           " (an earlier partial sync) and it differs from the ", y,
+           " computed this run. Rebuild with scripts/pipeline_stage3_edh.R.",
+           call. = FALSE)
+    }
+  }
+  if (length(held) > 0) {
+    log_msg("  ", var, "_", period, ": already holds ",
+            paste(held, collapse = ", "),
+            " (an earlier partial sync, matching this run's); not appended again")
+    new_layers <- new_layers[setdiff(names(new_layers), held)]
+  }
+  # Nothing left to append: still put the COG in cog_dir, because STEP 5
+  # publishes only when every COG was written this run (#89). A byte copy, not
+  # a rewrite, so nothing is re-encoded, and the size-only sync then skips it.
+  if (length(new_layers) == 0) {
+    # Retried: this runs at the end of a fetch measured in hours. A failure
+    # leaves no file (curl_download writes to a temp file first).
+    for (i in 1:3) {
+      ok <- tryCatch({
+        curl::curl_download(cog_url, cog_path, quiet = TRUE,
+                            handle = curl::new_handle(timeout = 600L))
+        TRUE
+      }, error = function(e) {
+        log_msg("  ", cog_name, ": copy attempt ", i, " failed: ", conditionMessage(e))
+        FALSE
+      })
+      if (ok) break
+      if (i == 3) stop("Could not copy ", cog_url, " after 3 attempts.", call. = FALSE)
+      Sys.sleep(5 * i)
+    }
+    copied <- names(rast(cog_path))
+    if (!identical(copied, names(existing_rast))) {
+      stop("Copy of ", cog_url, " does not hold the bands STEP 1 read.",
+           call. = FALSE)
+    }
+    log_msg("  Copied unchanged: ", cog_name, " (", length(copied), " years total)")
+    return(copied)
+  }
   new_rast <- rast(new_layers)
   names(new_rast) <- names(new_layers)
   if (!isTRUE(all.equal(as.vector(ext(existing_rast)),
                         as.vector(ext(new_rast)), tolerance = 1e-6)) ||
       !isTRUE(all.equal(res(existing_rast), res(new_rast), tolerance = 1e-6))) {
-    stop("Grid mismatch between existing COG (", existing_row$href,
+    stop("Grid mismatch between existing COG (", cog_url,
          ") and new ", var, "_", period,
          ". Extent/res differ. Aborting.", call. = FALSE)
   }
@@ -726,7 +838,7 @@ for (var in all_monthly_vars) {
                 period, " layer; ", yr, " skipped")
       }
     }
-    bands <- append_to_cog(var, period, new_layers, existing_row)
+    bands <- append_to_cog(var, period, new_layers)
     if (!is.null(bands)) written[[paste0(var, "_", period, ".tif")]] <- bands
   }
 }
@@ -754,7 +866,7 @@ for (var in annual_vars) {
     }
     new_layers[[as.character(yr)]] <- r
   }
-  bands <- append_to_cog(var, "annual", new_layers, existing_row)
+  bands <- append_to_cog(var, "annual", new_layers)
   if (!is.null(bands)) written[[paste0(var, "_annual.tif")]] <- bands
 }
 
@@ -765,7 +877,10 @@ log_msg("=== STEP 5: Rebuild catalog + push to S3 ===")
 # COG step 4 skipped would drop out of it while its .tif stayed on S3 with
 # nothing pointing at it (#89). No COG or catalog has been pushed yet.
 log_msg("  COGs written this run: ", length(written), " of ", length(expected_cogs))
-required_years <- union(current_years, new_years_written)
+# Every year any live COG holds, not just the years they all hold: a year a
+# partial sync left on some COGs must reach all of them, never be dropped (#119).
+required_years <- sort(unique(c(as.integer(unlist(live_years)),
+                                as.integer(new_years_written))))
 problems <- publish_problems(
   written,
   expected = expected_cogs,
@@ -826,6 +941,27 @@ if (!identical(live_after, built)) {
 }
 log_msg("  Live catalog: ", length(built$keys), " items, ",
         min(required_years), "-", max(required_years))
+# The catalog is a proxy for the COGs; read the COGs too, uncached, or GDAL
+# answers with the headers STEP 1 cached (probed on 3.8.5 and 3.13; each read
+# here opens, so stats, first). Every publish, not only a
+# repair: it is the one check that the sync put up the whole set. Uncached
+# reads are slow (~4 min for 59), and this runs about once a year.
+uncache()
+after <- live_spans(read_live_years())
+if (length(after$problems) > 0 || length(after$ahead) > 0 ||
+    !identical(after$common, required_years)) {
+  log_msg("ERROR: catalog.json is live, but the COGs read back do not all span ",
+          min(required_years), "-", max(required_years), ".")
+  for (p in after$problems) log_msg("  - ", p)
+  if (length(after$ahead) > 0) {
+    log_msg("  - ", length(after$ahead), " COG(s) still ahead of the rest")
+  }
+  log_msg("  The next run's STEP 1 reports what it finds.")
+  finish(1L)
+}
+log_msg("  Live COGs read back: all ", length(expected_cogs), " span ",
+        min(required_years), "-", max(required_years))
+partial_live <- FALSE
 
 log_msg("=== UPDATE COMPLETE ===")
 log_msg("Years added: ", paste(new_years_written, collapse = ", "))
