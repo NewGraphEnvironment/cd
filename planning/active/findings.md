@@ -44,7 +44,29 @@ with the list, which a human then resolves with stage 3.
   STEP 5 after the full fetch: `append_to_cog()` appends N again to the COGs that
   hold it, and `publish_problems()` sees spans that differ / are not contiguous.
 
+## live_spans() mutation table (2026-10-07)
+
+Each branch broken in a scratch copy of `scripts/`; `Rscript scripts/test_lib.R`
+must exit non-zero. Control (unmutated copy) exits 0, 67/67.
+
+| mutation | exit | FAIL lines |
+|---|---|---|
+| M1 drop the `^[0-9]{4}$` band check | 1 | 0 (crash: `seq()` on NA) |
+| M1b pattern accepts `2025.0` | 1 | 1 |
+| M2 drop the contiguity check | 1 | 3 |
+| M3 drop the start-year check | 1 | 1 |
+| M4 floor = max end year | 1 | 3 |
+| M5 drop the unreadable-COG check | 1 | 1 |
+| M6 keep empty `ahead` entries | 1 | 4 |
+| M7 no early return on problems | 1 | 3 |
+| M8 drop the empty-input check | 1 | 0 (crash: `min()` of nothing) |
+
+The first harness counted FAIL lines only and reported M1 as "0 failing" — a crash
+prints none. Exit status is the signal; the FAIL count is detail.
+
 ## Errors Encountered
 
 | Error | Resolution |
 |-------|------------|
+| Mutation harness reported M1 as surviving | It crashed instead; count exit status, not FAIL lines |
+| "start in different years" message listed the first 5 COGs, hiding the odd one | Name only COGs whose start differs from the majority |

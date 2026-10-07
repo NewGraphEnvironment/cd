@@ -16,9 +16,9 @@ weekly dry run reports a partial state as a WARNING and exits 0; a live run exit
 until the repair is published.
 
 ## Phase 1: `live_spans()` helper + offline tests
-- [ ] `live_spans(cog_years)` in `scripts/_lib.R` (pure, no I/O), documented like its neighbours
-- [ ] Cases in `scripts/test_lib.R`: healthy 59 → no ahead/problems; one COG ahead by N; `tmean_annual` lagging (others ahead); two COGs ahead by different amounts; different start year; gap; duplicate year (the double-append shape); NA/non-year band; empty input
-- [ ] Mutation check: break each branch and confirm a test goes red (table in findings.md)
+- [x] `live_spans(cog_years)` in `scripts/_lib.R` (pure, no I/O), documented like its neighbours
+- [x] Cases in `scripts/test_lib.R`: healthy 59 → no ahead/problems; one COG ahead by N; `tmean_annual` lagging (others ahead); two COGs ahead by different amounts; different start year; gap; duplicate year (the double-append shape); NA/non-year band; empty input
+- [x] Mutation check: break each branch and confirm a test goes red (table in findings.md)
 
 ## Phase 2: STEP 1–2 in `pipeline_update_edh.R`
 - [ ] Replace the `tmean_row` / `r_current` read with a read of all 59 COGs' band names; unreadable COG → named problem

@@ -202,6 +202,79 @@ catalog_problems <- function(keys, expected, start = NULL, end = NULL,
   problems
 }
 
+# The years each live COG holds, reconciled across all of them (#119).
+#
+# `aws s3 sync` uploads one object at a time, so a STEP 5 sync that dies
+# partway leaves some COGs a year ahead of the rest; cd_s3_push() aborts before
+# catalog.json goes up, so the catalog still spans the years they all held.
+# Reading tmean_annual alone took its end year as everyone's. Instead the update
+# targets the years every COG holds, and appends to each only what it lacks.
+#
+#   cog_years  named list, COG file name -> its band names; NULL for a COG that
+#              could not be read.
+#
+# Returns list(common, ahead, problems):
+#   common    integer years every COG holds: the shared first year through the
+#             earliest last year.
+#   ahead     named list, COG -> the years it holds beyond `common`, for the COGs
+#             a partial sync left ahead; empty when they all agree.
+#   problems  why the set cannot be repaired by appending, or character(0). A
+#             COG that is unreadable, holds a band that is not a year, or is not
+#             one contiguous ascending run, or COGs that start in different
+#             years, all need stage 3.
+live_spans <- function(cog_years) {
+  out <- list(common = integer(), ahead = list(), problems = character())
+  show <- function(x) {
+    paste0(paste(utils::head(x, 5), collapse = ", "),
+           if (length(x) > 5) ", ..." else "")
+  }
+  if (length(cog_years) == 0) {
+    out$problems <- "no live COGs were read"
+    return(out)
+  }
+
+  unread <- names(cog_years)[vapply(cog_years, is.null, logical(1))]
+  if (length(unread) > 0) {
+    out$problems <- c(out$problems, paste0(
+      "could not read ", length(unread), " live COG(s) (", show(unread), ")"
+    ))
+  }
+  read <- cog_years[!vapply(cog_years, is.null, logical(1))]
+  years <- lapply(read, function(x) {
+    x <- as.character(x)
+    if (length(x) == 0 || !all(grepl("^[0-9]{4}$", x))) return(NULL)
+    y <- as.integer(x)
+    if (!identical(y, seq(min(y), max(y)))) return(NULL)
+    y
+  })
+  bad <- names(years)[vapply(years, is.null, logical(1))]
+  if (length(bad) > 0) {
+    out$problems <- c(out$problems, paste0(
+      length(bad), " live COG(s) do not hold one contiguous, ascending run of ",
+      "years (", show(bad), ")"
+    ))
+  }
+  years <- years[!vapply(years, is.null, logical(1))]
+  starts <- vapply(years, min, integer(1))
+  if (length(unique(starts)) > 1) {
+    # Name the odd ones out: listing every COG would bury them past show()'s 5.
+    usual <- as.integer(names(which.max(table(starts))))
+    odd <- starts[starts != usual]
+    out$problems <- c(out$problems, paste0(
+      length(odd), " live COG(s) start in a different year from the other ",
+      length(starts) - length(odd), " (", usual, "): ",
+      show(paste0(names(odd), " ", odd))
+    ))
+  }
+  if (length(out$problems) > 0) return(out)
+
+  floor_year <- min(vapply(years, max, integer(1)))
+  out$common <- seq(starts[[1]], floor_year)
+  extra <- lapply(years, function(y) y[y > floor_year])
+  out$ahead <- extra[lengths(extra) > 0]
+  out
+}
+
 # First and last year of each item in a STAC catalog written by
 # cd_stac_catalog(), read from the JSON itself; NA where a date is absent.
 catalog_item_years <- function(catalog_json) {
