@@ -216,6 +216,8 @@ licensed under the Apache License 2.0.
   : Derive climate variables from raw ERA5-Land fields
 - [`cd_extract()`](https://newgraphenvironment.github.io/cd/reference/cd_extract.md)
   : Extract zonal mean time series for an AOI
+- [`cd_extract_daily()`](https://newgraphenvironment.github.io/cd/reference/cd_extract_daily.md)
+  : Extract daily air temperature at points
 - [`cd_fetch()`](https://newgraphenvironment.github.io/cd/reference/cd_fetch.md)
   : Download ERA5-Land climate data
 - [`cd_periods()`](https://newgraphenvironment.github.io/cd/reference/cd_periods.md)
