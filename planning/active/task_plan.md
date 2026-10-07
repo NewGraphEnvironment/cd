@@ -54,8 +54,8 @@ What exploration found, which shapes the plan:
 - [x] Update `README.md` (drop the roadmap item), `CLAUDE.md` (EDH gotcha, scripts list), the `backfill_edh_daily.py` and `_lib.py` docstrings, `research/` (new `tmax_tmin_day_boundary.md`; `edh_era5_land_store.md` needed no change), and ~~NEWS~~ the PR body (NEWS is written at release by `/gh-pr-merge`: values changed and their direction; one-month publish slip; `cd_cache_clear()` if revalidation is off)
 
 ## Validation
-- [ ] `uv run scripts/test_lib.py` passes; `devtools::test()` passes; `pkgdown::check_pkgdown()` passes
-- [ ] `/code-check` clean on each commit
+- [x] `uv run scripts/test_lib.py` 35/35; `devtools::test()` 491 pass / 0 fail; ~~`pkgdown::check_pkgdown()`~~ fails identically on main (DESCRIPTION URL lacks the github.io URL), out of scope; both vignettes render
+- [x] `/code-check`: run as four rounds over the branch's scripts diff rather than per commit (review-round1..4.md); ended Clean by enumeration (33 rows)
 - [ ] PWF checkboxes match landed work
 - [ ] `/planning-archive` on completion (README carries the Measurement + Evidence sections)
 
