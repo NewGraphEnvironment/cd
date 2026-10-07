@@ -98,6 +98,17 @@ for (var in all_vars) {
     for (yr in years) {
       mf <- file.path(monthly_dir, paste0(var, "_", yr, ".tif"))
       r_m <- rast(mf)
+      # tmax/tmin use local days since #37 and the files carry units=degC; a
+      # pre-#37 UTC-day file (units=K) is skipped by the backfills' existence
+      # check, so it would otherwise be published silently.
+      if (var %in% c("tmax", "tmin")) {
+        tags <- metags(r_m)
+        if (!identical(tags$value[tags$name == "units"], "degC")) {
+          stop(var, " ", yr, ": not a local-day file (no units=degC tag); ",
+               "delete it and re-run scripts/backfill_edh_tmax_tmin.py",
+               call. = FALSE)
+        }
+      }
       if (nlyr(r_m) != 12) {
         warning(sprintf("%s %d: has %d layers, need 12, skipping",
                         var, yr, nlyr(r_m)), call. = FALSE)
@@ -196,18 +207,21 @@ if (anyNA(years_written) ||
   stop("Refusing to build the catalog: the years written this run are not ",
        "contiguous (a monthly file was skipped).", call. = FALSE)
 }
-live_latest <- tryCatch({
+live_years <- tryCatch({
   live <- cd_catalog()
   href <- live$href[live$variable == "tmean" & live$period == "annual"]
-  max(as.integer(names(rast(paste0("/vsicurl/", href)))))
+  as.integer(names(rast(paste0("/vsicurl/", href))))
 }, error = function(e) {
   stop("Refusing to build the catalog: could not read the live tmean_annual ",
        "COG to check its years (", conditionMessage(e), ").", call. = FALSE)
 })
-if (max(years_written) < live_latest) {
-  stop("Refusing to build the catalog: this run ends at ", max(years_written),
-       " but the live COGs reach ", live_latest, "; publishing would drop ",
-       "those years.", call. = FALSE)
+dropped <- setdiff(live_years, years_written)
+if (length(dropped) > 0) {
+  stop("Refusing to build the catalog: the live COGs hold ",
+       length(dropped), " year(s) this run did not write (",
+       paste(utils::head(dropped, 5), collapse = ", "),
+       if (length(dropped) > 5) ", ..." else "", "); publishing would drop them.",
+       call. = FALSE)
 }
 
 log_msg("=== STEP 2: Build STAC catalog ===")

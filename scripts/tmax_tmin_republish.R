@@ -29,7 +29,10 @@
 # Run the live publish when the code that writes local-day tmax/tmin is on
 # main, not before: from the publish on, CI must append local-day years.
 # To restore the UTC-day originals, copy s3://<bucket>/_backup/tmax_tmin_utc_day/*
-# back over the 10 keys.
+# back over the 10 keys, but only while each live key still holds this
+# script's upload (ETag == MD5 of data/backfill/republish_37/local_day/<key>):
+# once CI has appended a year, a restore would drop it. And once restored,
+# pipeline_update_edh.R refuses to append (it checks the history is local-day).
 #
 # Usage:
 #   Rscript scripts/tmax_tmin_republish.R --dry-run   # steps 1, 3 and the local backup
@@ -169,9 +172,13 @@ for (nm in names(new_paths)) {
   key <- basename(new_paths[[nm]])
   new <- rast(new_paths[[nm]])
   old <- rast(file.path(old_dir, key))
-  if (!identical(names(new), names(old))) {
-    stop(key, ": band names differ (new ", names(new)[1], "..", tail(names(new), 1),
-         ", live ", names(old)[1], "..", tail(names(old), 1), ")", call. = FALSE)
+  # Years against the live object, not the backup: CI may have appended a
+  # year since the backup was taken, and the upload must not drop it.
+  live_names <- names(rast(paste0("/vsicurl/", base_url, "/", key)))
+  if (!identical(names(new), live_names) || !identical(names(new), names(old))) {
+    stop(key, ": years differ (new ", names(new)[1], "..", tail(names(new), 1),
+         ", live ", live_names[1], "..", tail(live_names, 1), ", backup ",
+         names(old)[1], "..", tail(names(old), 1), ")", call. = FALSE)
   }
   if (!isTRUE(compareGeom(new, old, stopOnError = FALSE))) {
     stop(key, ": grid differs from the live COG", call. = FALSE)
@@ -244,9 +251,16 @@ if (length(too_big) > 0) {
 for (nm in names(new_paths)) {
   path <- new_paths[[nm]]
   key <- basename(path)
-  if (identical(s3_etag(key), md5(path))) {
+  live_etag <- s3_etag(key)
+  if (identical(live_etag, md5(path))) {
     log_msg("  ", key, ": live object already identical, skipped")
     next
+  }
+  # Overwrite only what was backed up. Anything else on the key (a year CI
+  # appended, an unreadable HEAD) is data this script has no copy of.
+  if (!identical(live_etag, md5(file.path(old_dir, key)))) {
+    stop(key, ": live object is neither the backed-up original nor this ",
+         "upload; refusing to overwrite it", call. = FALSE)
   }
   res <- aws("s3", "cp", "--only-show-errors", "--content-type", "image/tiff",
              path, paste0("s3://", bucket, "/", key))
@@ -257,7 +271,9 @@ for (nm in names(new_paths)) {
   log_msg("  ", key, ": uploaded, ETag verified")
 }
 
-# One read back the way consumers read it, through /vsicurl/.
+# One read back the way consumers read it, through /vsicurl/. Step 3 read
+# these keys before the upload, so bypass GDAL's per-process curl cache.
+setGDALconfig("CPL_VSIL_CURL_NON_CACHED", paste0("/vsicurl/", base_url))
 probe <- new_paths[["tmax_summer"]]
 remote <- rast(paste0("/vsicurl/", base_url, "/", basename(probe)))
 if (!isTRUE(all.equal(values(remote[[nlyr(remote)]]), values(rast(probe)[[nlyr(remote)]])))) {

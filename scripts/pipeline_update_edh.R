@@ -449,6 +449,40 @@ if (length(candidate_years) == 0) {
 }
 log_msg("Candidate years to fetch: ", paste(candidate_years, collapse = ", "))
 
+# Appending local-day tmax/tmin years (#37) onto UTC-day history would put a
+# 0.5-0.8 degC step into every tmax COG. The history is local-day once
+# scripts/tmax_tmin_republish.R has run: each live key then differs from its
+# UTC-day backup. Checked against the live objects, before any fetch.
+tmaxmin_local_history <- function() {
+  keys <- as.vector(outer(c("tmax", "tmin"), c("annual", names(seasons)),
+                          paste, sep = "_"))
+  head_etag <- function(url) {
+    res <- tryCatch(
+      curl::curl_fetch_memory(
+        url, handle = curl::new_handle(nobody = TRUE, timeout = 30L)
+      ),
+      error = function(e) NULL
+    )
+    if (is.null(res)) return(list(code = 0L, etag = NA_character_))
+    h <- curl::parse_headers_list(res$headers)
+    list(code = as.integer(res$status_code),
+         etag = if (is.null(h$etag)) NA_character_ else gsub('"', "", h$etag))
+  }
+  base <- paste0("https://", bucket, ".s3.us-west-2.amazonaws.com")
+  all(vapply(keys, function(k) {
+    live <- head_etag(paste0(base, "/", k, ".tif"))
+    bak <- head_etag(paste0(base, "/_backup/tmax_tmin_utc_day/", k, ".tif"))
+    live$code == 200L && bak$code == 200L && !is.na(live$etag) &&
+      !identical(live$etag, bak$etag)
+  }, logical(1)))
+}
+if (!isTRUE(tmaxmin_local_history())) {
+  log_msg("ERROR: the live tmax/tmin history is not confirmed local-day ",
+          "(no UTC-day backup, or a live key still equals it). Run ",
+          "scripts/tmax_tmin_republish.R first (#37); not appending.")
+  finish(1L)
+}
+
 if (dry_run) {
   log_msg("=== DRY RUN COMPLETE ===")
   log_msg("Credentials, catalog read and target-year computation all succeeded.")
