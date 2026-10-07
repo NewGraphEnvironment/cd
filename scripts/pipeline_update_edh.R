@@ -16,6 +16,13 @@
 #      for annual-derived snow scalars), write locally, push to S3.
 #   5. Rebuild catalog, push to S3.
 #
+# Before step 1, STEP D extends the daily air-temperature cube (#116) under
+# s3://<bucket>/daily/, one COG per variable-year from backfill_edh_daily.py.
+# It runs on its own clock: a local-time year needs the first 8 hours of the
+# next UTC year, so the cube trails the annual COGs by about a month, and
+# steps 1-3 exit early on most runs. A daily failure does not stop the
+# annual path; it turns the run's exit status non-zero at the end.
+#
 # Designed for the monthly GitHub Action (climate-update.yml). Exits
 # cleanly with status 0 if nothing new is available.
 #
@@ -257,6 +264,119 @@ if (!is.null(attr(sentinel_rm, "status")) && attr(sentinel_rm, "status") != 0) {
 }
 log_msg("  AWS write to s3://", bucket, ": OK")
 
+# -- Step D: daily air-temperature cube (#116) --------------------------------
+# Self-contained: its own target, its own dry-run report, its own push. It
+# sits before step 1 because steps 1-3 exit early on most runs, and the CI
+# runner starts empty, so a daily year built after them would never be
+# pushed.
+log_msg("=== STEP D: Daily air-temperature cube (#116) ===")
+
+daily_dir <- "data/backfill/daily"
+daily_base <- paste0("https://", bucket, ".s3.us-west-2.amazonaws.com/daily")
+daily_vars <- c("tmean", "tmax", "tmin")
+daily_failed <- FALSE
+
+# Every later exit goes through here, so a daily failure is never reported
+# as a green run by an annual path that had nothing to do.
+finish <- function(status = 0L) {
+  if (daily_failed) {
+    log_msg("Daily cube step failed (see STEP D above); exiting non-zero.")
+    status <- 1L
+  }
+  quit(status = status)
+}
+
+# 200 = published, 403/404 = absent (S3 answers 403 for a missing key on a
+# bucket that does not grant anonymous ListBucket), anything else = unknown.
+daily_published <- function(year) {
+  codes <- vapply(daily_vars, function(v) {
+    url <- paste0(daily_base, "/", v, "_daily_", year, ".tif")
+    res <- tryCatch(
+      # timeout bounds the whole transfer; new_handle() alone bounds only the
+      # connect, and a stalled HEAD here would also block the annual path.
+      curl::curl_fetch_memory(
+        url, handle = curl::new_handle(nobody = TRUE, timeout = 30L)
+      ),
+      error = function(e) NULL
+    )
+    if (is.null(res)) 0L else as.integer(res$status_code)
+  }, integer(1))
+  if (all(codes == 200L)) return(TRUE)
+  if (all(codes %in% c(200L, 403L, 404L))) return(FALSE)
+  NA
+}
+
+daily_step <- function() {
+  # Latest complete local year, from the store's time coordinate only.
+  out <- suppressWarnings(system2(
+    "uv", c("run", "--quiet", "scripts/backfill_edh_daily.py", "--check"),
+    stdout = TRUE
+  ))
+  line <- grep("^latest_complete=[0-9]{4}$", out, value = TRUE)
+  if (!is.null(attr(out, "status")) || length(line) != 1L) {
+    log_msg("  ERROR: backfill_edh_daily.py --check failed (exit ",
+            if (is.null(attr(out, "status"))) 0L else attr(out, "status"), ")")
+    return(FALSE)
+  }
+  target <- as.integer(sub("^latest_complete=", "", line))
+  log_msg("  Latest complete local year on EDH: ", target)
+
+  # Walk back from the target to the newest published year. A few years is
+  # the most a healthy cube can be behind; finding none means the cube was
+  # never built, and 76 years is a local backfill, not a CI job.
+  newest <- NA_integer_
+  for (y in seq(target, target - 3L)) {
+    pub <- daily_published(y)
+    if (is.na(pub)) {
+      log_msg("  ERROR: could not tell whether ", y, " is published (HEAD failed)")
+      return(FALSE)
+    }
+    if (pub) {
+      newest <- y
+      break
+    }
+  }
+  if (is.na(newest)) {
+    log_msg("  ERROR: no daily cube published for ", target - 3L, "-", target,
+            ". Build it locally: uv run scripts/backfill_edh_daily.py, then ",
+            "cd_s3_push('", daily_dir, "', prefix = 'daily').")
+    return(FALSE)
+  }
+  log_msg("  Newest year on S3: ", newest)
+  if (newest >= target) {
+    log_msg("  Daily cube current.")
+    return(TRUE)
+  }
+  missing <- seq(newest + 1L, target)
+  if (dry_run) {
+    log_msg("  A live run would build and publish ", paste(missing, collapse = ", "), ".")
+    return(TRUE)
+  }
+
+  for (y in missing) {
+    log_msg("  Building ", y, " via backfill_edh_daily.py...")
+    status <- system2(
+      "uv", c("run", "scripts/backfill_edh_daily.py", "--year", as.character(y))
+    )
+    files <- file.path(daily_dir, paste0(daily_vars, "_daily_", y, ".tif"))
+    n_days <- if (y %% 4L == 0L && (y %% 100L != 0L || y %% 400L == 0L)) 366L else 365L
+    ok <- status == 0L && all(file.exists(files)) &&
+      all(vapply(files, function(f) nlyr(rast(f)) == n_days, logical(1)))
+    if (!ok) {
+      log_msg("  ERROR: ", y, " did not build completely (exit ", status, ")")
+      return(FALSE)
+    }
+  }
+  cd_s3_push(daily_dir, bucket = bucket, prefix = "daily", dry_run = FALSE)
+  log_msg("  Published ", paste(missing, collapse = ", "), " to s3://", bucket, "/daily/")
+  TRUE
+}
+
+daily_failed <- !isTRUE(tryCatch(daily_step(), error = function(e) {
+  log_msg("  ERROR: ", conditionMessage(e))
+  FALSE
+}))
+
 # -- Step 1: determine state ---------------------------------------------------
 log_msg("=== STEP 1: Check S3 catalog for latest year ===")
 
@@ -287,7 +407,7 @@ current_year <- as.integer(format(Sys.Date(), "%Y"))
 if (latest_year >= current_year) {
   log_msg("Already at or past current year (", latest_year, " >= ", current_year, ")")
   log_msg("Nothing to do.")
-  quit(status = 0)
+  finish(0L)
 }
 candidate_years <- seq(latest_year + 1, current_year)
 log_msg("Candidate years to fetch: ", paste(candidate_years, collapse = ", "))
@@ -299,7 +419,7 @@ if (dry_run) {
           " via EDH, append any complete years to the ",
           length(agg_methods) + length(annual_vars),
           " variable COGs, and publish to s3://", bucket, ".")
-  quit(status = 0)
+  finish(0L)
 }
 
 # -- Step 3: fetch via EDH ----------------------------------------------------
@@ -359,7 +479,7 @@ if (length(new_years_written) == 0) {
     quit(status = 1)
   }
   log_msg("No new complete years available on EDH yet (latency is normal).")
-  quit(status = 0)
+  finish(0L)
 }
 log_msg("New years to integrate: ", paste(new_years_written, collapse = ", "))
 
@@ -449,3 +569,4 @@ cd_s3_push(cog_dir, bucket = bucket, dry_run = FALSE)
 
 log_msg("=== UPDATE COMPLETE ===")
 log_msg("Years added: ", paste(new_years_written, collapse = ", "))
+finish(0L)
