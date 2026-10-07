@@ -47,16 +47,16 @@ Direct point reads from the EDH Zarr are too slow (201 s for one point × 20 yea
   - Published = HEAD `daily/tmean_daily_{Y}.tif`, probing back from the target.
   - Build missing years via `backfill_edh_daily.py`, convert with the Phase 2 helper, and push `daily/`.
   - The annual path's early exit must not skip this.
-- [ ] `--dry-run` reports the daily target and published year and builds nothing. Run it locally and once on CI (`gh workflow run`) after merge.
+- [x] `--dry-run` reports the daily target — local (both outcomes, plus a live run) and on CI before merge: run 37552913968, success, "Daily cube current" and published year and builds nothing. Run it locally and once on CI (`gh workflow run`) after merge.
 
 ## Phase 5: Docs and record
 - [x] Update `CLAUDE.md`: architecture (the daily cube as a second product), the scripts list, the EDH gotchas (the cube uses UTC−8, while monthly tmax/tmin are still UTC per #37), and the consumer chain (`cd_extract_daily()` sits outside the long-format chain).
-- [ ] `findings.md` gets the measurement table above plus the Phase 2 layout and validation numbers; that's the archive README's Measurement/Evidence.
+- [x] `findings.md` gets the measurement table above plus the Phase 2 layout and validation numbers; that's the archive README's Measurement/Evidence.
 - [x] ~~Draft an upstream GDAL issue for the `bitround` decode refusal~~ — not needed: the refusal was GDAL 3.8.5 (sf); GDAL 3.13 reads the filter (findings.md)
 
 ## Validation
 
-- [ ] Tests pass
-- [ ] `/code-check` clean on each commit
-- [ ] PWF checkboxes match landed work
-- [ ] `/planning-archive` on completion
+- [x] Tests pass — R 51 fixture + 4 live; Python 28/28; R CMD check 0/0/0
+- [x] `/code-check` clean on each commit — plan review + rounds 1–4 on the branch (round 4 clean, no defect inside a fix); one round on the retry fix
+- [x] PWF checkboxes match landed work
+- [x] `/planning-archive` on completion
