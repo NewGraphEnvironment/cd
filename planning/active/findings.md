@@ -41,7 +41,21 @@ Compute a UTC-offset raster from longitude (or from a time-zone polygon overlay)
 
 Separate follow-up after EDH migration. CDS-based path (#33) closed obsolete; this is the only remaining tmax/tmin correctness issue.
 
+## Phase 1 (2026-10-06)
+
+- `monthly_from_daily()` + `read_cog_days()` in `_lib.py`. The cube reader returns
+  exactly the shape `local_daily()` produces, so history (from the cube) and new
+  years (from hourly) go through the same monthly function.
+- The cube on disk sits on the live COG grid: 0.1 deg, extent -139.95/-113.95/47.95/59.95,
+  120 x 260, checked with terra against `/vsicurl/` of `tmax_annual.tif` (76 bands, 1950-2025).
+- Mutations: `LOCAL_OFFSET_H = 0` turns 6 cases red (both new monthly cases among them);
+  removing the whole-year guard turns 3 red. 35/35 otherwise.
+- The test spike for "UTC month vs local month" has to sit at 00-07 UTC on the 1st. A
+  23:00 UTC spike on the 31st is the same month either way, so it cannot tell the two apart.
+  The plan's wording ("23:00 UTC on 31 Jan") was corrected to 02:00 UTC on 1 Feb.
+
 ## Errors Encountered
 
 | Error | Resolution |
 |-------|------------|
+| `Error in sys.excepthook` at interpreter exit after reading a COG | `read_cog_days()` loads inside `with open_rasterio(...)` so no handle survives to shutdown |

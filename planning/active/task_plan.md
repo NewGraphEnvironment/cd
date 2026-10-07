@@ -28,9 +28,9 @@ What exploration found, which shapes the plan:
 3. **Republish to S3 before opening the PR, with a backup first.** The vignette numbers can only be refreshed once the corrected COGs are live. The 10 current COGs are copied to `s3://stac-era5-land/_backup/tmax_tmin_utc_day/` and kept locally. `catalog.json` is not rebuilt: the years and extents do not change, and the script asserts that.
 
 ## Phase 1: Local-month helper + offline tests
-- [ ] `_lib.py`: add `monthly_from_daily(daily)`. It takes local-dated daily values, returns the monthly mean labelled by local month, and refuses anything but a whole local year (365/366 days, 12 months)
-- [ ] `test_lib.py`: a 23:00 UTC peak on 31 Jan is credited to January; 00-07 UTC on 1 Jan Y belong to Y-1; a cube-shaped input and an hourly→`local_daily`→monthly input give identical monthly values; a short year is refused
-- [ ] Mutation check: switching back to UTC days turns a case red
+- [x] `_lib.py`: add `monthly_from_daily(daily)`. It takes local-dated daily values, returns the monthly mean labelled by local month, and refuses anything but a whole local year (365/366 days, 12 months)
+- [x] `test_lib.py`: a 23:00 UTC peak on 31 Jan is credited to January; 00-07 UTC on 1 Jan Y belong to Y-1; a cube-shaped input and an hourly→`local_daily`→monthly input give identical monthly values; a short year is refused
+- [x] Mutation check: switching back to UTC days turns a case red
 
 ## Phase 2: Producer code on local days
 - [ ] `backfill_edh_all.py`: compute tmax/tmin from the `local_year_window()` slice via `local_daily()` + `monthly_from_daily()`, gated on `local_year_complete()` before any compute (#84). tmean/vpd/rh/soil stay on UTC months; that is out of scope, and the shift is negligible for means
