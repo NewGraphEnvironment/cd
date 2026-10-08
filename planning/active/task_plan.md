@@ -41,14 +41,14 @@ The same exact-edge slice is copied into all three backfillers (`backfill_edh_da
 - [x] Plan review (`review-plan.md`): the backfillers' skip paths also check existing outputs (`bc_files_check()`), and stage 3 / STEP 5 refuse a COG set that is not all on the BC grid (`grid_problems()` in `scripts/_lib.R`)
 
 ## Phase 2: `cd_extract_daily()` — a point outside the cube gets NA, not an abort
-- [ ] Tests in `tests/testthat/test-cd_extract_daily.R`. These replace the "a point off the grid aborts" test:
+- [x] Tests in `tests/testthat/test-cd_extract_daily.R`. These replace the "a point off the grid aborts" test:
   - An off-grid point gets NA rows for every variable and day, NA `cell` / `cell_x` / `cell_y`, and `cell_moved = FALSE`, while the other points keep their values.
   - The warning names the point and states the extent read from the fixture template (53.8 / 54.3 / −124 / −123.4), not a hardcoded string.
   - All points off grid gives all-NA rows.
   - An off-grid point plus a stranded point raises both warnings. Collect them with `withCallingHandlers`, because `expect_warning` sees only the first.
-- [ ] `R/cd_extract_daily.R`, `daily_cells()`: an outside cell becomes NA, and the warning formats `terra::ext(template)`. The neighbour search skips NA cells.
-- [ ] `cd_extract_daily()`: drop NA from `ucell`, guard an empty `ucell`, and give unmatched rows NA values.
-- [ ] Roxygen: update the Cell choice section and `@return` (cell columns can be NA), then `devtools::document()`. Run `devtools::test()` and `lintr`.
+- [x] `R/cd_extract_daily.R`, `daily_cells()`: an outside cell becomes NA, and the warning formats `terra::ext(template)`. The neighbour search skips NA cells.
+- [x] `cd_extract_daily()`: drop NA from `ucell`, guard an empty `ucell`, and give unmatched rows NA values.
+- [x] Roxygen: update the Cell choice section and `@return` (cell columns can be NA), then `devtools::document()`. Run `devtools::test()` and `lintr`.
 
 ## Phase 3: Rebuild locally on the 121 × 261 grid
 - [ ] Move the current `data/backfill/{daily,monthly,annual}` aside to `data/backfill/_grid_120x260/` (gitignored), to compare against later.

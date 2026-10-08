@@ -132,13 +132,74 @@ test_that("an unpublished year aborts naming the year", {
   )
 })
 
-test_that("a point off the grid aborts naming it", {
+# Every warning an expression raises, in order: expect_warning() sees only
+# the first, so a second cause would go unchecked.
+all_warnings <- function(expr) {
+  msgs <- character()
+  value <- withCallingHandlers(expr, warning = function(w) {
+    msgs <<- c(msgs, conditionMessage(w))
+    invokeRestart("muffleWarning")
+  })
+  list(value = value, warnings = msgs)
+}
+
+test_that("a point off the grid gets NA rows and a warning, not an abort", {
   src <- daily_fixture()
   pts <- rbind(daily_pts(16), data.frame(id = "far", lon = -100, lat = 40))
-  expect_error(
-    cd_extract_daily(pts, "2003-01-01", "2003-01-01", source = src),
-    "far"
+  r <- all_warnings(
+    cd_extract_daily(pts, "2003-01-01", "2003-01-02", source = src)
   )
+  d <- r$value
+  expect_length(r$warnings, 1)
+  expect_match(r$warnings, "far", fixed = TRUE)
+  # The extent comes from the cube, not a hardcoded string (#123).
+  for (edge in c("-124", "-123.4", "53.8", "54.3")) {
+    expect_match(r$warnings, edge, fixed = TRUE)
+  }
+
+  far <- d[d$id == "far", ]
+  expect_equal(nrow(far), 3 * 2)
+  expect_true(all(is.na(far$value)))
+  expect_true(all(is.na(far$cell)))
+  expect_type(d$cell, "integer")
+  # NA, not the NaN terra::xyFromCell() gives for an NA cell.
+  expect_identical(far$cell_x, rep(NA_real_, 6))
+  expect_identical(far$cell_y, rep(NA_real_, 6))
+  expect_false(any(far$cell_moved))
+  # The point on the grid is untouched.
+  expect_equal(d$value[d$id == "p1" & d$variable == "tmean"], c(16001, 16002))
+  expect_equal(unique(d$id), c("p1", "far"))
+})
+
+test_that("every point off the grid gives all-NA rows", {
+  src <- daily_fixture()
+  pts <- data.frame(id = c("a", "b"), lon = c(-100, -130), lat = c(40, 54))
+  r <- all_warnings(
+    cd_extract_daily(pts, "2003-01-01", "2003-01-03", variables = "tmax",
+                     source = src)
+  )
+  expect_length(r$warnings, 1)
+  expect_match(r$warnings, "a, b", fixed = TRUE)
+  expect_equal(nrow(r$value), 2 * 3)
+  expect_true(all(is.na(r$value$value)))
+  expect_equal(r$value$date, rep(as.Date("2003-01-01") + 0:2, 2))
+})
+
+test_that("off the grid and stranded at sea each warn", {
+  src <- daily_fixture()
+  pts <- rbind(daily_pts(8, ids = "sea"),
+               data.frame(id = "far", lon = -100, lat = 40))
+  r <- all_warnings(
+    cd_extract_daily(pts, "2003-01-01", "2003-01-01", variables = "tmean",
+                     source = src)
+  )
+  expect_length(r$warnings, 2)
+  expect_true(any(grepl("far", r$warnings, fixed = TRUE) &
+                    grepl("extent", r$warnings, fixed = TRUE)))
+  expect_true(any(grepl("sea", r$warnings, fixed = TRUE) &
+                    grepl("No ERA5-Land data", r$warnings, fixed = TRUE)))
+  expect_true(all(is.na(r$value$value)))
+  expect_equal(r$value$cell, c(8L, NA))
 })
 
 test_that("bad arguments abort", {

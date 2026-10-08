@@ -30,6 +30,10 @@
 #' cell share a `cell` value, so identical series are easy to spot. There is
 #' no elevation adjustment between the cell and the point.
 #'
+#' A point outside the cube (British Columbia's box, 47.95–60.05° N,
+#' 140.05–113.95° W) gets `NA` values and `NA` cell columns, and a warning
+#' names it with the cube's extent; the other points are unaffected.
+#'
 #' @param points Point locations: an `sf` or [terra::SpatVector] of points
 #'   in any CRS, carrying the `id` column, or a data frame with longitude/latitude columns
 #'   (WGS84) named by `coords`.
@@ -53,8 +57,10 @@
 #'     \item{date}{Local day (`Date`).}
 #'     \item{variable}{`"tmean"`, `"tmax"` or `"tmin"`.}
 #'     \item{value}{Air temperature, °C.}
-#'     \item{cell}{ERA5-Land cell number on the cube's grid.}
-#'     \item{cell_x, cell_y}{Longitude and latitude of the cell centre.}
+#'     \item{cell}{ERA5-Land cell number on the cube's grid; `NA` for a
+#'       point outside the cube.}
+#'     \item{cell_x, cell_y}{Longitude and latitude of the cell centre;
+#'       `NA` for a point outside the cube.}
 #'     \item{cell_moved}{`TRUE` when the point's own cell had no data and a
 #'       neighbour was used.}
 #'   }
@@ -118,6 +124,7 @@ cd_extract_daily <- function(points, from, to,
   template <- daily_read(source, variables[1], years[1], cache)
 
   cells <- daily_cells(template, pts$xy, ids)
+  # sort() drops the NA of points outside the cube; match() gives them NA rows.
   ucell <- sort(unique(cells$cell))
 
   pieces <- vector("list", length(variables) * length(years))
@@ -143,7 +150,11 @@ cd_extract_daily <- function(points, from, to,
         ))
       }
       keep <- which(dates >= from & dates <= to)
-      vals <- as.matrix(terra::extract(r, ucell)[, keep, drop = FALSE])
+      vals <- if (length(ucell) > 0L) {
+        as.matrix(terra::extract(r, ucell)[, keep, drop = FALSE])
+      } else {
+        matrix(NA_real_, 0L, length(keep))
+      }
       # Point-major: each point's days in order, read from its cell's row.
       rows <- match(cells$cell, ucell)
       k <- k + 1L
@@ -257,10 +268,15 @@ daily_read <- function(source, variable, year, cache) {
 #' @noRd
 daily_cells <- function(template, xy, ids) {
   cell <- terra::cellFromXY(template, xy)
-  if (anyNA(cell)) {
-    rlang::abort(paste0(
-      "Outside the daily cube's extent (BC, 48-60 N, 114-140 W): ",
-      paste(ids[is.na(cell)], collapse = ", "), "."
+  outside <- is.na(cell)
+  if (any(outside)) {
+    # Stated from the cube itself, so it cannot drift from the data (#123).
+    e <- vapply(as.vector(terra::ext(template)),
+                function(v) format(round(v, 4)), character(1))
+    rlang::warn(paste0(
+      "Outside the daily cube's extent (", e[1], " to ", e[2], " E, ",
+      e[3], " to ", e[4], " N): ", paste(ids[outside], collapse = ", "),
+      ". Their values are NA."
     ))
   }
   # Read band 1 only at the cells in question, never the whole grid: the
@@ -270,7 +286,9 @@ daily_cells <- function(template, xy, ids) {
   moved <- rep(FALSE, length(cell))
   stranded <- character()
 
-  for (i in which(!has_data(cell))) {
+  inside <- which(!outside)
+  dry <- if (length(inside) > 0L) inside[!has_data(cell[inside])] else integer()
+  for (i in dry) {
     nb <- terra::adjacent(template, cell[i], directions = "queen")
     nb <- nb[!is.na(nb)]
     nb <- nb[has_data(nb)]
@@ -291,7 +309,10 @@ daily_cells <- function(template, xy, ids) {
     ))
   }
 
-  centre <- terra::xyFromCell(template, cell)
+  centre <- matrix(NA_real_, length(cell), 2)
+  if (length(inside) > 0L) {
+    centre[inside, ] <- terra::xyFromCell(template, cell[inside])
+  }
   list(
     cell = as.integer(cell),
     cell_x = unname(centre[, 1]),

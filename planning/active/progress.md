@@ -13,3 +13,4 @@
 - Code-check Phase 1 round 3: a guard failure in all.py / snow.py was swallowed by the per-year `except` and exited 0, which STEP 3 would read as EDH latency (green run). Fixed: both exit 1 on any failed year (probe: fail→1, ok→0). Also `bc_file_check()` turns RasterioIOError (an OSError, which `with_retry` retries) into ValueError (mutation: test FAILs). Daily set-level `grid_problems()` gate added to Phase 4
 - Code-check Phase 2 rounds 1–2: Clean
 - Code-check Phase 1 round 4 (enumeration of 18 guard sites → exit status → CI outcome): every diff site exits non-zero; no normal month trips one. Pre-existing gap fixed: STEP 3's any_fetch_errored was read only when no year wrote; finish() now reads it
+- Phase 2: `cd_extract_daily()` gives an outside point NA rows + a warning stating `terra::ext(template)`; 3 new fixture tests (FAIL before the fix, PASS after) + 10DA001 live test; code-check rounds 1–3 Clean (round 3 enumerated every consumer)
