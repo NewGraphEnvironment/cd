@@ -63,6 +63,10 @@ from pathlib import Path
 import xarray as xr
 
 from _lib import (
+    bc_file_check,
+    bc_files_check,
+    bc_grid_check,
+    bc_slice,
     get_token,
     local_daily,
     local_year_complete,
@@ -74,10 +78,8 @@ from _lib import (
 )
 
 # -- Config --------------------------------------------------------------------
-# BC bbox, matches backfill_edh_all.py so the cube shares the monthly grid
-LAT_N, LAT_S = 60.0, 48.0
-LON_W, LON_E = -140.0, -114.0  # translated to 0-360 for EDH
-
+# The BC box is `bc_slice()` in _lib.py, shared with the monthly backfillers
+# so the cube and the monthly layers sit on one 121 x 261 grid (#123).
 YEAR_FROM, YEAR_TO = 1950, 2025
 VARIABLES = ("tmean", "tmax", "tmin")
 
@@ -137,13 +139,10 @@ def main(years):
 
     ds = open_store()
 
-    if float(ds.longitude.min()) >= 0:
-        bc_west, bc_east = LON_W + 360, LON_E + 360
-    else:
-        bc_west, bc_east = LON_W, LON_E
-
     for year in years:
         outs = {v: out_path(v, year) for v in VARIABLES}
+        # A file on disk counts as done; refuse one on another grid (#123).
+        bc_files_check(outs.values())
         if all(p.exists() for p in outs.values()):
             log(f"{year}: exists, skipping")
             continue
@@ -159,10 +158,9 @@ def main(years):
 
         start, end = local_year_window(year)
         hourly = ds["t2m"].sel(
-            valid_time=slice(start, end),
-            latitude=slice(LAT_N, LAT_S),
-            longitude=slice(bc_west, bc_east),
+            **bc_slice(ds, start.isoformat(), end.isoformat())
         )
+        bc_grid_check(hourly, what=f"t2m {year}")
         # One fetch, three reductions: compute the hourly block once rather
         # than letting each .compute() below pull it from EDH again.
         hourly = with_retry(lambda da=hourly: da.compute(),
@@ -175,6 +173,13 @@ def main(years):
             da = da.compute()
             dates = [str(d)[:10] for d in da.valid_time.values]
             write_cog(da, outs[var], band_names=dates)
+            try:
+                bc_file_check(outs[var])
+            except ValueError:
+                # Off the grid is not a file to keep: the per-output skip
+                # would otherwise publish it on the next run.
+                outs[var].unlink()
+                raise
 
         elapsed = time.time() - t_year
         n_days = daily["tmean"].sizes["valid_time"]

@@ -282,6 +282,38 @@ live_spans <- function(cog_years) {
   out
 }
 
+# The BC grid every published COG is on (#123): 121 x 261 cells of 0.1 deg,
+# the same box `bc_slice()` in scripts/_lib.py cuts from EDH.
+bc_grid <- list(nrow = 121L, ncol = 261L,
+                ext = c(-140.05, -113.95, 47.95, 60.05))
+
+# Why a set of COGs is not on the BC grid, or character(0) when it is. Reads
+# headers only. publish_problems() checks names and years, not geometry, so a
+# variable rebuilt on another grid, or one left over from before #123, would
+# otherwise be catalogued beside the rest.
+grid_problems <- function(paths) {
+  bad <- character()
+  for (f in paths) {
+    r <- tryCatch(terra::rast(f), error = function(e) NULL)
+    if (is.null(r)) {
+      bad <- c(bad, paste0(basename(f), ": could not be opened"))
+      next
+    }
+    e <- as.vector(terra::ext(r))
+    if (terra::nrow(r) != bc_grid$nrow || terra::ncol(r) != bc_grid$ncol ||
+        any(abs(e - bc_grid$ext) > 1e-6)) {
+      bad <- c(bad, sprintf("%s: %d x %d, extent %s", basename(f),
+                            terra::nrow(r), terra::ncol(r),
+                            paste(signif(e, 7), collapse = " ")))
+    }
+  }
+  if (length(bad) == 0L) return(character(0))
+  paste0(length(bad), " COG(s) not on the BC grid (", bc_grid$nrow, " x ",
+         bc_grid$ncol, ", extent ", paste(bc_grid$ext, collapse = " "), "): ",
+         paste(utils::head(bad, 5), collapse = "; "),
+         if (length(bad) > 5) "; ..." else "")
+}
+
 # First and last year of each item in a STAC catalog written by
 # cd_stac_catalog(), read from the JSON itself; NA where a date is absent.
 catalog_item_years <- function(catalog_json) {

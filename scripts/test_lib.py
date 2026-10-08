@@ -27,6 +27,10 @@ import xarray as xr
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from _lib import (  # noqa: E402
+    bc_file_check,
+    bc_files_check,
+    bc_grid_check,
+    bc_slice,
     local_daily,
     local_year_complete,
     local_year_window,
@@ -352,6 +356,78 @@ def retry_aiohttp_payload() -> bool:
 LOCAL_CASES.append(("with_retry retries a truncated aiohttp payload, not a bug",
                     retry_aiohttp_payload))
 
+
+def store_like(lon_0_360: bool) -> xr.Dataset:
+    """A store over BC with the coordinate drift EDH's hourly store has.
+
+    Measured 2026-10-08 (#123): latitude 60.00000000000142 and
+    48.00000000000125, longitude 219.9999999999918 and 245.9999999999903.
+    Exact multiples of 0.1 would not reach the defect: a slice ending on
+    60.0 keeps a coordinate of exactly 60.0.
+    """
+    lat = np.round(np.arange(62.0, 45.95, -0.1), 1) + 1.42e-12
+    lon = np.round(np.arange(-145.0, -109.95, 0.1), 1)
+    lon = (lon + 360 if lon_0_360 else lon) - 8.2e-12
+    t = pd.date_range("2023-01-01", periods=2, freq="1h")
+    return xr.Dataset(
+        {"t2m": (("valid_time", "latitude", "longitude"),
+                 np.zeros((len(t), lat.size, lon.size), dtype="float32"))},
+        coords={"valid_time": t, "latitude": lat, "longitude": lon},
+    )
+
+
+def bc_slice_keeps_edges() -> bool:
+    """The slice keeps the 60.0 N row and the -140.0 column despite the drift,
+    in either longitude convention, and the guard tells the two cuts apart.
+
+    The exact-edge slice every backfiller used before #123 is rebuilt here
+    and must fail the guard: that is the published 120 x 260 grid.
+    """
+    ok = True
+    for lon_0_360 in (True, False):
+        ds = store_like(lon_0_360)
+        box = bc_slice(ds, "2023-01-01", "2023-01-01T01:00")
+        da = ds["t2m"].sel(**box)
+        bc_grid_check(da)
+        ok &= da.sizes["latitude"] == 121 and da.sizes["longitude"] == 261
+        w = -140.0 + (360 if lon_0_360 else 0)
+        old = ds["t2m"].sel(latitude=slice(60.0, 48.0),
+                            longitude=slice(w, w + 26.0))
+        ok &= raises(ValueError, lambda o=old: bc_grid_check(o))
+    return ok
+
+
+LOCAL_CASES.append(("bc_slice keeps the 60 N row and -140 column; guard "
+                    "rejects the old cut", bc_slice_keeps_edges))
+
+
+def bc_file_check_reads_written_extent() -> bool:
+    """A COG written from a BC slice passes; one written from the old cut fails."""
+    import tempfile
+
+    ds = store_like(True)
+    da = ds["t2m"].isel(valid_time=slice(0, 1))
+    good = da.sel(**bc_slice(ds, "2023-01-01", "2023-01-01"))
+    bad = da.sel(latitude=slice(60.0, 48.0), longitude=slice(220.0, 246.0))
+    with tempfile.TemporaryDirectory() as tmp:
+        out_dir = Path(tmp) / "daily"
+        out_dir.mkdir()
+        g, b = out_dir / "good.tif", out_dir / "bad.tif"
+        write_cog(good, g, band_names=["2023-01-01"])
+        write_cog(bad, b, band_names=["2023-01-01"])
+        bc_file_check(g)
+        # The skip-path form: a missing path is fine, an old-grid file is not.
+        bc_files_check([g, out_dir / "absent.tif"])
+        # Not a raster at all: ValueError, not the OSError with_retry() retries.
+        junk = out_dir / "junk.tif"
+        junk.write_bytes(b"not a tiff")
+        return (raises(ValueError, lambda: bc_file_check(b))
+                and raises(ValueError, lambda: bc_files_check([g, b]))
+                and raises(ValueError, lambda: bc_file_check(junk)))
+
+
+LOCAL_CASES.append(("bc_file_check passes a 121 x 261 COG, rejects 120 x 260",
+                    bc_file_check_reads_written_extent))
 
 def main() -> int:
     failures = 0

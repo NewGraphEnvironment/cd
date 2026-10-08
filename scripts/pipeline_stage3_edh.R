@@ -209,6 +209,8 @@ problems <- publish_problems(
   live_keys = paste(live$variable, live$period, sep = "_"),
   required_years = live_years
 )
+problems <- c(problems,
+              grid_problems(file.path(cog_dir, list.files(cog_dir, pattern = "\\.tif$"))))
 if (length(problems) > 0) {
   stop("Refusing to build the catalog; publishing would replace live data ",
        "with a partial or stale set:\n  - ",

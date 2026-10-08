@@ -14,6 +14,9 @@ against its own failure modes:
     idempotency check.
   - `months_available(ds, year)` — how many months of a year the store
     holds, from the time coordinate alone (no data transfer).
+  - `bc_slice()`, `bc_grid_check()`, `bc_file_check()`, `bc_files_check()` —
+    the BC box every product is cut to, and the guards that the cut and the
+    files on disk are 121 x 261 (#123).
   - `local_year_window()`, `local_year_complete()`, `local_daily()` —
     local-day (UTC-8) aggregation for the daily cube (#116).
   - `monthly_from_daily()`, `read_cog_days()` — local days to local months,
@@ -48,6 +51,7 @@ from typing import Callable, Iterable, Optional, Sequence, TypeVar
 
 import pandas as pd
 import rasterio
+import rasterio.errors
 import rasterio.shutil
 import rioxarray  # noqa: F401 — registers .rio accessor on xarray DataArrays
 import xarray as xr
@@ -167,6 +171,98 @@ def months_available(ds: xr.Dataset, year: int) -> int:
     if vt.size == 0:
         return 0
     return len(set(vt.dt.month.values.tolist()))
+
+
+# The BC box, as cell centres on ERA5-Land's 0.1 deg grid: 121 x 261 cells,
+# extent 47.95-60.05 N, 140.05-113.95 W. Every product (monthly, annual,
+# daily) is cut by `bc_slice()` so they share one grid.
+LAT_N, LAT_S = 60.0, 48.0
+LON_W, LON_E = -140.0, -114.0
+BC_NLAT, BC_NLON = 121, 261
+# Half a cell. The store's coordinates are not exact multiples of 0.1: the
+# hourly store holds latitude 60.00000000000142 and longitude
+# 219.9999999999918, so a slice ending exactly on 60.0 / 220.0 drops the
+# north row and west column. That cut is what #123 found in the published
+# cube (and the monthly layers): 120 x 260, stopping at 59.95 N.
+_BC_PAD = 0.05
+
+
+def bc_slice(ds: xr.Dataset, start: str, end: str) -> dict:
+    """`sel()` arguments cutting `ds` to the BC box over `start`..`end`.
+
+    Pads each edge by half a cell so float drift in the store's coordinates
+    cannot drop an edge row or column; pair with `bc_grid_check()` on the
+    result. Handles a store in 0-360 or -180-180 longitudes.
+    """
+    if float(ds.longitude.min()) >= 0:
+        west, east = LON_W + 360, LON_E + 360
+    else:
+        west, east = LON_W, LON_E
+    # Latitude is stored north to south, so the slice runs high to low.
+    return dict(
+        valid_time=slice(start, end),
+        latitude=slice(LAT_N + _BC_PAD, LAT_S - _BC_PAD),
+        longitude=slice(west - _BC_PAD, east + _BC_PAD),
+    )
+
+
+def bc_grid_check(da: xr.DataArray, what: str = "slice") -> None:
+    """Raise unless `da` covers the BC box cell for cell (121 x 261).
+
+    Reads coordinates only, so call it on the lazy slice, before anything is
+    fetched: a wrong cut then costs nothing rather than a year of transfer.
+    """
+    lat = da.latitude.values
+    lon = da.longitude.values
+    lon = (lon + 180) % 360 - 180
+    got = (lat.size, lon.size)
+    edges = (float(lat.max()), float(lat.min()), float(lon.min()), float(lon.max())) \
+        if lat.size and lon.size else None
+    want = (LAT_N, LAT_S, LON_W, LON_E)
+    if got != (BC_NLAT, BC_NLON) or edges is None or any(
+            abs(e - w) > 1e-6 for e, w in zip(edges, want)):
+        raise ValueError(
+            f"{what}: expected the BC grid, {BC_NLAT} x {BC_NLON} cell centres "
+            f"from {LAT_N} to {LAT_S} N and {LON_W} to {LON_E} E; got "
+            f"{got[0]} x {got[1]} with edges {edges}."
+        )
+
+
+def bc_file_check(path: Path) -> None:
+    """Raise unless the raster at `path` is on the BC grid: 261 x 121 cells,
+    bounds (-140.05, 47.95, -113.95, 60.05). Reads the header only.
+
+    The written-extent half of `bc_grid_check()`: it would also catch a
+    writer that shifted or cropped a correct slice.
+    """
+    want = (LON_W - _BC_PAD, LAT_S - _BC_PAD, LON_E + _BC_PAD, LAT_N + _BC_PAD)
+    try:
+        with rasterio.open(path) as src:
+            got = tuple(src.bounds)
+            size = (src.width, src.height)
+    except rasterio.errors.RasterioIOError as e:
+        # RasterioIOError subclasses OSError, which with_retry() treats as a
+        # network blip; an unreadable local file is not one.
+        raise ValueError(f"{path}: not readable as a raster ({e}).") from e
+    if size != (BC_NLON, BC_NLAT) or any(
+            abs(g - w) > 1e-6 for g, w in zip(got, want)):
+        raise ValueError(
+            f"{path}: expected the BC grid, {BC_NLON} x {BC_NLAT} cells with "
+            f"bounds {want}; got {size[0]} x {size[1]} with bounds {got}."
+        )
+
+
+def bc_files_check(paths: Iterable[Path]) -> None:
+    """`bc_file_check()` on every path that exists.
+
+    For the per-output skip: an output already on disk counts as done, so a
+    file left from before #123 (120 x 260) would otherwise ride along into
+    the publish beside the rebuilt ones. Raise rather than delete, so the
+    operator sees which file it was.
+    """
+    for p in paths:
+        if Path(p).exists():
+            bc_file_check(Path(p))
 
 
 # Pacific standard time. A fixed offset, not a zone: it ignores daylight time
