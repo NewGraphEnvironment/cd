@@ -41,5 +41,6 @@ A point costs its whole 64 × 64 tile, so point-by-point reading for many statio
 ## Failure modes seen
 
 - `aiohttp.ClientPayloadError: Response payload is not completed` (a chunk cut short) — twice in one 76-year run; and `502 Bad Gateway` on individual chunks — twice in a row on one year. Both transient; aiohttp errors do not subclass `OSError`, so `with_retry()` names `aiohttp.ClientError` explicitly (75883b8).
+- **Values can change after we read them.** The cd#123 rebuild (2026-10-08) was bit-identical to the published layers everywhere except band 2025 of the products built from the daily store's `tp` (`prcp_annual`, `prcp_winter`, `snowfall_fraction`). Those layers were built 2026-04-12. All 20,486 land cells differ, in both directions (mean +0.96 mm, max 71 mm). The differences correlate with January totals (r = 0.67), and hourly-derived snowfall is unchanged. No revision log was found, so this is inferred, not confirmed. A year's last months may be revised after publication: when comparing a rebuild with what is published, expect the most recent year to differ and check its difference before calling it a defect.
 - A single HTTP 403 at the auth probe has been transient too (CLAUDE.md, CI considerations).
 - Quota: 500,000 requests per month. A BC year is ~72 chunk requests, so even a full 76-year rebuild (~5,500) is about 1 %.
