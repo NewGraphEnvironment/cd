@@ -45,6 +45,13 @@ Relates to #123
 - Dataset tags land in the TIFF's `<GDALMetadata>`; no `.aux.json`. Two COG writes of one raster with the same tags are byte-identical; changing one tag changes the bytes.
 - Published COGs today carry only `AREA_OR_POINT=Area`; the monthly inputs' `units=degC` does not survive `cd_aggregate()`.
 
+## rasterio COG copy (measured 2026-10-09, uv env, scripts/test_lib.py)
+
+- Dataset tags set with `update_tags()` on the staging GeoTIFF survive `rasterio.shutil.copy(driver="COG")`.
+- Two `write_cog()` calls on one array with the same tags, 1.1 s apart, give identical bytes.
+- `read_cog_days()` -> `write_cog()` with the same tags reproduces the original bytes exactly, once `attrs = {"units": "degC"}` is restored (read_cog_days clears attrs). So `--rewrite` changes nothing but the tags.
+- Mutation check: with `update_tags` removed, the tag case goes red.
+
 ## Errors Encountered
 
 | Error | Resolution |

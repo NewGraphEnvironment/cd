@@ -50,8 +50,14 @@ Idempotent — skips years whose three outputs already exist. A year whose
 local window is not fully in the store (its last local day needs the first
 8 hours of the next UTC year) is skipped before anything is fetched.
 
+Every COG carries the run's provenance as file tags (`run_provenance()` in
+_lib.py, #124). `--rewrite` re-writes years already on disk with fresh
+provenance and the same values, with no EDH fetch: the way to tag a cube
+built before #124.
+
 Usage:
   uv run scripts/backfill_edh_daily.py --check              # latest complete year, no fetch
+  uv run scripts/backfill_edh_daily.py --rewrite            # re-tag 1950-2025 on disk
   uv run scripts/backfill_edh_daily.py                      # 1950-2025
   uv run scripts/backfill_edh_daily.py --year 2002          # one year
   uv run scripts/backfill_edh_daily.py --from 2002 --to 2025
@@ -73,6 +79,8 @@ from _lib import (
     local_year_window,
     log,
     preflight_single_instance,
+    read_cog_days,
+    run_provenance,
     with_retry,
     write_cog,
 )
@@ -133,10 +141,39 @@ def check():
     print(f"latest_complete={latest_complete_year(open_store())}", flush=True)
 
 
+def rewrite(years):
+    """Re-write cube years already on disk, with this run's provenance.
+
+    Values, band names, grid and layout are unchanged: the year is read back
+    with `read_cog_days()` and written through `write_cog()` again. Refuses a
+    year with a file missing, rather than leaving it half-tagged.
+    """
+    preflight_single_instance("backfill_edh_daily")
+    tags = run_provenance()
+    log(f"Rewriting with {tags}")
+    for year in years:
+        outs = {v: out_path(v, year) for v in VARIABLES}
+        missing = [p.name for p in outs.values() if not p.exists()]
+        if missing:
+            raise SystemExit(f"{year}: not on disk ({', '.join(missing)}); "
+                             f"build it first")
+        bc_files_check(outs.values())
+        for var, path in outs.items():
+            da = read_cog_days(path)
+            # local_daily() writes units=degC, and read_cog_days() clears attrs.
+            da.attrs = {"units": "degC"}
+            dates = [str(d)[:10] for d in da.valid_time.values]
+            write_cog(da, path, band_names=dates, tags=tags)
+            bc_file_check(path)
+        log(f"{year}: rewritten")
+    log("DONE")
+
+
 def main(years):
     preflight_single_instance("backfill_edh_daily")
     DAILY_DIR.mkdir(parents=True, exist_ok=True)
 
+    tags = run_provenance()
     ds = open_store()
 
     for year in years:
@@ -172,7 +209,7 @@ def main(years):
                 continue
             da = da.compute()
             dates = [str(d)[:10] for d in da.valid_time.values]
-            write_cog(da, outs[var], band_names=dates)
+            write_cog(da, outs[var], band_names=dates, tags=tags)
             try:
                 bc_file_check(outs[var])
             except ValueError:
@@ -192,6 +229,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--check", action="store_true",
                         help="Print the latest complete local year and exit")
+    parser.add_argument("--rewrite", action="store_true",
+                        help="Re-write years on disk with fresh provenance; no fetch")
     parser.add_argument("--year", type=int, help="Single year (for testing)")
     parser.add_argument("--from", dest="year_from", type=int, default=YEAR_FROM)
     parser.add_argument("--to", dest="year_to", type=int, default=YEAR_TO)
@@ -203,4 +242,7 @@ if __name__ == "__main__":
         years = [args.year]
     else:
         years = range(args.year_from, args.year_to + 1)
-    main(years)
+    if args.rewrite:
+        rewrite(years)
+    else:
+        main(years)

@@ -21,7 +21,10 @@ against its own failure modes:
     local-day (UTC-8) aggregation for the daily cube (#116).
   - `monthly_from_daily()`, `read_cog_days()` — local days to local months,
     from hourly or from the cube, for the monthly tmax/tmin (#37).
-  - `write_cog(da, out_path, band_names)` — atomic COG write, daily-cube layout.
+  - `write_cog(da, out_path, band_names, tags=)` — atomic COG write,
+    daily-cube layout, with the run's provenance as file tags (#124).
+  - `run_provenance()` — CD_VERSION / CD_SHA / CD_RUN_TIME / CD_RUN_ID, the
+    same keys and environment contract as `run_provenance()` in `_lib.R`.
   - `log(msg)` — timestamped print, flushed.
   - `get_token()` — EDH token from env or `~/.Renviron`.
 
@@ -394,10 +397,57 @@ def read_cog_days(path: Path) -> xr.DataArray:
     return da.drop_vars("spatial_ref", errors="ignore")
 
 
+def run_provenance() -> dict:
+    """The provenance a published COG carries as GDAL tags (#124).
+
+    The same keys and the same environment contract as `run_provenance()` in
+    `scripts/_lib.R`, so one pipeline run stamps the monthly COGs and the daily
+    cube alike: `pipeline_update_edh.R` sets CD_RUN_TIME before it calls this
+    script, and the child inherits it.
+
+      CD_VERSION   Version: in the repo's DESCRIPTION.
+      CD_SHA       GITHUB_SHA in CI; locally `git rev-parse HEAD`, with
+                   "-dirty" on an unclean tree; "unknown" without either.
+      CD_RUN_TIME  CD_RUN_TIME from the environment, else now (ISO, UTC).
+      CD_RUN_ID    GITHUB_RUN_ID in CI, else "local".
+
+    Keys carry no ':' — GDAL reads one as a metadata domain separator.
+    """
+    root = Path(__file__).resolve().parent.parent
+    version = next(
+        line.split(":", 1)[1].strip()
+        for line in (root / "DESCRIPTION").read_text().splitlines()
+        if line.startswith("Version:")
+    )
+    sha = os.environ.get("GITHUB_SHA") or ""
+    if not sha:
+        try:
+            head = subprocess.run(
+                ["git", "rev-parse", "HEAD"], cwd=root, capture_output=True,
+                text=True, check=True,
+            ).stdout.strip()
+            dirty = subprocess.run(
+                ["git", "status", "--porcelain"], cwd=root, capture_output=True,
+                text=True, check=True,
+            ).stdout.strip()
+            sha = head + ("-dirty" if dirty else "")
+        except (OSError, subprocess.CalledProcessError):
+            sha = "unknown"
+    run_time = os.environ.get("CD_RUN_TIME") or time.strftime(
+        "%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+    return {
+        "CD_VERSION": version,
+        "CD_SHA": sha,
+        "CD_RUN_TIME": run_time,
+        "CD_RUN_ID": os.environ.get("GITHUB_RUN_ID") or "local",
+    }
+
+
 def write_geotiff(
     da: xr.DataArray,
     out_path: Path,
     band_names: Optional[Sequence[str]] = None,
+    tags: Optional[dict] = None,
 ) -> None:
     """Write a DataArray with (valid_time, latitude, longitude) dims as a
     multi-band EPSG:4326 GeoTIFF.
@@ -409,7 +459,11 @@ def write_geotiff(
     Atomic: writes to a `.tmp` suffix then renames, so a killed run
     never leaves a truncated file that passes the per-output existence
     check on restart.
+
+    `tags` are written as dataset metadata alongside the descriptions.
     """
+    if tags and any(":" in k for k in tags):
+        raise ValueError(f"tag keys may not contain ':': {sorted(tags)}")
     band_names = list(band_names) if band_names is not None else MONTH_NAMES
     da = da.rename({"valid_time": "band"}).assign_coords(band=band_names)
     if float(da.longitude.max()) > 180:
@@ -423,6 +477,8 @@ def write_geotiff(
         da.rio.to_raster(tmp_path, driver="GTiff")
         with rasterio.open(tmp_path, "r+") as dst:
             dst.descriptions = tuple(band_names)
+            if tags:
+                dst.update_tags(**tags)
         os.replace(tmp_path, out_path)
     except Exception:
         if tmp_path.exists():
@@ -435,6 +491,7 @@ def write_cog(
     out_path: Path,
     band_names: Sequence[str],
     blocksize: int = 16,
+    tags: Optional[dict] = None,
 ) -> None:
     """Write a (valid_time, latitude, longitude) DataArray as a COG.
 
@@ -447,6 +504,10 @@ def write_cog(
     pixel-interleaved, so one point's 365 days sit in one ~125 KB tile and a
     remote point read fetches only that. DEFLATE with the floating-point
     predictor; no overviews, since nothing reads this grid zoomed out.
+
+    `tags` (the run's provenance, #124) go on the staging GeoTIFF, and the
+    COG copy carries them over: the copy is the last step to touch a published
+    byte, so a checksum taken afterwards covers them.
     """
     # Stage beside, not inside, the output directory: that directory is what
     # gets synced to S3, and a run killed hard (SIGKILL, OOM) skips `finally`.
@@ -455,7 +516,7 @@ def write_cog(
     tmp_tif = stage / "src.tif"
     tmp_cog = stage / "cog.tif"
     try:
-        write_geotiff(da, tmp_tif, band_names=band_names)
+        write_geotiff(da, tmp_tif, band_names=band_names, tags=tags)
         rasterio.shutil.copy(
             tmp_tif, tmp_cog, driver="COG", compress="DEFLATE",
             predictor="YES", blocksize=blocksize, overviews="NONE",

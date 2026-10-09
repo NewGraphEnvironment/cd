@@ -8,10 +8,10 @@
 - [x] `run_provenance()` in `scripts/_lib.R`: `CD_VERSION` (DESCRIPTION), `CD_SHA` (`GITHUB_SHA`, else `git rev-parse HEAD`, `-dirty` suffix on an unclean tree), `CD_RUN_TIME` (env `CD_RUN_TIME`, else now, ISO UTC), `CD_RUN_ID` (`GITHUB_RUN_ID`, else `local`); offline cases in `scripts/test_lib.R`
 
 ## Phase 2: Provenance tags on the Python write (daily cube)
-- [ ] `run_provenance()` in `scripts/_lib.py`, same keys and same env contract, so one `pipeline_update_edh.R` run stamps both products with one run time
-- [ ] `write_geotiff(tags=)` applies them in its existing `r+` block on the staging GeoTIFF (before the COG copy, so the COG write is the last thing to touch the bytes); `write_cog(tags=)` passes through; `backfill_edh_daily.py` passes `run_provenance()`
-- [ ] `backfill_edh_daily.py --rewrite`: re-tags existing local cube years via `read_cog_days()` → `write_cog()`, no EDH (the republish path)
-- [ ] `scripts/test_lib.py`: tags survive the COG copy; two writes, same tags → identical bytes; `--rewrite` preserves values and band names
+- [x] `run_provenance()` in `scripts/_lib.py`, same keys and same env contract, so one `pipeline_update_edh.R` run stamps both products with one run time
+- [x] `write_geotiff(tags=)` applies them in its existing `r+` block on the staging GeoTIFF (before the COG copy, so the COG write is the last thing to touch the bytes); `write_cog(tags=)` passes through; `backfill_edh_daily.py` passes `run_provenance()`
+- [x] `backfill_edh_daily.py --rewrite`: re-tags existing local cube years via `read_cog_days()` → `write_cog()`, no EDH (the republish path)
+- [x] `scripts/test_lib.py`: tags survive the COG copy; two writes, same tags → identical bytes; `--rewrite` preserves values and band names
 
 ## Phase 3: Checksums in the STAC catalog
 - [ ] `openssl` to Imports; internal `file_multihash()` (`"1220"` + lowercase sha256 hex, shape asserted)
