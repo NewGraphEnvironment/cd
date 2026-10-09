@@ -14,9 +14,9 @@
 - [x] `scripts/test_lib.py`: tags survive the COG copy; two writes, same tags → identical bytes; `--rewrite` preserves values and band names
 
 ## Phase 3: Checksums in the STAC catalog
-- [ ] `openssl` to Imports; internal `file_multihash()` (`"1220"` + lowercase sha256 hex, shape asserted)
-- [ ] `cd_stac_item()`: `file:checksum` + `file:size` on the `data` asset, `stac_extensions` = file v2.1.0, and `cd:version` / `cd:sha` / `cd:run_time` / `cd:run_id` properties read from the COG's own tags (omitted when absent)
-- [ ] Tests (`test-cd_stac_catalog.R`): checksum equals an independent hash of the file; shape `^1220[0-9a-f]{64}$`; size matches; provenance properties match the tags; `cd_catalog()` round-trip unchanged
+- [x] `openssl` to Imports; internal `file_multihash()` (`"1220"` + lowercase sha256 hex, shape asserted)
+- [x] `cd_stac_item()`: `file:checksum` + `file:size` on the `data` asset, `stac_extensions` = file v2.1.0, and `cd:version` / `cd:sha` / `cd:run_time` / `cd:run_id` properties read from the COG's own tags (omitted when absent)
+- [x] Tests (`test-cd_stac_catalog.R`): checksum equals an independent hash of the file; shape `^1220[0-9a-f]{64}$`; size matches; provenance properties match the tags; `cd_catalog()` round-trip unchanged
 
 ## Phase 4: Validators and monthly publish wiring
 - [ ] `scripts/_lib.R`: `checksum_problems(catalog_json, cog_dir)` (recompute every item's size + multihash from the local file, check shape) and `provenance_problems(paths)` (every COG carries all four tags, non-empty); restore-the-bug cases in `test_lib.R` (one flipped byte, a bare digest without `1220`, a missing tag each go red)

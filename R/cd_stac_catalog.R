@@ -5,6 +5,14 @@
 #' `cd:variable` and `cd:period` properties parsed from the filename.
 #' The resulting catalog is compatible with [cd_catalog()].
 #'
+#' Each item's `data` asset carries `file:checksum` (a sha256 multihash,
+#' `"1220"` + hex digest) and `file:size` from the
+#' [STAC file extension](https://github.com/stac-extensions/file) v2.1.0,
+#' taken from the local file, so build the catalog after the COGs are final.
+#' Run provenance written into a COG by [cd_cog_write()] (`CD_VERSION`,
+#' `CD_SHA`, `CD_RUN_TIME`, `CD_RUN_ID` tags) is copied into the item's
+#' properties as `cd:version`, `cd:sha`, `cd:run_time` and `cd:run_id`.
+#'
 #' @param cog_dir Character. Directory containing COG files (.tif).
 #' @param output_path Character. Path to write the catalog JSON.
 #'   Default `"catalog.json"`.
@@ -99,6 +107,12 @@ cd_stac_item <- function(cog_path, base_url) {
 
   # Extract spatial metadata
   r <- terra::rast(cog_path)
+  tags <- terra::metags(r)
+  tag <- function(key) {
+    v <- as.character(tags$value)[as.character(tags$name) == key &
+                                    as.character(tags$domain) == ""]
+    if (length(v) == 1 && nzchar(v)) v else NULL
+  }
   e <- as.vector(terra::ext(r))
   n_bands <- terra::nlyr(r)
   band_names <- names(r)
@@ -109,9 +123,18 @@ cd_stac_item <- function(cog_path, base_url) {
 
   item_id <- paste(variable, period, sep = "-")
 
+  # Absent tags are left out rather than written: jsonlite writes NULL as {}.
+  provenance <- Filter(Negate(is.null), list(
+    `cd:version` = tag("CD_VERSION"),
+    `cd:sha` = tag("CD_SHA"),
+    `cd:run_time` = tag("CD_RUN_TIME"),
+    `cd:run_id` = tag("CD_RUN_ID")
+  ))
+
   list(
     type = "Feature",
     stac_version = "1.0.0",
+    stac_extensions = list(stac_file_extension),
     id = item_id,
     geometry = NA,
     bbox = e[c(1, 3, 2, 4)],
@@ -121,14 +144,38 @@ cd_stac_item <- function(cog_path, base_url) {
       datetime = NA,
       start_datetime = if (length(years) > 0) paste0(min(years), "-01-01T00:00:00Z") else NULL,
       end_datetime = if (length(years) > 0) paste0(max(years), "-12-31T23:59:59Z") else NULL
-    ),
+    ) |> c(provenance),
     links = list(),
     assets = list(
       data = list(
         href = paste0(base_url, "/", fname),
         type = "image/tiff; application=geotiff; profile=cloud-optimized",
-        title = paste(variable, period)
+        title = paste(variable, period),
+        `file:checksum` = file_multihash(cog_path),
+        `file:size` = file.size(cog_path)
       )
     )
   )
+}
+
+stac_file_extension <- "https://stac-extensions.github.io/file/v2.1.0/schema.json"
+
+#' sha256 of a file as a hex multihash
+#'
+#' `"1220"` (sha2-256, 32 bytes) + the lowercase hex digest, the form the
+#' STAC file extension's `file:checksum` takes. A bare digest is not a valid
+#' multihash, and the extension's schema (`^[a-f0-9]+$`) cannot tell, so the
+#' shape is asserted here.
+#'
+#' @param path Path to a file.
+#' @return A 68-character string.
+#' @noRd
+file_multihash <- function(path) {
+  con <- file(path, open = "rb")
+  on.exit(close(con))
+  out <- paste0("1220", as.character(openssl::sha256(con)))
+  if (!grepl("^1220[0-9a-f]{64}$", out)) {
+    rlang::abort(paste0("Malformed multihash for ", path, ": ", out))
+  }
+  out
 }
