@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">cd</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -33,9 +33,15 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/NewGraphEnvironment/cd/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/NewGraphEnvironment/cd/blob/v0.6.2/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.6.2" id="cd-062-2026-10-09">cd 0.6.2 (2026-10-09)<a class="anchor" aria-label="anchor" href="#cd-062-2026-10-09"></a></h2>
+<ul><li>The published layers now reach <strong>60° N and 140° W</strong>. The ERA5-Land store holds its coordinates with a tiny rounding error (60.0 N is <code>60.00000000000142</code>), so the slice that cut British Columbia out of it dropped the top row and the west column: every product was 120 × 260 cells and stopped at 59.95 N, and stations along the Yukon and NWT border, such as 10DA001, got no air temperature. The daily cube and all 59 monthly COGs are rebuilt and republished on 121 × 261 cells (47.95–60.05 N, 140.05–113.95 W). Values in the old cells are unchanged, except the 2025 band of <code>prcp_annual</code>, <code>prcp_winter</code> and <code>snowfall_fraction</code>, where EDH has since revised its daily 2025 precipitation. <strong>Every <code>cell</code> number from <code><a href="../reference/cd_extract_daily.html">cd_extract_daily()</a></code> changes</strong>, since the grid gained a row and a column. Cached files refresh by ETag; if you set <code>options(cd.cache_revalidate = FALSE)</code>, run <code><a href="../reference/cd_cache_clear.html">cd_cache_clear()</a></code>. (<a href="https://github.com/NewGraphEnvironment/cd/issues/123" class="external-link">#123</a>, <a href="https://github.com/NewGraphEnvironment/cd/pull/125" class="external-link">#125</a>)</li>
+<li>
+<code><a href="../reference/cd_extract_daily.html">cd_extract_daily()</a></code>: a point outside the cube now gets <code>NA</code> rows and a warning that names it and states the cube’s extent, instead of stopping the call for every point. (<a href="https://github.com/NewGraphEnvironment/cd/issues/123" class="external-link">#123</a>)</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.6.1" id="cd-061-2026-10-06">cd 0.6.1 (2026-10-06)<a class="anchor" aria-label="anchor" href="#cd-061-2026-10-06"></a></h2>
 <ul><li>Monthly <code>tmax</code> and <code>tmin</code> now average <strong>local days</strong> (fixed UTC−8, as <code><a href="../reference/cd_extract_daily.html">cd_extract_daily()</a></code> does), not UTC days. A UTC day ran from one afternoon peak to the next, so a hot afternoon counted twice: published tmax was 0.5-0.8 °C too high (most in summer), and local-day tmin is 0.15-0.42 °C lower. The published COGs for 1950-2025 are republished; anomalies and trends move only slightly, since the shift is nearly constant over time. The annual update now lands about a month later, when the last local day of the year is available. If you set <code>options(cd.cache_revalidate = FALSE)</code>, run <code><a href="../reference/cd_cache_clear.html">cd_cache_clear()</a></code> to drop cached UTC-day copies. (<a href="https://github.com/NewGraphEnvironment/cd/pull/118" class="external-link">#118</a>)</li>

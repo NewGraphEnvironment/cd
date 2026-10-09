@@ -1,5 +1,31 @@
 # Changelog
 
+## cd 0.6.2 (2026-10-09)
+
+- The published layers now reach **60° N and 140° W**. The ERA5-Land
+  store holds its coordinates with a tiny rounding error (60.0 N is
+  `60.00000000000142`), so the slice that cut British Columbia out of it
+  dropped the top row and the west column: every product was 120 × 260
+  cells and stopped at 59.95 N, and stations along the Yukon and NWT
+  border, such as 10DA001, got no air temperature. The daily cube and
+  all 59 monthly COGs are rebuilt and republished on 121 × 261 cells
+  (47.95–60.05 N, 140.05–113.95 W). Values in the old cells are
+  unchanged, except the 2025 band of `prcp_annual`, `prcp_winter` and
+  `snowfall_fraction`, where EDH has since revised its daily 2025
+  precipitation. **Every `cell` number from
+  [`cd_extract_daily()`](https://newgraphenvironment.github.io/cd/reference/cd_extract_daily.md)
+  changes**, since the grid gained a row and a column. Cached files
+  refresh by ETag; if you set `options(cd.cache_revalidate = FALSE)`,
+  run
+  [`cd_cache_clear()`](https://newgraphenvironment.github.io/cd/reference/cd_cache_clear.md).
+  ([\#123](https://github.com/NewGraphEnvironment/cd/issues/123),
+  [\#125](https://github.com/NewGraphEnvironment/cd/pull/125))
+- [`cd_extract_daily()`](https://newgraphenvironment.github.io/cd/reference/cd_extract_daily.md):
+  a point outside the cube now gets `NA` rows and a warning that names
+  it and states the cube’s extent, instead of stopping the call for
+  every point.
+  ([\#123](https://github.com/NewGraphEnvironment/cd/issues/123))
+
 ## cd 0.6.1 (2026-10-06)
 
 - Monthly `tmax` and `tmin` now average **local days** (fixed UTC−8, as
