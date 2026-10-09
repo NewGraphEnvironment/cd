@@ -28,3 +28,7 @@ dev/*_cache/
 !.claude/
 .claude/*
 !.claude/visibility
+
+# Written by importing scripts/_lib.py; untracked files mark a build's CD_SHA
+# "-dirty" (#124)
+scripts/__pycache__/

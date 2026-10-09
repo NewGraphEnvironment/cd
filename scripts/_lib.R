@@ -346,3 +346,324 @@ catalog_repair_hint <- function(bucket) {
     "with scripts/pipeline_stage3_edh.R."
   )
 }
+
+# Load cd for a producer script (#124). On GitHub Actions, the cd that
+# climate-update.yml installs from this checkout (extra-packages: local::.).
+# Anywhere else, the checkout itself through pkgload, never an installed copy:
+# CD_SHA and CD_VERSION name the checkout, so the code that writes and hashes
+# the bytes must be the checkout. An installed cd from another branch carries
+# the same version string until a release, and nothing would tell them apart.
+load_cd <- function() {
+  if (identical(Sys.getenv("GITHUB_ACTIONS"), "true") &&
+      requireNamespace("cd", quietly = TRUE)) {
+    suppressPackageStartupMessages(library(cd))
+  } else if (requireNamespace("pkgload", quietly = TRUE)) {
+    pkgload::load_all(".", quiet = TRUE)
+  } else {
+    stop("pkgload is needed to run this pipeline from the checkout (or, on ",
+         "GitHub Actions, an installed cd). Install pkgload.", call. = FALSE)
+  }
+  invisible(TRUE)
+}
+
+# The provenance every published COG carries as GDAL tags (#124): which cd
+# built it, from which commit, in which run. Read from the environment and the
+# working tree, so unlike the helpers above it is not a pure function.
+#
+#   CD_VERSION   Version: in DESCRIPTION (cwd is the repo root, as for every
+#                pipeline script).
+#   CD_SHA       CD_SHA from the environment when set (run_start() sets it,
+#                so the daily cube's Python children carry the same), else
+#                GITHUB_SHA in CI, else `git rev-parse HEAD` with "-dirty" when
+#                the tree has uncommitted changes, since a local build from an
+#                edited tree is not the commit it names. "unknown" when none
+#                is available.
+#   CD_RUN_TIME  CD_RUN_TIME from the environment when set, else now. The
+#                pipelines set it once at start, so every COG of one run, and
+#                the daily cube's Python children, carry the same time.
+#   CD_RUN_ID    GITHUB_RUN_ID in CI, else "local".
+#
+# The same keys and the same environment contract as run_provenance() in
+# scripts/_lib.py.
+run_provenance <- function() {
+  env <- function(x) {
+    v <- Sys.getenv(x)
+    if (nzchar(v)) v else NA_character_
+  }
+  sha <- env("CD_SHA")
+  if (is.na(sha)) sha <- env("GITHUB_SHA")
+  if (is.na(sha)) {
+    head <- suppressWarnings(system2("git", c("rev-parse", "HEAD"),
+                                     stdout = TRUE, stderr = FALSE))
+    is_sha <- is.null(attr(head, "status")) && length(head) == 1L &&
+      grepl("^[0-9a-f]{40}$", head)
+    if (is_sha) {
+      dirty <- suppressWarnings(system2("git", c("status", "--porcelain"),
+                                        stdout = TRUE, stderr = FALSE))
+      # A failed status is not a clean tree; _lib.py says "unknown" too.
+      sha <- if (!is.null(attr(dirty, "status"))) {
+        "unknown"
+      } else {
+        paste0(head, if (length(dirty) > 0) "-dirty" else "")
+      }
+    } else {
+      sha <- "unknown"
+    }
+  }
+  run_time <- env("CD_RUN_TIME")
+  if (is.na(run_time)) {
+    run_time <- format(Sys.time(), "%Y-%m-%dT%H:%M:%SZ", tz = "UTC")
+  }
+  c(
+    CD_VERSION = unname(read.dcf("DESCRIPTION", fields = "Version")[1, 1]),
+    CD_SHA = sha,
+    CD_RUN_TIME = run_time,
+    CD_RUN_ID = if (is.na(env("GITHUB_RUN_ID"))) "local" else env("GITHUB_RUN_ID")
+  )
+}
+
+# The provenance tags every published file must carry (#124).
+prov_keys <- c("CD_VERSION", "CD_SHA", "CD_RUN_TIME", "CD_RUN_ID")
+
+# sha256 of a file as a hex multihash, "1220" + digest: the form
+# file:checksum takes. Computed here rather than through cd's internal
+# file_multihash(), so the check does not share the code it checks.
+multihash <- function(path) {
+  con <- file(path, open = "rb")
+  on.exit(close(con))
+  paste0("1220", as.character(openssl::sha256(con)))
+}
+
+# Whether a value is one sha256 multihash, the shape file:checksum must have.
+is_multihash <- function(x) {
+  is.character(x) && length(x) == 1L && grepl("^1220[0-9a-f]{64}$", x)
+}
+
+# Why a set of published entries does not describe the files on disk, or
+# character(0) when every one does. Recomputes each hash from the bytes.
+#
+#   entries  named list, file name -> list(`file:checksum`, `file:size`):
+#            catalog_entries() of a catalog, or a daily manifest's `files`.
+#   dir      where those files are.
+#   names    the file names to check; default all of them. A daily manifest
+#            carries every published year, while a CI runner holds only the
+#            ones it built, so STEP D checks the local ones.
+checksum_problems <- function(entries, dir, names = base::names(entries)) {
+  bad <- character()
+  for (n in names) {
+    e <- entries[[n]]
+    f <- file.path(dir, n)
+    ck <- e$`file:checksum`
+    if (is.null(e)) {
+      bad <- c(bad, paste0(n, ": no entry"))
+    } else if (!file.exists(f)) {
+      bad <- c(bad, paste0(n, ": not on disk"))
+    } else if (!is_multihash(ck)) {
+      bad <- c(bad, paste0(n, ": file:checksum is not a sha256 multihash (",
+                           paste(ck, collapse = " "), ")"))
+    } else if (!identical(as.numeric(e$`file:size`), as.numeric(file.size(f)))) {
+      bad <- c(bad, paste0(n, ": file:size ", paste(e$`file:size`, collapse = " "),
+                           ", file is ", file.size(f)))
+    } else if (!identical(ck, multihash(f))) {
+      bad <- c(bad, paste0(n, ": file:checksum does not match the file"))
+    }
+  }
+  if (length(bad) == 0L) return(character(0))
+  paste0(length(bad), " of ", length(names), " file(s) not as published: ",
+         paste(utils::head(bad, 5), collapse = "; "),
+         if (length(bad) > 5) "; ..." else "")
+}
+
+# A catalog's data assets as checksum_problems() entries, keyed by file name.
+catalog_entries <- function(catalog_json) {
+  stats::setNames(
+    lapply(catalog_json$items, function(i) i$assets$data),
+    vapply(catalog_json$items, function(i) basename(i$assets$data$href), character(1))
+  )
+}
+
+# Why a set of files does not all carry run provenance, or character(0). An
+# absent or empty tag fails: a file from before #124, or one written without
+# tags=, would publish a checksum with nothing saying what made the bytes.
+provenance_problems <- function(paths) {
+  bad <- character()
+  for (f in paths) {
+    r <- tryCatch(terra::rast(f), error = function(e) NULL)
+    if (is.null(r)) {
+      bad <- c(bad, paste0(basename(f), ": could not be opened"))
+      next
+    }
+    # NULL, not a zero-row frame, for a raster with no tags at all.
+    m <- terra::metags(r)
+    if (is.null(m)) m <- data.frame(name = character(), value = character())
+    v <- as.character(m$value)[match(prov_keys, as.character(m$name))]
+    missing <- prov_keys[is.na(v) | !nzchar(v)]
+    if (length(missing) > 0) {
+      bad <- c(bad, paste0(basename(f), " (", paste(missing, collapse = ", "), ")"))
+    }
+  }
+  if (length(bad) == 0L) return(character(0))
+  paste0(length(bad), " file(s) lack run provenance tags: ",
+         paste(utils::head(bad, 5), collapse = "; "),
+         if (length(bad) > 5) "; ..." else "")
+}
+
+# A run's provenance, with its time fixed once for this process and for every
+# child it starts (the daily cube's Python backfill reads CD_RUN_TIME), so one
+# run's files all carry one time.
+run_start <- function() {
+  if (!nzchar(Sys.getenv("CD_RUN_TIME"))) {
+    Sys.setenv(CD_RUN_TIME = format(Sys.time(), "%Y-%m-%dT%H:%M:%SZ", tz = "UTC"))
+  }
+  prov <- run_provenance()
+  # Fixed for the children too, so R and Python never derive it twice.
+  Sys.setenv(CD_SHA = prov[["CD_SHA"]])
+  prov
+}
+
+# Why a run may not publish under this provenance, or character(0). A SHA
+# that is "unknown", or "-dirty", names no commit that holds the code that
+# made the bytes. Checked before a live push only: a dry run publishes nothing.
+sha_problems <- function(prov) {
+  sha <- prov[["CD_SHA"]]
+  if (identical(sha, "unknown") || grepl("-dirty$", sha)) {
+    return(paste0("CD_SHA is ", sha, ": commit the working tree (or run from ",
+                  "CI) so the published files name the commit that made them"))
+  }
+  character(0)
+}
+
+# Why a publish directory holds something no catalog or manifest entry names,
+# or character(0). The sync uploads every file but the ones it excludes
+# (hidden files and *.aux.json, as cd_s3_push() does), so anything else would
+# reach S3 described by nothing.
+stray_problems <- function(dir, names) {
+  # The sync's own excludes, as aws reads them: '.*' and '*.aux.json' match the
+  # whole relative path, so a hidden file inside a subdirectory still goes up.
+  on_disk <- list.files(dir, recursive = TRUE, all.files = TRUE, no.. = TRUE)
+  on_disk <- on_disk[!startsWith(on_disk, ".") & !grepl("\\.aux\\.json$", on_disk)]
+  stray <- setdiff(on_disk, names)
+  if (length(stray) == 0L) return(character(0))
+  paste0(length(stray), " file(s) in ", dir, " that nothing published ",
+         "describes would be uploaded (",
+         paste(utils::head(stray, 5), collapse = ", "),
+         if (length(stray) > 5) ", ..." else "", ")")
+}
+
+# Whether a file is the object S3 reports by `etag`. A single-part upload's
+# ETag is the MD5 of the bytes (SSE-S3, as on this bucket); a multipart one is
+# the MD5 of the concatenated part MD5s, then "-<parts>". The part size is the
+# uploading machine's `multipart_chunksize` (8 MiB by default; this machine's
+# ~/.aws/config says 128 MB), so every size that gives that many parts is
+# tried. Measured: daily/tmax_daily_2000.tif, 9,263,371 bytes, is "-2" at
+# 8 MiB and matches the local file.
+s3_etag_matches <- function(path, etag) {
+  etag <- gsub('"', "", etag)
+  if (is.na(etag) || !nzchar(etag)) return(FALSE)
+  md5_file <- function(f) {
+    con <- file(f, open = "rb")
+    on.exit(close(con))
+    # as.character() keeps openssl's "hash" attributes, which identical() sees.
+    as.vector(as.character(openssl::md5(con)))
+  }
+  if (!grepl("-", etag, fixed = TRUE)) return(identical(etag, md5_file(path)))
+  n <- as.integer(sub(".*-", "", etag))
+  size <- file.size(path)
+  mib <- 1024^2
+  chunks <- c(5 * mib, 2^(3:12) * mib, 8e6, 16e6, 64e6, 128e6)
+  chunks <- unique(chunks[ceiling(size / chunks) == n])
+  for (chunk in chunks) {
+    con <- file(path, open = "rb")
+    parts <- list()
+    repeat {
+      b <- readBin(con, "raw", chunk)
+      if (length(b) == 0L) break
+      parts[[length(parts) + 1L]] <- as.raw(openssl::md5(b))
+    }
+    close(con)
+    if (identical(paste0(as.character(openssl::md5(do.call(c, parts))), "-", n), etag)) {
+      return(TRUE)
+    }
+  }
+  FALSE
+}
+
+# -- Daily cube manifest (#124) -------------------------------------------------
+# The daily cube is not in catalog.json, so s3://<bucket>/daily/manifest.json
+# carries what the catalog carries for the monthly COGs: per file, its size,
+# sha256 multihash and the provenance tags of the run that wrote it.
+
+# Manifest entries for local files, keyed by file name.
+manifest_entries <- function(paths) {
+  out <- lapply(paths, function(f) {
+    m <- terra::metags(terra::rast(f))
+    tag <- function(key) {
+      v <- as.character(m$value)[as.character(m$name) == key]
+      if (length(v) == 1L && nzchar(v)) v else NULL
+    }
+    Filter(Negate(is.null), list(
+      `file:checksum` = multihash(f),
+      `file:size` = file.size(f),
+      `cd:version` = tag("CD_VERSION"),
+      `cd:sha` = tag("CD_SHA"),
+      `cd:run_time` = tag("CD_RUN_TIME"),
+      `cd:run_id` = tag("CD_RUN_ID")
+    ))
+  })
+  stats::setNames(out, basename(paths))
+}
+
+# The live manifest's entries with this run's local ones laid over them, keys
+# in a locale-independent order so the file does not reorder between a Mac
+# and CI.
+manifest_merge <- function(live, local) {
+  merged <- if (is.null(live)) list() else live
+  for (n in names(local)) merged[[n]] <- local[[n]]
+  merged[sort(names(merged), method = "radix")]
+}
+
+# Why a manifest's entries are not one whole cube, or character(0): every
+# variable for every year of one contiguous span, nothing else, each entry
+# shaped as published.
+manifest_problems <- function(entries, vars = c("tmean", "tmax", "tmin")) {
+  problems <- character()
+  keys <- names(entries)
+  if (length(keys) == 0L) return("the manifest lists no files")
+  pat <- paste0("^(", paste(vars, collapse = "|"), ")_daily_([0-9]{4})\\.tif$")
+  odd <- keys[!grepl(pat, keys)]
+  if (length(odd) > 0) {
+    problems <- c(problems, paste0("entries that are not daily cube files (",
+                                   paste(utils::head(odd, 5), collapse = ", "), ")"))
+  }
+  years <- as.integer(sub(pat, "\\2", keys[grepl(pat, keys)]))
+  if (length(years) > 0) {
+    want <- as.vector(outer(vars, seq(min(years), max(years)),
+                            function(v, y) paste0(v, "_daily_", y, ".tif")))
+    missing <- setdiff(want, keys)
+    if (length(missing) > 0) {
+      problems <- c(problems, paste0(
+        length(missing), " file(s) missing from the span ", min(years), "-",
+        max(years), " (", paste(utils::head(missing, 5), collapse = ", "),
+        if (length(missing) > 5) ", ..." else "", ")"
+      ))
+    }
+  }
+  bad <- keys[!vapply(entries, function(e) {
+    ck <- e$`file:checksum`
+    sz <- e$`file:size`
+    is.character(ck) && length(ck) == 1L && grepl("^1220[0-9a-f]{64}$", ck) &&
+      is.numeric(sz) && length(sz) == 1L && sz > 0
+  }, logical(1))]
+  if (length(bad) > 0) {
+    problems <- c(problems, paste0("entries without a sha256 multihash and size (",
+                                   paste(utils::head(bad, 5), collapse = ", "), ")"))
+  }
+  problems
+}
+
+# The last year a manifest holds every variable for, or NA.
+manifest_last_year <- function(entries) {
+  keys <- names(entries)
+  y <- suppressWarnings(as.integer(sub("^.*_daily_([0-9]{4})\\.tif$", "\\1", keys)))
+  if (length(y) == 0L || all(is.na(y))) NA_integer_ else max(y, na.rm = TRUE)
+}

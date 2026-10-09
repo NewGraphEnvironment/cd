@@ -4,7 +4,13 @@
 \alias{cd_s3_push}
 \title{Push files to S3}
 \usage{
-cd_s3_push(local_dir, bucket = "stac-era5-land", prefix = "", dry_run = FALSE)
+cd_s3_push(
+  local_dir,
+  bucket = "stac-era5-land",
+  prefix = "",
+  dry_run = FALSE,
+  size_only = FALSE
+)
 }
 \arguments{
 \item{local_dir}{Character. Local directory to sync.}
@@ -16,14 +22,25 @@ Default \code{""} (bucket root).}
 
 \item{dry_run}{Logical. If \code{TRUE}, shows what would be uploaded
 without actually uploading. Default \code{FALSE}.}
+
+\item{size_only}{Logical. Compare by size alone (\code{--size-only}).
+Default \code{FALSE}.}
 }
 \value{
 The exit code from \verb{aws s3 sync} (invisibly). Zero on success.
 }
 \description{
 Syncs a local directory to an S3 bucket using \verb{aws s3 sync}.
-Only uploads new or changed files (\code{--size-only}). Requires
-the AWS CLI to be installed and configured.
+Only uploads new or changed files. Requires the AWS CLI to be installed
+and configured.
+}
+\details{
+By default a file is uploaded when its size differs from its S3 copy or it
+is newer than that copy, so a rebuilt file of unchanged size still goes up.
+That matters wherever something published describes the bytes, such as the
+checksums in the catalog and the daily manifest (#124). \code{size_only = TRUE}
+compares sizes alone (\code{--size-only}), the default before #124, and
+skips such a file.
 }
 \examples{
 \dontrun{

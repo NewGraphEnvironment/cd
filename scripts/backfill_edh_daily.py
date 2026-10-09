@@ -26,9 +26,9 @@ For each year:
        data/backfill/daily/tmax_daily_YYYY.tif
        data/backfill/daily/tmin_daily_YYYY.tif
 
-These are the published files: `cd_s3_push("data/backfill/daily",
-prefix = "daily")` puts them at s3://stac-era5-land/daily/, where
-cd_extract_daily() reads them. No R conversion step — the COG is written
+These are the published files: `Rscript scripts/daily_publish.R` puts them
+at s3://stac-era5-land/daily/ with daily/manifest.json, their sizes and
+checksums (#124), and cd_extract_daily() reads them there. No R conversion step — the COG is written
 here (`write_cog()`), in a layout chosen for point reads.
 
 Why local days: a UTC day splits BC's afternoon peak (22-00 UTC) across two
@@ -50,16 +50,28 @@ Idempotent — skips years whose three outputs already exist. A year whose
 local window is not fully in the store (its last local day needs the first
 8 hours of the next UTC year) is skipped before anything is fetched.
 
+Every COG carries the run's provenance as file tags (`run_provenance()` in
+_lib.py, #124). `--rewrite` re-writes years already on disk with fresh
+provenance and the same values, with no EDH fetch: the way to tag a cube
+built before #124.
+
 Usage:
   uv run scripts/backfill_edh_daily.py --check              # latest complete year, no fetch
+  uv run scripts/backfill_edh_daily.py --rewrite            # re-tag 1950-2025 on disk
   uv run scripts/backfill_edh_daily.py                      # 1950-2025
   uv run scripts/backfill_edh_daily.py --year 2002          # one year
   uv run scripts/backfill_edh_daily.py --from 2002 --to 2025
 """
 import argparse
+import os
+import shutil
+import subprocess
+import tempfile
 import time
 from pathlib import Path
 
+import numpy as np
+import rasterio
 import xarray as xr
 
 from _lib import (
@@ -73,6 +85,8 @@ from _lib import (
     local_year_window,
     log,
     preflight_single_instance,
+    read_cog_days,
+    run_provenance,
     with_retry,
     write_cog,
 )
@@ -133,10 +147,92 @@ def check():
     print(f"latest_complete={latest_complete_year(open_store())}", flush=True)
 
 
+def same_layout(old: Path, new: Path) -> None:
+    """Refuse a rewrite whose file differs from the original in anything but
+    its tags: grid, dtype, nodata, tiling, compression, band names."""
+    with rasterio.open(old) as a, rasterio.open(new) as b:
+        keys = ("driver", "dtype", "nodata", "width", "height", "count", "crs",
+                "transform", "blockxsize", "blockysize", "tiled", "compress",
+                "interleave")
+        pa = {k: a.profile.get(k) for k in keys}
+        pb = {k: b.profile.get(k) for k in keys}
+        if pa != pb or a.descriptions != b.descriptions:
+            raise SystemExit(f"{old.name}: rewrite changed the layout "
+                             f"({pa} -> {pb}); original kept")
+
+
+def rewrite(years):
+    """Re-write cube years already on disk, with this run's provenance.
+
+    Values, band names, grid and layout are unchanged: the year is read back
+    with `read_cog_days()` and written through `write_cog()` again, beside the
+    original; it replaces the original only once its values, band names and
+    layout are shown equal. Refuses a year with a file missing, rather than
+    leaving it half-tagged.
+    """
+    preflight_single_instance("backfill_edh_daily")
+    tags = run_provenance()
+    # A re-tag exists only to be published, and daily_publish() refuses files
+    # from a dirty or unknown SHA: refuse now, not after 76 years of writing.
+    if tags["CD_SHA"] == "unknown" or tags["CD_SHA"].endswith("-dirty"):
+        raise SystemExit(f"CD_SHA is {tags['CD_SHA']}: commit the working tree "
+                         f"first, or the rewritten files cannot be published")
+    # And on origin/main, as daily_publish() requires off CI
+    # (publish_sha_problems() in scripts/_publish.R).
+    if os.environ.get("GITHUB_ACTIONS") != "true":
+        root = Path(__file__).resolve().parent.parent
+        fetched = subprocess.run(["git", "fetch", "-q", "origin", "main"], cwd=root,
+                                 capture_output=True, text=True)
+        on_main = fetched.returncode == 0 and subprocess.run(
+            ["git", "merge-base", "--is-ancestor", tags["CD_SHA"], "origin/main"],
+            cwd=root, capture_output=True).returncode == 0
+        if not on_main:
+            raise SystemExit(f"CD_SHA {tags['CD_SHA']} is not on origin/main (or "
+                             f"the fetch failed): rewrite from a checkout of main, "
+                             f"or the files cannot be published")
+    log(f"Rewriting with {tags}")
+    for year in years:
+        outs = {v: out_path(v, year) for v in VARIABLES}
+        missing = [p.name for p in outs.values() if not p.exists()]
+        if missing:
+            raise SystemExit(f"{year}: not on disk ({', '.join(missing)}); "
+                             f"build it first")
+        bc_files_check(outs.values())
+        for var, path in outs.items():
+            da = read_cog_days(path)
+            # local_daily() writes units=degC, and read_cog_days() clears attrs.
+            da.attrs = {"units": "degC"}
+            dates = [str(d)[:10] for d in da.valid_time.values]
+            # Written beside, compared, then moved over the original: these
+            # files cannot be rebuilt as they were, since EDH has revised
+            # published values since (research/edh_era5_land_store.md).
+            stage = Path(tempfile.mkdtemp(prefix=".rewrite_", dir=DAILY_DIR.parent))
+            try:
+                (stage / "daily").mkdir()
+                new = stage / "daily" / path.name
+                write_cog(da, new, band_names=dates, tags=tags)
+                bc_file_check(new)
+                same_layout(path, new)
+                back = read_cog_days(new)
+                if not (np.array_equal(back.values, da.values, equal_nan=True)
+                        and back.dtype == da.dtype
+                        and list(back.valid_time.values) == list(da.valid_time.values)):
+                    raise SystemExit(f"{path.name}: rewrite changed values; original kept")
+                os.replace(new, path)
+            finally:
+                shutil.rmtree(stage, ignore_errors=True)
+        log(f"{year}: rewritten")
+    log("DONE")
+
+
 def main(years):
     preflight_single_instance("backfill_edh_daily")
     DAILY_DIR.mkdir(parents=True, exist_ok=True)
 
+    tags = run_provenance()
+    if tags["CD_SHA"] == "unknown" or tags["CD_SHA"].endswith("-dirty"):
+        log(f"WARNING: CD_SHA is {tags['CD_SHA']}; daily_publish() will refuse "
+            f"the files this run writes")
     ds = open_store()
 
     for year in years:
@@ -172,7 +268,7 @@ def main(years):
                 continue
             da = da.compute()
             dates = [str(d)[:10] for d in da.valid_time.values]
-            write_cog(da, outs[var], band_names=dates)
+            write_cog(da, outs[var], band_names=dates, tags=tags)
             try:
                 bc_file_check(outs[var])
             except ValueError:
@@ -192,6 +288,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--check", action="store_true",
                         help="Print the latest complete local year and exit")
+    parser.add_argument("--rewrite", action="store_true",
+                        help="Re-write years on disk with fresh provenance; no fetch")
     parser.add_argument("--year", type=int, help="Single year (for testing)")
     parser.add_argument("--from", dest="year_from", type=int, default=YEAR_FROM)
     parser.add_argument("--to", dest="year_to", type=int, default=YEAR_TO)
@@ -203,4 +301,7 @@ if __name__ == "__main__":
         years = [args.year]
     else:
         years = range(args.year_from, args.year_to + 1)
-    main(years)
+    if args.rewrite:
+        rewrite(years)
+    else:
+        main(years)
