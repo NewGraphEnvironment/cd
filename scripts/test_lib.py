@@ -374,11 +374,14 @@ LOCAL_CASES.append(("COG: provenance tags survive the copy; same input + tags = 
 def provenance_shape() -> bool:
     import os
 
-    keep = {k: os.environ.get(k) for k in ("GITHUB_SHA", "GITHUB_RUN_ID", "CD_RUN_TIME")}
+    keep = {k: os.environ.get(k) for k in ("GITHUB_SHA", "GITHUB_RUN_ID", "CD_RUN_TIME", "CD_SHA")}
     try:
         os.environ.update({"GITHUB_SHA": "f00", "GITHUB_RUN_ID": "77",
                            "CD_RUN_TIME": "2026-01-02T03:04:05Z"})
         ci = run_provenance()
+        # The R pipeline's CD_SHA wins, so R and Python stamp one SHA.
+        os.environ["CD_SHA"] = "fromR"
+        from_r = run_provenance()["CD_SHA"]
         for k in keep:
             os.environ.pop(k, None)
         local = run_provenance()
@@ -390,7 +393,7 @@ def provenance_shape() -> bool:
                 os.environ[k] = v
     import re
     return (list(ci) == ["CD_VERSION", "CD_SHA", "CD_RUN_TIME", "CD_RUN_ID"]
-            and ci["CD_SHA"] == "f00" and ci["CD_RUN_ID"] == "77"
+            and ci["CD_SHA"] == "f00" and ci["CD_RUN_ID"] == "77" and from_r == "fromR"
             and ci["CD_RUN_TIME"] == "2026-01-02T03:04:05Z"
             and re.fullmatch(r"[0-9a-f]{40}(-dirty)?", local["CD_SHA"]) is not None
             and local["CD_RUN_ID"] == "local"

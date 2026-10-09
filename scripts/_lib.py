@@ -406,8 +406,10 @@ def run_provenance() -> dict:
     script, and the child inherits it.
 
       CD_VERSION   Version: in the repo's DESCRIPTION.
-      CD_SHA       GITHUB_SHA in CI; locally `git rev-parse HEAD`, with
-                   "-dirty" on an unclean tree; "unknown" without either.
+      CD_SHA       CD_SHA from the environment (set by the R pipeline that
+                   started this script), else GITHUB_SHA in CI, else
+                   `git rev-parse HEAD` with "-dirty" on an unclean tree;
+                   "unknown" without any.
       CD_RUN_TIME  CD_RUN_TIME from the environment, else now (ISO, UTC).
       CD_RUN_ID    GITHUB_RUN_ID in CI, else "local".
 
@@ -419,7 +421,7 @@ def run_provenance() -> dict:
         for line in (root / "DESCRIPTION").read_text().splitlines()
         if line.startswith("Version:")
     )
-    sha = os.environ.get("GITHUB_SHA") or ""
+    sha = os.environ.get("CD_SHA") or os.environ.get("GITHUB_SHA") or ""
     if not sha:
         try:
             head = subprocess.run(

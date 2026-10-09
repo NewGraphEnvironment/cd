@@ -65,6 +65,7 @@ Usage:
 import argparse
 import os
 import shutil
+import subprocess
 import tempfile
 import time
 from pathlib import Path
@@ -176,6 +177,19 @@ def rewrite(years):
     if tags["CD_SHA"] == "unknown" or tags["CD_SHA"].endswith("-dirty"):
         raise SystemExit(f"CD_SHA is {tags['CD_SHA']}: commit the working tree "
                          f"first, or the rewritten files cannot be published")
+    # And on origin/main, as daily_publish() requires off CI
+    # (publish_sha_problems() in scripts/_publish.R).
+    if os.environ.get("GITHUB_ACTIONS") != "true":
+        root = Path(__file__).resolve().parent.parent
+        fetched = subprocess.run(["git", "fetch", "-q", "origin", "main"], cwd=root,
+                                 capture_output=True, text=True)
+        on_main = fetched.returncode == 0 and subprocess.run(
+            ["git", "merge-base", "--is-ancestor", tags["CD_SHA"], "origin/main"],
+            cwd=root, capture_output=True).returncode == 0
+        if not on_main:
+            raise SystemExit(f"CD_SHA {tags['CD_SHA']} is not on origin/main (or "
+                             f"the fetch failed): rewrite from a checkout of main, "
+                             f"or the files cannot be published")
     log(f"Rewriting with {tags}")
     for year in years:
         outs = {v: out_path(v, year) for v in VARIABLES}

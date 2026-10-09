@@ -80,3 +80,25 @@ Copy of 2001 (3 files): 7.0 s, each file +208 bytes (the four tags), values / ba
 - `backfill_edh_daily.py --rewrite` over 1950-2025 (228 files): 18 min (concurrent with the stage 3 dry run), exit 0, every file compared equal in values and layout before replacing. Tags: SHA 39390af (clean at start), run time 2026-10-09T14:57:34Z.
 - `daily_publish.R --dry-run`: 7.7 s. No live manifest, so the bootstrap path: 228 local files, live `daily/` listing 228, names equal; manifest of 228 entries, radix-sorted, one SHA; `aws --dryrun` would upload all 228.
 - These files carry a branch SHA, so they are NOT what gets published: after merge (and the release), re-run `--rewrite` from clean main, then publish.
+
+## Code-check enumeration (terminates the loop, 2026-10-09)
+
+Round 3 found a defect inside round 2's fix (terra floor 1.8-42: the getter's version, not the setter's), so the loop ends by enumeration. Mechanism named by round 3: **a fact set in one place and relied on in another, kept in agreement only by intent**. Every such fact in this diff:
+
+| # | Fact | Set | Relied on | Re-derived where used? |
+|---|------|-----|-----------|------------------------|
+| 1 | COG / daily bytes | hash (cd_stac_catalog, manifest_entries) | sync | yes: ETag check + checksum_problems after the sync, before catalog/manifest upload |
+| 2 | catalog.json | local file | live object | yes: byte read-back |
+| 3 | daily manifest | ETag read at start | the write | yes: s3_put_if --if-match / --if-none-match (live-tested) |
+| 4 | manifest coverage | publish | later runs | yes: listing equality at publish; daily_manifest_problems() vs HEAD on every STEP D path |
+| 5 | provenance tags | cd_cog_write / write_cog | cd_stac_item, manifest_entries, provenance_problems | yes: read from the file; default domain by name; tested |
+| 6 | CD_SHA / CD_RUN_TIME, R vs Python | run_start() | backfill children | yes: one env contract (CD_SHA added round 3) |
+| 7 | CD_SHA vs the code that ran | run_provenance (checkout) | the cd that writes | yes: load_cd() loads the checkout off CI; CI installs local::. |
+| 8 | CD_SHA vs a resolvable commit | checkout | published provenance | yes: publish_sha_problems() off CI (R live publishes) and `--rewrite` (Python) — the Python half found by this enumeration |
+| 9 | dependency floors vs calls used | DESCRIPTION | metags get / set / NULL, writeRaster COG, openssl sha256/md5 on connections | terra >= 1.8-54 per round 3's runs of each archived setter; openssl calls long-standing |
+| 10 | sync excludes vs stray check | cd_s3_push | stray_problems | yes after this enumeration: hidden files below the top level go up (aws `--dryrun` measured) and are now flagged |
+| 11 | remedy texts vs the guards they lead to | messages | operator | traced: catalog_repair_hint, daily gap hint, no-manifest hint, s3_put_if, STEP 2 tmax/tmin, SHA refusals |
+| 12 | GITHUB_ACTIONS exemptions | load_cd, pgrep skip, publish_sha_problems, Python main check | CI | consistent: all key on GITHUB_ACTIONS == "true" |
+| 13 | CD_VERSION vs the release | DESCRIPTION at the checkout | provenance | not enforced; CD_SHA disambiguates; the PR body says republish from the release commit |
+
+Nothing above sits above its source of truth except #13, which is procedural and stated in the PR.

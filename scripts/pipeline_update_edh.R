@@ -55,23 +55,16 @@
 # is the only way to prove the bucket is actually writable.
 # climate-update.yml runs it weekly as a heartbeat (#78).
 
-# Prefer the installed package (what CI does — see extra-packages: local::. in
-# climate-update.yml). devtools::load_all() is the local-dev fallback. Fail with
-# a readable message rather than a bare "no package called 'devtools'" from
-# loadNamespace, which is how #78 presented on every scheduled run.
-if (requireNamespace("cd", quietly = TRUE)) {
-  library(cd)
-} else if (requireNamespace("devtools", quietly = TRUE)) {
-  devtools::load_all()
-} else {
-  stop("cd is not installed and devtools is unavailable to load_all() it. ",
-       "Install cd (or devtools) before running this pipeline.", call. = FALSE)
-}
-suppressMessages(library(terra))
-
 # Producer-side helpers (mirrors scripts/_lib.py). Repo-root cwd, same
 # assumption the `uv run scripts/...` calls below already make.
 source("scripts/_lib.R")
+# CI runs the cd that climate-update.yml installs from the checkout
+# (extra-packages: local::.); anywhere else, the checkout itself, so the code
+# writing the bytes is the commit CD_SHA names (#124). Fails with a readable
+# message rather than a bare loadNamespace error, which is how #78 presented
+# on every scheduled run.
+load_cd()
+suppressMessages(library(terra))
 # Networked publish helpers: ETag and byte read-backs, the daily publish (#124).
 source("scripts/_publish.R")
 
@@ -125,8 +118,8 @@ log_msg("Mode: ", if (dry_run) {
 # the environment, so the daily backfill this script starts carries the same.
 prov <- run_start()
 log_msg("Provenance: ", paste(names(prov), prov, sep = "=", collapse = " "))
-if (!dry_run && length(sha_problems(prov)) > 0) {
-  log_msg("ERROR: refusing a live run: ", sha_problems(prov))
+if (!dry_run && length(publish_sha_problems(prov[["CD_SHA"]])) > 0) {
+  log_msg("ERROR: refusing a live run: ", publish_sha_problems(prov[["CD_SHA"]]))
   quit(status = 1L)
 }
 

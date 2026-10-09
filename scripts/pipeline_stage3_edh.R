@@ -19,21 +19,12 @@
 #   Rscript scripts/pipeline_stage3_edh.R
 #   Rscript scripts/pipeline_stage3_edh.R --dry-run   # no S3 push
 
-# Prefer the installed package; devtools::load_all() is the local-dev fallback.
-# Fail with a readable message rather than a bare "no package called 'devtools'"
-# from loadNamespace (see #78).
-if (requireNamespace("cd", quietly = TRUE)) {
-  library(cd)
-} else if (requireNamespace("devtools", quietly = TRUE)) {
-  devtools::load_all()
-} else {
-  stop("cd is not installed and devtools is unavailable to load_all() it. ",
-       "Install cd (or devtools) before running this pipeline.", call. = FALSE)
-}
-suppressMessages(library(terra))
-
 # Producer-side helpers, shared with pipeline_update_edh.R (repo-root cwd).
 source("scripts/_lib.R")
+# The installed cd on GitHub Actions, the checkout anywhere else (#124);
+# readable failure rather than a bare loadNamespace error (#78).
+load_cd()
+suppressMessages(library(terra))
 source("scripts/_publish.R")
 
 args <- commandArgs(trailingOnly = TRUE)
@@ -76,8 +67,8 @@ log_msg <- function(...) {
 log_msg("=== STEP 1: Aggregate monthly -> seasonal/annual COGs ===")
 log_msg("  Provenance: ", paste(names(prov), prov, sep = "=", collapse = " "))
 # Before hours of work, not after: a live push from an edited tree is refused.
-if (!dry_run && length(sha_problems(prov)) > 0) {
-  stop("Refusing to publish: ", sha_problems(prov), call. = FALSE)
+if (!dry_run && length(publish_sha_problems(prov[["CD_SHA"]])) > 0) {
+  stop("Refusing to publish: ", publish_sha_problems(prov[["CD_SHA"]]), call. = FALSE)
 }
 
 # COGs written by THIS run, with their band names (years). cog_dir persists

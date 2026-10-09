@@ -342,8 +342,13 @@ rs1 <- run_start()
 Sys.sleep(1.1)
 rs2 <- run_start()
 if (is.na(old_rt)) Sys.unsetenv("CD_RUN_TIME") else Sys.setenv(CD_RUN_TIME = old_rt)
-check(identical(rs1[["CD_RUN_TIME"]], rs2[["CD_RUN_TIME"]]),
-      "run_start() fixes the run time once, for every later call")
+check(identical(rs1[["CD_RUN_TIME"]], rs2[["CD_RUN_TIME"]]) &&
+        identical(Sys.getenv("CD_SHA"), rs1[["CD_SHA"]]),
+      "run_start() fixes the run time and SHA once, for every later call and child")
+Sys.setenv(CD_SHA = "fromparent")
+check(identical(run_provenance()[["CD_SHA"]], "fromparent"),
+      "a CD_SHA in the environment wins, as in _lib.py")
+Sys.unsetenv("CD_SHA")
 
 fake_bin <- tempfile("fakegit_")
 dir.create(fake_bin)
@@ -434,6 +439,10 @@ check(identical(stray_problems(st_dir, c("a.tif", "notes.txt")), character(0)),
       "a directory holding only described files (and what the sync excludes) passes")
 check(grepl("notes.txt", stray_problems(st_dir, "a.tif"), fixed = TRUE),
       "a file nothing describes, which the sync would upload, is refused")
+dir.create(file.path(st_dir, "sub"))
+file.create(file.path(st_dir, "sub", ".hidden"))
+check(grepl("sub/.hidden", stray_problems(st_dir, c("a.tif", "notes.txt")), fixed = TRUE),
+      "a hidden file in a subdirectory, which aws's '.*' exclude does not match, is refused")
 et_f <- tempfile()
 writeBin(as.raw(rep(0:255, length.out = 3 * 1024^2 + 17)), et_f)
 et_md5 <- as.vector(as.character(openssl::md5(file(et_f, "rb"))))

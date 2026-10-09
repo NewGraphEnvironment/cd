@@ -347,16 +347,37 @@ catalog_repair_hint <- function(bucket) {
   )
 }
 
+# Load cd for a producer script (#124). On GitHub Actions, the cd that
+# climate-update.yml installs from this checkout (extra-packages: local::.).
+# Anywhere else, the checkout itself through pkgload, never an installed copy:
+# CD_SHA and CD_VERSION name the checkout, so the code that writes and hashes
+# the bytes must be the checkout. An installed cd from another branch carries
+# the same version string until a release, and nothing would tell them apart.
+load_cd <- function() {
+  if (identical(Sys.getenv("GITHUB_ACTIONS"), "true") &&
+      requireNamespace("cd", quietly = TRUE)) {
+    suppressPackageStartupMessages(library(cd))
+  } else if (requireNamespace("pkgload", quietly = TRUE)) {
+    pkgload::load_all(".", quiet = TRUE)
+  } else {
+    stop("pkgload is needed to run this pipeline from the checkout (or, on ",
+         "GitHub Actions, an installed cd). Install pkgload.", call. = FALSE)
+  }
+  invisible(TRUE)
+}
+
 # The provenance every published COG carries as GDAL tags (#124): which cd
 # built it, from which commit, in which run. Read from the environment and the
 # working tree, so unlike the helpers above it is not a pure function.
 #
 #   CD_VERSION   Version: in DESCRIPTION (cwd is the repo root, as for every
 #                pipeline script).
-#   CD_SHA       GITHUB_SHA in CI; locally `git rev-parse HEAD`, with "-dirty"
-#                when the tree has uncommitted changes, since a local build
-#                from an edited tree is not the commit it names. "unknown"
-#                when neither is available.
+#   CD_SHA       CD_SHA from the environment when set (run_start() sets it,
+#                so the daily cube's Python children carry the same), else
+#                GITHUB_SHA in CI, else `git rev-parse HEAD` with "-dirty" when
+#                the tree has uncommitted changes, since a local build from an
+#                edited tree is not the commit it names. "unknown" when none
+#                is available.
 #   CD_RUN_TIME  CD_RUN_TIME from the environment when set, else now. The
 #                pipelines set it once at start, so every COG of one run, and
 #                the daily cube's Python children, carry the same time.
@@ -369,7 +390,8 @@ run_provenance <- function() {
     v <- Sys.getenv(x)
     if (nzchar(v)) v else NA_character_
   }
-  sha <- env("GITHUB_SHA")
+  sha <- env("CD_SHA")
+  if (is.na(sha)) sha <- env("GITHUB_SHA")
   if (is.na(sha)) {
     head <- suppressWarnings(system2("git", c("rev-parse", "HEAD"),
                                      stdout = TRUE, stderr = FALSE))
@@ -493,7 +515,10 @@ run_start <- function() {
   if (!nzchar(Sys.getenv("CD_RUN_TIME"))) {
     Sys.setenv(CD_RUN_TIME = format(Sys.time(), "%Y-%m-%dT%H:%M:%SZ", tz = "UTC"))
   }
-  run_provenance()
+  prov <- run_provenance()
+  # Fixed for the children too, so R and Python never derive it twice.
+  Sys.setenv(CD_SHA = prov[["CD_SHA"]])
+  prov
 }
 
 # Why a run may not publish under this provenance, or character(0). A SHA
@@ -513,8 +538,10 @@ sha_problems <- function(prov) {
 # (hidden files and *.aux.json, as cd_s3_push() does), so anything else would
 # reach S3 described by nothing.
 stray_problems <- function(dir, names) {
-  on_disk <- list.files(dir, recursive = TRUE)
-  on_disk <- on_disk[!grepl("\\.aux\\.json$", on_disk)]
+  # The sync's own excludes, as aws reads them: '.*' and '*.aux.json' match the
+  # whole relative path, so a hidden file inside a subdirectory still goes up.
+  on_disk <- list.files(dir, recursive = TRUE, all.files = TRUE, no.. = TRUE)
+  on_disk <- on_disk[!startsWith(on_disk, ".") & !grepl("\\.aux\\.json$", on_disk)]
   stray <- setdiff(on_disk, names)
   if (length(stray) == 0L) return(character(0))
   paste0(length(stray), " file(s) in ", dir, " that nothing published ",

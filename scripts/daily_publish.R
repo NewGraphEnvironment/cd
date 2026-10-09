@@ -10,24 +10,18 @@
 # local backfill or re-tag (uv run scripts/backfill_edh_daily.py --rewrite).
 #
 # The first manifest needs the whole cube on disk: the manifest must name
-# exactly the files S3 will hold. A live publish refuses files tagged with a
-# dirty or unknown SHA, so build them from a clean checkout.
+# exactly the files S3 will hold. A live publish refuses files whose CD_SHA is
+# dirty, unknown, or (off CI) not on origin/main, so build them from a clean
+# checkout of main.
 #
 # Usage (repo root):
 #   Rscript scripts/daily_publish.R --dry-run   # checks + aws --dryrun, no upload
 #   Rscript scripts/daily_publish.R
 
-if (requireNamespace("cd", quietly = TRUE)) {
-  library(cd)
-} else if (requireNamespace("devtools", quietly = TRUE)) {
-  devtools::load_all()
-} else {
-  stop("cd is not installed and devtools is unavailable to load_all() it.",
-       call. = FALSE)
-}
-suppressMessages(library(terra))
 source("scripts/_lib.R")
 source("scripts/_publish.R")
+load_cd()
+suppressMessages(library(terra))
 
 dry_run <- "--dry-run" %in% commandArgs(trailingOnly = TRUE)
 log_msg <- function(...) {

@@ -67,6 +67,34 @@ readback_problems <- function(url, path) {
   character(0)
 }
 
+# Why files stamped with these SHAs may not be published, or character(0):
+# sha_problems() for each, and, off GitHub Actions, each must be on
+# origin/main, or the provenance names a commit nobody else can resolve (a
+# feature branch, or a local commit never pushed). CI is exempt: GITHUB_SHA is
+# the commit the workflow checked out, and its clone is shallow. "main" is
+# this repo's default branch.
+publish_sha_problems <- function(shas) {
+  shas <- unique(shas)
+  problems <- unlist(lapply(shas, function(x) sha_problems(c(CD_SHA = x))))
+  if (length(problems) > 0 || identical(Sys.getenv("GITHUB_ACTIONS"), "true")) {
+    return(problems)
+  }
+  f <- suppressWarnings(system2("git", c("fetch", "-q", "origin", "main"),
+                                stdout = TRUE, stderr = TRUE))
+  if (!is.null(attr(f, "status"))) {
+    return(paste0("could not fetch origin/main to check the SHA: ",
+                  paste(f, collapse = " ")))
+  }
+  off <- shas[vapply(shas, function(x) {
+    st <- suppressWarnings(system2("git", c("merge-base", "--is-ancestor", x, "origin/main"),
+                                   stdout = FALSE, stderr = FALSE))
+    st != 0L
+  }, logical(1))]
+  if (length(off) == 0L) return(character(0))
+  paste0("CD_SHA ", paste(off, collapse = ", "), " is not on origin/main: ",
+         "build the files from a checkout of main once the work has merged")
+}
+
 # Upload one file to one key with `aws s3 cp`, or stop().
 s3_put <- function(path, bucket, key, dry_run = FALSE) {
   out <- suppressWarnings(system2(
@@ -97,9 +125,10 @@ s3_put_if <- function(path, bucket, key, etag) {
   if (!is.null(attr(out, "status"))) {
     stop("upload of ", key, " refused or failed (exit ", attr(out, "status"),
          "): ", paste(out, collapse = " "),
-         if (any(grepl("PreconditionFailed|412", out))) {
-           paste0(". Another publish changed it since this run read it; ",
-                  "re-run to merge onto the new one.")
+         if (any(grepl("PreconditionFailed", out, fixed = TRUE))) {
+           paste0(". Another publish changed it since this run read it. The ",
+                  "files are up; the next STEP D reports the manifest's gap ",
+                  "and names the repair.")
          } else "", call. = FALSE)
   }
   invisible(out)
@@ -163,7 +192,13 @@ daily_publish <- function(daily_dir, bucket, manifest_path, dry_run = FALSE,
   busy <- if (identical(Sys.getenv("GITHUB_ACTIONS"), "true")) character(0) else
     suppressWarnings(system2("pgrep", c("-f", "backfill_edh_daily"),
                              stdout = TRUE, stderr = FALSE))
-  if (is.null(attr(busy, "status")) && length(busy) > 0) {
+  # pgrep exits 1 for no match; anything else (2, 127: no pgrep) is not "idle".
+  busy_status <- attr(busy, "status")
+  if (!is.null(busy_status) && busy_status != 1L) {
+    stop("could not tell whether backfill_edh_daily.py is running (pgrep exit ",
+         busy_status, ")", call. = FALSE)
+  }
+  if (is.null(busy_status) && length(busy) > 0) {
     stop("backfill_edh_daily.py is running (pid ", paste(busy, collapse = ", "),
          "); publish once it has finished.", call. = FALSE)
   }
@@ -182,8 +217,10 @@ daily_publish <- function(daily_dir, bucket, manifest_path, dry_run = FALSE,
     stray_problems(daily_dir, names(local))
   )
   if (!dry_run) {
-    shas <- unique(vapply(local, function(e) e$`cd:sha` %||% "unknown", character(1)))
-    problems <- c(problems, unlist(lapply(shas, function(x) sha_problems(c(CD_SHA = x)))))
+    shas <- vapply(local, function(e) {
+      if (is.null(e$`cd:sha`)) "unknown" else e$`cd:sha`
+    }, character(1))
+    problems <- c(problems, publish_sha_problems(shas))
   }
   after <- sort(union(s3_tifs(bucket, "daily"), names(local)), method = "radix")
   if (!identical(after, names(merged))) {
@@ -258,7 +295,13 @@ daily_manifest_problems <- function(bucket, newest) {
     # that built them, so fetch them before re-publishing; daily_publish()
     # refuses until the local dir holds every file S3 does that the manifest
     # lacks.
-    gap <- if (is.na(last) || last >= newest) newest else seq(last + 1L, newest)
+    if (!is.na(last) && last > newest) {
+      return(c(problems, paste0(
+        "the live manifest lists years through ", last, " but HEAD finds the ",
+        "cube published only through ", newest, ": the manifest names files ",
+        "that are not live. Investigate before publishing again.")))
+    }
+    gap <- if (is.na(last)) newest else seq(last + 1L, newest)
     problems <- c(problems, paste0(
       "the live manifest ends in ", last, " but the cube is published through ",
       newest, ". Repair: aws s3 cp s3://", bucket, "/daily/ data/backfill/daily/ ",
