@@ -51,13 +51,13 @@ The same exact-edge slice is copied into all three backfillers (`backfill_edh_da
 - [x] Roxygen: update the Cell choice section and `@return` (cell columns can be NA), then `devtools::document()`. Run `devtools::test()` and `lintr`.
 
 ## Phase 3: Rebuild locally on the 121 × 261 grid
-- [ ] Move the current `data/backfill/{daily,monthly,annual}` aside to `data/backfill/_grid_120x260/` (gitignored), to compare against later.
-- [ ] Run `backfill_edh_daily.py` for 1950–2025. Then run `backfill_edh_tmax_tmin.py` (from the cube), `backfill_edh_all.py` and `backfill_edh_snow.py`. Each runs in the background and notifies on exit.
-- [ ] Verify:
+- [x] Move the current `data/backfill/{daily,monthly,annual}` aside to `data/backfill/_grid_120x260/` (gitignored), to compare against later.
+- [x] Run `backfill_edh_daily.py` for 1950–2025. Then run `backfill_edh_tmax_tmin.py` (from the cube), `backfill_edh_all.py` and `backfill_edh_snow.py`. Each runs in the background and notifies on exit.
+- [x] Verify:
   - Every output is 121 × 261 with extent (−140.05, −113.95, 47.95, 60.05).
   - The inner 120 × 260 block of every rebuilt file is value-identical to its old counterpart: all 228 daily files and the old local tmax/tmin; other monthly variables against the live COGs.
   - 10DA001's cell has data.
-- [ ] Record the measurements in `findings.md`: run times, quota, and the identity results.
+- [x] Record the measurements in `findings.md`: run times, quota, and the identity results.
 
 ## Phase 4: Publish
 - [ ] Before any push: `grid_problems()` over all of `data/backfill/daily` (the push syncs the whole directory), and `pipeline_stage3_edh.R --dry-run` passes (O2).
@@ -71,8 +71,8 @@ The same exact-edge slice is copied into all three backfillers (`backfill_edh_da
 - [ ] Dispatch the dry-run of `climate-update.yml` on main and confirm it is green: STEP 1 / `catalog_problems()` on the live catalog, and STEP 2's tmax/tmin local-day check.
 
 ## Phase 5: Docs
-- [ ] `research/edh_era5_land_store.md`: add the coordinate-drift fact, with the measured values, and why the slice is padded.
-- [ ] `CLAUDE.md` EDH gotchas: one bullet on the padded slice / 121 × 261 grid and `bc_grid_check()`.
+- [x] `research/edh_era5_land_store.md`: add the coordinate-drift fact, with the measured values, and why the slice is padded.
+- [x] `CLAUDE.md` EDH gotchas: one bullet on the padded slice / 121 × 261 grid and `bc_grid_check()`.
 
 ## Validation
 

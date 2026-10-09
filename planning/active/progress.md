@@ -14,3 +14,9 @@
 - Code-check Phase 2 rounds 1–2: Clean
 - Code-check Phase 1 round 4 (enumeration of 18 guard sites → exit status → CI outcome): every diff site exits non-zero; no normal month trips one. Pre-existing gap fixed: STEP 3's any_fetch_errored was read only when no year wrote; finish() now reads it
 - Phase 2: `cd_extract_daily()` gives an outside point NA rows + a warning stating `terra::ext(template)`; 3 new fixture tests (FAIL before the fix, PASS after) + 10DA001 live test; code-check rounds 1–3 Clean (round 3 enumerated every consumer)
+
+## Session 2026-10-08/09 (rebuild + publish)
+
+- Phase 3: daily 3 h 10 m, snow 7 h 21 m, core monthly 9 h 55 m (concurrent). Every product's old block bit-identical except band 2025 of prcp_annual / prcp_winter / snowfall_fraction (daily-store tp changed upstream since 2026-04-12; see findings)
+- Phase 4: daily pushed (228), stage 3 live (59 + catalog); A1 by hand; 10DA001 live; full read-back and CI dry-run dispatched
+- Phase 5: research note + CLAUDE.md gotcha

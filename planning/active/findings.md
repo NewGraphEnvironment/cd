@@ -67,3 +67,21 @@ The EDH hourly store's coordinates carry float drift (`scratchpad probe_coords.p
 
 | Error | Resolution |
 |-------|------------|
+
+## Rebuild measurements (Phase 3, 2026-10-08)
+
+- Daily cube: `uv run scripts/backfill_edh_daily.py`, 1950–2025, 07:05:53 → 10:15:28 local (3 h 10 m, concurrent with snow), 76 years, 111–207 s per year, one EDH `502 Bad Gateway` (1957) recovered by `with_retry`. Log `logs/backfill_daily_123_20261008.log`
+- Identity (`grid_identity.py`, new `[:, 1:, 1:]` vs old, NaN = NaN, band names and dtype equal): **228/228 daily files bit-identical** on the old block; all 121 × 261 at (−140.05, 47.95, −113.95, 60.05); new edge row and column hold data (band 1, summed over files: 59,508 finite cells)
+- Monthly tmax/tmin from the cube (`backfill_edh_tmax_tmin.py`): 37 s; **152/152 bit-identical** to the old local files on the old block
+- Snow (`backfill_edh_snow.py`): 07:11:37 → 14:32:20 (7 h 21 m, concurrent with daily then all), exit 0; transient `502` (snowc 1952) and `ClientPayloadError` (rsn 1982), both recovered. 304 monthly + 304 annual files. Log `logs/backfill_snow_123_20261008.log`
+- Core monthly (`backfill_edh_all.py`): 10:18:05 → 20:13:26 (9 h 55 m; ~430 s/yr while snow ran, ~265 s/yr after), exit 0; transient ClientPayloadError ×2 (2001) and 502 (2011), recovered. All 11 monthly vars × 76 years present
+- Stage 3 `--dry-run`: 2 m 22 s, exit 0. `publish_problems()`, `grid_problems()` and `catalog_problems()` all pass; 59 COGs, all items bbox `[-140.05, 47.95, -113.95, 60.05]`, end 2025
+- Rebuilt COGs vs the old live COGs (downloaded 2026-10-08 to `data/backfill/_grid_120x260/cogs_live`), old block by index: **56/59 bit-identical in every band**. The other three (`prcp_annual`, `prcp_winter`, `snowfall_fraction_annual`) differ **only in band 2025**, in all 20,486 land cells: prcp mean 773.24 → 774.20 mm, max abs 71.1 mm; snowfall_fraction mean 27.80 → 27.77 %. Spring/summer/fall prcp are identical, so the change is in Jan, Feb or Dec 2025 of the **daily** store's `tp` (hourly-derived snowfall is identical). The differences go both ways (8,467 cells lower, median 0) and correlate with January totals (r = 0.67; Feb 0.12, Dec 0.21). That points to an upstream revision of the daily store since the live band was built (2026-04-12), not to missing days. Inferred, not confirmed: EDH publishes no revision log we have found. The rebuild publishes the store's current values
+
+## Publish (Phase 4, 2026-10-09 UTC)
+
+- Pre-push gate: `grid_problems()` over all 228 files in `data/backfill/daily`: none
+- Daily: `cd_s3_push("data/backfill/daily", prefix = "daily")` 03:18:19 → 03:26:40 UTC, 228 uploads (dry run listed 228), exit 0
+- Monthly: `Rscript scripts/pipeline_stage3_edh.R` 03:26:44 → 03:30:05 UTC, 60 uploads (59 COGs + catalog.json), exit 0
+- STEP 2's local-day check, by hand (A1): all 10 live tmax/tmin ETags differ from their `_backup/tmax_tmin_utc_day/` twins
+- 10DA001 (−122.9609, 59.98856) from the live cube: cell 171, centre (−123, 60), non-NA, `cache = TRUE` and `FALSE`; `test-cd_extract_daily_live.R` 7/7
