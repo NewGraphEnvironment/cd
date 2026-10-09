@@ -42,8 +42,9 @@
 cd_cog_write <- function(x, path, overwrite = FALSE,
                          gdal = c("COMPRESS=DEFLATE"), tags = NULL, ...) {
   if (!is.null(tags)) {
-    if (!is.character(tags) || is.null(names(tags)) ||
-        any(!nzchar(names(tags))) || anyNA(names(tags)) || anyNA(tags)) {
+    malformed <- !is.character(tags) || is.null(names(tags)) ||
+      any(!nzchar(names(tags))) || anyNA(names(tags)) || anyNA(tags)
+    if (malformed) {
       rlang::abort("`tags` must be a named character vector with no NA.")
     }
     if (any(grepl(":", names(tags), fixed = TRUE))) {

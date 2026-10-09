@@ -113,7 +113,7 @@ test_that("file_multihash is the sha256 multihash of the bytes", {
   f <- tempfile()
   writeBin(charToRaw("abc"), f)
   # sha256("abc"), FIPS 180-2 test vector.
-  expect_equal(file_multihash(f), paste0(
-    "1220", "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"))
+  abc <- "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"
+  expect_equal(file_multihash(f), paste0("1220", abc))
   unlink(f)
 })

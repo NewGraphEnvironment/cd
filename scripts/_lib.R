@@ -373,8 +373,9 @@ run_provenance <- function() {
   if (is.na(sha)) {
     head <- suppressWarnings(system2("git", c("rev-parse", "HEAD"),
                                      stdout = TRUE, stderr = FALSE))
-    if (is.null(attr(head, "status")) && length(head) == 1L &&
-        grepl("^[0-9a-f]{40}$", head)) {
+    is_sha <- is.null(attr(head, "status")) && length(head) == 1L &&
+      grepl("^[0-9a-f]{40}$", head)
+    if (is_sha) {
       dirty <- suppressWarnings(system2("git", c("status", "--porcelain"),
                                         stdout = TRUE, stderr = FALSE))
       sha <- paste0(head, if (length(dirty) > 0) "-dirty" else "")
@@ -406,6 +407,11 @@ multihash <- function(path) {
   paste0("1220", as.character(openssl::sha256(con)))
 }
 
+# Whether a value is one sha256 multihash, the shape file:checksum must have.
+is_multihash <- function(x) {
+  is.character(x) && length(x) == 1L && grepl("^1220[0-9a-f]{64}$", x)
+}
+
 # Why a set of published entries does not describe the files on disk, or
 # character(0) when every one does. Recomputes each hash from the bytes.
 #
@@ -425,8 +431,7 @@ checksum_problems <- function(entries, dir, names = base::names(entries)) {
       bad <- c(bad, paste0(n, ": no entry"))
     } else if (!file.exists(f)) {
       bad <- c(bad, paste0(n, ": not on disk"))
-    } else if (!is.character(ck) || length(ck) != 1L ||
-               !grepl("^1220[0-9a-f]{64}$", ck)) {
+    } else if (!is_multihash(ck)) {
       bad <- c(bad, paste0(n, ": file:checksum is not a sha256 multihash (",
                            paste(ck, collapse = " "), ")"))
     } else if (!identical(as.numeric(e$`file:size`), as.numeric(file.size(f)))) {
@@ -607,7 +612,8 @@ manifest_problems <- function(entries, vars = c("tmean", "tmax", "tmin")) {
       problems <- c(problems, paste0(
         length(missing), " file(s) missing from the span ", min(years), "-",
         max(years), " (", paste(utils::head(missing, 5), collapse = ", "),
-        if (length(missing) > 5) ", ..." else "", ")"))
+        if (length(missing) > 5) ", ..." else "", ")"
+      ))
     }
   }
   bad <- keys[!vapply(entries, function(e) {
