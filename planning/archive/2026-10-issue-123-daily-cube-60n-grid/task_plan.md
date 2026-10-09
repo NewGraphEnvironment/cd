@@ -60,15 +60,15 @@ The same exact-edge slice is copied into all three backfillers (`backfill_edh_da
 - [x] Record the measurements in `findings.md`: run times, quota, and the identity results.
 
 ## Phase 4: Publish
-- [ ] Before any push: `grid_problems()` over all of `data/backfill/daily` (the push syncs the whole directory), and `pipeline_stage3_edh.R --dry-run` passes (O2).
-- [ ] Daily: `cd_s3_push("data/backfill/daily", prefix = "daily")`. Read back the extent of all 228 over `/vsicurl/` in a fresh R process: `--size-only` could skip a same-size file, and GDAL's cache would serve an earlier header.
-- [ ] Monthly: run `scripts/pipeline_stage3_edh.R` (all 59 COGs, `publish_problems()`, catalog, push, read-back).
-- [ ] Live checks:
+- [x] Before any push: `grid_problems()` over all of `data/backfill/daily` (the push syncs the whole directory), and `pipeline_stage3_edh.R --dry-run` passes (O2).
+- [x] Daily: `cd_s3_push("data/backfill/daily", prefix = "daily")`. Read back the extent of all 228 over `/vsicurl/` in a fresh R process: `--size-only` could skip a same-size file, and GDAL's cache would serve an earlier header.
+- [x] Monthly: run `scripts/pipeline_stage3_edh.R` (all 59 COGs, `publish_problems()`, catalog, push, read-back).
+- [x] Live checks:
   - The catalog bbox is `[-140.05, 47.95, -113.95, 60.05]`.
   - `cd_extract_daily()` at 10DA001 returns non-NA values, with both `cache = TRUE` and `cache = FALSE`.
   - The live test file passes.
-- [ ] Comment on wet#40: the abort is now a warning plus NA rows, so wet's message-parsing retry (`temp_fill_validate.R`) is dead code.
-- [ ] Dispatch the dry-run of `climate-update.yml` on main and confirm it is green: STEP 1 / `catalog_problems()` on the live catalog, and STEP 2's tmax/tmin local-day check.
+- [x] Comment on wet#40: the abort is now a warning plus NA rows, so wet's message-parsing retry (`temp_fill_validate.R`) is dead code.
+- [x] Dispatch the dry-run of `climate-update.yml` on main and confirm it is green: STEP 1 / `catalog_problems()` on the live catalog, and STEP 2's tmax/tmin local-day check.
 
 ## Phase 5: Docs
 - [x] `research/edh_era5_land_store.md`: add the coordinate-drift fact, with the measured values, and why the slice is padded.
@@ -76,7 +76,7 @@ The same exact-edge slice is copied into all three backfillers (`backfill_edh_da
 
 ## Validation
 
-- [ ] Tests pass (`devtools::test()`, `uv run scripts/test_lib.py`)
-- [ ] `/code-check` clean on each commit
-- [ ] PWF checkboxes match landed work
+- [x] Tests pass (`devtools::test()`, `uv run scripts/test_lib.py`)
+- [x] `/code-check` clean on each commit
+- [x] PWF checkboxes match landed work
 - [ ] `/planning-archive` on completion

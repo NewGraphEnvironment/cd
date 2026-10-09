@@ -1,6 +1,6 @@
 # The DestinE EDH ERA5-Land hourly store
 
-**Verified:** 2026-10-06; *Coordinates are not exact* 2026-10-08 · **Issues:** #116 (spawned it), #36 (EDH migration), #84, #123 · **Produced by:** plan-mode probes and the daily-cube build for #116 — method and raw numbers in `planning/archive/2026-10-issue-116-daily-air-temperature-cube/` (README `Measurement`, `findings.md`); coordinate probe for #123 in `planning/archive/*issue-123*/findings.md`
+**Verified:** 2026-10-06; *Coordinates are not exact* 2026-10-08 · **Issues:** #116 (spawned it), #36 (EDH migration), #84, #123 · **Produced by:** plan-mode probes and the daily-cube build for #116 — method and raw numbers in `planning/archive/2026-10-issue-116-daily-air-temperature-cube/` (README `Measurement`, `findings.md`); coordinate probe for #123 in `planning/archive/2026-10-issue-123-daily-cube-60n-grid/findings.md`
 
 What we know about reading `https://data.earthdatahub.destine.eu/era5/reanalysis-era5-land-no-antartica-v0.zarr`, so the next point-or-grid question does not re-measure it.
 

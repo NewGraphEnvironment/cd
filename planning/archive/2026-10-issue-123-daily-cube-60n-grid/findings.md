@@ -85,3 +85,5 @@ The EDH hourly store's coordinates carry float drift (`scratchpad probe_coords.p
 - Monthly: `Rscript scripts/pipeline_stage3_edh.R` 03:26:44 → 03:30:05 UTC, 60 uploads (59 COGs + catalog.json), exit 0
 - STEP 2's local-day check, by hand (A1): all 10 live tmax/tmin ETags differ from their `_backup/tmax_tmin_utc_day/` twins
 - 10DA001 (−122.9609, 59.98856) from the live cube: cell 171, centre (−123, 60), non-NA, `cache = TRUE` and `FALSE`; `test-cd_extract_daily_live.R` 7/7
+- Read-back from a fresh R process with `CPL_VSIL_CURL_NON_CACHED` set (132 min uncached): catalog 59 items, bbox `[-140.05, 47.95, -113.95, 60.05]`; `grid_problems()` over all 59 live COGs and all 228 live daily files: none; every COG spans 1950–2025
+- `climate-update.yml` dry run on main ([run 37880420685](https://github.com/NewGraphEnvironment/cd/actions/runs/37880420685)): success
