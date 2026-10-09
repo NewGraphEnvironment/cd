@@ -285,5 +285,25 @@ check(one(p, "lack 1 required year") && grepl("2027", p, fixed = TRUE),
       "a live year no written COG holds (an ahead year never fetched) is refused")
 check(lp_one(list(), "no live COGs"), "no COGs read is refused")
 
+# -- grid_problems (#123) -----------------------------------------------------
+grid_tif <- function(nrow, ncol, xmin, xmax, ymin, ymax) {
+  f <- tempfile(fileext = ".tif")
+  r <- terra::rast(nrows = nrow, ncols = ncol, xmin = xmin, xmax = xmax,
+                   ymin = ymin, ymax = ymax, crs = "EPSG:4326", vals = 1)
+  terra::writeRaster(r, f)
+  f
+}
+g_new <- grid_tif(121, 261, -140.05, -113.95, 47.95, 60.05)
+g_new2 <- grid_tif(121, 261, -140.05 - 8e-12, -113.95 - 8e-12, 47.95 + 1e-12, 60.05 + 1e-12)
+g_old <- grid_tif(120, 260, -139.95, -113.95, 47.95, 59.95)
+check(identical(grid_problems(c(g_new, g_new2)), character(0)),
+      "COGs on the BC grid (within float drift) pass")
+p <- grid_problems(c(g_new, g_old))
+check(length(p) == 1L && grepl("1 COG(s)", p, fixed = TRUE) &&
+        grepl(basename(g_old), p, fixed = TRUE),
+      "a 120 x 260 COG from before #123 is refused, by name")
+check(grepl("could not be opened", grid_problems(tempfile(fileext = ".tif")), fixed = TRUE),
+      "a missing COG is refused")
+
 cat(sprintf("\n%d/%d passed\n", checks - failures, checks))
 quit(status = if (failures > 0L) 1L else 0L)

@@ -289,6 +289,10 @@ daily_dir <- "data/backfill/daily"
 daily_base <- paste0("https://", bucket, ".s3.us-west-2.amazonaws.com/daily")
 daily_vars <- c("tmean", "tmax", "tmin")
 daily_failed <- FALSE
+# Set in STEP 3 when backfill_edh_all.py or backfill_edh_snow.py exits non-zero.
+# Read by finish() as well, so a year that failed beside one that published
+# still turns the run red (#123 code-check round 4).
+any_fetch_errored <- FALSE
 # Set in STEP 1 when an earlier sync left some live COGs ahead of the rest,
 # cleared once STEP 5 has published the repair (#119).
 partial_live <- FALSE
@@ -299,6 +303,10 @@ partial_live <- FALSE
 finish <- function(status = 0L) {
   if (daily_failed) {
     log_msg("Daily cube step failed (see STEP D above); exiting non-zero.")
+    status <- 1L
+  }
+  if (any_fetch_errored) {
+    log_msg("A year's fetch failed (see STEP 3 above); exiting non-zero.")
     status <- 1L
   }
   # Not on a dry run: it reports the state, and the next live run repairs it.
@@ -648,7 +656,6 @@ if (dry_run) {
 log_msg("=== STEP 3: Fetch missing years via EDH ===")
 
 new_years_written <- c()
-any_fetch_errored <- FALSE
 core_vars <- c("tmean", "tmax", "tmin", "prcp", "vpd", "rh", "soil_moisture")
 snow_monthly_vars <- c("swe", "snowfall", "snowmelt", "snow_cover")
 
@@ -888,6 +895,8 @@ problems <- publish_problems(
   live_keys = live_keys,
   required_years = required_years
 )
+problems <- c(problems,
+              grid_problems(file.path(cog_dir, list.files(cog_dir, pattern = "\\.tif$"))))
 if (length(problems) > 0) {
   log_msg("ERROR: refusing to build the catalog; no COG or catalog was published.")
   for (p in problems) log_msg("  - ", p)

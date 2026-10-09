@@ -48,7 +48,8 @@ import sys
 import time
 from pathlib import Path
 
-from _lib import log, monthly_from_daily, read_cog_days, write_geotiff
+from _lib import (bc_file_check, bc_files_check, log, monthly_from_daily, read_cog_days,
+                  write_geotiff)
 
 YEARS_DEFAULT = range(1950, 2026)
 VARS = ("tmax", "tmin")
@@ -67,12 +68,16 @@ def main(years) -> int:
         for var in VARS:
             out = MONTHLY_DIR / f"{var}_{year}.tif"
             if out.exists():
+                bc_files_check([out])  # done only if on the BC grid (#123)
                 continue
             src = DAILY_DIR / f"{var}_daily_{year}.tif"
             if not src.exists():
                 missing.append(src.name)
                 log(f"{year}: no {src.name}, skipping {var}")
                 continue
+            # A cube file from before #123 is 120 x 260; refuse it rather
+            # than write a monthly layer on the old grid.
+            bc_file_check(src)
             write_geotiff(monthly_from_daily(read_cog_days(src)), out)
             wrote.append(out.name)
         if wrote:

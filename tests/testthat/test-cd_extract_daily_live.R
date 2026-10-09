@@ -34,3 +34,18 @@ test_that("cd_extract_daily reads the published cube both ways", {
   b <- cd_extract_daily(pts, "2002-12-30", "2003-01-02", cache = TRUE)
   expect_equal(b, a)
 })
+
+test_that("the published cube reaches 60 N (#123)", {
+  skip_on_ci()
+  skip_on_cran()
+  skip_if_offline(host = "stac-era5-land.s3.us-west-2.amazonaws.com")
+
+  # 10DA001, Petitot River below Highway 77: 59.98856 N, in the cell centred
+  # on 60.0 N that the cube lacked before #123.
+  pts <- data.frame(id = "10DA001", lon = -122.9609, lat = 59.98856)
+  expect_no_warning(
+    d <- cd_extract_daily(pts, "2002-07-01", "2002-07-03", cache = FALSE)
+  )
+  expect_false(anyNA(d$value))
+  expect_equal(unique(d$cell_y), 60, tolerance = 1e-6)
+})

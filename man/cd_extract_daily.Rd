@@ -47,8 +47,10 @@ A tibble with one row per point, variable and day:
 \item{date}{Local day (\code{Date}).}
 \item{variable}{\code{"tmean"}, \code{"tmax"} or \code{"tmin"}.}
 \item{value}{Air temperature, °C.}
-\item{cell}{ERA5-Land cell number on the cube's grid.}
-\item{cell_x, cell_y}{Longitude and latitude of the cell centre.}
+\item{cell}{ERA5-Land cell number on the cube's grid; \code{NA} for a
+point outside the cube.}
+\item{cell_x, cell_y}{Longitude and latitude of the cell centre;
+\code{NA} for a point outside the cube.}
 \item{cell_moved}{\code{TRUE} when the point's own cell had no data and a
 neighbour was used.}
 }
@@ -87,6 +89,10 @@ around it, measured geodesically from the point to each cell centre
 own cell, its values are \code{NA}, and a warning names it. Points sharing a
 cell share a \code{cell} value, so identical series are easy to spot. There is
 no elevation adjustment between the cell and the point.
+
+A point outside the cube (British Columbia's box, 47.95–60.05° N,
+140.05–113.95° W) gets \code{NA} values and \code{NA} cell columns, and a warning
+names it with the cube's extent; the other points are unaffected.
 }
 
 \examples{

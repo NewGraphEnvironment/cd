@@ -17,7 +17,7 @@
 Unified EDH backfill for all cd package variables (1950-2025).
 
 Produces data/backfill/monthly/*.tif in a single consistent grid (EPSG:4326,
-BC bbox, 120x260) with proper CRS tagging, so cd_extract() returns aligned
+BC bbox, 121x261 — `bc_slice()` in _lib.py, #123) with proper CRS tagging, so cd_extract() returns aligned
 pixels across variables.
 
 Output (per year):
@@ -47,6 +47,7 @@ Usage:
   uv run scripts/backfill_edh_all.py --year 2000  # single year test
 """
 import argparse
+import sys
 import time
 from pathlib import Path
 
@@ -55,6 +56,9 @@ import numpy as np
 import xarray as xr
 
 from _lib import (
+    bc_files_check,
+    bc_grid_check,
+    bc_slice,
     get_token,
     local_daily,
     local_year_complete,
@@ -68,9 +72,6 @@ from _lib import (
 )
 
 # -- Config --------------------------------------------------------------------
-LAT_N, LAT_S = 60.0, 48.0
-LON_W, LON_E = -140.0, -114.0
-
 YEARS_DEFAULT = range(1950, 2026)
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -81,19 +82,6 @@ MONTHLY_DIR = REPO_ROOT / "data" / "backfill" / "monthly"
 def open_zarr(url_path: str, token: str) -> xr.Dataset:
     url = f"https://edh:{token}@data.earthdatahub.destine.eu/{url_path}"
     return xr.open_dataset(url, chunks={}, engine="zarr")
-
-
-def bc_slice(ds: xr.Dataset, start: str, end: str) -> dict:
-    lon_min = float(ds.longitude.min())
-    if lon_min >= 0:
-        bc_west, bc_east = LON_W + 360, LON_E + 360
-    else:
-        bc_west, bc_east = LON_W, LON_E
-    return dict(
-        valid_time=slice(start, end),
-        latitude=slice(LAT_N, LAT_S),
-        longitude=slice(bc_west, bc_east),
-    )
 
 
 def tetens_es(t_c):
@@ -121,6 +109,8 @@ def outputs_for_year(year: int) -> dict:
 
 def process_year(year: int, hourly_ds: xr.Dataset, daily_ds: xr.Dataset):
     out = outputs_for_year(year)
+    # A file on disk counts as done below; refuse one on another grid.
+    bc_files_check(out.values())
 
     # Which outputs are missing?
     needed = {v: p for v, p in out.items() if not p.exists()}
@@ -183,6 +173,8 @@ def process_year(year: int, hourly_ds: xr.Dataset, daily_ds: xr.Dataset):
         needed_hourly_vars.extend(["swvl1", "swvl2", "swvl3", "swvl4"])
 
     hourly_sub = hourly_ds[needed_hourly_vars].sel(**hourly_box) if needed_hourly_vars else None
+    if hourly_sub is not None:
+        bc_grid_check(hourly_sub, what=f"hourly {year}")
 
     # -- tmax / tmin (local-day max/min → monthly mean, #37) -----------------
     # Own slice: the local year runs 08:00 UTC 1 Jan to 07:00 UTC 1 Jan next
@@ -194,6 +186,7 @@ def process_year(year: int, hourly_ds: xr.Dataset, daily_ds: xr.Dataset):
         t2m_local = hourly_ds["t2m"].sel(
             **bc_slice(hourly_ds, start.isoformat(), end.isoformat())
         )
+        bc_grid_check(t2m_local, what=f"local-year t2m {year}")
         daily = local_daily(t2m_local)
         # One compute for both, so the year's hourly t2m is fetched once.
         monthly = dask.compute(*[monthly_from_daily(daily[v]) for v in local_vars])
@@ -248,6 +241,7 @@ def process_year(year: int, hourly_ds: xr.Dataset, daily_ds: xr.Dataset):
     if "prcp" in needed:
         daily_box = bc_slice(daily_ds, f"{year}-01-01", f"{year}-12-31")
         tp_daily = daily_ds["tp"].sel(**daily_box)
+        bc_grid_check(tp_daily, what=f"daily tp {year}")
         monthly_prcp_m = tp_daily.resample(valid_time="1MS").sum()
         monthly_prcp_mm = (monthly_prcp_m * 1000).compute()
         if monthly_prcp_mm.sizes["valid_time"] == 12:
@@ -256,6 +250,7 @@ def process_year(year: int, hourly_ds: xr.Dataset, daily_ds: xr.Dataset):
         else:
             log(f"  SKIP prcp: got {monthly_prcp_mm.sizes['valid_time']} months, expected 12")
 
+    bc_files_check(out.values())
     log(f"{year}: done in {time.time() - t_year:.1f}s")
 
 
@@ -276,6 +271,7 @@ def main(years):
         what="open daily zarr",
     )
 
+    failed = []
     for year in years:
         try:
             with_retry(
@@ -285,8 +281,15 @@ def main(years):
         except Exception as e:
             log(f"FAILED year {year} after retries: {type(e).__name__}: {e}")
             log("Continuing to next year (idempotent — restart to retry this one)")
+            failed.append(year)
 
+    if failed:
+        # Non-zero, so pipeline_update_edh.R STEP 3 counts a failed fetch rather
+        # than reading the missing files as EDH latency (#123 code-check).
+        log(f"DONE with {len(failed)} failed year(s): {failed}")
+        return 1
     log("ALL DONE")
+    return 0
 
 
 if __name__ == "__main__":
@@ -294,4 +297,4 @@ if __name__ == "__main__":
     parser.add_argument("--year", type=int, help="Single year to backfill (for testing)")
     args = parser.parse_args()
     years = [args.year] if args.year else YEARS_DEFAULT
-    main(years)
+    sys.exit(main(years))

@@ -57,6 +57,7 @@ Usage:
   uv run scripts/backfill_edh_snow.py --year 2020  # single year test
 """
 import argparse
+import sys
 import time
 from pathlib import Path
 
@@ -64,6 +65,9 @@ import numpy as np
 import xarray as xr
 
 from _lib import (
+    bc_files_check,
+    bc_grid_check,
+    bc_slice,
     get_token,
     log,
     months_available,
@@ -73,9 +77,6 @@ from _lib import (
 )
 
 # -- Config --------------------------------------------------------------------
-LAT_N, LAT_S = 60.0, 48.0
-LON_W, LON_E = -140.0, -114.0
-
 YEARS_DEFAULT = range(1950, 2026)
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -91,19 +92,6 @@ ANNUAL_VARS = ("swe_max", "snowfall_fraction", "snowmelt_doy_50",
 def open_zarr(url_path: str, token: str) -> xr.Dataset:
     url = f"https://edh:{token}@data.earthdatahub.destine.eu/{url_path}"
     return xr.open_dataset(url, chunks={}, engine="zarr")
-
-
-def bc_slice(ds: xr.Dataset, start: str, end: str) -> dict:
-    lon_min = float(ds.longitude.min())
-    if lon_min >= 0:
-        bc_west, bc_east = LON_W + 360, LON_E + 360
-    else:
-        bc_west, bc_east = LON_W, LON_E
-    return dict(
-        valid_time=slice(start, end),
-        latitude=slice(LAT_N, LAT_S),
-        longitude=slice(bc_west, bc_east),
-    )
 
 
 def hourly_accum_to_daily(da_hourly: xr.DataArray) -> xr.DataArray:
@@ -151,6 +139,8 @@ def outputs_for_year(year: int) -> dict:
 
 def process_year(year: int, hourly_ds: xr.Dataset, daily_ds: xr.Dataset) -> None:
     out = outputs_for_year(year)
+    # A file on disk counts as done below; refuse one on another grid.
+    bc_files_check(out.values())
     needed = {v: p for v, p in out.items() if not p.exists()}
     if not needed:
         log(f"{year}: all outputs exist, skipping")
@@ -208,6 +198,7 @@ def process_year(year: int, hourly_ds: xr.Dataset, daily_ds: xr.Dataset) -> None
     for v in ("sde", "rsn", "snowc"):
         if v in needed_hourly:
             hourly = hourly_ds[v].sel(**state_box)
+            bc_grid_check(hourly, what=f"{v} {year}")
             daily_vars[v] = with_retry(
                 lambda h=hourly: h.resample(valid_time="1D").mean().compute(),
                 what=f"compute daily {v} {year}",
@@ -222,6 +213,7 @@ def process_year(year: int, hourly_ds: xr.Dataset, daily_ds: xr.Dataset) -> None
         for v in ("sf", "smlt"):
             if v in needed_hourly:
                 hourly = hourly_ds[v].sel(**accum_box)
+                bc_grid_check(hourly, what=f"{v} {year}")
                 daily_lazy = hourly_accum_to_daily(hourly)
                 daily_vars[v] = with_retry(
                     lambda d=daily_lazy: d.compute(),
@@ -281,11 +273,17 @@ def process_year(year: int, hourly_ds: xr.Dataset, daily_ds: xr.Dataset) -> None
         annual_sf = daily_vars["sf"].sum(dim="valid_time")  # m
         daily_box_tp = bc_slice(daily_ds, f"{year}-01-01", f"{year}-12-31")
         tp_daily = daily_ds["tp"].sel(**daily_box_tp)
+        bc_grid_check(tp_daily, what=f"daily tp {year}")
         annual_tp = with_retry(
             lambda: tp_daily.sum(dim="valid_time").compute(),
             what=f"compute annual tp {year}",
         )
         sf_pct = (100 * annual_sf / annual_tp).where(annual_tp > 0, 0).clip(0, 100)
+        # The two sides come from different stores. The division inner-joins
+        # them on labels, so an edge coordinate one ulp apart would drop that
+        # row; today the `.where(..., 0)` above raises on it first (exact
+        # join), but only while it keeps a fill value (#123 review).
+        bc_grid_check(sf_pct, what=f"snowfall_fraction {year}")
         write_annual_geotiff(sf_pct, out["snowfall_fraction"], year)
         log(f"  wrote {out['snowfall_fraction'].name}")
 
@@ -308,6 +306,7 @@ def process_year(year: int, hourly_ds: xr.Dataset, daily_ds: xr.Dataset) -> None
         write_annual_geotiff(peak, out["snowmelt_rate_peak"], year)
         log(f"  wrote {out['snowmelt_rate_peak'].name}")
 
+    bc_files_check(out.values())
     log(f"{year}: done in {time.time() - t_year:.1f}s")
 
 
@@ -329,6 +328,7 @@ def main(years):
         what="open daily zarr",
     )
 
+    failed = []
     for year in years:
         try:
             with_retry(
@@ -338,8 +338,15 @@ def main(years):
         except Exception as e:
             log(f"FAILED year {year} after retries: {type(e).__name__}: {e}")
             log("Continuing to next year (idempotent — restart to retry this one)")
+            failed.append(year)
 
+    if failed:
+        # Non-zero, so pipeline_update_edh.R STEP 3 counts a failed fetch rather
+        # than reading the missing files as EDH latency (#123 code-check).
+        log(f"DONE with {len(failed)} failed year(s): {failed}")
+        return 1
     log("ALL DONE")
+    return 0
 
 
 if __name__ == "__main__":
@@ -348,4 +355,4 @@ if __name__ == "__main__":
                         help="Single year to backfill (for testing)")
     args = parser.parse_args()
     years = [args.year] if args.year else YEARS_DEFAULT
-    main(years)
+    sys.exit(main(years))
