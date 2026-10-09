@@ -9,14 +9,21 @@
 s3_base <- function(bucket) paste0("https://", bucket, ".s3.us-west-2.amazonaws.com")
 
 # Status and ETag of one object, by anonymous HEAD. Status 0 = no response.
-head_object <- function(url) {
-  res <- tryCatch(
-    curl::curl_fetch_memory(url, handle = curl::new_handle(nobody = TRUE, timeout = 30L)),
-    error = function(e) NULL
-  )
+# Retried on no response or a 5xx: these run after a sync has succeeded, and
+# one dropped connection would otherwise hold back the catalog or manifest.
+head_object <- function(url, attempts = 3L) {
+  for (i in seq_len(attempts)) {
+    res <- tryCatch(
+      curl::curl_fetch_memory(url, handle = curl::new_handle(nobody = TRUE, timeout = 30L)),
+      error = function(e) NULL
+    )
+    code <- if (is.null(res)) 0L else as.integer(res$status_code)
+    if (code != 0L && code < 500L) break
+    if (i < attempts) Sys.sleep(5 * i)
+  }
   if (is.null(res)) return(list(code = 0L, etag = NA_character_))
   h <- curl::parse_headers_list(res$headers)
-  list(code = as.integer(res$status_code),
+  list(code = code,
        etag = if (is.null(h$etag)) NA_character_ else gsub('"', "", h$etag))
 }
 
@@ -246,9 +253,18 @@ daily_manifest_problems <- function(bucket, newest) {
   problems <- manifest_problems(live)
   last <- manifest_last_year(live)
   if (!identical(last, as.integer(newest))) {
+    # The year(s) went up without their manifest entries (a failed check or
+    # upload after the sync). The files exist only on S3 and the CI runner
+    # that built them, so fetch them before re-publishing; daily_publish()
+    # refuses until the local dir holds every file S3 does that the manifest
+    # lacks.
+    gap <- if (is.na(last) || last >= newest) newest else seq(last + 1L, newest)
     problems <- c(problems, paste0(
       "the live manifest ends in ", last, " but the cube is published through ",
-      newest, "; repair from a full local cube: Rscript scripts/daily_publish.R"))
+      newest, ". Repair: aws s3 cp s3://", bucket, "/daily/ data/backfill/daily/ ",
+      "--recursive --exclude '*' ",
+      paste0("--include '*_daily_", gap, ".tif'", collapse = " "),
+      "; then Rscript scripts/daily_publish.R"))
   }
   problems
 }

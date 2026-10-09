@@ -667,8 +667,10 @@ tmaxmin_local_history <- function() {
 }
 if (!isTRUE(tmaxmin_local_history())) {
   log_msg("ERROR: the live tmax/tmin history is not confirmed local-day ",
-          "(no UTC-day backup, or a live key still equals it). Run ",
-          "scripts/tmax_tmin_republish.R first (#37); not appending.")
+          "(no UTC-day backup, or a live key still equals it); not appending. ",
+          "The record is s3://", bucket, "/_backup/tmax_tmin_utc_day/, written ",
+          "by the #37 republish (scripts/tmax_tmin_republish.R, retired in ",
+          "#124); its local copy is data/backfill/republish_37/.")
   finish(1L)
 }
 
@@ -945,6 +947,9 @@ cd_stac_catalog(
   output_path = catalog_path,
   base_url = paste0("https://", bucket, ".s3.us-west-2.amazonaws.com")
 )
+# A catalog.json left in cog_dir by a run from before #89 would ride the sync;
+# removed before stray_problems() below, which would otherwise refuse it.
+unlink(file.path(cog_dir, "catalog.json"))
 # Check the catalog that was written, not only the inputs it was built from:
 # its items, and that every checksum is of the COG beside it and every COG
 # says which run made it (#124). A COG STEP 4 copied unchanged keeps the
@@ -965,8 +970,6 @@ if (length(problems) > 0) {
   finish(1L)
 }
 
-# A catalog.json left in cog_dir by a run from before #89 would ride the sync.
-unlink(file.path(cog_dir, "catalog.json"))
 # Not --size-only (#124): a rewritten COG of unchanged size would otherwise
 # stay behind on S3 under a catalog checksum that is not its own. Every COG in
 # cog_dir is newer than its S3 copy, so all 59 go up, the copied ones as the

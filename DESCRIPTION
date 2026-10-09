@@ -48,5 +48,5 @@ Imports:
     rappdirs,
     rlang,
     stringr,
-    terra,
+    terra (>= 1.8-42),
     tibble

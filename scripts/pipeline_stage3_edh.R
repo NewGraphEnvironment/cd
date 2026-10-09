@@ -234,6 +234,9 @@ cd_stac_catalog(
   base_url = paste0("https://", bucket, ".s3.us-west-2.amazonaws.com")
 )
 log_msg("  wrote ", catalog_path)
+# A catalog.json left in cog_dir by a run from before #89 would ride the sync;
+# removed before stray_problems() below, which would otherwise refuse it.
+unlink(file.path(cog_dir, "catalog.json"))
 # Check the catalog that was written, not only the inputs it was built from:
 # its items, and that every checksum is of the COG beside it and every COG
 # says which run made it (#124). Nothing touches a COG after this point.
@@ -253,8 +256,6 @@ if (length(problems) > 0) {
 
 # -- Step 3: S3 push -----------------------------------------------------------
 log_msg("=== STEP 3: Push to S3 ===")
-# A catalog.json left in cog_dir by a run from before #89 would ride the sync.
-unlink(file.path(cog_dir, "catalog.json"))
 if (dry_run) log_msg("  DRY RUN — showing what would be uploaded:")
 # Not --size-only (#124): a rebuilt COG of unchanged size would otherwise stay
 # behind on S3 under a catalog checksum that is not its own. The sync uploads
@@ -267,7 +268,8 @@ if (!dry_run) {
   problems <- c(etag_problems(s3_base(bucket), cog_dir, names(written)),
                 checksum_problems(catalog_entries(built_json), cog_dir))
   if (length(problems) > 0) {
-    stop("COGs synced, catalog.json NOT uploaded: ", problems, call. = FALSE)
+    stop("COGs synced, catalog.json NOT uploaded: ", paste(problems, collapse = "; "),
+         call. = FALSE)
   }
   log_msg("  All ", length(written), " live COGs are the bytes the catalog hashes")
 }
