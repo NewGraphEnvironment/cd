@@ -305,5 +305,32 @@ check(length(p) == 1L && grepl("1 COG(s)", p, fixed = TRUE) &&
 check(grepl("could not be opened", grid_problems(tempfile(fileext = ".tif")), fixed = TRUE),
       "a missing COG is refused")
 
+# -- run_provenance (#124) ------------------------------------------------------
+prov_keys <- c("CD_VERSION", "CD_SHA", "CD_RUN_TIME", "CD_RUN_ID")
+withr_env <- function(vars, code) {
+  old <- Sys.getenv(names(vars), unset = NA)
+  do.call(Sys.setenv, as.list(vars))
+  on.exit({
+    for (n in names(old)) if (is.na(old[[n]])) Sys.unsetenv(n) else
+      do.call(Sys.setenv, stats::setNames(list(old[[n]]), n))
+  })
+  code
+}
+p <- withr_env(c(GITHUB_SHA = "f00", GITHUB_RUN_ID = "77",
+                 CD_RUN_TIME = "2026-01-02T03:04:05Z"), run_provenance())
+check(identical(names(p), prov_keys) && p[["CD_SHA"]] == "f00" &&
+        p[["CD_RUN_ID"]] == "77" && p[["CD_RUN_TIME"]] == "2026-01-02T03:04:05Z" &&
+        p[["CD_VERSION"]] == read.dcf("DESCRIPTION", fields = "Version")[1, 1],
+      "CI provenance comes from GITHUB_SHA, GITHUB_RUN_ID and CD_RUN_TIME")
+old_ci <- Sys.getenv(c("GITHUB_SHA", "GITHUB_RUN_ID", "CD_RUN_TIME"), unset = NA)
+Sys.unsetenv(c("GITHUB_SHA", "GITHUB_RUN_ID", "CD_RUN_TIME"))
+p <- run_provenance()
+for (n in names(old_ci)) if (!is.na(old_ci[[n]])) do.call(Sys.setenv, stats::setNames(list(old_ci[[n]]), n))
+check(grepl("^[0-9a-f]{40}(-dirty)?$", p[["CD_SHA"]]) && p[["CD_RUN_ID"]] == "local" &&
+        grepl("^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$", p[["CD_RUN_TIME"]]),
+      "local provenance reads the git HEAD and stamps now, in UTC")
+check(!any(grepl(":", names(p), fixed = TRUE)) && !anyNA(p),
+      "provenance keys carry no ':' and no value is NA, so cd_cog_write() accepts them")
+
 cat(sprintf("\n%d/%d passed\n", checks - failures, checks))
 quit(status = if (failures > 0L) 1L else 0L)

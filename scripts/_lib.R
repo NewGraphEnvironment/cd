@@ -346,3 +346,50 @@ catalog_repair_hint <- function(bucket) {
     "with scripts/pipeline_stage3_edh.R."
   )
 }
+
+# The provenance every published COG carries as GDAL tags (#124): which cd
+# built it, from which commit, in which run. Read from the environment and the
+# working tree, so unlike the helpers above it is not a pure function.
+#
+#   CD_VERSION   Version: in DESCRIPTION (cwd is the repo root, as for every
+#                pipeline script).
+#   CD_SHA       GITHUB_SHA in CI; locally `git rev-parse HEAD`, with "-dirty"
+#                when the tree has uncommitted changes, since a local build
+#                from an edited tree is not the commit it names. "unknown"
+#                when neither is available.
+#   CD_RUN_TIME  CD_RUN_TIME from the environment when set, else now. The
+#                pipelines set it once at start, so every COG of one run, and
+#                the daily cube's Python children, carry the same time.
+#   CD_RUN_ID    GITHUB_RUN_ID in CI, else "local".
+#
+# The same keys and the same environment contract as run_provenance() in
+# scripts/_lib.py.
+run_provenance <- function() {
+  env <- function(x) {
+    v <- Sys.getenv(x)
+    if (nzchar(v)) v else NA_character_
+  }
+  sha <- env("GITHUB_SHA")
+  if (is.na(sha)) {
+    head <- suppressWarnings(system2("git", c("rev-parse", "HEAD"),
+                                     stdout = TRUE, stderr = FALSE))
+    if (is.null(attr(head, "status")) && length(head) == 1L &&
+        grepl("^[0-9a-f]{40}$", head)) {
+      dirty <- suppressWarnings(system2("git", c("status", "--porcelain"),
+                                        stdout = TRUE, stderr = FALSE))
+      sha <- paste0(head, if (length(dirty) > 0) "-dirty" else "")
+    } else {
+      sha <- "unknown"
+    }
+  }
+  run_time <- env("CD_RUN_TIME")
+  if (is.na(run_time)) {
+    run_time <- format(Sys.time(), "%Y-%m-%dT%H:%M:%SZ", tz = "UTC")
+  }
+  c(
+    CD_VERSION = unname(read.dcf("DESCRIPTION", fields = "Version")[1, 1]),
+    CD_SHA = sha,
+    CD_RUN_TIME = run_time,
+    CD_RUN_ID = if (is.na(env("GITHUB_RUN_ID"))) "local" else env("GITHUB_RUN_ID")
+  )
+}

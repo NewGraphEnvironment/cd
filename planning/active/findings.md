@@ -36,6 +36,15 @@ Relates to #123
 2. `openssl` in Imports rather than `R (>= 4.5)`.
 3. The daily manifest lives at `s3://stac-era5-land/daily/manifest.json`, keyed by file name.
 
+## terra metags semantics (measured 2026-10-09, terra 1.9.50 / GDAL 3.13)
+
+- `metags(x) <- c(...)` MERGES with existing tags and copies (the caller's raster is unchanged).
+- `metags(x) <- NULL` clears, but ERRORS on a raster with no tags (`value[, 3] <- ""`: incorrect number of subscripts).
+- An untagged raster's `metags()` is a zero-row frame whose columns are not character, so `startsWith()` on it errors.
+- `c(a, b)` keeps `a`'s tags, so STEP 4's `c(existing /vsicurl/ COG, new)` carries the old run's provenance unless stripped.
+- Dataset tags land in the TIFF's `<GDALMetadata>`; no `.aux.json`. Two COG writes of one raster with the same tags are byte-identical; changing one tag changes the bytes.
+- Published COGs today carry only `AREA_OR_POINT=Area`; the monthly inputs' `units=degC` does not survive `cd_aggregate()`.
+
 ## Errors Encountered
 
 | Error | Resolution |

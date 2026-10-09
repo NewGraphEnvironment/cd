@@ -3,9 +3,9 @@
 **If we do it:** every COG cd publishes carries a hash and the run that made it. A changed hash then means changed bytes, and a consumer such as wet can tell which build of the monthly layers or the daily cube an analysis read. **If we never do:** a republish like #123's replaces every published file in place, and nothing outside git history records what was there before or what replaced it.
 
 ## Phase 1: Provenance tags on the R write
-- [ ] `cd_cog_write(tags = NULL)`: a named character vector written as dataset `metags`, replacing any the input carries (stale `CD_*` from a `/vsicurl/` source); refuses a key containing `:`; never mutates the caller's raster
-- [ ] Tests (`test-cd_cog_write.R`): tags read back from the file; a stale input tag is replaced; same input + same tags written twice → identical bytes (sred#39); no `.aux.json` beside the COG
-- [ ] `run_provenance()` in `scripts/_lib.R`: `CD_VERSION` (DESCRIPTION), `CD_SHA` (`GITHUB_SHA`, else `git rev-parse HEAD`, `-dirty` suffix on an unclean tree), `CD_RUN_TIME` (env `CD_RUN_TIME`, else now, ISO UTC), `CD_RUN_ID` (`GITHUB_RUN_ID`, else `local`); offline cases in `scripts/test_lib.R`
+- [x] `cd_cog_write(tags = NULL)`: a named character vector written as dataset `metags`, replacing any the input carries (stale `CD_*` from a `/vsicurl/` source); refuses a key containing `:`; never mutates the caller's raster
+- [x] Tests (`test-cd_cog_write.R`): tags read back from the file; a stale input tag is replaced; same input + same tags written twice → identical bytes (sred#39); no `.aux.json` beside the COG
+- [x] `run_provenance()` in `scripts/_lib.R`: `CD_VERSION` (DESCRIPTION), `CD_SHA` (`GITHUB_SHA`, else `git rev-parse HEAD`, `-dirty` suffix on an unclean tree), `CD_RUN_TIME` (env `CD_RUN_TIME`, else now, ISO UTC), `CD_RUN_ID` (`GITHUB_RUN_ID`, else `local`); offline cases in `scripts/test_lib.R`
 
 ## Phase 2: Provenance tags on the Python write (daily cube)
 - [ ] `run_provenance()` in `scripts/_lib.py`, same keys and same env contract, so one `pipeline_update_edh.R` run stamps both products with one run time
