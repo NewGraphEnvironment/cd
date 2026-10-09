@@ -74,3 +74,9 @@ Copy of 2001 (3 files): 7.0 s, each file +208 bytes (the four tags), values / ba
 ## S3 conditional writes (2026-10-09, aws-cli 2.34.34)
 
 `s3_put_if()` against `_healthcheck/`: `--if-none-match '*'` writes when absent and is refused (PreconditionFailed, exit 254) when present; `--if-match` with a stale ETag is refused, with the current one writes. Test key deleted.
+
+## Real-data run, daily cube (2026-10-09)
+
+- `backfill_edh_daily.py --rewrite` over 1950-2025 (228 files): 18 min (concurrent with the stage 3 dry run), exit 0, every file compared equal in values and layout before replacing. Tags: SHA 39390af (clean at start), run time 2026-10-09T14:57:34Z.
+- `daily_publish.R --dry-run`: 7.7 s. No live manifest, so the bootstrap path: 228 local files, live `daily/` listing 228, names equal; manifest of 228 entries, radix-sorted, one SHA; `aws --dryrun` would upload all 228.
+- These files carry a branch SHA, so they are NOT what gets published: after merge (and the release), re-run `--rewrite` from clean main, then publish.

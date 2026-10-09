@@ -34,8 +34,8 @@
 - [x] Plan review: `daily_publish()` lives in `scripts/daily_publish.R`, sourced by the pipeline (S1); after the sync the manifest's keys equal the live `daily/` listing, which also covers the bootstrap (G3); per-object ETag check (G1); STEP D checks the live manifest covers every published year, dry run included (G2); keys sorted radix (G10); `--rewrite` reads back and compares values (G6)
 
 ## Phase 6: Real-data dry run and docs
-- [ ] `uv run scripts/backfill_edh_daily.py --rewrite` over the 228 local daily files; `Rscript scripts/daily_publish.R --dry-run` with no live manifest's bootstrap path
-- [ ] `Rscript scripts/pipeline_stage3_edh.R --dry-run`: all 59 COGs tagged, catalog carries checksums, validators pass; record timings and the determinism result in `findings.md`
+- [x] `uv run scripts/backfill_edh_daily.py --rewrite` over the 228 local daily files; `Rscript scripts/daily_publish.R --dry-run` with no live manifest's bootstrap path
+- [x] `Rscript scripts/pipeline_stage3_edh.R --dry-run`: all 59 COGs tagged, catalog carries checksums, validators pass; record timings and the determinism result in `findings.md`
 - [x] CLAUDE.md architecture: checksums, provenance tags, daily manifest; correct the `--size-only` sentences
 - [x] Comments made false by dropping `--size-only` (G7); docs say a checksum identifies a build, not values (AC1)
 - [x] ~~`research/` note~~ — dropped at plan review (S3): findings.md and the archive carry the measurements
