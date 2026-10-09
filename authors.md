@@ -10,7 +10,7 @@
 ## Citation
 
 Source:
-[`DESCRIPTION`](https://github.com/NewGraphEnvironment/cd/blob/v0.6.2/DESCRIPTION)
+[`DESCRIPTION`](https://github.com/NewGraphEnvironment/cd/blob/main/DESCRIPTION)
 
 Irvine A (2026). *cd: Climate Departure Analysis from ERA5-Land
 Reanalysis*. R package version 0.6.2,
