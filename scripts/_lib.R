@@ -378,7 +378,12 @@ run_provenance <- function() {
     if (is_sha) {
       dirty <- suppressWarnings(system2("git", c("status", "--porcelain"),
                                         stdout = TRUE, stderr = FALSE))
-      sha <- paste0(head, if (length(dirty) > 0) "-dirty" else "")
+      # A failed status is not a clean tree; _lib.py says "unknown" too.
+      sha <- if (!is.null(attr(dirty, "status"))) {
+        "unknown"
+      } else {
+        paste0(head, if (length(dirty) > 0) "-dirty" else "")
+      }
     } else {
       sha <- "unknown"
     }

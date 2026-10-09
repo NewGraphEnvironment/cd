@@ -171,6 +171,11 @@ def rewrite(years):
     """
     preflight_single_instance("backfill_edh_daily")
     tags = run_provenance()
+    # A re-tag exists only to be published, and daily_publish() refuses files
+    # from a dirty or unknown SHA: refuse now, not after 76 years of writing.
+    if tags["CD_SHA"] == "unknown" or tags["CD_SHA"].endswith("-dirty"):
+        raise SystemExit(f"CD_SHA is {tags['CD_SHA']}: commit the working tree "
+                         f"first, or the rewritten files cannot be published")
     log(f"Rewriting with {tags}")
     for year in years:
         outs = {v: out_path(v, year) for v in VARIABLES}
@@ -211,6 +216,9 @@ def main(years):
     DAILY_DIR.mkdir(parents=True, exist_ok=True)
 
     tags = run_provenance()
+    if tags["CD_SHA"] == "unknown" or tags["CD_SHA"].endswith("-dirty"):
+        log(f"WARNING: CD_SHA is {tags['CD_SHA']}; daily_publish() will refuse "
+            f"the files this run writes")
     ds = open_store()
 
     for year in years:

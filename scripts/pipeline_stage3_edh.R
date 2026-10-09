@@ -194,7 +194,7 @@ for (var in annual_vars) {
 # partial monthly_dir would publish a partial catalog, or stale COGs left in
 # cog_dir by an earlier run over newer live ones. A partial monthly_dir is the
 # normal state after a single-variable regen (#37 left only tmax and tmin
-# there; scripts/tmax_tmin_republish.R is the tool for that case). So every
+# there; scripts/tmax_tmin_republish.R handled that case, retired in #124). So every
 # COG must have been written by this run, cog_dir must hold nothing else, and
 # every COG must carry one contiguous span of years that keeps every live
 # year: the push cannot be undone. pipeline_update_edh.R runs the same guard
@@ -263,7 +263,9 @@ cd_s3_push(cog_dir, bucket = bucket, dry_run = dry_run, size_only = FALSE)
 # What went up is what was hashed, checked before the catalog that carries
 # the hashes goes up (#124).
 if (!dry_run) {
-  problems <- etag_problems(s3_base(bucket), cog_dir, names(written))
+  # ...and what was hashed is still what is on disk.
+  problems <- c(etag_problems(s3_base(bucket), cog_dir, names(written)),
+                checksum_problems(catalog_entries(built_json), cog_dir))
   if (length(problems) > 0) {
     stop("COGs synced, catalog.json NOT uploaded: ", problems, call. = FALSE)
   }

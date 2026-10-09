@@ -66,3 +66,11 @@ Copy of 2001 (3 files): 7.0 s, each file +208 bytes (the four tags), values / ba
 
 | Error | Resolution |
 |-------|------------|
+
+## Real-data dry run, stage 3 (2026-10-09)
+
+`pipeline_stage3_edh.R --dry-run` from a frozen copy, branch cd installed: 8 min 43 s; 59 COGs tagged, 59/59 catalog items carry a valid multihash and one run time; every validator passed; `aws --dryrun` lists all 59 COGs then catalog.json (no `--size-only`).
+
+## S3 conditional writes (2026-10-09, aws-cli 2.34.34)
+
+`s3_put_if()` against `_healthcheck/`: `--if-none-match '*'` writes when absent and is refused (PreconditionFailed, exit 254) when present; `--if-match` with a stale ETag is refused, with the current one writes. Test key deleted.

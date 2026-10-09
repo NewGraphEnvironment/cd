@@ -974,7 +974,9 @@ unlink(file.path(cog_dir, "catalog.json"))
 cd_s3_push(cog_dir, bucket = bucket, dry_run = FALSE, size_only = FALSE)
 # What went up is what was hashed, checked before the catalog that carries
 # the hashes goes up (#124).
-problems <- etag_problems(cog_base, cog_dir, names(written))
+# ...and what was hashed is still what is on disk.
+problems <- c(etag_problems(cog_base, cog_dir, names(written)),
+              checksum_problems(catalog_entries(built_json), cog_dir))
 if (length(problems) > 0) {
   log_msg("ERROR: COGs synced, catalog.json NOT uploaded: ", problems)
   log_msg("Repair: ", catalog_repair_hint(bucket))

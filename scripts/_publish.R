@@ -74,6 +74,30 @@ s3_put <- function(path, bucket, key, dry_run = FALSE) {
   invisible(out)
 }
 
+# Upload a manifest only if the live one is still the one this run read: its
+# ETag, or no object at all when `etag` is NA (S3 conditional writes,
+# --if-match / --if-none-match). Two publishers merging into one manifest at
+# once (a hand-run daily_publish.R beside CI's STEP D; the workflow's
+# concurrency group covers only CI) would otherwise lose one's entries with
+# nothing to show it. Stops on a failed or refused write.
+s3_put_if <- function(path, bucket, key, etag) {
+  cond <- if (is.na(etag)) c("--if-none-match", "'*'") else c("--if-match", shQuote(etag))
+  out <- suppressWarnings(system2(
+    "aws", c("s3api", "put-object", "--bucket", bucket, "--key", shQuote(key),
+             "--body", shQuote(path), "--content-type", "application/json", cond),
+    stdout = TRUE, stderr = TRUE
+  ))
+  if (!is.null(attr(out, "status"))) {
+    stop("upload of ", key, " refused or failed (exit ", attr(out, "status"),
+         "): ", paste(out, collapse = " "),
+         if (any(grepl("PreconditionFailed|412", out))) {
+           paste0(". Another publish changed it since this run read it; ",
+                  "re-run to merge onto the new one.")
+         } else "", call. = FALSE)
+  }
+  invisible(out)
+}
+
 # The .tif names directly under s3://<bucket>/<prefix>/, from the AWS CLI
 # (the bucket grants no anonymous ListBucket). Stops when the listing fails.
 s3_tifs <- function(bucket, prefix) {
@@ -90,9 +114,10 @@ s3_tifs <- function(bucket, prefix) {
   sort(f[grepl("\\.tif$", f)], method = "radix")
 }
 
-# The live daily manifest's entries, NULL when there is none yet (S3 answers
-# 403 for a missing key on a bucket without anonymous ListBucket). Stops on
-# anything else, which is not evidence of absence.
+# The live daily manifest: list(files = its entries, etag = the object's
+# ETag), or NULL when there is none yet (S3 answers 403 for a missing key on a
+# bucket without anonymous ListBucket). Stops on anything else, which is not
+# evidence of absence.
 daily_manifest_live <- function(bucket) {
   url <- paste0(s3_base(bucket), "/daily/manifest.json")
   res <- tryCatch(
@@ -102,7 +127,9 @@ daily_manifest_live <- function(bucket) {
   code <- if (is.null(res)) 0L else as.integer(res$status_code)
   if (code %in% c(403L, 404L)) return(NULL)
   if (code != 200L) stop("could not read ", url, " (HTTP ", code, ")", call. = FALSE)
-  jsonlite::fromJSON(rawToChar(res$content), simplifyVector = FALSE)$files
+  h <- curl::parse_headers_list(res$headers)
+  list(files = jsonlite::fromJSON(rawToChar(res$content), simplifyVector = FALSE)$files,
+       etag = if (is.null(h$etag)) NA_character_ else gsub('"', "", h$etag))
 }
 
 # Publish the local daily cube files with a manifest that describes every
@@ -122,10 +149,22 @@ daily_manifest_live <- function(bucket) {
 #   log            a function of one string, for progress lines.
 daily_publish <- function(daily_dir, bucket, manifest_path, dry_run = FALSE,
                           log = message) {
+  # A backfill or --rewrite still writing would change files after they are
+  # hashed here. Not on GitHub Actions, where STEP D has already waited for the
+  # backfill and pgrep matches wrapper shells (preflight_single_instance() in
+  # _lib.py skips there for the same reason).
+  busy <- if (identical(Sys.getenv("GITHUB_ACTIONS"), "true")) character(0) else
+    suppressWarnings(system2("pgrep", c("-f", "backfill_edh_daily"),
+                             stdout = TRUE, stderr = FALSE))
+  if (is.null(attr(busy, "status")) && length(busy) > 0) {
+    stop("backfill_edh_daily.py is running (pid ", paste(busy, collapse = ", "),
+         "); publish once it has finished.", call. = FALSE)
+  }
   paths <- list.files(daily_dir, pattern = "\\.tif$", full.names = TRUE)
   if (length(paths) == 0L) stop("no .tif files in ", daily_dir, call. = FALSE)
   local <- manifest_entries(paths)
-  live <- daily_manifest_live(bucket)
+  live_manifest <- daily_manifest_live(bucket)
+  live <- live_manifest$files
   merged <- manifest_merge(live, local)
   log(paste0("Daily manifest: ", length(local), " local file(s) over ",
              length(live), " live entr", if (length(live) == 1L) "y" else "ies"))
@@ -169,7 +208,11 @@ daily_publish <- function(daily_dir, bucket, manifest_path, dry_run = FALSE,
   }
 
   cd::cd_s3_push(daily_dir, bucket = bucket, prefix = "daily", size_only = FALSE)
-  problems <- etag_problems(paste0(s3_base(bucket), "/daily"), daily_dir, names(local))
+  # What is live is what is on disk (ETags), and what is on disk is still what
+  # was hashed: a file rewritten after manifest_entries() would pass the ETag
+  # check alone.
+  problems <- c(etag_problems(paste0(s3_base(bucket), "/daily"), daily_dir, names(local)),
+                checksum_problems(merged, daily_dir, names(local)))
   if (!identical(s3_tifs(bucket, "daily"), names(merged))) {
     problems <- c(problems, "the live daily/ listing is not the manifest's file set")
   }
@@ -177,7 +220,8 @@ daily_publish <- function(daily_dir, bucket, manifest_path, dry_run = FALSE,
     stop("Daily files synced, manifest NOT uploaded:\n  - ",
          paste(problems, collapse = "\n  - "), call. = FALSE)
   }
-  s3_put(manifest_path, bucket, "daily/manifest.json")
+  s3_put_if(manifest_path, bucket, "daily/manifest.json",
+            if (is.null(live_manifest)) NA_character_ else live_manifest$etag)
   problems <- readback_problems(paste0(s3_base(bucket), "/daily/manifest.json"),
                                 manifest_path)
   if (length(problems) > 0) stop(problems, call. = FALSE)
@@ -194,6 +238,7 @@ daily_publish <- function(daily_dir, bucket, manifest_path, dry_run = FALSE,
 daily_manifest_problems <- function(bucket, newest) {
   live <- tryCatch(daily_manifest_live(bucket), error = function(e) e)
   if (inherits(live, "error")) return(conditionMessage(live))
+  live <- live$files
   if (is.null(live)) {
     return(paste0("there is no s3://", bucket, "/daily/manifest.json; build it ",
                   "from the whole cube on disk: Rscript scripts/daily_publish.R"))

@@ -345,6 +345,21 @@ if (is.na(old_rt)) Sys.unsetenv("CD_RUN_TIME") else Sys.setenv(CD_RUN_TIME = old
 check(identical(rs1[["CD_RUN_TIME"]], rs2[["CD_RUN_TIME"]]),
       "run_start() fixes the run time once, for every later call")
 
+fake_bin <- tempfile("fakegit_")
+dir.create(fake_bin)
+writeLines(c("#!/bin/sh", 'if [ "$1" = "rev-parse" ]; then echo 0123456789abcdef0123456789abcdef01234567; exit 0; fi',
+             "exit 128"), file.path(fake_bin, "git"))
+Sys.chmod(file.path(fake_bin, "git"), "755")
+old_path <- Sys.getenv("PATH")
+old_gs <- Sys.getenv("GITHUB_SHA", unset = NA)
+Sys.unsetenv("GITHUB_SHA")
+Sys.setenv(PATH = paste(fake_bin, old_path, sep = ":"))
+p_fail <- run_provenance()
+Sys.setenv(PATH = old_path)
+if (!is.na(old_gs)) Sys.setenv(GITHUB_SHA = old_gs)
+check(identical(p_fail[["CD_SHA"]], "unknown") && length(sha_problems(p_fail)) == 1L,
+      "a git status that fails gives CD_SHA unknown, which a live publish refuses")
+
 # -- checksum_problems / provenance_problems (#124) ----------------------------
 # The source tree's cd_stac_catalog(), not whatever version is installed: an
 # installed cd from before #124 writes no checksums at all.
