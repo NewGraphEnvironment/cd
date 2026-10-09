@@ -24,7 +24,7 @@
 - [x] `pipeline_stage3_edh.R` and `pipeline_update_edh.R`: `Sys.setenv(CD_RUN_TIME=…)` once at start, `tags = prov` on every `cd_cog_write()`, both validators after the catalog build and before any push
 - [x] Read-back compares the whole live `catalog.json` to the built one (checksums included), not only keys and years
 
-- [ ] Plan review (review-plan.md): `provenance_problems()` tells an untagged file (`metags()` NULL) from an unreadable one (G9); `stray_problems()` on the publish dir (G4); `s3_etag()` + per-object ETag read-back in both pipelines (G1); catalog read-back as raw bytes (AC2); STEP 1 warns when the live catalog carries no checksums (O3); `size_only` default FALSE (S2); `tmax_tmin_republish.R` retired (G5); `__pycache__/` in `.gitignore` (A1)
+- [x] Plan review (review-plan.md): `provenance_problems()` tells an untagged file (`metags()` NULL) from an unreadable one (G9); `stray_problems()` on the publish dir (G4); `s3_etag()` + per-object ETag read-back in both pipelines (G1); catalog read-back as raw bytes (AC2); STEP 1 warns when the live catalog carries no checksums (O3); `size_only` default FALSE (S2); `tmax_tmin_republish.R` retired (G5); `__pycache__/` in `.gitignore` (A1)
 
 ## Phase 5: Daily cube manifest
 - [ ] `scripts/_lib.R` pure helpers: `manifest_entries(paths)` (size, multihash, provenance from tags), `manifest_merge(live, local)`, `manifest_problems(manifest, dir, vars, years)` (key set = 3 vars × one contiguous span of years; every local file matches its entry; shapes)

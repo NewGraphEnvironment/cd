@@ -456,11 +456,14 @@ catalog_entries <- function(catalog_json) {
 provenance_problems <- function(paths) {
   bad <- character()
   for (f in paths) {
-    m <- tryCatch(terra::metags(terra::rast(f)), error = function(e) NULL)
-    if (is.null(m)) {
+    r <- tryCatch(terra::rast(f), error = function(e) NULL)
+    if (is.null(r)) {
       bad <- c(bad, paste0(basename(f), ": could not be opened"))
       next
     }
+    # NULL, not a zero-row frame, for a raster with no tags at all.
+    m <- terra::metags(r)
+    if (is.null(m)) m <- data.frame(name = character(), value = character())
     v <- as.character(m$value)[match(prov_keys, as.character(m$name))]
     missing <- prov_keys[is.na(v) | !nzchar(v)]
     if (length(missing) > 0) {
@@ -493,4 +496,136 @@ sha_problems <- function(prov) {
                   "CI) so the published files name the commit that made them"))
   }
   character(0)
+}
+
+# Why a publish directory holds something no catalog or manifest entry names,
+# or character(0). The sync uploads every file but the ones it excludes
+# (hidden files and *.aux.json, as cd_s3_push() does), so anything else would
+# reach S3 described by nothing.
+stray_problems <- function(dir, names) {
+  on_disk <- list.files(dir, recursive = TRUE)
+  on_disk <- on_disk[!grepl("\\.aux\\.json$", on_disk)]
+  stray <- setdiff(on_disk, names)
+  if (length(stray) == 0L) return(character(0))
+  paste0(length(stray), " file(s) in ", dir, " that nothing published ",
+         "describes would be uploaded (",
+         paste(utils::head(stray, 5), collapse = ", "),
+         if (length(stray) > 5) ", ..." else "", ")")
+}
+
+# Whether a file is the object S3 reports by `etag`. A single-part upload's
+# ETag is the MD5 of the bytes (SSE-S3, as on this bucket); a multipart one is
+# the MD5 of the concatenated part MD5s, then "-<parts>". The part size is the
+# uploading machine's `multipart_chunksize` (8 MiB by default; this machine's
+# ~/.aws/config says 128 MB), so every size that gives that many parts is
+# tried. Measured: daily/tmax_daily_2000.tif, 9,263,371 bytes, is "-2" at
+# 8 MiB and matches the local file.
+s3_etag_matches <- function(path, etag) {
+  etag <- gsub('"', "", etag)
+  if (is.na(etag) || !nzchar(etag)) return(FALSE)
+  md5_file <- function(f) {
+    con <- file(f, open = "rb")
+    on.exit(close(con))
+    # as.character() keeps openssl's "hash" attributes, which identical() sees.
+    as.vector(as.character(openssl::md5(con)))
+  }
+  if (!grepl("-", etag, fixed = TRUE)) return(identical(etag, md5_file(path)))
+  n <- as.integer(sub(".*-", "", etag))
+  size <- file.size(path)
+  mib <- 1024^2
+  chunks <- c(5 * mib, 2^(3:12) * mib, 8e6, 16e6, 64e6, 128e6)
+  chunks <- unique(chunks[ceiling(size / chunks) == n])
+  for (chunk in chunks) {
+    con <- file(path, open = "rb")
+    parts <- list()
+    repeat {
+      b <- readBin(con, "raw", chunk)
+      if (length(b) == 0L) break
+      parts[[length(parts) + 1L]] <- as.raw(openssl::md5(b))
+    }
+    close(con)
+    if (identical(paste0(as.character(openssl::md5(do.call(c, parts))), "-", n), etag)) {
+      return(TRUE)
+    }
+  }
+  FALSE
+}
+
+# -- Daily cube manifest (#124) -------------------------------------------------
+# The daily cube is not in catalog.json, so s3://<bucket>/daily/manifest.json
+# carries what the catalog carries for the monthly COGs: per file, its size,
+# sha256 multihash and the provenance tags of the run that wrote it.
+
+# Manifest entries for local files, keyed by file name.
+manifest_entries <- function(paths) {
+  out <- lapply(paths, function(f) {
+    m <- terra::metags(terra::rast(f))
+    tag <- function(key) {
+      v <- as.character(m$value)[as.character(m$name) == key]
+      if (length(v) == 1L && nzchar(v)) v else NULL
+    }
+    Filter(Negate(is.null), list(
+      `file:checksum` = multihash(f),
+      `file:size` = file.size(f),
+      `cd:version` = tag("CD_VERSION"),
+      `cd:sha` = tag("CD_SHA"),
+      `cd:run_time` = tag("CD_RUN_TIME"),
+      `cd:run_id` = tag("CD_RUN_ID")
+    ))
+  })
+  stats::setNames(out, basename(paths))
+}
+
+# The live manifest's entries with this run's local ones laid over them, keys
+# in a locale-independent order so the file does not reorder between a Mac
+# and CI.
+manifest_merge <- function(live, local) {
+  merged <- if (is.null(live)) list() else live
+  for (n in names(local)) merged[[n]] <- local[[n]]
+  merged[sort(names(merged), method = "radix")]
+}
+
+# Why a manifest's entries are not one whole cube, or character(0): every
+# variable for every year of one contiguous span, nothing else, each entry
+# shaped as published.
+manifest_problems <- function(entries, vars = c("tmean", "tmax", "tmin")) {
+  problems <- character()
+  keys <- names(entries)
+  if (length(keys) == 0L) return("the manifest lists no files")
+  pat <- paste0("^(", paste(vars, collapse = "|"), ")_daily_([0-9]{4})\\.tif$")
+  odd <- keys[!grepl(pat, keys)]
+  if (length(odd) > 0) {
+    problems <- c(problems, paste0("entries that are not daily cube files (",
+                                   paste(utils::head(odd, 5), collapse = ", "), ")"))
+  }
+  years <- as.integer(sub(pat, "\\2", keys[grepl(pat, keys)]))
+  if (length(years) > 0) {
+    want <- as.vector(outer(vars, seq(min(years), max(years)),
+                            function(v, y) paste0(v, "_daily_", y, ".tif")))
+    missing <- setdiff(want, keys)
+    if (length(missing) > 0) {
+      problems <- c(problems, paste0(
+        length(missing), " file(s) missing from the span ", min(years), "-",
+        max(years), " (", paste(utils::head(missing, 5), collapse = ", "),
+        if (length(missing) > 5) ", ..." else "", ")"))
+    }
+  }
+  bad <- keys[!vapply(entries, function(e) {
+    ck <- e$`file:checksum`
+    sz <- e$`file:size`
+    is.character(ck) && length(ck) == 1L && grepl("^1220[0-9a-f]{64}$", ck) &&
+      is.numeric(sz) && length(sz) == 1L && sz > 0
+  }, logical(1))]
+  if (length(bad) > 0) {
+    problems <- c(problems, paste0("entries without a sha256 multihash and size (",
+                                   paste(utils::head(bad, 5), collapse = ", "), ")"))
+  }
+  problems
+}
+
+# The last year a manifest holds every variable for, or NA.
+manifest_last_year <- function(entries) {
+  keys <- names(entries)
+  y <- suppressWarnings(as.integer(sub("^.*_daily_([0-9]{4})\\.tif$", "\\1", keys)))
+  if (length(y) == 0L || all(is.na(y))) NA_integer_ else max(y, na.rm = TRUE)
 }

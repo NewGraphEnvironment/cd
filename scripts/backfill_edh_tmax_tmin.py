@@ -21,7 +21,7 @@ EDH hourly 2 m temperature, and averages each local month's daily max and min:
     -> data/backfill/monthly/tmin_YYYY.tif
 
 Same output as backfill_edh_all.py writes for tmax/tmin, on the same grid,
-for pipeline_stage3_edh.R or scripts/tmax_tmin_republish.R to aggregate.
+for pipeline_stage3_edh.R to aggregate.
 
 Days are local at a fixed UTC-8 (`LOCAL_OFFSET_H` in _lib.py). Until #37 the
 monthly layers used UTC days, which run from one afternoon peak (22-00 UTC)

@@ -25,10 +25,11 @@ test_that("cd_s3_push passes --size-only only when asked", {
     },
     .package = "base"
   )
+  suppressMessages(cd_s3_push(dir, dry_run = TRUE, size_only = TRUE))
   suppressMessages(cd_s3_push(dir, dry_run = TRUE))
-  suppressMessages(cd_s3_push(dir, dry_run = TRUE, size_only = FALSE))
   expect_match(cmds[1], "--size-only", fixed = TRUE)
-  # A checksum-carrying publish must upload a rebuilt file of unchanged size.
+  # The default: a checksum-carrying publish must upload a rebuilt file of
+  # unchanged size.
   expect_false(grepl("--size-only", cmds[2], fixed = TRUE))
   expect_match(cmds[2], "--dryrun", fixed = TRUE)
 })

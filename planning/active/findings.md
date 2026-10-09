@@ -52,6 +52,16 @@ Relates to #123
 - `read_cog_days()` -> `write_cog()` with the same tags reproduces the original bytes exactly, once `attrs = {"units": "degC"}` is restored (read_cog_days clears attrs). So `--rewrite` changes nothing but the tags.
 - Mutation check: with `update_tags` removed, the tag case goes red.
 
+## S3 ETags (measured 2026-10-09)
+
+- `tmean_annual.tif` (5,608,749 B): ETag `47a67dfd…` = local MD5, single part.
+- `daily/tmax_daily_2000.tif` (9,263,371 B): ETag `5701ffe3…-2`, multipart at 8 MiB, matches the local file. This machine's `~/.aws/config` now says `multipart_chunksize = 128MB`, so the part size is not fixed: `s3_etag_matches()` tries every common size giving the ETag's part count.
+- `openssl::md5()` / `sha256()` results keep a `hash` class through `as.character()`, so `identical()` against a plain string is FALSE. `as.vector()` or `paste0()` strips it.
+
+## `--rewrite` on real data (2026-10-09)
+
+Copy of 2001 (3 files): 7.0 s, each file +208 bytes (the four tags), values / band names / layout unchanged, no stage directory left. 76 years ≈ 9 min.
+
 ## Errors Encountered
 
 | Error | Resolution |

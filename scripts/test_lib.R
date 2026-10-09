@@ -405,5 +405,74 @@ check(grepl("one_short.tif (CD_RUN_ID)", provenance_problems(file.path(ck_dir, "
             fixed = TRUE),
       "a COG missing one tag is refused, naming it")
 
+# -- untagged rasters, strays, ETags, manifests (#124 plan review) --------------
+ck_bare_tif <- file.path(ck_dir, "no_tags.tif")
+ck_r4 <- terra::rast(nrows = 2, ncols = 2, vals = 1:4)
+terra::writeRaster(ck_r4, ck_bare_tif, gdal = "PROFILE=BASELINE")
+p <- provenance_problems(ck_bare_tif)
+check(grepl("no_tags.tif (CD_VERSION", p, fixed = TRUE) && !grepl("could not be opened", p),
+      "a file with no tags at all is reported as untagged, not unreadable")
+st_dir <- tempfile("st_")
+dir.create(st_dir)
+file.create(file.path(st_dir, c("a.tif", "a.tif.aux.json", ".hidden", "notes.txt")))
+check(identical(stray_problems(st_dir, c("a.tif", "notes.txt")), character(0)),
+      "a directory holding only described files (and what the sync excludes) passes")
+check(grepl("notes.txt", stray_problems(st_dir, "a.tif"), fixed = TRUE),
+      "a file nothing describes, which the sync would upload, is refused")
+et_f <- tempfile()
+writeBin(as.raw(rep(0:255, length.out = 3 * 1024^2 + 17)), et_f)
+et_md5 <- as.vector(as.character(openssl::md5(file(et_f, "rb"))))
+et_parts <- function(f, chunk) {
+  con <- file(f, "rb")
+  on.exit(close(con))
+  p <- list()
+  repeat {
+    b <- readBin(con, "raw", chunk)
+    if (!length(b)) break
+    p[[length(p) + 1]] <- as.raw(openssl::md5(b))
+  }
+  paste0(as.character(openssl::md5(do.call(c, p))), "-", length(p))
+}
+big_f <- tempfile()
+writeBin(as.raw(rep(0:255, length.out = 9263371)), big_f)
+check(s3_etag_matches(et_f, et_md5) && s3_etag_matches(et_f, paste0('"', et_md5, '"')) &&
+        !s3_etag_matches(et_f, sub(".$", "0", et_md5)) && !s3_etag_matches(et_f, NA),
+      "a single-part ETag matches its file's MD5, and only that")
+check(s3_etag_matches(big_f, et_parts(big_f, 8 * 1024^2)) &&
+        s3_etag_matches(big_f, et_parts(big_f, 5 * 1024^2)) &&
+        !s3_etag_matches(big_f, sub("^.", "0", et_parts(big_f, 8 * 1024^2))) &&
+        !s3_etag_matches(et_f, et_parts(big_f, 8 * 1024^2)),
+      "a multipart ETag matches at whatever part size gives its part count")
+mf_dir <- tempfile("mf_")
+dir.create(mf_dir)
+for (v in c("tmean", "tmax", "tmin")) for (y in 2001:2002) {
+  terra::writeRaster(ck_r2, file.path(mf_dir, sprintf("%s_daily_%d.tif", v, y)))
+}
+mf_local <- manifest_entries(list.files(mf_dir, full.names = TRUE))
+check(identical(manifest_problems(mf_local), character(0)) &&
+        identical(checksum_problems(mf_local, mf_dir), character(0)) &&
+        identical(mf_local[["tmax_daily_2001.tif"]]$`cd:run_id`, "local"),
+      "manifest entries for a whole cube pass, and carry each file's provenance")
+check(grepl("1 file(s) missing from the span 2001-2002 (tmin_daily_2002.tif)",
+            manifest_problems(mf_local[names(mf_local) != "tmin_daily_2002.tif"]), fixed = TRUE),
+      "a manifest missing one variable-year is refused, by name")
+mf_gap <- mf_local[!grepl("2002", names(mf_local))]
+mf_gap[["tmean_daily_2004.tif"]] <- mf_local[[1]]
+check(any(grepl("missing from the span 2001-2004", manifest_problems(mf_gap), fixed = TRUE)),
+      "a manifest that skips a year is refused")
+mf_bad <- mf_local
+mf_bad[[1]]$`file:checksum` <- substring(mf_bad[[1]]$`file:checksum`, 5)
+check(any(grepl("without a sha256 multihash", manifest_problems(mf_bad), fixed = TRUE)),
+      "a bare digest in the manifest is refused")
+mf_live <- mf_local
+mf_live[["tmax_daily_2001.tif"]]$`cd:run_id` <- "older"
+mf_new <- list(tmean_daily_2003.tif = mf_local[[1]], tmax_daily_2001.tif = mf_local[["tmax_daily_2001.tif"]])
+mf_m <- manifest_merge(mf_live, mf_new)
+check(identical(mf_m[["tmax_daily_2001.tif"]]$`cd:run_id`, "local") &&
+        identical(names(mf_m), sort(names(mf_m), method = "radix")) &&
+        length(mf_m) == 7L && manifest_last_year(mf_m) == 2003L &&
+        identical(names(manifest_merge(NULL, mf_new)), sort(names(mf_new), method = "radix")),
+      "a merge lays local entries over live ones, adds new ones, and sorts by bytes")
+
 cat(sprintf("\n%d/%d passed\n", checks - failures, checks))
 quit(status = if (failures > 0L) 1L else 0L)

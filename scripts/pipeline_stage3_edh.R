@@ -34,6 +34,7 @@ suppressMessages(library(terra))
 
 # Producer-side helpers, shared with pipeline_update_edh.R (repo-root cwd).
 source("scripts/_lib.R")
+source("scripts/_publish.R")
 
 args <- commandArgs(trailingOnly = TRUE)
 dry_run <- "--dry-run" %in% args
@@ -242,7 +243,8 @@ problems <- catalog_problems(built$keys, sub("\\.tif$", "", expected_cogs),
                              built$start, built$end, years_written)
 problems <- c(problems,
               checksum_problems(catalog_entries(built_json), cog_dir),
-              provenance_problems(file.path(cog_dir, list.files(cog_dir, pattern = "\\.tif$"))))
+              provenance_problems(file.path(cog_dir, list.files(cog_dir, pattern = "\\.tif$"))),
+              stray_problems(cog_dir, names(written)))
 if (length(problems) > 0) {
   unlink(catalog_path)
   stop("Refusing to push: the catalog built this run is not fit to publish:\n  - ",
@@ -258,6 +260,15 @@ if (dry_run) log_msg("  DRY RUN — showing what would be uploaded:")
 # behind on S3 under a catalog checksum that is not its own. The sync uploads
 # every COG newer than its S3 copy, which is all of them after a rebuild.
 cd_s3_push(cog_dir, bucket = bucket, dry_run = dry_run, size_only = FALSE)
+# What went up is what was hashed, checked before the catalog that carries
+# the hashes goes up (#124).
+if (!dry_run) {
+  problems <- etag_problems(s3_base(bucket), cog_dir, names(written))
+  if (length(problems) > 0) {
+    stop("COGs synced, catalog.json NOT uploaded: ", problems, call. = FALSE)
+  }
+  log_msg("  All ", length(written), " live COGs are the bytes the catalog hashes")
+}
 # On its own and last: uploaded after the COGs, it never points at a COG that
 # is not up yet.
 cat_put <- suppressWarnings(system2(
@@ -273,11 +284,10 @@ if (!is.null(attr(cat_put, "status"))) {
 }
 log_msg("  ", paste(cat_put, collapse = " "))
 if (!dry_run) {
-  # The whole document, checksums included, not only its keys and years.
-  live_after <- tryCatch(jsonlite::read_json(catalog_url), error = function(e) NULL)
-  if (!identical(live_after, built_json)) {
-    stop("catalog.json uploaded, but the live catalog read back does not ",
-         "match the one built this run.", call. = FALSE)
+  # Byte for byte, checksums included, not only its keys and years.
+  problems <- readback_problems(catalog_url, catalog_path)
+  if (length(problems) > 0) {
+    stop("catalog.json uploaded, but ", problems, call. = FALSE)
   }
 }
 

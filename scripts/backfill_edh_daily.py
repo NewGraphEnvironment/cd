@@ -26,9 +26,9 @@ For each year:
        data/backfill/daily/tmax_daily_YYYY.tif
        data/backfill/daily/tmin_daily_YYYY.tif
 
-These are the published files: `cd_s3_push("data/backfill/daily",
-prefix = "daily")` puts them at s3://stac-era5-land/daily/, where
-cd_extract_daily() reads them. No R conversion step — the COG is written
+These are the published files: `Rscript scripts/daily_publish.R` puts them
+at s3://stac-era5-land/daily/ with daily/manifest.json, their sizes and
+checksums (#124), and cd_extract_daily() reads them there. No R conversion step — the COG is written
 here (`write_cog()`), in a layout chosen for point reads.
 
 Why local days: a UTC day splits BC's afternoon peak (22-00 UTC) across two
@@ -63,9 +63,14 @@ Usage:
   uv run scripts/backfill_edh_daily.py --from 2002 --to 2025
 """
 import argparse
+import os
+import shutil
+import tempfile
 import time
 from pathlib import Path
 
+import numpy as np
+import rasterio
 import xarray as xr
 
 from _lib import (
@@ -141,12 +146,28 @@ def check():
     print(f"latest_complete={latest_complete_year(open_store())}", flush=True)
 
 
+def same_layout(old: Path, new: Path) -> None:
+    """Refuse a rewrite whose file differs from the original in anything but
+    its tags: grid, dtype, nodata, tiling, compression, band names."""
+    with rasterio.open(old) as a, rasterio.open(new) as b:
+        keys = ("driver", "dtype", "nodata", "width", "height", "count", "crs",
+                "transform", "blockxsize", "blockysize", "tiled", "compress",
+                "interleave")
+        pa = {k: a.profile.get(k) for k in keys}
+        pb = {k: b.profile.get(k) for k in keys}
+        if pa != pb or a.descriptions != b.descriptions:
+            raise SystemExit(f"{old.name}: rewrite changed the layout "
+                             f"({pa} -> {pb}); original kept")
+
+
 def rewrite(years):
     """Re-write cube years already on disk, with this run's provenance.
 
     Values, band names, grid and layout are unchanged: the year is read back
-    with `read_cog_days()` and written through `write_cog()` again. Refuses a
-    year with a file missing, rather than leaving it half-tagged.
+    with `read_cog_days()` and written through `write_cog()` again, beside the
+    original; it replaces the original only once its values, band names and
+    layout are shown equal. Refuses a year with a file missing, rather than
+    leaving it half-tagged.
     """
     preflight_single_instance("backfill_edh_daily")
     tags = run_provenance()
@@ -163,8 +184,24 @@ def rewrite(years):
             # local_daily() writes units=degC, and read_cog_days() clears attrs.
             da.attrs = {"units": "degC"}
             dates = [str(d)[:10] for d in da.valid_time.values]
-            write_cog(da, path, band_names=dates, tags=tags)
-            bc_file_check(path)
+            # Written beside, compared, then moved over the original: these
+            # files cannot be rebuilt as they were, since EDH has revised
+            # published values since (research/edh_era5_land_store.md).
+            stage = Path(tempfile.mkdtemp(prefix=".rewrite_", dir=DAILY_DIR.parent))
+            try:
+                (stage / "daily").mkdir()
+                new = stage / "daily" / path.name
+                write_cog(da, new, band_names=dates, tags=tags)
+                bc_file_check(new)
+                same_layout(path, new)
+                back = read_cog_days(new)
+                if not (np.array_equal(back.values, da.values, equal_nan=True)
+                        and back.dtype == da.dtype
+                        and list(back.valid_time.values) == list(da.valid_time.values)):
+                    raise SystemExit(f"{path.name}: rewrite changed values; original kept")
+                os.replace(new, path)
+            finally:
+                shutil.rmtree(stage, ignore_errors=True)
         log(f"{year}: rewritten")
     log("DONE")
 

@@ -4,10 +4,12 @@
 #' Only uploads new or changed files. Requires the AWS CLI to be installed
 #' and configured.
 #'
-#' With `size_only = TRUE` (the default) a file is changed only when its size
-#' differs, so a rebuilt file of the same size is not uploaded. Pass `FALSE`
-#' whenever something published describes the bytes, such as a checksum in a
-#' catalog: the sync then also uploads any file newer than its S3 copy.
+#' By default a file is uploaded when its size differs from its S3 copy or it
+#' is newer than that copy, so a rebuilt file of unchanged size still goes up.
+#' That matters wherever something published describes the bytes, such as the
+#' checksums in the catalog and the daily manifest (#124). `size_only = TRUE`
+#' compares sizes alone (`--size-only`), the default before #124, and
+#' skips such a file.
 #'
 #' @param local_dir Character. Local directory to sync.
 #' @param bucket Character. S3 bucket name. Default `"stac-era5-land"`.
@@ -16,7 +18,7 @@
 #' @param dry_run Logical. If `TRUE`, shows what would be uploaded
 #'   without actually uploading. Default `FALSE`.
 #' @param size_only Logical. Compare by size alone (`--size-only`).
-#'   Default `TRUE`.
+#'   Default `FALSE`.
 #'
 #' @return The exit code from `aws s3 sync` (invisibly). Zero on success.
 #'
@@ -37,7 +39,7 @@ cd_s3_push <- function(local_dir,
                        bucket = "stac-era5-land",
                        prefix = "",
                        dry_run = FALSE,
-                       size_only = TRUE) {
+                       size_only = FALSE) {
   if (!dir.exists(local_dir)) {
     rlang::abort(paste("Directory not found:", local_dir))
   }
