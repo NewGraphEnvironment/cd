@@ -27,11 +27,11 @@
 - [x] Plan review (review-plan.md): `provenance_problems()` tells an untagged file (`metags()` NULL) from an unreadable one (G9); `stray_problems()` on the publish dir (G4); `s3_etag()` + per-object ETag read-back in both pipelines (G1); catalog read-back as raw bytes (AC2); STEP 1 warns when the live catalog carries no checksums (O3); `size_only` default FALSE (S2); `tmax_tmin_republish.R` retired (G5); `__pycache__/` in `.gitignore` (A1)
 
 ## Phase 5: Daily cube manifest
-- [ ] `scripts/_lib.R` pure helpers: `manifest_entries(paths)` (size, multihash, provenance from tags), `manifest_merge(live, local)`, `manifest_problems(manifest, dir, vars, years)` (key set = 3 vars × one contiguous span of years; every local file matches its entry; shapes)
-- [ ] `daily_publish(daily_dir, bucket, dry_run)` in `scripts/_lib.R`: read live `daily/manifest.json` (absent → refuse in CI, naming the local bootstrap), merge, validate, sync (`size_only = FALSE`), then `aws s3 cp` the manifest last (written outside `daily_dir`), read back identical
-- [ ] STEP D calls `daily_publish()` instead of `cd_s3_push()`; `scripts/daily_publish.R` is the thin local entry point; STEP D's "build it locally" hint names it
-- [ ] Offline tests for the three pure helpers in `test_lib.R`
-- [ ] Plan review: `daily_publish()` lives in `scripts/daily_publish.R`, sourced by the pipeline (S1); after the sync the manifest's keys equal the live `daily/` listing, which also covers the bootstrap (G3); per-object ETag check (G1); STEP D checks the live manifest covers every published year, dry run included (G2); keys sorted radix (G10); `--rewrite` reads back and compares values (G6)
+- [x] `scripts/_lib.R` pure helpers: `manifest_entries(paths)` (size, multihash, provenance from tags), `manifest_merge(live, local)`, `manifest_problems(manifest, dir, vars, years)` (key set = 3 vars × one contiguous span of years; every local file matches its entry; shapes)
+- [x] `daily_publish(daily_dir, bucket, dry_run)` (in `scripts/_publish.R`, per review S1): read live `daily/manifest.json` (absent → refuse in CI, naming the local bootstrap), merge, validate, sync (`size_only = FALSE`), then `aws s3 cp` the manifest last (written outside `daily_dir`), read back identical
+- [x] STEP D calls `daily_publish()` instead of `cd_s3_push()`; `scripts/daily_publish.R` is the thin local entry point; STEP D's "build it locally" hint names it
+- [x] Offline tests for the three pure helpers in `test_lib.R`
+- [x] Plan review: `daily_publish()` lives in `scripts/daily_publish.R`, sourced by the pipeline (S1); after the sync the manifest's keys equal the live `daily/` listing, which also covers the bootstrap (G3); per-object ETag check (G1); STEP D checks the live manifest covers every published year, dry run included (G2); keys sorted radix (G10); `--rewrite` reads back and compares values (G6)
 
 ## Phase 6: Real-data dry run and docs
 - [ ] `uv run scripts/backfill_edh_daily.py --rewrite` over the 228 local daily files; `Rscript scripts/daily_publish.R --dry-run` with no live manifest's bootstrap path
