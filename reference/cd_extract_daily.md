@@ -90,11 +90,13 @@ A tibble with one row per point, variable and day:
 
 - cell:
 
-  ERA5-Land cell number on the cube's grid.
+  ERA5-Land cell number on the cube's grid; `NA` for a point outside the
+  cube.
 
 - cell_x, cell_y:
 
-  Longitude and latitude of the cell centre.
+  Longitude and latitude of the cell centre; `NA` for a point outside
+  the cube.
 
 - cell_moved:
 
@@ -124,6 +126,10 @@ around it, measured geodesically from the point to each cell centre
 own cell, its values are `NA`, and a warning names it. Points sharing a
 cell share a `cell` value, so identical series are easy to spot. There
 is no elevation adjustment between the cell and the point.
+
+A point outside the cube (British Columbia's box, 47.95–60.05° N,
+140.05–113.95° W) gets `NA` values and `NA` cell columns, and a warning
+names it with the cube's extent; the other points are unaffected.
 
 ## Examples
 

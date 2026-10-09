@@ -133,10 +133,12 @@ over the network, which suits a few points in one call.</p></dd>
 <dd><p>Air temperature, °C.</p></dd>
 
 <dt>cell</dt>
-<dd><p>ERA5-Land cell number on the cube's grid.</p></dd>
+<dd><p>ERA5-Land cell number on the cube's grid; <code>NA</code> for a
+point outside the cube.</p></dd>
 
 <dt>cell_x, cell_y</dt>
-<dd><p>Longitude and latitude of the cell centre.</p></dd>
+<dd><p>Longitude and latitude of the cell centre;
+<code>NA</code> for a point outside the cube.</p></dd>
 
 <dt>cell_moved</dt>
 <dd><p><code>TRUE</code> when the point's own cell had no data and a
@@ -171,6 +173,9 @@ around it, measured geodesically from the point to each cell centre
 own cell, its values are <code>NA</code>, and a warning names it. Points sharing a
 cell share a <code>cell</code> value, so identical series are easy to spot. There is
 no elevation adjustment between the cell and the point.</p>
+<p>A point outside the cube (British Columbia's box, 47.95–60.05° N,
+140.05–113.95° W) gets <code>NA</code> values and <code>NA</code> cell columns, and a warning
+names it with the cube's extent; the other points are unaffected.</p>
     </div>
 
     <div class="section level2">
