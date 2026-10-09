@@ -42,8 +42,8 @@
 
 ## Validation
 
-- [ ] Tests pass (`devtools::test()`, `Rscript scripts/test_lib.R`, `uv run scripts/test_lib.py`); lintr; `devtools::document()`
-- [ ] `/code-check` clean (each commit, or once over the branch with `/code-check branch`)
+- [x] Tests pass (`devtools::test()`, `Rscript scripts/test_lib.R`, `uv run scripts/test_lib.py`); lintr; `devtools::document()`
+- [x] `/code-check` clean (each commit, or once over the branch with `/code-check branch`)
 - [ ] PWF checkboxes match landed work
 - [ ] `/planning-archive` on completion
 
