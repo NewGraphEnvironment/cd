@@ -12,6 +12,8 @@
 #' Run provenance written into a COG by [cd_cog_write()] (`CD_VERSION`,
 #' `CD_SHA`, `CD_RUN_TIME`, `CD_RUN_ID` tags) is copied into the item's
 #' properties as `cd:version`, `cd:sha`, `cd:run_time` and `cd:run_id`.
+#' Because the run time is part of the bytes, a checksum identifies a build,
+#' not values: rebuilding unchanged data gives a new checksum.
 #'
 #' @param cog_dir Character. Directory containing COG files (.tif).
 #' @param output_path Character. Path to write the catalog JSON.

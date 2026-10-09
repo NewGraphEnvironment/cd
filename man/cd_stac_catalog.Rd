@@ -46,6 +46,8 @@ taken from the local file, so build the catalog after the COGs are final.
 Run provenance written into a COG by \code{\link[=cd_cog_write]{cd_cog_write()}} (\code{CD_VERSION},
 \code{CD_SHA}, \code{CD_RUN_TIME}, \code{CD_RUN_ID} tags) is copied into the item's
 properties as \code{cd:version}, \code{cd:sha}, \code{cd:run_time} and \code{cd:run_id}.
+Because the run time is part of the bytes, a checksum identifies a build,
+not values: rebuilding unchanged data gives a new checksum.
 }
 \examples{
 \dontrun{
