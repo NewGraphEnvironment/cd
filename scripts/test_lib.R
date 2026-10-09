@@ -332,5 +332,78 @@ check(grepl("^[0-9a-f]{40}(-dirty)?$", p[["CD_SHA"]]) && p[["CD_RUN_ID"]] == "lo
 check(!any(grepl(":", names(p), fixed = TRUE)) && !anyNA(p),
       "provenance keys carry no ':' and no value is NA, so cd_cog_write() accepts them")
 
+check(identical(sha_problems(c(CD_SHA = strrep("a", 40))), character(0)) &&
+        length(sha_problems(c(CD_SHA = paste0(strrep("a", 40), "-dirty")))) == 1L &&
+        length(sha_problems(c(CD_SHA = "unknown"))) == 1L,
+      "a live publish refuses a dirty or unknown SHA")
+old_rt <- Sys.getenv("CD_RUN_TIME", unset = NA)
+Sys.unsetenv("CD_RUN_TIME")
+rs1 <- run_start()
+Sys.sleep(1.1)
+rs2 <- run_start()
+if (is.na(old_rt)) Sys.unsetenv("CD_RUN_TIME") else Sys.setenv(CD_RUN_TIME = old_rt)
+check(identical(rs1[["CD_RUN_TIME"]], rs2[["CD_RUN_TIME"]]),
+      "run_start() fixes the run time once, for every later call")
+
+# -- checksum_problems / provenance_problems (#124) ----------------------------
+# The source tree's cd_stac_catalog(), not whatever version is installed: an
+# installed cd from before #124 writes no checksums at all.
+suppressMessages(pkgload::load_all(".", quiet = TRUE, export_all = FALSE))
+ck_dir <- tempfile("ck_")
+dir.create(ck_dir)
+ck_r <- terra::rast(nrows = 4, ncols = 5, nlyrs = 2, vals = 1:40)
+names(ck_r) <- c("2001", "2002")
+terra::writeRaster(ck_r, file.path(ck_dir, "tmean_annual.tif"), filetype = "COG",
+                   overwrite = TRUE)
+ck_r2 <- ck_r
+terra::metags(ck_r2) <- c(CD_VERSION = "1", CD_SHA = "a", CD_RUN_TIME = "t",
+                          CD_RUN_ID = "local")
+terra::writeRaster(ck_r2, file.path(ck_dir, "prcp_annual.tif"), filetype = "COG",
+                   overwrite = TRUE)
+ck_json <- tempfile(fileext = ".json")
+suppressMessages(cd_stac_catalog(ck_dir, output_path = ck_json,
+                                     base_url = "https://example.com"))
+ck_cat <- jsonlite::read_json(ck_json)
+ck_e <- catalog_entries(ck_cat)
+check(identical(sort(names(ck_e)), c("prcp_annual.tif", "tmean_annual.tif")) &&
+        identical(checksum_problems(ck_e, ck_dir), character(0)),
+      "a freshly built catalog matches its COGs")
+check(identical(ck_e[["tmean_annual.tif"]]$`file:checksum`,
+                paste0("1220", strsplit(system2("shasum", c("-a", "256",
+                  shQuote(file.path(ck_dir, "tmean_annual.tif"))), stdout = TRUE), " ")[[1]][1])),
+      "the catalog's checksum is the sha256 the shasum binary computes")
+# One byte flipped in the middle of the file, size unchanged: what a --size-only
+# sync of a rebuilt COG would leave live.
+ck_f <- file.path(ck_dir, "tmean_annual.tif")
+ck_bytes <- readBin(ck_f, "raw", file.size(ck_f))
+ck_mid <- length(ck_bytes) %/% 2L
+ck_bytes[ck_mid] <- as.raw(bitwXor(as.integer(ck_bytes[ck_mid]), 1L))
+writeBin(ck_bytes, ck_f)
+p <- checksum_problems(ck_e, ck_dir)
+check(length(p) == 1L && grepl("tmean_annual.tif: file:checksum does not match", p, fixed = TRUE),
+      "a same-size change to a COG is refused")
+ck_bare <- ck_e
+ck_bare[["prcp_annual.tif"]]$`file:checksum` <- sub("^1220", "", ck_bare[["prcp_annual.tif"]]$`file:checksum`)
+check(grepl("prcp_annual.tif: file:checksum is not a sha256 multihash",
+            checksum_problems(ck_bare, ck_dir, "prcp_annual.tif"), fixed = TRUE),
+      "a bare digest without the 1220 multihash prefix is refused")
+ck_size <- ck_e
+ck_size[["prcp_annual.tif"]]$`file:size` <- 1
+check(grepl("file:size 1", checksum_problems(ck_size, ck_dir, "prcp_annual.tif"), fixed = TRUE),
+      "a wrong size is refused")
+check(grepl("not on disk", checksum_problems(ck_e["prcp_annual.tif"], tempdir()), fixed = TRUE) &&
+        grepl("no entry", checksum_problems(ck_e, ck_dir, "x.tif"), fixed = TRUE),
+      "an entry with no file, and a file with no entry, are refused")
+p <- provenance_problems(file.path(ck_dir, c("tmean_annual.tif", "prcp_annual.tif")))
+check(length(p) == 1L && grepl("1 file(s)", p, fixed = TRUE) &&
+        grepl("tmean_annual.tif (CD_VERSION, CD_SHA, CD_RUN_TIME, CD_RUN_ID)", p, fixed = TRUE),
+      "an untagged COG is refused; a tagged one passes")
+ck_r3 <- ck_r
+terra::metags(ck_r3) <- c(CD_VERSION = "1", CD_SHA = "a", CD_RUN_TIME = "t")
+terra::writeRaster(ck_r3, file.path(ck_dir, "one_short.tif"), filetype = "COG")
+check(grepl("one_short.tif (CD_RUN_ID)", provenance_problems(file.path(ck_dir, "one_short.tif")),
+            fixed = TRUE),
+      "a COG missing one tag is refused, naming it")
+
 cat(sprintf("\n%d/%d passed\n", checks - failures, checks))
 quit(status = if (failures > 0L) 1L else 0L)

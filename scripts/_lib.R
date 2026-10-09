@@ -393,3 +393,104 @@ run_provenance <- function() {
     CD_RUN_ID = if (is.na(env("GITHUB_RUN_ID"))) "local" else env("GITHUB_RUN_ID")
   )
 }
+
+# The provenance tags every published file must carry (#124).
+prov_keys <- c("CD_VERSION", "CD_SHA", "CD_RUN_TIME", "CD_RUN_ID")
+
+# sha256 of a file as a hex multihash, "1220" + digest: the form
+# file:checksum takes. Computed here rather than through cd's internal
+# file_multihash(), so the check does not share the code it checks.
+multihash <- function(path) {
+  con <- file(path, open = "rb")
+  on.exit(close(con))
+  paste0("1220", as.character(openssl::sha256(con)))
+}
+
+# Why a set of published entries does not describe the files on disk, or
+# character(0) when every one does. Recomputes each hash from the bytes.
+#
+#   entries  named list, file name -> list(`file:checksum`, `file:size`):
+#            catalog_entries() of a catalog, or a daily manifest's `files`.
+#   dir      where those files are.
+#   names    the file names to check; default all of them. A daily manifest
+#            carries every published year, while a CI runner holds only the
+#            ones it built, so STEP D checks the local ones.
+checksum_problems <- function(entries, dir, names = base::names(entries)) {
+  bad <- character()
+  for (n in names) {
+    e <- entries[[n]]
+    f <- file.path(dir, n)
+    ck <- e$`file:checksum`
+    if (is.null(e)) {
+      bad <- c(bad, paste0(n, ": no entry"))
+    } else if (!file.exists(f)) {
+      bad <- c(bad, paste0(n, ": not on disk"))
+    } else if (!is.character(ck) || length(ck) != 1L ||
+               !grepl("^1220[0-9a-f]{64}$", ck)) {
+      bad <- c(bad, paste0(n, ": file:checksum is not a sha256 multihash (",
+                           paste(ck, collapse = " "), ")"))
+    } else if (!identical(as.numeric(e$`file:size`), as.numeric(file.size(f)))) {
+      bad <- c(bad, paste0(n, ": file:size ", paste(e$`file:size`, collapse = " "),
+                           ", file is ", file.size(f)))
+    } else if (!identical(ck, multihash(f))) {
+      bad <- c(bad, paste0(n, ": file:checksum does not match the file"))
+    }
+  }
+  if (length(bad) == 0L) return(character(0))
+  paste0(length(bad), " of ", length(names), " file(s) not as published: ",
+         paste(utils::head(bad, 5), collapse = "; "),
+         if (length(bad) > 5) "; ..." else "")
+}
+
+# A catalog's data assets as checksum_problems() entries, keyed by file name.
+catalog_entries <- function(catalog_json) {
+  stats::setNames(
+    lapply(catalog_json$items, function(i) i$assets$data),
+    vapply(catalog_json$items, function(i) basename(i$assets$data$href), character(1))
+  )
+}
+
+# Why a set of files does not all carry run provenance, or character(0). An
+# absent or empty tag fails: a file from before #124, or one written without
+# tags=, would publish a checksum with nothing saying what made the bytes.
+provenance_problems <- function(paths) {
+  bad <- character()
+  for (f in paths) {
+    m <- tryCatch(terra::metags(terra::rast(f)), error = function(e) NULL)
+    if (is.null(m)) {
+      bad <- c(bad, paste0(basename(f), ": could not be opened"))
+      next
+    }
+    v <- as.character(m$value)[match(prov_keys, as.character(m$name))]
+    missing <- prov_keys[is.na(v) | !nzchar(v)]
+    if (length(missing) > 0) {
+      bad <- c(bad, paste0(basename(f), " (", paste(missing, collapse = ", "), ")"))
+    }
+  }
+  if (length(bad) == 0L) return(character(0))
+  paste0(length(bad), " file(s) lack run provenance tags: ",
+         paste(utils::head(bad, 5), collapse = "; "),
+         if (length(bad) > 5) "; ..." else "")
+}
+
+# A run's provenance, with its time fixed once for this process and for every
+# child it starts (the daily cube's Python backfill reads CD_RUN_TIME), so one
+# run's files all carry one time.
+run_start <- function() {
+  if (!nzchar(Sys.getenv("CD_RUN_TIME"))) {
+    Sys.setenv(CD_RUN_TIME = format(Sys.time(), "%Y-%m-%dT%H:%M:%SZ", tz = "UTC"))
+  }
+  run_provenance()
+}
+
+# Why a run may not publish under this provenance, or character(0). A SHA
+# that is "unknown", or "-dirty", names no commit that holds the code that
+# made the bytes. Checked before a live push only: a dry run publishes nothing.
+sha_problems <- function(prov) {
+  sha <- prov[["CD_SHA"]]
+  if (identical(sha, "unknown") || grepl("-dirty$", sha)) {
+    return(paste0("CD_SHA is ", sha, ": commit the working tree (or run from ",
+                  "CI) so the published files name the commit that made them"))
+  }
+  character(0)
+}

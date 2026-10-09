@@ -38,6 +38,9 @@ source("scripts/_lib.R")
 args <- commandArgs(trailingOnly = TRUE)
 dry_run <- "--dry-run" %in% args
 
+# Written into every COG as GDAL tags, and from there into the catalog (#124).
+prov <- run_start()
+
 # -- Config --------------------------------------------------------------------
 bucket <- "stac-era5-land"
 monthly_dir <- "data/backfill/monthly"
@@ -70,6 +73,11 @@ log_msg <- function(...) {
 
 # -- Step 1: Aggregate to seasonal/annual COGs --------------------------------
 log_msg("=== STEP 1: Aggregate monthly -> seasonal/annual COGs ===")
+log_msg("  Provenance: ", paste(names(prov), prov, sep = "=", collapse = " "))
+# Before hours of work, not after: a live push from an edited tree is refused.
+if (!dry_run && length(sha_problems(prov)) > 0) {
+  stop("Refusing to publish: ", sha_problems(prov), call. = FALSE)
+}
 
 # COGs written by THIS run, with their band names (years). cog_dir persists
 # between runs, so a file merely present there may be a stale copy from an
@@ -131,7 +139,7 @@ for (var in all_vars) {
 
     multi <- rast(year_layers)
     names(multi) <- names(year_layers)
-    cd_cog_write(multi, cog_path, overwrite = TRUE)
+    cd_cog_write(multi, cog_path, overwrite = TRUE, tags = prov)
     written[[basename(cog_path)]] <- names(multi)
     log_msg(sprintf("    wrote %s (%d years)", basename(cog_path), nlyr(multi)))
   }
@@ -175,7 +183,7 @@ for (var in annual_vars) {
 
   multi <- rast(year_layers)
   names(multi) <- names(year_layers)
-  cd_cog_write(multi, cog_path, overwrite = TRUE)
+  cd_cog_write(multi, cog_path, overwrite = TRUE, tags = prov)
   written[[basename(cog_path)]] <- names(multi)
   log_msg(sprintf("    wrote %s (%d years)", basename(cog_path), nlyr(multi)))
 }
@@ -225,13 +233,19 @@ cd_stac_catalog(
   base_url = paste0("https://", bucket, ".s3.us-west-2.amazonaws.com")
 )
 log_msg("  wrote ", catalog_path)
-# Check the catalog that was written, not only the inputs it was built from.
-built <- catalog_item_years(jsonlite::read_json(catalog_path))
+# Check the catalog that was written, not only the inputs it was built from:
+# its items, and that every checksum is of the COG beside it and every COG
+# says which run made it (#124). Nothing touches a COG after this point.
+built_json <- jsonlite::read_json(catalog_path)
+built <- catalog_item_years(built_json)
 problems <- catalog_problems(built$keys, sub("\\.tif$", "", expected_cogs),
                              built$start, built$end, years_written)
+problems <- c(problems,
+              checksum_problems(catalog_entries(built_json), cog_dir),
+              provenance_problems(file.path(cog_dir, list.files(cog_dir, pattern = "\\.tif$"))))
 if (length(problems) > 0) {
   unlink(catalog_path)
-  stop("Refusing to push: the catalog built this run is not the full set:\n  - ",
+  stop("Refusing to push: the catalog built this run is not fit to publish:\n  - ",
        paste(problems, collapse = "\n  - "), call. = FALSE)
 }
 
@@ -240,11 +254,12 @@ log_msg("=== STEP 3: Push to S3 ===")
 # A catalog.json left in cog_dir by a run from before #89 would ride the sync.
 unlink(file.path(cog_dir, "catalog.json"))
 if (dry_run) log_msg("  DRY RUN — showing what would be uploaded:")
-cd_s3_push(cog_dir, bucket = bucket, dry_run = dry_run)
-# On its own and last: the sync is --size-only, and a rebuilt catalog can
-# differ from the live one without differing in size (an end year moving from
-# 2025 to 2026), so the sync would skip it; and uploaded after the COGs, it
-# never points at a COG that is not up yet.
+# Not --size-only (#124): a rebuilt COG of unchanged size would otherwise stay
+# behind on S3 under a catalog checksum that is not its own. The sync uploads
+# every COG newer than its S3 copy, which is all of them after a rebuild.
+cd_s3_push(cog_dir, bucket = bucket, dry_run = dry_run, size_only = FALSE)
+# On its own and last: uploaded after the COGs, it never points at a COG that
+# is not up yet.
 cat_put <- suppressWarnings(system2(
   "aws", c("s3", "cp", shQuote(catalog_path),
            shQuote(paste0("s3://", bucket, "/catalog.json")),
@@ -258,9 +273,9 @@ if (!is.null(attr(cat_put, "status"))) {
 }
 log_msg("  ", paste(cat_put, collapse = " "))
 if (!dry_run) {
-  live_after <- tryCatch(catalog_item_years(jsonlite::read_json(catalog_url)),
-                         error = function(e) NULL)
-  if (!identical(live_after, built)) {
+  # The whole document, checksums included, not only its keys and years.
+  live_after <- tryCatch(jsonlite::read_json(catalog_url), error = function(e) NULL)
+  if (!identical(live_after, built_json)) {
     stop("catalog.json uploaded, but the live catalog read back does not ",
          "match the one built this run.", call. = FALSE)
   }
