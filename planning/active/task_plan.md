@@ -74,11 +74,14 @@ carry no provenance, so the examples show `NA`.
       returns a non-`NA` checksum. It can only pass after the prerequisite republish.
 
 ## Phase 4: Docs
-- [ ] NEWS entry, including the issue's note that the #124 republish changes every
-      file's bytes, so `cd_cache_fetch()` caches re-download once.
-- [ ] CLAUDE.md consumer section: one line saying the extract outputs carry
+- [x] NEWS text goes in the PR body, not NEWS.md: in this repo only the release commit
+      (`/gh-pr-merge`) writes NEWS. It includes a reminder that the #124 republish
+      (v0.6.3) changed every file's bytes, and that the vignette-data `.rds` files
+      lack the new columns until `data-raw/*_vignette_data.R` is re-run.
+- [x] CLAUDE.md consumer section: one line saying the extract outputs carry
       `checksum`/`cd_sha` and where they come from.
-- [ ] `lintr::lint_package()`, `devtools::test()`, `pkgdown::check_pkgdown()`.
+- [x] `lintr::lint_package()` (no lints in changed files) and `pkgdown::check_pkgdown()` (clean)
+- [ ] `devtools::test()` full suite
 
 ## Validation
 
