@@ -53,6 +53,11 @@ point outside the cube.}
 \code{NA} for a point outside the cube.}
 \item{cell_moved}{\code{TRUE} when the point's own cell had no data and a
 neighbour was used.}
+\item{checksum}{The checksum the cube's manifest gives for the file the
+row was read from, kept only when the file is shown to be that build
+(see Provenance); otherwise \code{NA}.}
+\item{cd_sha}{Git commit of the cd code that built that file, from the
+file's own tags; \code{NA} for an untagged file.}
 }
 Rows are ordered by point (input order), variable, then date.
 }
@@ -93,6 +98,19 @@ no elevation adjustment between the cell and the point.
 A point outside the cube (British Columbia's box, 47.95–60.05° N,
 140.05–113.95° W) gets \code{NA} values and \code{NA} cell columns, and a warning
 names it with the cube's extent; the other points are unaffected.
+}
+
+\section{Provenance}{
+
+Each file of the cube is one variable and year, and \code{checksum} and
+\code{cd_sha} say which build of it a row came from. \code{cd_sha} is read from the
+file itself. \code{checksum} comes from \verb{<source>/manifest.json}, read once per
+call, and is kept only when the file's run-time tag matches the manifest's
+\code{processing:datetime} for it, so a stale cached copy gives \code{NA} and a
+warning rather than another build's checksum. A \code{source} with no manifest
+(such as the bundled example) gives \code{NA} silently; a remote manifest that
+cannot be read gives \code{NA} and a warning. A checksum identifies a build, not
+values.
 }
 
 \examples{

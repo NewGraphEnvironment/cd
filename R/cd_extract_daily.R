@@ -34,6 +34,17 @@
 #' 140.05–113.95° W) gets `NA` values and `NA` cell columns, and a warning
 #' names it with the cube's extent; the other points are unaffected.
 #'
+#' @section Provenance:
+#' Each file of the cube is one variable and year, and `checksum` and
+#' `cd_sha` say which build of it a row came from. `cd_sha` is read from the
+#' file itself. `checksum` comes from `<source>/manifest.json`, read once per
+#' call, and is kept only when the file's run-time tag matches the manifest's
+#' `processing:datetime` for it, so a stale cached copy gives `NA` and a
+#' warning rather than another build's checksum. A `source` with no manifest
+#' (such as the bundled example) gives `NA` silently; a remote manifest that
+#' cannot be read gives `NA` and a warning. A checksum identifies a build, not
+#' values.
+#'
 #' @param points Point locations: an `sf` or [terra::SpatVector] of points
 #'   in any CRS, carrying the `id` column, or a data frame with longitude/latitude columns
 #'   (WGS84) named by `coords`.
@@ -63,6 +74,11 @@
 #'       `NA` for a point outside the cube.}
 #'     \item{cell_moved}{`TRUE` when the point's own cell had no data and a
 #'       neighbour was used.}
+#'     \item{checksum}{The checksum the cube's manifest gives for the file the
+#'       row was read from, kept only when the file is shown to be that build
+#'       (see Provenance); otherwise `NA`.}
+#'     \item{cd_sha}{Git commit of the cd code that built that file, from the
+#'       file's own tags; `NA` for an untagged file.}
 #'   }
 #'   Rows are ordered by point (input order), variable, then date.
 #'
@@ -112,7 +128,8 @@ cd_extract_daily <- function(points, from, to,
   out_empty <- tibble::tibble(
     id = ids[0], date = as.Date(character()), variable = character(),
     value = numeric(), cell = integer(), cell_x = numeric(),
-    cell_y = numeric(), cell_moved = logical()
+    cell_y = numeric(), cell_moved = logical(), checksum = character(),
+    cd_sha = character()
   )
   if (length(ids) == 0L) {
     return(out_empty)
@@ -124,6 +141,8 @@ cd_extract_daily <- function(points, from, to,
   template <- daily_read(source, variables[1], years[1], cache)
 
   cells <- daily_cells(template, pts$xy, ids)
+  manifest <- daily_manifest(source)
+  unmatched <- character()
   # sort() drops the NA of points outside the cube; match() gives them NA rows.
   ucell <- sort(unique(cells$cell))
 
@@ -150,6 +169,13 @@ cd_extract_daily <- function(points, from, to,
         ))
       }
       keep <- which(dates >= from & dates <= to)
+      file <- paste0(v, "_daily_", yr, ".tif")
+      entry <- manifest[[file]]
+      claimed <- scalar_chr(entry[["file:checksum"]])
+      build <- build_tags(r)
+      ck <- build_checksum(claimed, scalar_chr(entry[["processing:datetime"]]),
+                           build$run_time)
+      if (!is.na(claimed) && is.na(ck)) unmatched <- c(unmatched, file)
       vals <- if (length(ucell) > 0L) {
         as.matrix(terra::extract(r, ucell)[, keep, drop = FALSE])
       } else {
@@ -162,10 +188,14 @@ cd_extract_daily <- function(points, from, to,
         .pt = rep(seq_along(ids), each = length(keep)),
         date = rep(dates[keep], times = length(ids)),
         variable = v,
-        value = as.numeric(t(vals[rows, , drop = FALSE]))
+        value = as.numeric(t(vals[rows, , drop = FALSE])),
+        checksum = ck,
+        cd_sha = build$sha
       )
     }
   }
+
+  build_warn(unmatched, "the cube's manifest")
 
   long <- dplyr::bind_rows(pieces)
   long <- long[order(long$.pt, match(long$variable, variables), long$date), ]
@@ -177,8 +207,44 @@ cd_extract_daily <- function(points, from, to,
     cell = cells$cell[long$.pt],
     cell_x = cells$cell_x[long$.pt],
     cell_y = cells$cell_y[long$.pt],
-    cell_moved = cells$cell_moved[long$.pt]
+    cell_moved = cells$cell_moved[long$.pt],
+    checksum = long$checksum,
+    cd_sha = long$cd_sha
   )
+}
+
+#' The daily cube's manifest entries, keyed by file name, or NULL. A source
+#' with no manifest is NULL silently (a local cube need not have one); one
+#' that cannot be read warns, since provenance is informational and must not
+#' stop the read.
+#' @noRd
+daily_manifest <- function(source) {
+  url <- paste0(sub("/+$", "", source), "/manifest.json")
+  if (!cd_is_remote(url) && !file.exists(url)) {
+    return(NULL)
+  }
+  m <- if (cd_is_remote(url)) {
+    daily_manifest_fetch(url)
+  } else {
+    tryCatch(jsonlite::read_json(url), error = function(e) NULL)
+  }
+  if (is.null(m) || !is.list(m$files)) {
+    rlang::warn(paste0(
+      "Could not read the daily cube's manifest at '", url, "'; ",
+      "`checksum` is NA."
+    ))
+    return(NULL)
+  }
+  m$files
+}
+
+#' GET a remote manifest and parse it, or NULL on any failure.
+#' @noRd
+daily_manifest_fetch <- function(url) {
+  tryCatch({
+    res <- curl::curl_fetch_memory(url, handle = curl::new_handle(timeout = 60))
+    if (res$status_code >= 400) NULL else jsonlite::parse_json(rawToChar(res$content))
+  }, error = function(e) NULL)
 }
 
 #' Parse a from/to argument to a single Date.

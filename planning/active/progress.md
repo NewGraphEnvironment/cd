@@ -12,3 +12,4 @@
 - Phase 1: `cd_catalog()` gains checksum/size/cd_version/cd_sha/run_time/run_url (NA when absent); exact `[["cd"]]` lookup, guarded by a test proven red against `$cd`
 - Plan review returned (planning/active/review-plan.md): B1 accepted (verify the build read), B2/G5/A1 folded into #128's body
 - Phase 2: `cd_extract()` gains `checksum`/`cd_sha`, verified against the file's own tags; typed empty return
+- Phase 3: `cd_extract_daily()` gains `checksum`/`cd_sha` per file, manifest read once (`daily_manifest()` / mockable `daily_manifest_fetch()`); guard proven (manifest checksum unverified → 2 tests red). Live canary skips until #128's republish

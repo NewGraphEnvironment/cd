@@ -73,9 +73,14 @@ cd_catalog <- function(catalog = cd_catalog_default()) {
 #' @noRd
 catalog_field <- function(items, get) {
   vapply(items, function(x) {
-    v <- tryCatch(get(x), error = function(e) NULL)
-    if (length(v) == 1L && !is.list(v) && !is.na(v)) as.character(v) else NA_character_
+    scalar_chr(tryCatch(get(x), error = function(e) NULL))
   }, character(1))
+}
+
+#' One JSON scalar as character; NA for NULL, NA, an object or an array.
+#' @noRd
+scalar_chr <- function(v) {
+  if (length(v) == 1L && !is.list(v) && !is.na(v)) as.character(v) else NA_character_
 }
 
 #' Default STAC catalog URL

@@ -7,7 +7,7 @@ test_that("returns one row per point, variable and day, typed and ordered", {
                         source = src)
 
   expect_named(d, c("id", "date", "variable", "value", "cell",
-                    "cell_x", "cell_y", "cell_moved"))
+                    "cell_x", "cell_y", "cell_moved", "checksum", "cd_sha"))
   expect_s3_class(d$date, "Date")
   expect_type(d$value, "double")
   expect_type(d$cell, "integer")
@@ -224,7 +224,104 @@ test_that("no points gives a zero-row tibble with every column", {
   d <- cd_extract_daily(daily_pts(16)[0, ], "2003-01-01", "2003-01-02", source = src)
   expect_equal(nrow(d), 0)
   expect_named(d, c("id", "date", "variable", "value", "cell",
-                    "cell_x", "cell_y", "cell_moved"))
+                    "cell_x", "cell_y", "cell_moved", "checksum", "cd_sha"))
   expect_s3_class(d$date, "Date")
   expect_type(d$id, "character")
+  expect_type(d$checksum, "character")
+  expect_type(d$cd_sha, "character")
+})
+
+test_that("each row carries the checksum and cd_sha of the file it came from", {
+  run <- "2026-10-10T22:19:46Z"
+  src <- daily_fixture(tags = c(CD_SHA = "sha_built", CD_RUN_TIME = run))
+  files <- as.vector(outer(c("tmean", "tmax", "tmin"), 2003:2004,
+                           function(v, y) paste0(v, "_daily_", y, ".tif")))
+  daily_manifest_write(src, stats::setNames(
+    lapply(files, function(f) daily_entry(paste0("1220", f), run)), files
+  ))
+  d <- expect_no_warning(
+    cd_extract_daily(daily_pts(c(16, 30)), "2003-12-30", "2004-01-02", source = src)
+  )
+
+  expected <- paste0("1220", d$variable, "_daily_", format(d$date, "%Y"), ".tif")
+  expect_equal(d$checksum, expected)
+  # From the files' own tags, not the manifest.
+  expect_equal(unique(d$cd_sha), "sha_built")
+})
+
+test_that("a file that is not the manifest's build gets NA checksum and a warning", {
+  run <- "2026-10-10T22:19:46Z"
+  src <- daily_fixture(years = 2003, tags = c(CD_SHA = "sha_built", CD_RUN_TIME = run))
+  daily_manifest_write(src, list(
+    tmean_daily_2003.tif = daily_entry("1220aa", run),
+    # A rebuild the local copy predates.
+    tmax_daily_2003.tif = daily_entry("1220bb", "2027-01-01T00:00:00Z"),
+    tmin_daily_2003.tif = daily_entry("1220cc", run)
+  ))
+  expect_warning(
+    d <- cd_extract_daily(daily_pts(16), "2003-06-01", "2003-06-02", source = src),
+    "tmax_daily_2003.tif"
+  )
+  expect_equal(unique(d$checksum[d$variable == "tmean"]), "1220aa")
+  expect_true(all(is.na(d$checksum[d$variable == "tmax"])))
+  expect_equal(unique(d$checksum[d$variable == "tmin"]), "1220cc")
+  expect_equal(unique(d$cd_sha), "sha_built")
+})
+
+test_that("no manifest, or a file it does not list, gives NA without a warning", {
+  src <- daily_fixture(years = 2003)
+  d <- expect_no_warning(
+    cd_extract_daily(daily_pts(16), "2003-06-01", "2003-06-02", source = src)
+  )
+  expect_true(all(is.na(d$checksum)))
+  expect_true(all(is.na(d$cd_sha)))
+
+  daily_manifest_write(src, list(tmean_daily_2003.tif = daily_entry("1220aa")))
+  d <- expect_no_warning(
+    cd_extract_daily(daily_pts(16), "2003-06-01", "2003-06-02",
+                     variables = "tmax", source = src)
+  )
+  expect_true(all(is.na(d$checksum)))
+})
+
+test_that("a manifest still on the cd: keys gives NA checksum", {
+  # Only the processing: keys are read (#128); a cd:run_time is not one.
+  run <- "2026-10-10T22:19:46Z"
+  src <- daily_fixture(years = 2003, tags = c(CD_SHA = "s", CD_RUN_TIME = run))
+  daily_manifest_write(src, list(tmean_daily_2003.tif = list(
+    `file:checksum` = "1220aa", `cd:sha` = "s", `cd:run_time` = run
+  )))
+  expect_warning(
+    d <- cd_extract_daily(daily_pts(16), "2003-06-01", "2003-06-02",
+                          variables = "tmean", source = src),
+    "not shown to be"
+  )
+  expect_true(all(is.na(d$checksum)))
+})
+
+test_that("an unreadable remote manifest warns and gives NULL", {
+  local_mocked_bindings(daily_manifest_fetch = function(url) NULL)
+  expect_warning(
+    m <- daily_manifest("https://example.com/daily"),
+    "https://example.com/daily/manifest.json"
+  )
+  expect_null(m)
+})
+
+test_that("a readable remote manifest returns its files", {
+  local_mocked_bindings(daily_manifest_fetch = function(url) {
+    list(files = list(tmean_daily_2003.tif = daily_entry("1220aa")))
+  })
+  m <- expect_no_warning(daily_manifest("https://example.com/daily/"))
+  expect_equal(m$tmean_daily_2003.tif$`file:checksum`, "1220aa")
+})
+
+test_that("an unparseable local manifest warns and gives NA", {
+  src <- daily_fixture(years = 2003)
+  writeLines("{ not json", file.path(src, "manifest.json"))
+  expect_warning(
+    d <- cd_extract_daily(daily_pts(16), "2003-06-01", "2003-06-01", source = src),
+    "manifest"
+  )
+  expect_true(all(is.na(d$checksum)))
 })

@@ -49,3 +49,25 @@ test_that("the published cube reaches 60 N (#123)", {
   expect_false(anyNA(d$value))
   expect_equal(unique(d$cell_y), 60, tolerance = 1e-6)
 })
+
+test_that("the published cube reports each file's manifest checksum (#126)", {
+  skip_on_ci()
+  skip_on_cran()
+  skip_if_offline(host = "stac-era5-land.s3.us-west-2.amazonaws.com")
+  skip_if_not_installed("withr")
+  withr::local_options(cd.cache_revalidate = TRUE)
+
+  base <- "https://stac-era5-land.s3.us-west-2.amazonaws.com/daily"
+  files <- daily_manifest(base)
+  skip_if(is.null(files[["tmean_daily_2003.tif"]][["processing:datetime"]]),
+          "live manifest predates the processing: keys (#128)")
+
+  pts <- data.frame(id = "prince_george", lon = -122.75, lat = 53.92)
+  d <- expect_no_warning(
+    cd_extract_daily(pts, "2002-12-31", "2003-01-01", cache = FALSE)
+  )
+  want <- vapply(paste0(d$variable, "_daily_", format(d$date, "%Y"), ".tif"),
+                 function(f) files[[f]][["file:checksum"]], character(1))
+  expect_equal(d$checksum, unname(want))
+  expect_false(anyNA(d$cd_sha))
+})

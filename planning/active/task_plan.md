@@ -53,14 +53,14 @@ carry no provenance, so the examples show `NA`.
       Guard proven: an unverified checksum turns 6 tests red.
 
 ## Phase 3: cd_extract_daily() columns
-- [ ] Tests (`test-cd_extract_daily.R`):
+- [x] Tests (`test-cd_extract_daily.R`):
   - A temp source made of `example_daily` plus a `manifest.json` with a distinct
     checksum per file: each row carries its own file's checksum and SHA.
   - A source with no manifest gives `NA` and no warning.
   - A remote source whose manifest can't be read (mocked) gives a warning and `NA`.
   - A file missing from the manifest gives `NA` on its rows.
   - The zero-point output keeps both columns.
-- [ ] `R/cd_extract_daily.R`: add a `daily_manifest(source)` helper that reads
+- [x] `R/cd_extract_daily.R`: add a `daily_manifest(source)` helper that reads
       `<source>/manifest.json` once per call (local: absent means `NULL`; remote: a
       failed read warns and returns `NULL`). Look up `<v>_daily_<yr>.tif` per piece
       and add `checksum` and `cd_sha` to `out_empty` and the final tibble, using the
