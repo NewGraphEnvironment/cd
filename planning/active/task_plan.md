@@ -28,16 +28,16 @@ carry no provenance, so the examples show `NA`.
       #126 depends on it, and add the dependency to #126's body.
 
 ## Phase 1: cd_catalog() columns
-- [ ] Tests first (`tests/testthat/test-cd_catalog.R`):
+- [x] Tests first (`tests/testthat/test-cd_catalog.R`):
   - The example catalog gets the new columns, typed, all `NA`.
   - A synthetic catalog with `file:*` and `processing:*` fields parses to the right values.
   - An item missing some fields gets `NA` in those columns only.
   - An empty catalog keeps every column with its type.
-- [ ] `R/cd_catalog.R`: add `checksum` (from `assets$data$file:checksum`), `size`
+- [x] `R/cd_catalog.R`: add `checksum` (from `assets$data$file:checksum`), `size`
       (double), `cd_version`, `cd_sha` (`processing:software$cd`), `run_time`
       (character), and `run_url` (the href of the `processing-execution` link), each
       `NA` when absent. Write one small helper so a missing field never errors.
-- [ ] Update the roxygen `@return` (a checksum identifies a build, not values).
+- [x] Update the roxygen `@return` (a checksum identifies a build, not values).
       Run `devtools::document()`.
 
 ## Phase 2: cd_extract() columns

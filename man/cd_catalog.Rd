@@ -16,13 +16,34 @@ A tibble with columns:
 \item{variable}{Climate variable short name (e.g., "tmean").}
 \item{period}{Temporal aggregation period (e.g., "annual").}
 \item{href}{Resolved path or URL to the COG file.}
+\item{checksum}{The file's sha256 as a multihash (\code{"1220"} + hex), from
+the item's \code{file:checksum}.}
+\item{size}{The file's size in bytes, from \code{file:size}.}
+\item{cd_version}{Version of cd that built the file
+(\code{processing:version}).}
+\item{cd_sha}{Git commit of the cd code that built the file
+(\code{processing:software}'s \code{cd} entry).}
+\item{run_time}{When the build ran, UTC, RFC 3339
+(\code{processing:datetime}).}
+\item{run_url}{The CI run that built the file (the item's
+\code{processing-execution} link); \code{NA} for a local build.}
 }
+Each of the last six is \code{NA} where the catalog does not carry it.
 }
 \description{
 Reads a static STAC catalog JSON file and returns a tidy tibble
 of available climate data COGs. This is the entry point for
 consumer-side workflows.
 }
+\section{Provenance}{
+
+The \code{checksum} and \code{cd_sha} columns say which build of each file the
+catalog describes, so an analysis can record them and notice when a
+republish changes a file. A checksum identifies a build, not values: the
+run time is written into the file, so rebuilding unchanged data gives a
+new checksum. A changed checksum means "rebuilt", not "different data".
+}
+
 \examples{
 cd_catalog(
   system.file("extdata", "example_catalog.json", package = "cd")
