@@ -92,3 +92,43 @@ catalog_field <- function(items, get) {
 cd_catalog_default <- function() {
   getOption("cd.catalog_url", default = "https://stac-era5-land.s3.us-west-2.amazonaws.com/catalog.json")
 }
+
+#' The build a raster says it is, from its own `CD_SHA` and `CD_RUN_TIME`
+#' tags (written by cd_cog_write() and write_cog()), NA where untagged.
+#' Read from the file actually opened, so a stale cached copy reports its own
+#' build rather than the one the catalog describes.
+#' @noRd
+build_tags <- function(r) {
+  m <- terra::metags(r)
+  tag <- function(key) {
+    if (is.null(m) || nrow(m) == 0L) return(NA_character_)
+    v <- as.character(m$value)[as.character(m$name) == key &
+                                 as.character(m$domain) == ""]
+    if (length(v) == 1L && nzchar(v)) v else NA_character_
+  }
+  list(sha = tag("CD_SHA"), run_time = tag("CD_RUN_TIME"))
+}
+
+#' A catalog or manifest checksum, kept only where the file read can be shown
+#' to be the build the entry describes: its `CD_RUN_TIME` tag equals the
+#' entry's run time. The run time is in the bytes, so two builds never share
+#' one. Anything else is NA, never the entry's value.
+#' @noRd
+build_checksum <- function(checksum, entry_run_time, file_run_time) {
+  ok <- !is.na(checksum) & !is.na(entry_run_time) & !is.na(file_run_time) &
+    entry_run_time == file_run_time
+  ifelse(ok, checksum, NA_character_)
+}
+
+#' Warn once about files whose entry carries a checksum the file read could
+#' not be matched to.
+#' @noRd
+build_warn <- function(files, what) {
+  if (length(files) == 0L) return(invisible())
+  rlang::warn(paste0(
+    "Not the build ", what, " describes, or not shown to be (its run time ",
+    "tag differs or is missing), so `checksum` is NA: ",
+    paste(files, collapse = ", "), ". A stale cached copy is the usual cause; ",
+    "`cd_cache_fetch(href, refresh = TRUE)` replaces it."
+  ))
+}

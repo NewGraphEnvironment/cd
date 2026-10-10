@@ -41,12 +41,16 @@ carry no provenance, so the examples show `NA`.
       Run `devtools::document()`.
 
 ## Phase 2: cd_extract() columns
-- [ ] Tests (`test-cd_extract.R`): `checksum`/`cd_sha` are copied from the catalog row
-      onto every row of that variable/period, and a catalog without those columns
-      (hand-built, or saved before this release) gives `NA`, using the existing
-      `col_or_na()` helper.
-- [ ] `R/cd_extract.R`: carry `rows$checksum[i]` and `rows$cd_sha[i]` through
-      `col_or_na()`. Update `@return`.
+- [x] Tests (`test-cd_extract.R`): a tagged temp COG whose `CD_RUN_TIME` matches the
+      catalog's `run_time` reports the catalog checksum and the file's own `CD_SHA`;
+      a stale build (run time differs) or an unprovable one (untagged file, or no
+      catalog run time) gives `NA` + a warning; a catalog without the columns gives
+      `NA` silently; zero matching rows keeps typed columns. (Revised after plan
+      review B1: a copied checksum could name another build than the one read.)
+- [x] `R/cd_extract.R`: resolve the cache once, read tags with `build_tags()`, keep the
+      checksum via `build_checksum()`, warn once via `build_warn()` (helpers in
+      `R/cd_catalog.R`); typed empty template. Update `@return` + Provenance section.
+      Guard proven: an unverified checksum turns 6 tests red.
 
 ## Phase 3: cd_extract_daily() columns
 - [ ] Tests (`test-cd_extract_daily.R`):
@@ -59,7 +63,11 @@ carry no provenance, so the examples show `NA`.
 - [ ] `R/cd_extract_daily.R`: add a `daily_manifest(source)` helper that reads
       `<source>/manifest.json` once per call (local: absent means `NULL`; remote: a
       failed read warns and returns `NULL`). Look up `<v>_daily_<yr>.tif` per piece
-      and add `checksum` and `cd_sha` to `out_empty` and the final tibble. Update
+      and add `checksum` and `cd_sha` to `out_empty` and the final tibble, using the
+      same verification as Phase 2 (`cd_sha` from the file's tags, the manifest
+      checksum only when the file's `CD_RUN_TIME` matches `processing:datetime`).
+      Remote manifest read goes through a mockable `daily_manifest_fetch()`; entries
+      are under `$files`. Update
       `@return`. Document that the manifest is read live while `cache = TRUE` files
       are ETag-validated at fetch, so the two agree unless a publish lands mid-call.
 - [ ] Live canary (`test-cd_extract_daily_live.R`, `skip_on_ci`): the published cube
