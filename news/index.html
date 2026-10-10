@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">cd</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -33,9 +33,16 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/NewGraphEnvironment/cd/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/NewGraphEnvironment/cd/blob/v0.6.3/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.6.3" id="cd-063-2026-10-10">cd 0.6.3 (2026-10-10)<a class="anchor" aria-label="anchor" href="#cd-063-2026-10-10"></a></h2>
+<ul><li>Every published COG now carries a <strong>checksum and the run that made it</strong>. Each catalog item’s <code>data</code> asset has <code>file:checksum</code> (a sha256 multihash) and <code>file:size</code> (STAC file extension v2.1.0), and the item’s properties carry <code>cd:version</code>, <code>cd:sha</code>, <code>cd:run_time</code> and <code>cd:run_id</code>, read from GDAL tags written into the COG itself. The daily cube, which is not in the catalog, gets the same per file in <code>s3://stac-era5-land/daily/manifest.json</code>. So a changed checksum means changed bytes, and an analysis can record which build it read. A checksum identifies a <strong>build</strong>, not values: the run time is in the bytes, so a rebuild of unchanged data changes it. Every published file is republished once to carry them, so caches validated by ETag download each file again once; if you set <code>options(cd.cache_revalidate = FALSE)</code>, run <code><a href="../reference/cd_cache_clear.html">cd_cache_clear()</a></code>. (<a href="https://github.com/NewGraphEnvironment/cd/issues/124" class="external-link">#124</a>, <a href="https://github.com/NewGraphEnvironment/cd/pull/127" class="external-link">#127</a>)</li>
+<li>
+<code><a href="../reference/cd_cog_write.html">cd_cog_write()</a></code> gains <code>tags =</code>, written into the file as dataset metadata; any <code>CD_*</code> tag the input carries is dropped first. <code><a href="../reference/cd_s3_push.html">cd_s3_push()</a></code> no longer syncs <code>--size-only</code> by default (<code>size_only = FALSE</code>), so a rebuilt file of unchanged size is uploaded. cd now imports <code>openssl</code> and needs <code>terra (&gt;= 1.8-54)</code>.</li>
+<li>Producer side, every publish recomputes the hashes and refuses an untagged or undescribed file; after the sync it checks each object’s ETag against its file before the catalog or manifest goes up, and a live publish needs a commit on <code>main</code>. Checksums and provenance in <code><a href="../reference/cd_catalog.html">cd_catalog()</a></code> and the extract functions are <a href="https://github.com/NewGraphEnvironment/cd/issues/126" class="external-link">#126</a>.</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.6.2" id="cd-062-2026-10-09">cd 0.6.2 (2026-10-09)<a class="anchor" aria-label="anchor" href="#cd-062-2026-10-09"></a></h2>
 <ul><li>The published layers now reach <strong>60° N and 140° W</strong>. The ERA5-Land store holds its coordinates with a tiny rounding error (60.0 N is <code>60.00000000000142</code>), so the slice that cut British Columbia out of it dropped the top row and the west column: every product was 120 × 260 cells and stopped at 59.95 N, and stations along the Yukon and NWT border, such as 10DA001, got no air temperature. The daily cube and all 59 monthly COGs are rebuilt and republished on 121 × 261 cells (47.95–60.05 N, 140.05–113.95 W). Values in the old cells are unchanged, except the 2025 band of <code>prcp_annual</code>, <code>prcp_winter</code> and <code>snowfall_fraction</code>, where EDH has since revised its daily 2025 precipitation. <strong>Every <code>cell</code> number from <code><a href="../reference/cd_extract_daily.html">cd_extract_daily()</a></code> changes</strong>, since the grid gained a row and a column. Cached files refresh by ETag; if you set <code>options(cd.cache_revalidate = FALSE)</code>, run <code><a href="../reference/cd_cache_clear.html">cd_cache_clear()</a></code>. (<a href="https://github.com/NewGraphEnvironment/cd/issues/123" class="external-link">#123</a>, <a href="https://github.com/NewGraphEnvironment/cd/pull/125" class="external-link">#125</a>)</li>

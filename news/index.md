@@ -1,5 +1,38 @@
 # Changelog
 
+## cd 0.6.3 (2026-10-10)
+
+- Every published COG now carries a **checksum and the run that made
+  it**. Each catalog item’s `data` asset has `file:checksum` (a sha256
+  multihash) and `file:size` (STAC file extension v2.1.0), and the
+  item’s properties carry `cd:version`, `cd:sha`, `cd:run_time` and
+  `cd:run_id`, read from GDAL tags written into the COG itself. The
+  daily cube, which is not in the catalog, gets the same per file in
+  `s3://stac-era5-land/daily/manifest.json`. So a changed checksum means
+  changed bytes, and an analysis can record which build it read. A
+  checksum identifies a **build**, not values: the run time is in the
+  bytes, so a rebuild of unchanged data changes it. Every published file
+  is republished once to carry them, so caches validated by ETag
+  download each file again once; if you set
+  `options(cd.cache_revalidate = FALSE)`, run
+  [`cd_cache_clear()`](https://newgraphenvironment.github.io/cd/reference/cd_cache_clear.md).
+  ([\#124](https://github.com/NewGraphEnvironment/cd/issues/124),
+  [\#127](https://github.com/NewGraphEnvironment/cd/pull/127))
+- [`cd_cog_write()`](https://newgraphenvironment.github.io/cd/reference/cd_cog_write.md)
+  gains `tags =`, written into the file as dataset metadata; any `CD_*`
+  tag the input carries is dropped first.
+  [`cd_s3_push()`](https://newgraphenvironment.github.io/cd/reference/cd_s3_push.md)
+  no longer syncs `--size-only` by default (`size_only = FALSE`), so a
+  rebuilt file of unchanged size is uploaded. cd now imports `openssl`
+  and needs `terra (>= 1.8-54)`.
+- Producer side, every publish recomputes the hashes and refuses an
+  untagged or undescribed file; after the sync it checks each object’s
+  ETag against its file before the catalog or manifest goes up, and a
+  live publish needs a commit on `main`. Checksums and provenance in
+  [`cd_catalog()`](https://newgraphenvironment.github.io/cd/reference/cd_catalog.md)
+  and the extract functions are
+  [\#126](https://github.com/NewGraphEnvironment/cd/issues/126).
+
 ## cd 0.6.2 (2026-10-09)
 
 - The published layers now reach **60° N and 140° W**. The ERA5-Land
