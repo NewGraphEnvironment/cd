@@ -7,3 +7,5 @@
 - Created branch `126-surface-checksums-and-run-provenance-in` off main
 - Scaffolded PWF baseline from issue #126 with approved phases
 - Next: Phase 0 (file the prerequisite issue), then Phase 1
+- Phase 0: filed #128 (provenance keys to `processing:*`, blocks #126); #126 body edited
+  with the decided shape and the dependency

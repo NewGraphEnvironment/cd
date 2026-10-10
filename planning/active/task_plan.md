@@ -20,7 +20,7 @@ carry no provenance, so the examples show `NA`.
 
 
 ## Phase 0: Prerequisite issue
-- [ ] File a cd issue: rename the provenance keys to `processing:*` (v1.2.0 schema in
+- [x] File a cd issue (#128): rename the provenance keys to `processing:*` (v1.2.0 schema in
       `stac_extensions`) in `cd_stac_item()` (`R/cd_stac_catalog.R`),
       `manifest_entries()` (`scripts/_lib.R`), the publish checks
       (`provenance_problems()`, tests in `test-cd_stac_catalog.R`, `scripts/test_lib.R`),
