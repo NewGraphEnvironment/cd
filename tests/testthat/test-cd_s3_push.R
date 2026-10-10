@@ -14,3 +14,22 @@ test_that("cd_s3_push default bucket is stac-era5-land", {
   defaults <- formals(cd_s3_push)
   expect_equal(defaults$bucket, "stac-era5-land")
 })
+
+test_that("cd_s3_push passes --size-only only when asked", {
+  dir <- withr::local_tempdir()
+  cmds <- character()
+  testthat::local_mocked_bindings(
+    system = function(command, ...) {
+      cmds <<- c(cmds, command)
+      0L
+    },
+    .package = "base"
+  )
+  suppressMessages(cd_s3_push(dir, dry_run = TRUE, size_only = TRUE))
+  suppressMessages(cd_s3_push(dir, dry_run = TRUE))
+  expect_match(cmds[1], "--size-only", fixed = TRUE)
+  # The default: a checksum-carrying publish must upload a rebuilt file of
+  # unchanged size.
+  expect_false(grepl("--size-only", cmds[2], fixed = TRUE))
+  expect_match(cmds[2], "--dryrun", fixed = TRUE)
+})

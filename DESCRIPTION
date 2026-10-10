@@ -44,8 +44,9 @@ Imports:
     curl,
     dplyr,
     jsonlite,
+    openssl,
     rappdirs,
     rlang,
     stringr,
-    terra,
+    terra (>= 1.8-54),
     tibble

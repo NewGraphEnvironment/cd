@@ -37,6 +37,16 @@
 # Usage:
 #   Rscript scripts/tmax_tmin_republish.R --dry-run   # steps 1, 3 and the local backup
 #   Rscript scripts/tmax_tmin_republish.R
+#
+# RETIRED (#124). It ran once, for #37, and its record is the _backup/ prefix.
+# Since #124 the catalog carries each COG's checksum and every COG carries
+# run provenance: replacing 10 COGs while leaving catalog.json alone would
+# publish 10 checksums that are not the live objects', for COGs with no
+# provenance. Rebuild with scripts/pipeline_stage3_edh.R, which publishes all
+# 59 with their catalog. Kept for its history and the restore notes above.
+
+stop("scripts/tmax_tmin_republish.R is retired (#124): it would leave the ",
+     "catalog's checksums wrong. Use scripts/pipeline_stage3_edh.R.", call. = FALSE)
 
 if (requireNamespace("cd", quietly = TRUE)) {
   library(cd)

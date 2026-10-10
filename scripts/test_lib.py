@@ -37,6 +37,7 @@ from _lib import (  # noqa: E402
     monthly_from_daily,
     months_available,
     read_cog_days,
+    run_provenance,
     with_retry,
     write_cog,
 )
@@ -313,6 +314,110 @@ def cube_monthly_matches_hourly() -> bool:
 
 LOCAL_CASES.append(("cube -> monthly equals hourly -> monthly: grid, NaN, 29 Feb, float32",
                     cube_monthly_matches_hourly))
+
+
+PROV = {"CD_VERSION": "1.0.0", "CD_SHA": "abc", "CD_RUN_TIME": "2026-01-01T00:00:00Z",
+        "CD_RUN_ID": "1"}
+
+
+def cube_year(seed: int = 124) -> xr.DataArray:
+    rng = np.random.default_rng(seed)
+    t = pd.date_range(*local_year_window(2023), freq="1h")
+    v = (273.15 + rng.normal(5, 8, (len(t), 2, 2))).astype("float32")
+    v[:, 1, 1] = np.nan
+    hourly = xr.DataArray(
+        v, coords={"valid_time": t, "latitude": np.array([54.05, 53.95]),
+                   "longitude": np.array([237.0, 237.1])},
+        dims=("valid_time", "latitude", "longitude"))
+    return local_daily(hourly)["tmax"]
+
+
+def cog_tags_and_determinism() -> bool:
+    """Provenance survives the COG copy, and is the only thing that varies.
+
+    A checksum carries information only if an unchanged input reproduces it
+    (NewGraphEnvironment/sred#39); and a re-tag through read_cog_days() must
+    give the same bytes as the original write, or --rewrite changed data.
+    """
+    import tempfile
+    import time as _time
+
+    import rasterio
+
+    da = cube_year()
+    names = [str(d)[:10] for d in da.valid_time.values]
+    with tempfile.TemporaryDirectory() as tmp:
+        d = Path(tmp) / "daily"
+        d.mkdir()
+        a, b, c = d / "a.tif", d / "b.tif", d / "c.tif"
+        write_cog(da, a, band_names=names, tags=PROV)
+        _time.sleep(1.1)
+        write_cog(da, b, band_names=names, tags=PROV)
+        # What --rewrite does to a year already on disk.
+        back = read_cog_days(a)
+        back.attrs = {"units": "degC"}
+        write_cog(back, c, band_names=names, tags=PROV)
+        with rasterio.open(a) as src:
+            tags = src.tags()
+        same = a.read_bytes() == b.read_bytes()
+        lossless = a.read_bytes() == c.read_bytes()
+        write_cog(da, b, band_names=names, tags={**PROV, "CD_RUN_TIME": "x"})
+        varies = a.read_bytes() != b.read_bytes()
+    return (all(tags.get(k) == v for k, v in PROV.items())
+            and tags.get("units") == "degC" and same and lossless and varies)
+
+
+LOCAL_CASES.append(("COG: provenance tags survive the copy; same input + tags = same bytes; "
+                    "a read-back rewrite is byte-identical", cog_tags_and_determinism))
+
+
+def provenance_shape() -> bool:
+    import os
+
+    keep = {k: os.environ.get(k) for k in ("GITHUB_SHA", "GITHUB_RUN_ID", "CD_RUN_TIME", "CD_SHA")}
+    try:
+        os.environ.update({"GITHUB_SHA": "f00", "GITHUB_RUN_ID": "77",
+                           "CD_RUN_TIME": "2026-01-02T03:04:05Z"})
+        ci = run_provenance()
+        # The R pipeline's CD_SHA wins, so R and Python stamp one SHA.
+        os.environ["CD_SHA"] = "fromR"
+        from_r = run_provenance()["CD_SHA"]
+        for k in keep:
+            os.environ.pop(k, None)
+        local = run_provenance()
+    finally:
+        for k, v in keep.items():
+            if v is None:
+                os.environ.pop(k, None)
+            else:
+                os.environ[k] = v
+    import re
+    return (list(ci) == ["CD_VERSION", "CD_SHA", "CD_RUN_TIME", "CD_RUN_ID"]
+            and ci["CD_SHA"] == "f00" and ci["CD_RUN_ID"] == "77" and from_r == "fromR"
+            and ci["CD_RUN_TIME"] == "2026-01-02T03:04:05Z"
+            and re.fullmatch(r"[0-9a-f]{40}(-dirty)?", local["CD_SHA"]) is not None
+            and local["CD_RUN_ID"] == "local"
+            and re.fullmatch(r"\d{4}-\d\d-\d\dT\d\d:\d\d:\d\dZ", local["CD_RUN_TIME"]) is not None
+            and colon_refused())
+
+
+def colon_refused() -> bool:
+    import tempfile
+
+    da = cube_year()
+    names = [str(d)[:10] for d in da.valid_time.values]
+    with tempfile.TemporaryDirectory() as tmp:
+        d = Path(tmp) / "daily"
+        d.mkdir()
+        out = d / "x.tif"
+        refused = raises(ValueError, lambda: write_cog(
+            da, out, band_names=names, tags={"cd:sha": "x"}))
+        left = sorted(p.relative_to(tmp).as_posix() for p in Path(tmp).rglob("*"))
+    return refused and left == ["daily"]
+
+
+LOCAL_CASES.append(("run_provenance: CI and local shapes, same keys as _lib.R; "
+                    "a ':' key is refused", provenance_shape))
 
 
 def retry_aiohttp_payload() -> bool:

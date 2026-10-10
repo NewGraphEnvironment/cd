@@ -19,24 +19,19 @@
 #   Rscript scripts/pipeline_stage3_edh.R
 #   Rscript scripts/pipeline_stage3_edh.R --dry-run   # no S3 push
 
-# Prefer the installed package; devtools::load_all() is the local-dev fallback.
-# Fail with a readable message rather than a bare "no package called 'devtools'"
-# from loadNamespace (see #78).
-if (requireNamespace("cd", quietly = TRUE)) {
-  library(cd)
-} else if (requireNamespace("devtools", quietly = TRUE)) {
-  devtools::load_all()
-} else {
-  stop("cd is not installed and devtools is unavailable to load_all() it. ",
-       "Install cd (or devtools) before running this pipeline.", call. = FALSE)
-}
-suppressMessages(library(terra))
-
 # Producer-side helpers, shared with pipeline_update_edh.R (repo-root cwd).
 source("scripts/_lib.R")
+# The installed cd on GitHub Actions, the checkout anywhere else (#124);
+# readable failure rather than a bare loadNamespace error (#78).
+load_cd()
+suppressMessages(library(terra))
+source("scripts/_publish.R")
 
 args <- commandArgs(trailingOnly = TRUE)
 dry_run <- "--dry-run" %in% args
+
+# Written into every COG as GDAL tags, and from there into the catalog (#124).
+prov <- run_start()
 
 # -- Config --------------------------------------------------------------------
 bucket <- "stac-era5-land"
@@ -70,6 +65,11 @@ log_msg <- function(...) {
 
 # -- Step 1: Aggregate to seasonal/annual COGs --------------------------------
 log_msg("=== STEP 1: Aggregate monthly -> seasonal/annual COGs ===")
+log_msg("  Provenance: ", paste(names(prov), prov, sep = "=", collapse = " "))
+# Before hours of work, not after: a live push from an edited tree is refused.
+if (!dry_run && length(publish_sha_problems(prov[["CD_SHA"]])) > 0) {
+  stop("Refusing to publish: ", publish_sha_problems(prov[["CD_SHA"]]), call. = FALSE)
+}
 
 # COGs written by THIS run, with their band names (years). cog_dir persists
 # between runs, so a file merely present there may be a stale copy from an
@@ -131,7 +131,7 @@ for (var in all_vars) {
 
     multi <- rast(year_layers)
     names(multi) <- names(year_layers)
-    cd_cog_write(multi, cog_path, overwrite = TRUE)
+    cd_cog_write(multi, cog_path, overwrite = TRUE, tags = prov)
     written[[basename(cog_path)]] <- names(multi)
     log_msg(sprintf("    wrote %s (%d years)", basename(cog_path), nlyr(multi)))
   }
@@ -175,7 +175,7 @@ for (var in annual_vars) {
 
   multi <- rast(year_layers)
   names(multi) <- names(year_layers)
-  cd_cog_write(multi, cog_path, overwrite = TRUE)
+  cd_cog_write(multi, cog_path, overwrite = TRUE, tags = prov)
   written[[basename(cog_path)]] <- names(multi)
   log_msg(sprintf("    wrote %s (%d years)", basename(cog_path), nlyr(multi)))
 }
@@ -185,7 +185,7 @@ for (var in annual_vars) {
 # partial monthly_dir would publish a partial catalog, or stale COGs left in
 # cog_dir by an earlier run over newer live ones. A partial monthly_dir is the
 # normal state after a single-variable regen (#37 left only tmax and tmin
-# there; scripts/tmax_tmin_republish.R is the tool for that case). So every
+# there; scripts/tmax_tmin_republish.R handled that case, retired in #124). So every
 # COG must have been written by this run, cog_dir must hold nothing else, and
 # every COG must carry one contiguous span of years that keeps every live
 # year: the push cannot be undone. pipeline_update_edh.R runs the same guard
@@ -225,26 +225,47 @@ cd_stac_catalog(
   base_url = paste0("https://", bucket, ".s3.us-west-2.amazonaws.com")
 )
 log_msg("  wrote ", catalog_path)
-# Check the catalog that was written, not only the inputs it was built from.
-built <- catalog_item_years(jsonlite::read_json(catalog_path))
+# A catalog.json left in cog_dir by a run from before #89 would ride the sync;
+# removed before stray_problems() below, which would otherwise refuse it.
+unlink(file.path(cog_dir, "catalog.json"))
+# Check the catalog that was written, not only the inputs it was built from:
+# its items, and that every checksum is of the COG beside it and every COG
+# says which run made it (#124). Nothing touches a COG after this point.
+built_json <- jsonlite::read_json(catalog_path)
+built <- catalog_item_years(built_json)
 problems <- catalog_problems(built$keys, sub("\\.tif$", "", expected_cogs),
                              built$start, built$end, years_written)
+problems <- c(problems,
+              checksum_problems(catalog_entries(built_json), cog_dir),
+              provenance_problems(file.path(cog_dir, list.files(cog_dir, pattern = "\\.tif$"))),
+              stray_problems(cog_dir, names(written)))
 if (length(problems) > 0) {
   unlink(catalog_path)
-  stop("Refusing to push: the catalog built this run is not the full set:\n  - ",
+  stop("Refusing to push: the catalog built this run is not fit to publish:\n  - ",
        paste(problems, collapse = "\n  - "), call. = FALSE)
 }
 
 # -- Step 3: S3 push -----------------------------------------------------------
 log_msg("=== STEP 3: Push to S3 ===")
-# A catalog.json left in cog_dir by a run from before #89 would ride the sync.
-unlink(file.path(cog_dir, "catalog.json"))
 if (dry_run) log_msg("  DRY RUN — showing what would be uploaded:")
-cd_s3_push(cog_dir, bucket = bucket, dry_run = dry_run)
-# On its own and last: the sync is --size-only, and a rebuilt catalog can
-# differ from the live one without differing in size (an end year moving from
-# 2025 to 2026), so the sync would skip it; and uploaded after the COGs, it
-# never points at a COG that is not up yet.
+# Not --size-only (#124): a rebuilt COG of unchanged size would otherwise stay
+# behind on S3 under a catalog checksum that is not its own. The sync uploads
+# every COG newer than its S3 copy, which is all of them after a rebuild.
+cd_s3_push(cog_dir, bucket = bucket, dry_run = dry_run, size_only = FALSE)
+# What went up is what was hashed, checked before the catalog that carries
+# the hashes goes up (#124).
+if (!dry_run) {
+  # ...and what was hashed is still what is on disk.
+  problems <- c(etag_problems(s3_base(bucket), cog_dir, names(written)),
+                checksum_problems(catalog_entries(built_json), cog_dir))
+  if (length(problems) > 0) {
+    stop("COGs synced, catalog.json NOT uploaded: ", paste(problems, collapse = "; "),
+         call. = FALSE)
+  }
+  log_msg("  All ", length(written), " live COGs are the bytes the catalog hashes")
+}
+# On its own and last: uploaded after the COGs, it never points at a COG that
+# is not up yet.
 cat_put <- suppressWarnings(system2(
   "aws", c("s3", "cp", shQuote(catalog_path),
            shQuote(paste0("s3://", bucket, "/catalog.json")),
@@ -258,11 +279,10 @@ if (!is.null(attr(cat_put, "status"))) {
 }
 log_msg("  ", paste(cat_put, collapse = " "))
 if (!dry_run) {
-  live_after <- tryCatch(catalog_item_years(jsonlite::read_json(catalog_url)),
-                         error = function(e) NULL)
-  if (!identical(live_after, built)) {
-    stop("catalog.json uploaded, but the live catalog read back does not ",
-         "match the one built this run.", call. = FALSE)
+  # Byte for byte, checksums included, not only its keys and years.
+  problems <- readback_problems(catalog_url, catalog_path)
+  if (length(problems) > 0) {
+    stop("catalog.json uploaded, but ", problems, call. = FALSE)
   }
 }
 

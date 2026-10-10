@@ -4,7 +4,14 @@
 \alias{cd_cog_write}
 \title{Write a SpatRaster as a Cloud-Optimized GeoTIFF}
 \usage{
-cd_cog_write(x, path, overwrite = FALSE, gdal = c("COMPRESS=DEFLATE"), ...)
+cd_cog_write(
+  x,
+  path,
+  overwrite = FALSE,
+  gdal = c("COMPRESS=DEFLATE"),
+  tags = NULL,
+  ...
+)
 }
 \arguments{
 \item{x}{A \link[terra:SpatRaster-class]{terra::SpatRaster} to write.}
@@ -18,6 +25,10 @@ Default \code{c("COMPRESS=DEFLATE")}. Other common options:
 \code{"COMPRESS=LZW"}, \code{"COMPRESS=ZSTD"}, \code{"OVERVIEW_RESAMPLING=AVERAGE"},
 \code{"BLOCKSIZE=512"}.}
 
+\item{tags}{Named character vector of dataset metadata to write, or
+\code{NULL} (default) for none. Names may not contain \code{:}, which GDAL reads
+as a metadata domain separator.}
+
 \item{...}{Additional arguments passed to \code{\link[terra:writeRaster]{terra::writeRaster()}}.}
 }
 \value{
@@ -28,6 +39,14 @@ Wrapper around \code{\link[terra:writeRaster]{terra::writeRaster()}} with COG fo
 Compression and other GDAL creation options are parameterized
 for flexibility across data types and use cases.
 }
+\details{
+\code{tags} are written into the file as GDAL dataset metadata, so they are
+part of the bytes and of any checksum taken afterwards. The producer
+pipelines pass the run's provenance here (\code{CD_VERSION}, \code{CD_SHA},
+\code{CD_RUN_TIME}, \code{CD_RUN_ID}). Any \verb{CD_*} tag the input already carries,
+such as one read back from a published COG, is dropped first, so a
+rewrite never inherits an earlier run's provenance.
+}
 \examples{
 r <- terra::rast(nrows = 10, ncols = 10, vals = rnorm(100))
 tmp <- tempfile(fileext = ".tif")
@@ -35,5 +54,10 @@ cd_cog_write(r, tmp, overwrite = TRUE)
 
 # Custom compression
 cd_cog_write(r, tmp, overwrite = TRUE, gdal = c("COMPRESS=LZW"))
+
+# Record where the file came from, inside the file
+cd_cog_write(r, tmp, overwrite = TRUE,
+             tags = c(CD_VERSION = "0.6.2", CD_RUN_ID = "local"))
+terra::metags(terra::rast(tmp))
 
 }

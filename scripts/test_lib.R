@@ -305,5 +305,198 @@ check(length(p) == 1L && grepl("1 COG(s)", p, fixed = TRUE) &&
 check(grepl("could not be opened", grid_problems(tempfile(fileext = ".tif")), fixed = TRUE),
       "a missing COG is refused")
 
+# -- run_provenance (#124) ------------------------------------------------------
+prov_keys <- c("CD_VERSION", "CD_SHA", "CD_RUN_TIME", "CD_RUN_ID")
+withr_env <- function(vars, code) {
+  old <- Sys.getenv(names(vars), unset = NA)
+  do.call(Sys.setenv, as.list(vars))
+  on.exit({
+    for (n in names(old)) if (is.na(old[[n]])) Sys.unsetenv(n) else
+      do.call(Sys.setenv, stats::setNames(list(old[[n]]), n))
+  })
+  code
+}
+p <- withr_env(c(GITHUB_SHA = "f00", GITHUB_RUN_ID = "77",
+                 CD_RUN_TIME = "2026-01-02T03:04:05Z"), run_provenance())
+check(identical(names(p), prov_keys) && p[["CD_SHA"]] == "f00" &&
+        p[["CD_RUN_ID"]] == "77" && p[["CD_RUN_TIME"]] == "2026-01-02T03:04:05Z" &&
+        p[["CD_VERSION"]] == read.dcf("DESCRIPTION", fields = "Version")[1, 1],
+      "CI provenance comes from GITHUB_SHA, GITHUB_RUN_ID and CD_RUN_TIME")
+old_ci <- Sys.getenv(c("GITHUB_SHA", "GITHUB_RUN_ID", "CD_RUN_TIME"), unset = NA)
+Sys.unsetenv(c("GITHUB_SHA", "GITHUB_RUN_ID", "CD_RUN_TIME"))
+p <- run_provenance()
+for (n in names(old_ci)) if (!is.na(old_ci[[n]])) do.call(Sys.setenv, stats::setNames(list(old_ci[[n]]), n))
+check(grepl("^[0-9a-f]{40}(-dirty)?$", p[["CD_SHA"]]) && p[["CD_RUN_ID"]] == "local" &&
+        grepl("^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$", p[["CD_RUN_TIME"]]),
+      "local provenance reads the git HEAD and stamps now, in UTC")
+check(!any(grepl(":", names(p), fixed = TRUE)) && !anyNA(p),
+      "provenance keys carry no ':' and no value is NA, so cd_cog_write() accepts them")
+
+check(identical(sha_problems(c(CD_SHA = strrep("a", 40))), character(0)) &&
+        length(sha_problems(c(CD_SHA = paste0(strrep("a", 40), "-dirty")))) == 1L &&
+        length(sha_problems(c(CD_SHA = "unknown"))) == 1L,
+      "a live publish refuses a dirty or unknown SHA")
+old_rt <- Sys.getenv("CD_RUN_TIME", unset = NA)
+Sys.unsetenv("CD_RUN_TIME")
+rs1 <- run_start()
+Sys.sleep(1.1)
+rs2 <- run_start()
+if (is.na(old_rt)) Sys.unsetenv("CD_RUN_TIME") else Sys.setenv(CD_RUN_TIME = old_rt)
+check(identical(rs1[["CD_RUN_TIME"]], rs2[["CD_RUN_TIME"]]) &&
+        identical(Sys.getenv("CD_SHA"), rs1[["CD_SHA"]]),
+      "run_start() fixes the run time and SHA once, for every later call and child")
+Sys.setenv(CD_SHA = "fromparent")
+check(identical(run_provenance()[["CD_SHA"]], "fromparent"),
+      "a CD_SHA in the environment wins, as in _lib.py")
+Sys.unsetenv("CD_SHA")
+
+fake_bin <- tempfile("fakegit_")
+dir.create(fake_bin)
+writeLines(c("#!/bin/sh", 'if [ "$1" = "rev-parse" ]; then echo 0123456789abcdef0123456789abcdef01234567; exit 0; fi',
+             "exit 128"), file.path(fake_bin, "git"))
+Sys.chmod(file.path(fake_bin, "git"), "755")
+old_path <- Sys.getenv("PATH")
+old_gs <- Sys.getenv("GITHUB_SHA", unset = NA)
+Sys.unsetenv("GITHUB_SHA")
+Sys.setenv(PATH = paste(fake_bin, old_path, sep = ":"))
+p_fail <- run_provenance()
+Sys.setenv(PATH = old_path)
+if (!is.na(old_gs)) Sys.setenv(GITHUB_SHA = old_gs)
+check(identical(p_fail[["CD_SHA"]], "unknown") && length(sha_problems(p_fail)) == 1L,
+      "a git status that fails gives CD_SHA unknown, which a live publish refuses")
+
+# -- checksum_problems / provenance_problems (#124) ----------------------------
+# The source tree's cd_stac_catalog(), not whatever version is installed: an
+# installed cd from before #124 writes no checksums at all.
+suppressMessages(pkgload::load_all(".", quiet = TRUE, export_all = FALSE))
+ck_dir <- tempfile("ck_")
+dir.create(ck_dir)
+ck_r <- terra::rast(nrows = 4, ncols = 5, nlyrs = 2, vals = 1:40)
+names(ck_r) <- c("2001", "2002")
+terra::writeRaster(ck_r, file.path(ck_dir, "tmean_annual.tif"), filetype = "COG",
+                   overwrite = TRUE)
+ck_r2 <- ck_r
+terra::metags(ck_r2) <- c(CD_VERSION = "1", CD_SHA = "a", CD_RUN_TIME = "t",
+                          CD_RUN_ID = "local")
+terra::writeRaster(ck_r2, file.path(ck_dir, "prcp_annual.tif"), filetype = "COG",
+                   overwrite = TRUE)
+ck_json <- tempfile(fileext = ".json")
+suppressMessages(cd_stac_catalog(ck_dir, output_path = ck_json,
+                                     base_url = "https://example.com"))
+ck_cat <- jsonlite::read_json(ck_json)
+ck_e <- catalog_entries(ck_cat)
+check(identical(sort(names(ck_e)), c("prcp_annual.tif", "tmean_annual.tif")) &&
+        identical(checksum_problems(ck_e, ck_dir), character(0)),
+      "a freshly built catalog matches its COGs")
+check(identical(ck_e[["tmean_annual.tif"]]$`file:checksum`,
+                paste0("1220", strsplit(system2("shasum", c("-a", "256",
+                  shQuote(file.path(ck_dir, "tmean_annual.tif"))), stdout = TRUE), " ")[[1]][1])),
+      "the catalog's checksum is the sha256 the shasum binary computes")
+# One byte flipped in the middle of the file, size unchanged: what a --size-only
+# sync of a rebuilt COG would leave live.
+ck_f <- file.path(ck_dir, "tmean_annual.tif")
+ck_bytes <- readBin(ck_f, "raw", file.size(ck_f))
+ck_mid <- length(ck_bytes) %/% 2L
+ck_bytes[ck_mid] <- as.raw(bitwXor(as.integer(ck_bytes[ck_mid]), 1L))
+writeBin(ck_bytes, ck_f)
+p <- checksum_problems(ck_e, ck_dir)
+check(length(p) == 1L && grepl("tmean_annual.tif: file:checksum does not match", p, fixed = TRUE),
+      "a same-size change to a COG is refused")
+ck_bare <- ck_e
+ck_bare[["prcp_annual.tif"]]$`file:checksum` <- sub("^1220", "", ck_bare[["prcp_annual.tif"]]$`file:checksum`)
+check(grepl("prcp_annual.tif: file:checksum is not a sha256 multihash",
+            checksum_problems(ck_bare, ck_dir, "prcp_annual.tif"), fixed = TRUE),
+      "a bare digest without the 1220 multihash prefix is refused")
+ck_size <- ck_e
+ck_size[["prcp_annual.tif"]]$`file:size` <- 1
+check(grepl("file:size 1", checksum_problems(ck_size, ck_dir, "prcp_annual.tif"), fixed = TRUE),
+      "a wrong size is refused")
+check(grepl("not on disk", checksum_problems(ck_e["prcp_annual.tif"], tempdir()), fixed = TRUE) &&
+        grepl("no entry", checksum_problems(ck_e, ck_dir, "x.tif"), fixed = TRUE),
+      "an entry with no file, and a file with no entry, are refused")
+p <- provenance_problems(file.path(ck_dir, c("tmean_annual.tif", "prcp_annual.tif")))
+check(length(p) == 1L && grepl("1 file(s)", p, fixed = TRUE) &&
+        grepl("tmean_annual.tif (CD_VERSION, CD_SHA, CD_RUN_TIME, CD_RUN_ID)", p, fixed = TRUE),
+      "an untagged COG is refused; a tagged one passes")
+ck_r3 <- ck_r
+terra::metags(ck_r3) <- c(CD_VERSION = "1", CD_SHA = "a", CD_RUN_TIME = "t")
+terra::writeRaster(ck_r3, file.path(ck_dir, "one_short.tif"), filetype = "COG")
+check(grepl("one_short.tif (CD_RUN_ID)", provenance_problems(file.path(ck_dir, "one_short.tif")),
+            fixed = TRUE),
+      "a COG missing one tag is refused, naming it")
+
+# -- untagged rasters, strays, ETags, manifests (#124 plan review) --------------
+ck_bare_tif <- file.path(ck_dir, "no_tags.tif")
+ck_r4 <- terra::rast(nrows = 2, ncols = 2, vals = 1:4)
+terra::writeRaster(ck_r4, ck_bare_tif, gdal = "PROFILE=BASELINE")
+p <- provenance_problems(ck_bare_tif)
+check(grepl("no_tags.tif (CD_VERSION", p, fixed = TRUE) && !grepl("could not be opened", p),
+      "a file with no tags at all is reported as untagged, not unreadable")
+st_dir <- tempfile("st_")
+dir.create(st_dir)
+file.create(file.path(st_dir, c("a.tif", "a.tif.aux.json", ".hidden", "notes.txt")))
+check(identical(stray_problems(st_dir, c("a.tif", "notes.txt")), character(0)),
+      "a directory holding only described files (and what the sync excludes) passes")
+check(grepl("notes.txt", stray_problems(st_dir, "a.tif"), fixed = TRUE),
+      "a file nothing describes, which the sync would upload, is refused")
+dir.create(file.path(st_dir, "sub"))
+file.create(file.path(st_dir, "sub", ".hidden"))
+check(grepl("sub/.hidden", stray_problems(st_dir, c("a.tif", "notes.txt")), fixed = TRUE),
+      "a hidden file in a subdirectory, which aws's '.*' exclude does not match, is refused")
+et_f <- tempfile()
+writeBin(as.raw(rep(0:255, length.out = 3 * 1024^2 + 17)), et_f)
+et_md5 <- as.vector(as.character(openssl::md5(file(et_f, "rb"))))
+et_parts <- function(f, chunk) {
+  con <- file(f, "rb")
+  on.exit(close(con))
+  p <- list()
+  repeat {
+    b <- readBin(con, "raw", chunk)
+    if (!length(b)) break
+    p[[length(p) + 1]] <- as.raw(openssl::md5(b))
+  }
+  paste0(as.character(openssl::md5(do.call(c, p))), "-", length(p))
+}
+big_f <- tempfile()
+writeBin(as.raw(rep(0:255, length.out = 9263371)), big_f)
+check(s3_etag_matches(et_f, et_md5) && s3_etag_matches(et_f, paste0('"', et_md5, '"')) &&
+        !s3_etag_matches(et_f, sub(".$", "0", et_md5)) && !s3_etag_matches(et_f, NA),
+      "a single-part ETag matches its file's MD5, and only that")
+check(s3_etag_matches(big_f, et_parts(big_f, 8 * 1024^2)) &&
+        s3_etag_matches(big_f, et_parts(big_f, 5 * 1024^2)) &&
+        !s3_etag_matches(big_f, sub("^.", "0", et_parts(big_f, 8 * 1024^2))) &&
+        !s3_etag_matches(et_f, et_parts(big_f, 8 * 1024^2)),
+      "a multipart ETag matches at whatever part size gives its part count")
+mf_dir <- tempfile("mf_")
+dir.create(mf_dir)
+for (v in c("tmean", "tmax", "tmin")) for (y in 2001:2002) {
+  terra::writeRaster(ck_r2, file.path(mf_dir, sprintf("%s_daily_%d.tif", v, y)))
+}
+mf_local <- manifest_entries(list.files(mf_dir, full.names = TRUE))
+check(identical(manifest_problems(mf_local), character(0)) &&
+        identical(checksum_problems(mf_local, mf_dir), character(0)) &&
+        identical(mf_local[["tmax_daily_2001.tif"]]$`cd:run_id`, "local"),
+      "manifest entries for a whole cube pass, and carry each file's provenance")
+check(grepl("1 file(s) missing from the span 2001-2002 (tmin_daily_2002.tif)",
+            manifest_problems(mf_local[names(mf_local) != "tmin_daily_2002.tif"]), fixed = TRUE),
+      "a manifest missing one variable-year is refused, by name")
+mf_gap <- mf_local[!grepl("2002", names(mf_local))]
+mf_gap[["tmean_daily_2004.tif"]] <- mf_local[[1]]
+check(any(grepl("missing from the span 2001-2004", manifest_problems(mf_gap), fixed = TRUE)),
+      "a manifest that skips a year is refused")
+mf_bad <- mf_local
+mf_bad[[1]]$`file:checksum` <- substring(mf_bad[[1]]$`file:checksum`, 5)
+check(any(grepl("without a sha256 multihash", manifest_problems(mf_bad), fixed = TRUE)),
+      "a bare digest in the manifest is refused")
+mf_live <- mf_local
+mf_live[["tmax_daily_2001.tif"]]$`cd:run_id` <- "older"
+mf_new <- list(tmean_daily_2003.tif = mf_local[[1]], tmax_daily_2001.tif = mf_local[["tmax_daily_2001.tif"]])
+mf_m <- manifest_merge(mf_live, mf_new)
+check(identical(mf_m[["tmax_daily_2001.tif"]]$`cd:run_id`, "local") &&
+        identical(names(mf_m), sort(names(mf_m), method = "radix")) &&
+        length(mf_m) == 7L && manifest_last_year(mf_m) == 2003L &&
+        identical(names(manifest_merge(NULL, mf_new)), sort(names(mf_new), method = "radix")),
+      "a merge lays local entries over live ones, adds new ones, and sorts by bytes")
+
 cat(sprintf("\n%d/%d passed\n", checks - failures, checks))
 quit(status = if (failures > 0L) 1L else 0L)

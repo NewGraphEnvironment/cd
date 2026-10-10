@@ -14,6 +14,7 @@ Compute climate anomalies from ERA5-Land reanalysis data for custom areas of int
 Useful links:
 \itemize{
   \item \url{https://github.com/NewGraphEnvironment/cd}
+  \item \url{https://newgraphenvironment.github.io/cd/}
   \item Report bugs at \url{https://github.com/NewGraphEnvironment/cd/issues}
 }
 

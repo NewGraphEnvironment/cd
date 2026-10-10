@@ -55,23 +55,18 @@
 # is the only way to prove the bucket is actually writable.
 # climate-update.yml runs it weekly as a heartbeat (#78).
 
-# Prefer the installed package (what CI does — see extra-packages: local::. in
-# climate-update.yml). devtools::load_all() is the local-dev fallback. Fail with
-# a readable message rather than a bare "no package called 'devtools'" from
-# loadNamespace, which is how #78 presented on every scheduled run.
-if (requireNamespace("cd", quietly = TRUE)) {
-  library(cd)
-} else if (requireNamespace("devtools", quietly = TRUE)) {
-  devtools::load_all()
-} else {
-  stop("cd is not installed and devtools is unavailable to load_all() it. ",
-       "Install cd (or devtools) before running this pipeline.", call. = FALSE)
-}
-suppressMessages(library(terra))
-
 # Producer-side helpers (mirrors scripts/_lib.py). Repo-root cwd, same
 # assumption the `uv run scripts/...` calls below already make.
 source("scripts/_lib.R")
+# CI runs the cd that climate-update.yml installs from the checkout
+# (extra-packages: local::.); anywhere else, the checkout itself, so the code
+# writing the bytes is the commit CD_SHA names (#124). Fails with a readable
+# message rather than a bare loadNamespace error, which is how #78 presented
+# on every scheduled run.
+load_cd()
+suppressMessages(library(terra))
+# Networked publish helpers: ETag and byte read-backs, the daily publish (#124).
+source("scripts/_publish.R")
 
 args <- commandArgs(trailingOnly = TRUE)
 # Same --dry-run flag as pipeline_stage3_edh.R, plus CD_DRY_RUN so the GitHub
@@ -117,6 +112,16 @@ log_msg("Mode: ", if (dry_run) {
 } else {
   "LIVE"
 })
+
+# Written into every COG this run makes, monthly and daily, and from there into
+# the catalog and the daily manifest (#124). run_start() fixes CD_RUN_TIME in
+# the environment, so the daily backfill this script starts carries the same.
+prov <- run_start()
+log_msg("Provenance: ", paste(names(prov), prov, sep = "=", collapse = " "))
+if (!dry_run && length(publish_sha_problems(prov[["CD_SHA"]])) > 0) {
+  log_msg("ERROR: refusing a live run: ", publish_sha_problems(prov[["CD_SHA"]]))
+  quit(status = 1L)
+}
 
 # -- Step 0: auth probes -------------------------------------------------------
 # Runs on every path, including the live run. STEP 1/2 can exit 0 early when
@@ -382,10 +387,21 @@ daily_step <- function() {
   if (is.na(newest)) {
     log_msg("  ERROR: no daily cube published for ", target - 3L, "-", target,
             ". Build it locally: uv run scripts/backfill_edh_daily.py, then ",
-            "cd_s3_push('", daily_dir, "', prefix = 'daily').")
+            "Rscript scripts/daily_publish.R.")
     return(FALSE)
   }
   log_msg("  Newest year on S3: ", newest)
+  # The manifest must describe every year the files say is published, on
+  # every path, the dry-run heartbeat included: a run whose manifest upload
+  # failed after its sync would otherwise leave that year out for good, since
+  # the next run finds the files and calls the cube current (#124).
+  mf_problems <- daily_manifest_problems(bucket, newest)
+  if (length(mf_problems) > 0) {
+    log_msg("  ERROR: the daily manifest does not describe the published cube:")
+    for (p in mf_problems) log_msg("    - ", p)
+    return(FALSE)
+  }
+  log_msg("  Daily manifest describes the cube through ", newest)
   if (newest >= target) {
     log_msg("  Daily cube current.")
     return(TRUE)
@@ -410,7 +426,10 @@ daily_step <- function() {
       return(FALSE)
     }
   }
-  cd_s3_push(daily_dir, bucket = bucket, prefix = "daily", dry_run = FALSE)
+  # The new years' files, then the live manifest with their entries added,
+  # each checked against S3 (scripts/_publish.R).
+  daily_publish(daily_dir, bucket, manifest_path = "data/backfill/daily_manifest.json",
+                log = function(x) log_msg("  ", x))
   log_msg("  Published ", paste(missing, collapse = ", "), " to s3://", bucket, "/daily/")
   TRUE
 }
@@ -555,6 +574,16 @@ if (length(key_problems) > 0) {
 }
 log_msg("Live catalog: the expected ", length(expected_cogs), " items, ",
         min(current_years), "-", latest_year)
+# A catalog from before #124 carries no checksums, and its COGs no provenance;
+# STEP 5 would then refuse a COG STEP 4 copies unchanged. Said on the weekly
+# heartbeat, so the republish is not first noticed by a live run.
+unhashed <- tryCatch(sum(vapply(jsonlite::read_json(catalog_url)$items, function(i)
+  is.null(i$assets$data$`file:checksum`), logical(1))), error = function(e) NA)
+if (!identical(unhashed, 0L)) {
+  log_msg("WARNING: ", if (is.na(unhashed)) "could not count" else unhashed,
+          " live catalog item(s) without file:checksum; republish with ",
+          "scripts/pipeline_stage3_edh.R (#124).")
+}
 
 # -- Step 2: target year ------------------------------------------------------
 # ERA5-Land has ~2-3 month latency. Try the current year — if EDH has all
@@ -631,8 +660,10 @@ tmaxmin_local_history <- function() {
 }
 if (!isTRUE(tmaxmin_local_history())) {
   log_msg("ERROR: the live tmax/tmin history is not confirmed local-day ",
-          "(no UTC-day backup, or a live key still equals it). Run ",
-          "scripts/tmax_tmin_republish.R first (#37); not appending.")
+          "(no UTC-day backup, or a live key still equals it); not appending. ",
+          "The record is s3://", bucket, "/_backup/tmax_tmin_utc_day/, written ",
+          "by the #37 republish (scripts/tmax_tmin_republish.R, retired in ",
+          "#124); its local copy is data/backfill/republish_37/.")
   finish(1L)
 }
 
@@ -774,7 +805,8 @@ append_to_cog <- function(var, period, new_layers) {
   }
   # Nothing left to append: still put the COG in cog_dir, because STEP 5
   # publishes only when every COG was written this run (#89). A byte copy, not
-  # a rewrite, so nothing is re-encoded, and the size-only sync then skips it.
+  # a rewrite, so nothing is re-encoded: the sync puts the same bytes back, and
+  # the COG keeps the provenance tags of the run that made them (#124).
   if (length(new_layers) == 0) {
     # Retried: this runs at the end of a fetch measured in hours. A failure
     # leaves no file (curl_download writes to a temp file first).
@@ -809,7 +841,7 @@ append_to_cog <- function(var, period, new_layers) {
          ". Extent/res differ. Aborting.", call. = FALSE)
   }
   combined <- c(existing_rast, new_rast)
-  cd_cog_write(combined, cog_path, overwrite = TRUE)
+  cd_cog_write(combined, cog_path, overwrite = TRUE, tags = prov)
   log_msg("  Updated: ", cog_name, " (", nlyr(combined), " years total)")
   names(combined)
 }
@@ -908,25 +940,46 @@ cd_stac_catalog(
   output_path = catalog_path,
   base_url = paste0("https://", bucket, ".s3.us-west-2.amazonaws.com")
 )
-# Check the catalog that was written, not only the inputs it was built from.
-built <- catalog_item_years(jsonlite::read_json(catalog_path))
+# A catalog.json left in cog_dir by a run from before #89 would ride the sync;
+# removed before stray_problems() below, which would otherwise refuse it.
+unlink(file.path(cog_dir, "catalog.json"))
+# Check the catalog that was written, not only the inputs it was built from:
+# its items, and that every checksum is of the COG beside it and every COG
+# says which run made it (#124). A COG STEP 4 copied unchanged keeps the
+# provenance of the run that made its bytes. Nothing touches a COG after this.
+built_json <- jsonlite::read_json(catalog_path)
+built <- catalog_item_years(built_json)
 problems <- catalog_problems(built$keys, sub("\\.tif$", "", expected_cogs),
                              built$start, built$end, required_years)
+problems <- c(problems,
+              checksum_problems(catalog_entries(built_json), cog_dir),
+              provenance_problems(file.path(cog_dir, list.files(cog_dir, pattern = "\\.tif$"))),
+              stray_problems(cog_dir, names(written)))
 if (length(problems) > 0) {
-  log_msg("ERROR: the catalog built this run is not the full set; no COG or ",
+  log_msg("ERROR: the catalog built this run is not fit to publish; no COG or ",
           "catalog was published.")
   for (p in problems) log_msg("  - ", p)
   unlink(catalog_path)
   finish(1L)
 }
 
-# A catalog.json left in cog_dir by a run from before #89 would ride the sync.
-unlink(file.path(cog_dir, "catalog.json"))
-cd_s3_push(cog_dir, bucket = bucket, dry_run = FALSE)
-# On its own and last, for two reasons: the sync is --size-only, and a
-# healthy update changes the catalog only from end year 2025 to 2026, the same
-# byte count, so the sync would skip it; and uploaded after the COGs, it never
-# points at a COG that is not up yet.
+# Not --size-only (#124): a rewritten COG of unchanged size would otherwise
+# stay behind on S3 under a catalog checksum that is not its own. Every COG in
+# cog_dir is newer than its S3 copy, so all 59 go up, the copied ones as the
+# same bytes.
+cd_s3_push(cog_dir, bucket = bucket, dry_run = FALSE, size_only = FALSE)
+# What went up is what was hashed, checked before the catalog that carries
+# the hashes goes up (#124).
+# ...and what was hashed is still what is on disk.
+problems <- c(etag_problems(cog_base, cog_dir, names(written)),
+              checksum_problems(catalog_entries(built_json), cog_dir))
+if (length(problems) > 0) {
+  log_msg("ERROR: COGs synced, catalog.json NOT uploaded: ", problems)
+  log_msg("Repair: ", catalog_repair_hint(bucket))
+  finish(1L)
+}
+# On its own and last: uploaded after the COGs, it never points at a COG that
+# is not up yet.
 cat_put <- suppressWarnings(system2(
   "aws", c("s3", "cp", shQuote(catalog_path),
            shQuote(paste0("s3://", bucket, "/catalog.json"))),
@@ -940,11 +993,10 @@ if (!is.null(attr(cat_put, "status"))) {
   log_msg("Repair: ", catalog_repair_hint(bucket))
   finish(1L)
 }
-live_after <- tryCatch(catalog_item_years(jsonlite::read_json(catalog_url)),
-                       error = function(e) NULL)
-if (!identical(live_after, built)) {
-  log_msg("ERROR: catalog.json uploaded, but the live catalog read back does ",
-          "not match the one built this run.")
+# Byte for byte, checksums included, not only its keys and years.
+problems <- readback_problems(catalog_url, catalog_path)
+if (length(problems) > 0) {
+  log_msg("ERROR: catalog.json uploaded, but ", problems)
   log_msg("Repair: ", catalog_repair_hint(bucket))
   finish(1L)
 }

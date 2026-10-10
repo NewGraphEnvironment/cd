@@ -38,6 +38,17 @@ STAC catalog JSON file. Each COG becomes one item with
 \code{cd:variable} and \code{cd:period} properties parsed from the filename.
 The resulting catalog is compatible with \code{\link[=cd_catalog]{cd_catalog()}}.
 }
+\details{
+Each item's \code{data} asset carries \code{file:checksum} (a sha256 multihash,
+\code{"1220"} + hex digest) and \code{file:size} from the
+\href{https://github.com/stac-extensions/file}{STAC file extension} v2.1.0,
+taken from the local file, so build the catalog after the COGs are final.
+Run provenance written into a COG by \code{\link[=cd_cog_write]{cd_cog_write()}} (\code{CD_VERSION},
+\code{CD_SHA}, \code{CD_RUN_TIME}, \code{CD_RUN_ID} tags) is copied into the item's
+properties as \code{cd:version}, \code{cd:sha}, \code{cd:run_time} and \code{cd:run_id}.
+Because the run time is part of the bytes, a checksum identifies a build,
+not values: rebuilding unchanged data gives a new checksum.
+}
 \examples{
 \dontrun{
 cd_stac_catalog(
