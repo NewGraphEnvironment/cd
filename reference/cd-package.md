@@ -13,6 +13,8 @@ Useful links:
 
 - <https://github.com/NewGraphEnvironment/cd>
 
+- <https://newgraphenvironment.github.io/cd/>
+
 - Report bugs at <https://github.com/NewGraphEnvironment/cd/issues>
 
 ## Author

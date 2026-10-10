@@ -50,6 +50,20 @@ cd_stac_catalog(
 
 The output path (invisibly).
 
+## Details
+
+Each item's `data` asset carries `file:checksum` (a sha256 multihash,
+`"1220"` + hex digest) and `file:size` from the [STAC file
+extension](https://github.com/stac-extensions/file) v2.1.0, taken from
+the local file, so build the catalog after the COGs are final. Run
+provenance written into a COG by
+[`cd_cog_write()`](https://newgraphenvironment.github.io/cd/reference/cd_cog_write.md)
+(`CD_VERSION`, `CD_SHA`, `CD_RUN_TIME`, `CD_RUN_ID` tags) is copied into
+the item's properties as `cd:version`, `cd:sha`, `cd:run_time` and
+`cd:run_id`. Because the run time is part of the bytes, a checksum
+identifies a build, not values: rebuilding unchanged data gives a new
+checksum.
+
 ## Examples
 
 ``` r

@@ -97,6 +97,18 @@ Asset hrefs are built as <code>{base_url}/{filename}</code>.</p></dd>
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>The output path (invisibly).</p>
     </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>Each item's <code>data</code> asset carries <code>file:checksum</code> (a sha256 multihash,
+<code>"1220"</code> + hex digest) and <code>file:size</code> from the
+<a href="https://github.com/stac-extensions/file" class="external-link">STAC file extension</a> v2.1.0,
+taken from the local file, so build the catalog after the COGs are final.
+Run provenance written into a COG by <code><a href="cd_cog_write.html">cd_cog_write()</a></code> (<code>CD_VERSION</code>,
+<code>CD_SHA</code>, <code>CD_RUN_TIME</code>, <code>CD_RUN_ID</code> tags) is copied into the item's
+properties as <code>cd:version</code>, <code>cd:sha</code>, <code>cd:run_time</code> and <code>cd:run_id</code>.
+Because the run time is part of the bytes, a checksum identifies a build,
+not values: rebuilding unchanged data gives a new checksum.</p>
+    </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
