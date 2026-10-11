@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">cd</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.5</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -33,9 +33,16 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/NewGraphEnvironment/cd/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/NewGraphEnvironment/cd/blob/v0.6.5/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.6.5" id="cd-065-2026-10-11">cd 0.6.5 (2026-10-11)<a class="anchor" aria-label="anchor" href="#cd-065-2026-10-11"></a></h2>
+<ul><li>
+<code><a href="../reference/cd_catalog.html">cd_catalog()</a></code> gains <code>checksum</code>, <code>size</code>, <code>cd_version</code>, <code>cd_sha</code>, <code>run_time</code> and <code>run_url</code>, and <code><a href="../reference/cd_extract.html">cd_extract()</a></code> and <code><a href="../reference/cd_extract_daily.html">cd_extract_daily()</a></code> gain <code>checksum</code> and <code>cd_sha</code> on every row, so an analysis can record which build of each file it read and notice a republish. <code>cd_sha</code> is read from the file itself; the checksum is kept only when the file is shown to be the build the catalog or manifest describes, so a stale cached copy gives <code>NA</code> and a warning rather than another build’s checksum. A checksum identifies a build, not values. The vignettes’ precomputed series lack the new columns until <code>data-raw/*_vignette_data.R</code> is re-run. (<a href="https://github.com/NewGraphEnvironment/cd/issues/126" class="external-link">#126</a>, <a href="https://github.com/NewGraphEnvironment/cd/pull/129" class="external-link">#129</a>)</li>
+<li>
+<code><a href="../reference/cd_extract.html">cd_extract()</a></code> with no matching catalog rows now returns a typed zero-row tibble rather than a 0 x 0 one. The tests need <code>testthat (&gt;= 3.2.0)</code>.</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.6.4" id="cd-064-2026-10-11">cd 0.6.4 (2026-10-11)<a class="anchor" aria-label="anchor" href="#cd-064-2026-10-11"></a></h2>
 <ul><li>Run provenance in <code>catalog.json</code> and <code>daily/manifest.json</code> moves to the <strong>STAC processing extension</strong> (v1.2.0), a standard any STAC reader understands, in place of the four <code>cd:</code> fields added in 0.6.3. The fields are now <code>processing:version</code>, <code>processing:software</code> (<code>{"cd": "&lt;sha&gt;"}</code>) and <code>processing:datetime</code> (the COG’s <code>CD_RUN_TIME</code> tag, copied exactly), plus a <code>processing-execution</code> link to the GitHub Actions run that built the file. <code>cd:variable</code> and <code>cd:period</code> are unchanged. The COGs are not rebuilt, so their checksums and ETags stay the same and no cache downloads them again; only the two metadata documents are republished. (<a href="https://github.com/NewGraphEnvironment/cd/issues/128" class="external-link">#128</a>, <a href="https://github.com/NewGraphEnvironment/cd/pull/131" class="external-link">#131</a>)</li>
