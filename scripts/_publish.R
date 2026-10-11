@@ -114,8 +114,12 @@ s3_put <- function(path, bucket, key, dry_run = FALSE) {
 # --if-match / --if-none-match). Two publishers merging into one manifest at
 # once (a hand-run daily_publish.R beside CI's STEP D; the workflow's
 # concurrency group covers only CI) would otherwise lose one's entries with
-# nothing to show it. Stops on a failed or refused write.
-s3_put_if <- function(path, bucket, key, etag) {
+# nothing to show it. Stops on a failed or refused write; `on_conflict` is
+# what to do about a refusal, which depends on what the caller already sent.
+s3_put_if <- function(path, bucket, key, etag,
+                      on_conflict = paste0("The files are up; the next STEP D ",
+                                           "reports the manifest's gap and names ",
+                                           "the repair.")) {
   cond <- if (is.na(etag)) c("--if-none-match", "'*'") else c("--if-match", shQuote(etag))
   out <- suppressWarnings(system2(
     "aws", c("s3api", "put-object", "--bucket", bucket, "--key", shQuote(key),
@@ -126,9 +130,8 @@ s3_put_if <- function(path, bucket, key, etag) {
     stop("upload of ", key, " refused or failed (exit ", attr(out, "status"),
          "): ", paste(out, collapse = " "),
          if (any(grepl("PreconditionFailed", out, fixed = TRUE))) {
-           paste0(". Another publish changed it since this run read it. The ",
-                  "files are up; the next STEP D reports the manifest's gap ",
-                  "and names the repair.")
+           paste0(". Another publish changed it since this run read it. ",
+                  on_conflict)
          } else "", call. = FALSE)
   }
   invisible(out)
@@ -284,7 +287,14 @@ daily_publish <- function(daily_dir, bucket, manifest_path, dry_run = FALSE,
          paste(problems, collapse = "\n  - "), call. = FALSE)
   }
   s3_put_if(manifest_path, bucket, "daily/manifest.json",
-            if (is.null(live_manifest)) NA_character_ else live_manifest$etag)
+            if (is.null(live_manifest)) NA_character_ else live_manifest$etag,
+            on_conflict = if (sync) {
+              paste0("The files are up; the next STEP D reports the manifest's ",
+                     "gap and names the repair.")
+            } else {
+              paste0("No file was uploaded; re-run scripts/daily_publish.R ",
+                     "--manifest-only.")
+            })
   problems <- readback_problems(paste0(s3_base(bucket), "/daily/manifest.json"),
                                 manifest_path)
   if (length(problems) > 0) stop(problems, call. = FALSE)

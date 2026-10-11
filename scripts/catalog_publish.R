@@ -124,6 +124,7 @@ built_json <- jsonlite::read_json(catalog_path)
 built <- catalog_item_years(built_json)
 problems <- c(
   catalog_problems(built$keys, live$keys, built$start, built$end, years),
+  catalog_vocab_problems(built_json),
   checksum_problems(catalog_entries(built_json), cog_dir)
 )
 if (length(problems) > 0) refuse("the catalog built is not fit to publish", problems)
@@ -157,7 +158,9 @@ if (dry_run) {
 
 problems <- publish_sha_problems(run_provenance()[["CD_SHA"]])
 if (length(problems) > 0) refuse("this checkout may not publish", problems)
-put <- tryCatch(s3_put_if(catalog_path, bucket, "catalog.json", live_etag),
+put <- tryCatch(s3_put_if(catalog_path, bucket, "catalog.json", live_etag,
+                          on_conflict = paste0("Nothing was uploaded; re-run ",
+                                               "scripts/catalog_publish.R.")),
                 error = function(e) e)
 if (inherits(put, "error")) {
   refuse("the catalog upload was refused or failed", conditionMessage(put))

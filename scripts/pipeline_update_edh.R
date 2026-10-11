@@ -549,13 +549,17 @@ if (partial_live) {
 # COG holds, so it passes and the run repairs the COGs.
 # Before the dry-run exit, so the weekly heartbeat reports either (#89).
 live_keys <- paste(catalog$variable, catalog$period, sep = "_")
-live_items <- tryCatch(catalog_item_years(jsonlite::read_json(catalog_url)),
-                       error = function(e) NULL)
+live_json <- tryCatch(jsonlite::read_json(catalog_url), error = function(e) NULL)
+live_items <- if (is.null(live_json)) NULL else catalog_item_years(live_json)
 key_problems <- if (is.null(live_items)) {
   "could not read the live catalog's item years"
 } else {
-  catalog_problems(live_items$keys, sub("\\.tif$", "", expected_cogs),
-                   live_items$start, live_items$end, current_years)
+  # And in the processing:* vocabulary (#128): a catalog rebuilt by an
+  # installed cd from before #128 would otherwise stay live, unnoticed, until
+  # the next STEP 5, about a year on.
+  c(catalog_problems(live_items$keys, sub("\\.tif$", "", expected_cogs),
+                     live_items$start, live_items$end, current_years),
+    catalog_vocab_problems(live_json))
 }
 if (length(key_problems) > 0) {
   log_msg("ERROR: the live catalog does not describe the live COGs (",
@@ -953,6 +957,8 @@ problems <- catalog_problems(built$keys, sub("\\.tif$", "", expected_cogs),
                              built$start, built$end, required_years)
 problems <- c(problems,
               checksum_problems(catalog_entries(built_json), cog_dir),
+              # Written by the checkout's cd_stac_catalog(), so in its vocabulary (#128).
+              catalog_vocab_problems(built_json),
               provenance_problems(file.path(cog_dir, list.files(cog_dir, pattern = "\\.tif$"))),
               stray_problems(cog_dir, names(written)))
 if (length(problems) > 0) {

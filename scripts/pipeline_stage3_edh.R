@@ -237,6 +237,8 @@ problems <- catalog_problems(built$keys, sub("\\.tif$", "", expected_cogs),
                              built$start, built$end, years_written)
 problems <- c(problems,
               checksum_problems(catalog_entries(built_json), cog_dir),
+              # Written by the checkout's cd_stac_catalog(), so in its vocabulary (#128).
+              catalog_vocab_problems(built_json),
               provenance_problems(file.path(cog_dir, list.files(cog_dir, pattern = "\\.tif$"))),
               stray_problems(cog_dir, names(written)))
 if (length(problems) > 0) {

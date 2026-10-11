@@ -198,6 +198,9 @@ check(grepl("s3://stac-era5-land/catalog.json", h, fixed = TRUE) &&
         grepl("--exclude 'daily/*'", h, fixed = TRUE) &&
         grepl("pipeline_stage3_edh.R", h, fixed = TRUE),
       "catalog_repair_hint names the target key, skips daily/, and the stage 3 fallback")
+check(grepl("load_cd(); cd_stac_catalog(", h, fixed = TRUE) &&
+        !grepl("cd::cd_stac_catalog", h, fixed = TRUE),
+      "catalog_repair_hint builds the catalog with the checkout, never an installed cd")
 # Rebuilt from COGs a partial sync left out of step, the catalog lists mixed
 # spans (#119), so the hint must say when it applies.
 check(grepl("ends in the same year", h, fixed = TRUE) &&
@@ -520,6 +523,27 @@ mf_bad <- mf_local
 mf_bad[[1]]$`file:checksum` <- substring(mf_bad[[1]]$`file:checksum`, 5)
 check(any(grepl("without a sha256 multihash", manifest_problems(mf_bad), fixed = TRUE)),
       "a bare digest in the manifest is refused")
+# The catalog's items are held to the same vocabulary (#128).
+cv_item <- function(id, props) list(id = id, properties = props)
+cv_new <- list(`processing:software` = list(cd = "a"),
+               `processing:datetime` = "2026-01-01T00:00:00Z")
+cv_ok <- list(items = list(cv_item("tmean-annual", cv_new), cv_item("prcp-annual", cv_new)))
+cv_old <- cv_ok
+cv_old$items[[2]]$properties <- list(`cd:sha` = "a", `cd:run_time` = "2026-01-01T00:00:00Z")
+cv_local <- cv_ok
+cv_local$items[[1]]$properties$`processing:datetime` <- "2026-01-01T00:00:00-08:00"
+check(identical(catalog_vocab_problems(cv_ok), character(0)) &&
+        grepl(paste0("1 of 2 catalog item(s) without processing:software's cd commit ",
+                     "and a UTC processing:datetime (prcp-annual)"),
+              catalog_vocab_problems(cv_old), fixed = TRUE) &&
+        grepl("(tmean-annual)", catalog_vocab_problems(cv_local), fixed = TRUE),
+      "a catalog item without processing:* provenance, or with a non-UTC time, is refused by id")
+# A catalog built here, by the checkout's cd_stac_catalog(), passes.
+ck_vocab <- catalog_vocab_problems(jsonlite::read_json(ck_json))
+check(length(ck_vocab) == 1L && grepl("1 of 2 catalog item(s)", ck_vocab, fixed = TRUE) &&
+        grepl("(tmean-annual)", ck_vocab, fixed = TRUE) &&
+        grepl("Rscript scripts/catalog_publish.R", ck_vocab, fixed = TRUE),
+      "a catalog built by the checkout carries processing:* on every tagged item (the untagged one is refused)")
 mf_live <- mf_local
 mf_live[["tmax_daily_2001.tif"]]$`processing:datetime` <- "older"
 mf_new <- list(tmean_daily_2003.tif = mf_local[[1]], tmax_daily_2001.tif = mf_local[["tmax_daily_2001.tif"]])

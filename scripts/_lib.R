@@ -340,7 +340,9 @@ catalog_repair_hint <- function(bucket) {
     "if every live COG ends in the same year: ",
     "aws s3 sync s3://", bucket, "/ <dir> --exclude '*' --include '*.tif' ",
     "--exclude 'daily/*' --exclude '_backup/*' --exclude '_healthcheck/*'; ",
-    "then in R cd::cd_stac_catalog('<dir>', output_path = '<dir>.json'); ",
+    "then, from a clean checkout of main (never an installed cd, which may ",
+    "write an older catalog), Rscript -e \"source('scripts/_lib.R'); load_cd(); ",
+    "cd_stac_catalog('<dir>', output_path = '<dir>.json')\"; ",
     "then aws s3 cp <dir>.json s3://", bucket, "/catalog.json. ",
     "If a COG is missing or short, or they end in different years, rebuild ",
     "with scripts/pipeline_stage3_edh.R."
@@ -669,24 +671,48 @@ manifest_problems <- function(entries, vars = c("tmean", "tmax", "tmin")) {
                                    paste(utils::head(bad, 5), collapse = ", "), ")"))
   }
   # Every entry in one vocabulary (#128): a publish holding only some years
-  # would otherwise leave the rest on the old cd:* keys. processing:datetime
-  # too, since readers match it against the file's CD_RUN_TIME tag to trust
-  # the checksum, and the extension's schema requires UTC (Z or +00:00).
-  unprov <- keys[vapply(entries, function(e) {
-    dt <- e$`processing:datetime`
-    is.na(entry_sha(e)) ||
-      !(is.character(dt) && length(dt) == 1L && grepl("(Z|\\+00:00)$", dt))
-  }, logical(1))]
+  # would otherwise leave the rest on the old cd:* keys.
+  unprov <- keys[!vapply(entries, has_processing_provenance, logical(1))]
   if (length(unprov) > 0) {
     problems <- c(problems, paste0(
       length(unprov), " entr", if (length(unprov) == 1L) "y" else "ies",
       " without processing:software's cd commit and a UTC processing:datetime (",
       paste(utils::head(unprov, 5), collapse = ", "),
       if (length(unprov) > 5) ", ..." else "",
-      "); republish from the whole cube: Rscript scripts/daily_publish.R"
+      "); republish from the whole cube: Rscript scripts/daily_publish.R --manifest-only"
     ))
   }
   problems
+}
+
+# Whether a manifest entry or a catalog item's properties carry run
+# provenance in the processing extension's keys (#128): processing:software's
+# cd commit, and processing:datetime in UTC, since readers match it against
+# the file's CD_RUN_TIME tag to trust the checksum and the extension's schema
+# requires Z or +00:00. One predicate for both documents, so neither can
+# accept what the other refuses.
+has_processing_provenance <- function(x) {
+  dt <- x$`processing:datetime`
+  !is.na(entry_sha(x)) &&
+    is.character(dt) && length(dt) == 1L && grepl("(Z|\\+00:00)$", dt)
+}
+
+# Why a catalog's items do not all carry processing:* provenance, or
+# character(0) (#128). Published COGs are always tagged (provenance_problems()),
+# so an item without it was written by a cd from before #128: an installed cd
+# rather than the checkout, or a catalog not yet republished.
+catalog_vocab_problems <- function(catalog_json) {
+  items <- catalog_json$items
+  ids <- vapply(items, function(i) as.character(i$id), character(1))
+  bad <- ids[!vapply(items, function(i) has_processing_provenance(i$properties),
+                     logical(1))]
+  if (length(bad) == 0L) return(character(0))
+  paste0(length(bad), " of ", length(ids), " catalog item(s) without ",
+         "processing:software's cd commit and a UTC processing:datetime (",
+         paste(utils::head(bad, 5), collapse = ", "),
+         if (length(bad) > 5) ", ..." else "",
+         "): written by a cd from before #128; rebuild it from the checkout: ",
+         "Rscript scripts/catalog_publish.R, when the COGs and the catalog agree")
 }
 
 # The last year a manifest holds every variable for, or NA.
