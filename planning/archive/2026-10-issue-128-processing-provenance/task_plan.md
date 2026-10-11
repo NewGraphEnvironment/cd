@@ -60,19 +60,19 @@ republish gets `scripts/catalog_publish.R`; the live republish runs post-merge f
 ## Phase 4: docs
 - [x] `CLAUDE.md` #124 paragraph: `cd:version`/… → the processing keys and link;
       `scripts/catalog_publish.R` in the Scripts list; `daily_publish.R` header comment
-- [ ] `devtools::test()` + `lintr::lint_package()` clean; `/code-check branch`
+- [x] `devtools::test()` + `lintr::lint_package()` clean; `/code-check branch`
       (three-round floor)
 
-## Phase 5: republish (after merge, on your go)
+## Phase 5: republish (after merge, on your go) — open at archive time; see README
 - [ ] From a clean `main`: `Rscript scripts/daily_publish.R --manifest-only`, then
       `Rscript scripts/catalog_publish.R` — before the next Monday 06:00 UTC dry run
-- [ ] `uv run planning/archive/<dir>/compare_128.py` on `data/backfill/pre_128/*` vs the live
+- [ ] `uv run planning/archive/2026-10-issue-128-processing-provenance/compare_128.py` on `data/backfill/pre_128/*` vs the live
       documents: only the rename, every checksum unchanged
 - [ ] Tell #126 / PR #129 it can merge
 
 ## Validation
 
-- [ ] Tests pass
-- [ ] `/code-check` clean (each commit, or once over the branch with `/code-check branch`)
-- [ ] PWF checkboxes match landed work
-- [ ] `/planning-archive` on completion
+- [x] Tests pass
+- [x] `/code-check` clean (each commit, or once over the branch with `/code-check branch`)
+- [x] PWF checkboxes match landed work
+- [x] `/planning-archive` on completion
