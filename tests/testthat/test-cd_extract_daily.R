@@ -284,17 +284,34 @@ test_that("no manifest, or a file it does not list, gives NA without a warning",
   expect_true(all(is.na(d$checksum)))
 })
 
-test_that("a manifest still on the cd: keys gives NA checksum", {
+test_that("a manifest still on the cd: keys gives NA checksum, silently", {
   # Only the processing: keys are read (#128); a cd:run_time is not one.
   run <- "2026-10-10T22:19:46Z"
   src <- daily_fixture(years = 2003, tags = c(CD_SHA = "s", CD_RUN_TIME = run))
   daily_manifest_write(src, list(tmean_daily_2003.tif = list(
     `file:checksum` = "1220aa", `cd:sha` = "s", `cd:run_time` = run
   )))
+  d <- expect_no_warning(
+    cd_extract_daily(daily_pts(16), "2003-06-01", "2003-06-02",
+                     variables = "tmean", source = src)
+  )
+  expect_true(all(is.na(d$checksum)))
+})
+
+test_that("a malformed manifest gives NA rather than stopping the read", {
+  src <- daily_fixture(years = 2003)
+  # The top level a JSON scalar.
+  writeLines("3", file.path(src, "manifest.json"))
   expect_warning(
-    d <- cd_extract_daily(daily_pts(16), "2003-06-01", "2003-06-02",
-                          variables = "tmean", source = src),
-    "not shown to be"
+    d <- cd_extract_daily(daily_pts(16), "2003-06-01", "2003-06-01", source = src),
+    "manifest"
+  )
+  expect_true(all(is.na(d$checksum)))
+  # An entry that is a scalar, not an object.
+  jsonlite::write_json(list(files = list(tmean_daily_2003.tif = "1220aa")),
+                       file.path(src, "manifest.json"), auto_unbox = TRUE)
+  d <- expect_no_warning(
+    cd_extract_daily(daily_pts(16), "2003-06-01", "2003-06-01", source = src)
   )
   expect_true(all(is.na(d$checksum)))
 })

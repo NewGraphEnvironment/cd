@@ -48,3 +48,4 @@ otherwise its prefix names what it describes, not who built the catalogue.
 
 | Error | Resolution |
 |-------|------------|
+| Live 60 N test (`test-cd_extract_daily_live.R:46`, `expect_no_warning`) failed: today's manifest has `file:checksum` but no `processing:datetime`, so `build_warn()` fired on every live call | Warn only when the entry states a run time and the file's tag differs or is missing (the stale-copy case); an entry with no run time gives NA silently. Found by `NOT_CRAN=true test_file()` of the live tests, 2026-10-10 |

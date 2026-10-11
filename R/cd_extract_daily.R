@@ -40,7 +40,8 @@
 #' file itself. `checksum` comes from `<source>/manifest.json`, read once per
 #' call, and is kept only when the file's run-time tag matches the manifest's
 #' `processing:datetime` for it, so a stale cached copy gives `NA` and a
-#' warning rather than another build's checksum. A `source` with no manifest
+#' warning rather than another build's checksum. An entry with no
+#' `processing:datetime` cannot be checked and gives `NA` silently. A `source` with no manifest
 #' (such as the bundled example) gives `NA` silently; a remote manifest that
 #' cannot be read gives `NA` and a warning. A checksum identifies a build, not
 #' values.
@@ -171,11 +172,14 @@ cd_extract_daily <- function(points, from, to,
       keep <- which(dates >= from & dates <= to)
       file <- paste0(v, "_daily_", yr, ".tif")
       entry <- manifest[[file]]
+      if (!is.list(entry)) entry <- NULL
       claimed <- scalar_chr(entry[["file:checksum"]])
+      entry_run <- scalar_chr(entry[["processing:datetime"]])
       build <- build_tags(r)
-      ck <- build_checksum(claimed, scalar_chr(entry[["processing:datetime"]]),
-                           build$run_time)
-      if (!is.na(claimed) && is.na(ck)) unmatched <- c(unmatched, file)
+      ck <- build_checksum(claimed, entry_run, build$run_time)
+      if (build_stale(claimed, entry_run, build$run_time)) {
+        unmatched <- c(unmatched, file)
+      }
       vals <- if (length(ucell) > 0L) {
         as.matrix(terra::extract(r, ucell)[, keep, drop = FALSE])
       } else {
@@ -228,14 +232,14 @@ daily_manifest <- function(source) {
   } else {
     tryCatch(jsonlite::read_json(url), error = function(e) NULL)
   }
-  if (is.null(m) || !is.list(m$files)) {
+  if (!is.list(m) || !is.list(m[["files"]])) {
     rlang::warn(paste0(
       "Could not read the daily cube's manifest at '", url, "'; ",
       "`checksum` is NA."
     ))
     return(NULL)
   }
-  m$files
+  m[["files"]]
 }
 
 #' GET a remote manifest and parse it, or NULL on any failure.

@@ -13,3 +13,4 @@
 - Plan review returned (planning/active/review-plan.md): B1 accepted (verify the build read), B2/G5/A1 folded into #128's body
 - Phase 2: `cd_extract()` gains `checksum`/`cd_sha`, verified against the file's own tags; typed empty return
 - Phase 3: `cd_extract_daily()` gains `checksum`/`cd_sha` per file, manifest read once (`daily_manifest()` / mockable `daily_manifest_fetch()`); guard proven (manifest checksum unverified → 2 tests red). Live canary skips until #128's republish
+- code-check round 1 (planning/active/review-round1.md): 2 fragile (malformed manifest stops the read; `%||%` needs R 4.4), both fixed. Plus the live 60 N test failure: warn only on a stale copy, NA silently when the entry has no run time

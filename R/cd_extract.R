@@ -37,8 +37,9 @@
 #' read from the file itself. `checksum` comes from `catalog` (see
 #' [cd_catalog()]) and is kept only when the file's run-time tag matches the
 #' catalog's `run_time`, so a stale cached copy or an out-of-date catalog
-#' gives `NA` and a warning rather than another build's checksum. A checksum
-#' identifies a build, not values.
+#' gives `NA` and a warning rather than another build's checksum. A catalog
+#' row with no `run_time` cannot be checked and gives `NA` without a warning.
+#' A checksum identifies a build, not values.
 #'
 #' @examples
 #' catalog <- cd_catalog(
@@ -68,7 +69,7 @@ cd_extract <- function(catalog, aoi,
     r <- cd_crop(src, aoi, cache = FALSE)
     build <- build_tags(terra::rast(src))
     ck <- build_checksum(checksum[i], run_time[i], build$run_time)
-    if (!is.na(checksum[i]) && is.na(ck)) {
+    if (build_stale(checksum[i], run_time[i], build$run_time)) {
       unmatched <<- c(unmatched, rows$href[i])
     }
     means <- terra::global(r, fun = "mean", na.rm = TRUE)

@@ -61,7 +61,7 @@ cd_catalog <- function(catalog = cd_catalog_default()) {
     cd_sha = catalog_field(items, function(x) x$properties$`processing:software`[["cd"]]),
     run_time = catalog_field(items, function(x) x$properties$`processing:datetime`),
     run_url = catalog_field(items, function(x) {
-      rel <- vapply(x$links, function(l) l$rel %||% NA_character_, character(1))
+      rel <- vapply(x$links, function(l) scalar_chr(l[["rel"]]), character(1))
       x$links[[which(rel %in% "processing-execution")[1]]]$href
     })
   )
@@ -125,14 +125,24 @@ build_checksum <- function(checksum, entry_run_time, file_run_time) {
   ifelse(ok, checksum, NA_character_)
 }
 
-#' Warn once about files whose entry carries a checksum the file read could
-#' not be matched to.
+#' Whether an entry names a build the file read is not: it states a checksum
+#' and a run time, and the file's run-time tag differs or is missing. An entry
+#' with no run time cannot be checked, which is NA without a warning: the user
+#' can do nothing about it, and a catalog or manifest from before the
+#' processing: keys (#128) is exactly that shape.
+#' @noRd
+build_stale <- function(checksum, entry_run_time, file_run_time) {
+  !is.na(checksum) & !is.na(entry_run_time) &
+    (is.na(file_run_time) | entry_run_time != file_run_time)
+}
+
+#' Warn once about the files build_stale() picked out.
 #' @noRd
 build_warn <- function(files, what) {
   if (length(files) == 0L) return(invisible())
   rlang::warn(paste0(
-    "Not the build ", what, " describes, or not shown to be (its run time ",
-    "tag differs or is missing), so `checksum` is NA: ",
+    "Not the build ", what, " describes (its run-time tag differs or is ",
+    "missing), so `checksum` is NA: ",
     paste(files, collapse = ", "), ". A stale cached copy is the usual cause; ",
     "`cd_cache_fetch(href, refresh = TRUE)` replaces it."
   ))

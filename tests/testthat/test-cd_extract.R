@@ -115,19 +115,23 @@ test_that("cd_extract gives NA checksum for a file that is another build", {
   expect_equal(ts$cd_sha, rep("sha_old", 10))
 })
 
-test_that("cd_extract gives NA checksum when the build cannot be shown", {
+test_that("cd_extract gives NA checksum for an untagged file", {
   skip_if_not_installed("sf")
-  # Untagged file under a catalog that claims a checksum.
+  # An untagged file predates provenance, so it is an older build.
   catalog <- tagged_catalog(NA, NA, catalog_run_time = "2026-10-10T22:36:36Z")
-  expect_warning(ts <- cd_extract(catalog, extract_aoi()), "not shown to be")
+  expect_warning(ts <- cd_extract(catalog, extract_aoi()), "tag differs or is missing")
   expect_identical(ts$checksum, rep(NA_character_, 10))
   expect_identical(ts$cd_sha, rep(NA_character_, 10))
+})
 
-  # A catalog with a checksum but no run time cannot vouch for it either.
+test_that("cd_extract gives NA checksum, silently, for a catalog without run times", {
+  skip_if_not_installed("sf")
+  # It cannot be checked, and the user can do nothing about it.
   catalog <- tagged_catalog("sha_a", "2026-10-10T22:36:36Z",
                             catalog_run_time = NA)
-  expect_warning(ts <- cd_extract(catalog, extract_aoi()), "not shown to be")
+  ts <- expect_no_warning(cd_extract(catalog, extract_aoi()))
   expect_identical(ts$checksum, rep(NA_character_, 10))
+  expect_equal(ts$cd_sha, rep("sha_a", 10))
 })
 
 test_that("cd_extract gives NA provenance for a catalog without those columns", {
