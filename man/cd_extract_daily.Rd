@@ -53,6 +53,11 @@ point outside the cube.}
 \code{NA} for a point outside the cube.}
 \item{cell_moved}{\code{TRUE} when the point's own cell had no data and a
 neighbour was used.}
+\item{checksum}{The checksum the cube's manifest gives for the file the
+row was read from, kept only when the file is shown to be that build
+(see Provenance); otherwise \code{NA}.}
+\item{cd_sha}{Git commit of the cd code that built that file, from the
+file's own tags; \code{NA} for an untagged file.}
 }
 Rows are ordered by point (input order), variable, then date.
 }
@@ -93,6 +98,29 @@ no elevation adjustment between the cell and the point.
 A point outside the cube (British Columbia's box, 47.95–60.05° N,
 140.05–113.95° W) gets \code{NA} values and \code{NA} cell columns, and a warning
 names it with the cube's extent; the other points are unaffected.
+}
+
+\section{Provenance}{
+
+Each file of the cube is one variable and year, and \code{checksum} and
+\code{cd_sha} say which build of it a row came from. \code{cd_sha} is read from the
+file itself. \code{checksum} comes from \verb{<source>/manifest.json}, read once per
+call (through the cache when \code{cache = TRUE}, so it follows
+\code{cd.cache_revalidate} like the files), and is kept only when the file's
+run-time tag matches the manifest's
+\code{processing:datetime} for it, so a stale cached copy gives \code{NA} and, for
+an entry carrying both a checksum and a run time, a warning rather than
+another build's checksum. An entry with no
+\code{processing:datetime} cannot be checked and gives \code{NA} silently, as does
+a file the manifest does not list. A local \code{source} with no manifest (such
+as the bundled example) gives \code{NA} silently. A manifest that cannot be
+read or is not the published shape (\code{files}, an object keyed by file name)
+gives \code{NA} and a warning; with \code{cache = TRUE}, a cached manifest is used
+instead when the remote one cannot be reached. A cached manifest can be
+older than a file downloaded after it (with \code{cd.cache_revalidate = FALSE}):
+a republished year then warns, and a year it does not list yet is \code{NA}
+silently. \code{cd_cache_fetch("<source>/manifest.json", refresh = TRUE)}
+replaces it. A checksum identifies a build, not values.
 }
 
 \examples{

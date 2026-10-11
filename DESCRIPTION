@@ -35,7 +35,7 @@ Suggests:
     knitr,
     rmarkdown,
     sf,
-    testthat (>= 3.0.0),
+    testthat (>= 3.2.0),
     tidyterra,
     withr,
     zyp

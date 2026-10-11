@@ -24,7 +24,23 @@
 #'     \item{period}{Temporal aggregation period.}
 #'     \item{year}{Year (integer).}
 #'     \item{value}{Spatial mean of the climate value for this AOI.}
+#'     \item{checksum}{The checksum `catalog` gives for the file read, kept
+#'       only when the file is shown to be that build (see Provenance);
+#'       otherwise `NA`.}
+#'     \item{cd_sha}{Git commit of the cd code that built the file read,
+#'       from the file's own tags; `NA` for an untagged file.}
 #'   }
+#'
+#' @section Provenance:
+#' `checksum` and `cd_sha` record which build of each file the values came
+#' from, so a later run can tell when a republish changed it. `cd_sha` is
+#' read from the file itself. `checksum` comes from `catalog` (see
+#' [cd_catalog()]) and is kept only when the file's run-time tag matches the
+#' catalog's `run_time`, so a stale cached copy or an out-of-date catalog
+#' gives `NA` rather than another build's checksum, and a warning for a row
+#' carrying both a checksum and a `run_time`. A catalog row with no `run_time`
+#' cannot be checked and gives `NA` without a warning.
+#' A checksum identifies a build, not values.
 #'
 #' @examples
 #' catalog <- cd_catalog(
@@ -43,9 +59,20 @@ cd_extract <- function(catalog, aoi,
                        years = NULL,
                        cache = TRUE) {
   rows <- catalog[catalog$variable %in% variables & catalog$period %in% periods, ]
+  checksum <- col_or_na(rows, "checksum")
+  run_time <- col_or_na(rows, "run_time")
+  unmatched <- character()
 
   results <- lapply(seq_len(nrow(rows)), function(i) {
-    r <- cd_crop(rows$href[i], aoi, cache = cache)
+    # Resolve the cache once, so the raster cropped and the tags read are
+    # the same file.
+    src <- if (isTRUE(cache)) cd_cache_fetch(rows$href[i]) else rows$href[i]
+    r <- cd_crop(src, aoi, cache = FALSE)
+    build <- build_tags(terra::rast(src))
+    ck <- build_checksum(checksum[i], run_time[i], build$run_time)
+    if (build_stale(checksum[i], run_time[i], build$run_time)) {
+      unmatched <<- c(unmatched, rows$href[i])
+    }
     means <- terra::global(r, fun = "mean", na.rm = TRUE)
     yr <- as.integer(names(r))
 
@@ -53,11 +80,27 @@ cd_extract <- function(catalog, aoi,
       variable = rows$variable[i],
       period = rows$period[i],
       year = yr,
-      value = round(means$mean, 4)
+      value = round(means$mean, 4),
+      checksum = ck,
+      cd_sha = build$sha
     )
   })
+  build_warn(unmatched, "the catalog", paste0(
+    "If `catalog` was read before a republish, read it again with ",
+    "cd_catalog(). ",
+    if (isTRUE(cache)) {
+      "If a cached copy is stale, `cd_cache_fetch(href, refresh = TRUE)` replaces it. "
+    },
+    "A publish still in progress also shows this until it completes."
+  ))
 
-  out <- dplyr::bind_rows(results)
+  out <- dplyr::bind_rows(
+    tibble::tibble(
+      variable = character(), period = character(), year = integer(),
+      value = numeric(), checksum = character(), cd_sha = character()
+    ),
+    results
+  )
 
   if (!is.null(years)) {
     out <- out[out$year %in% years, ]

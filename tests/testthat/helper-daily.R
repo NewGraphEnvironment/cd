@@ -4,7 +4,7 @@
 # from: variable offset (tmean 0, tmax 100000, tmin 200000) + cell * 1000 +
 # day of year. The top-left 3 x 3 block (cells 1-3, 7-9, 13-15) and the
 # bottom-left cell (25) hold no data, standing in for sea.
-daily_fixture <- function(years = c(2003, 2004)) {
+daily_fixture <- function(years = c(2003, 2004), tags = NULL) {
   dir <- tempfile("cd_daily")
   dir.create(dir)
   sea <- c(1, 2, 3, 7, 8, 9, 13, 14, 15, 25)
@@ -22,6 +22,7 @@ daily_fixture <- function(years = c(2003, 2004)) {
       m[sea, ] <- NA
       terra::values(r) <- m
       names(r) <- format(days, "%Y-%m-%d")
+      if (!is.null(tags)) terra::metags(r) <- tags
       terra::writeRaster(
         r, file.path(dir, paste0(v, "_daily_", yr, ".tif")),
         datatype = "FLT4S", overwrite = TRUE
@@ -29,6 +30,22 @@ daily_fixture <- function(years = c(2003, 2004)) {
     }
   }
   dir
+}
+
+# Write `<dir>/manifest.json` in the published shape: entries under `files`,
+# keyed by file name. `entries` is a named list of lists.
+daily_manifest_write <- function(dir, entries) {
+  jsonlite::write_json(list(files = entries), file.path(dir, "manifest.json"),
+                       auto_unbox = TRUE, pretty = TRUE)
+}
+
+# One manifest entry in the published shape.
+daily_entry <- function(checksum, run_time = "2026-10-10T22:19:46Z",
+                        sha = "349f9d72e1687761ce98ebd62e6a086be30cc2a6") {
+  list(`file:checksum` = checksum, `file:size` = 9094221,
+       `processing:version` = "0.6.4",
+       `processing:software` = list(cd = sha),
+       `processing:datetime` = run_time)
 }
 
 # Centre of a fixture cell, as a lon/lat pair.
