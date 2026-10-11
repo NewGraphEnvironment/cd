@@ -1,3 +1,8 @@
+# cd 0.6.5 (2026-10-11)
+
+* `cd_catalog()` gains `checksum`, `size`, `cd_version`, `cd_sha`, `run_time` and `run_url`, and `cd_extract()` and `cd_extract_daily()` gain `checksum` and `cd_sha` on every row, so an analysis can record which build of each file it read and notice a republish. `cd_sha` is read from the file itself; the checksum is kept only when the file is shown to be the build the catalog or manifest describes, so a stale cached copy gives `NA` and a warning rather than another build's checksum. A checksum identifies a build, not values. The vignettes' precomputed series lack the new columns until `data-raw/*_vignette_data.R` is re-run. ([#126](https://github.com/NewGraphEnvironment/cd/issues/126), [#129](https://github.com/NewGraphEnvironment/cd/pull/129))
+* `cd_extract()` with no matching catalog rows now returns a typed zero-row tibble rather than a 0 x 0 one. The tests need `testthat (>= 3.2.0)`.
+
 # cd 0.6.4 (2026-10-11)
 
 * Run provenance in `catalog.json` and `daily/manifest.json` moves to the **STAC processing extension** (v1.2.0), a standard any STAC reader understands, in place of the four `cd:` fields added in 0.6.3. The fields are now `processing:version`, `processing:software` (`{"cd": "<sha>"}`) and `processing:datetime` (the COG's `CD_RUN_TIME` tag, copied exactly), plus a `processing-execution` link to the GitHub Actions run that built the file. `cd:variable` and `cd:period` are unchanged. The COGs are not rebuilt, so their checksums and ETags stay the same and no cache downloads them again; only the two metadata documents are republished. ([#128](https://github.com/NewGraphEnvironment/cd/issues/128), [#131](https://github.com/NewGraphEnvironment/cd/pull/131))
