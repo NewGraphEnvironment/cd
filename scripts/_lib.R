@@ -340,7 +340,9 @@ catalog_repair_hint <- function(bucket) {
     "if every live COG ends in the same year: ",
     "aws s3 sync s3://", bucket, "/ <dir> --exclude '*' --include '*.tif' ",
     "--exclude 'daily/*' --exclude '_backup/*' --exclude '_healthcheck/*'; ",
-    "then in R cd::cd_stac_catalog('<dir>', output_path = '<dir>.json'); ",
+    "then, from a clean checkout of main (never an installed cd, which may ",
+    "write an older catalog), Rscript -e \"source('scripts/_lib.R'); load_cd(); ",
+    "cd_stac_catalog('<dir>', output_path = '<dir>.json')\"; ",
     "then aws s3 cp <dir>.json s3://", bucket, "/catalog.json. ",
     "If a COG is missing or short, or they end in different years, rebuild ",
     "with scripts/pipeline_stage3_edh.R."
@@ -591,9 +593,15 @@ s3_etag_matches <- function(path, etag) {
 # -- Daily cube manifest (#124) -------------------------------------------------
 # The daily cube is not in catalog.json, so s3://<bucket>/daily/manifest.json
 # carries what the catalog carries for the monthly COGs: per file, its size,
-# sha256 multihash and the provenance tags of the run that wrote it.
+# sha256 multihash and the provenance of the run that wrote it, in the STAC
+# processing extension's keys (#128): processing:version, processing:software
+# {cd: sha}, processing:datetime, and a processing-execution link for a CI run.
 
-# Manifest entries for local files, keyed by file name.
+# Manifest entries for local files, keyed by file name. The provenance comes
+# from cd's own stac_provenance(), which writes the catalog items, so the two
+# documents share one vocabulary. An internal, so it needs the checkout
+# (load_cd(), test_lib.R) or a cd installed from it, as CI's is; an installed
+# cd from before #128 has no stac_provenance().
 manifest_entries <- function(paths) {
   out <- lapply(paths, function(f) {
     m <- terra::metags(terra::rast(f))
@@ -601,16 +609,20 @@ manifest_entries <- function(paths) {
       v <- as.character(m$value)[as.character(m$name) == key]
       if (length(v) == 1L && nzchar(v)) v else NULL
     }
-    Filter(Negate(is.null), list(
-      `file:checksum` = multihash(f),
-      `file:size` = file.size(f),
-      `cd:version` = tag("CD_VERSION"),
-      `cd:sha` = tag("CD_SHA"),
-      `cd:run_time` = tag("CD_RUN_TIME"),
-      `cd:run_id` = tag("CD_RUN_ID")
-    ))
+    prov <- cd:::stac_provenance(tag("CD_VERSION"), tag("CD_SHA"),
+                                 tag("CD_RUN_TIME"), tag("CD_RUN_ID"))
+    c(list(`file:checksum` = multihash(f), `file:size` = file.size(f)),
+      prov$properties,
+      if (length(prov$links) > 0) list(links = prov$links))
   })
   stats::setNames(out, basename(paths))
+}
+
+# The cd commit an entry names (processing:software's cd), or NA.
+entry_sha <- function(e) {
+  sw <- e$`processing:software`
+  sha <- if (is.list(sw)) sw[["cd"]] else NULL
+  if (is.character(sha) && length(sha) == 1L && nzchar(sha)) sha else NA_character_
 }
 
 # The live manifest's entries with this run's local ones laid over them, keys
@@ -658,7 +670,49 @@ manifest_problems <- function(entries, vars = c("tmean", "tmax", "tmin")) {
     problems <- c(problems, paste0("entries without a sha256 multihash and size (",
                                    paste(utils::head(bad, 5), collapse = ", "), ")"))
   }
+  # Every entry in one vocabulary (#128): a publish holding only some years
+  # would otherwise leave the rest on the old cd:* keys.
+  unprov <- keys[!vapply(entries, has_processing_provenance, logical(1))]
+  if (length(unprov) > 0) {
+    problems <- c(problems, paste0(
+      length(unprov), " entr", if (length(unprov) == 1L) "y" else "ies",
+      " without processing:software's cd commit and a UTC processing:datetime (",
+      paste(utils::head(unprov, 5), collapse = ", "),
+      if (length(unprov) > 5) ", ..." else "",
+      "); republish from the whole cube: Rscript scripts/daily_publish.R --manifest-only"
+    ))
+  }
   problems
+}
+
+# Whether a manifest entry or a catalog item's properties carry run
+# provenance in the processing extension's keys (#128): processing:software's
+# cd commit, and processing:datetime in UTC, since readers match it against
+# the file's CD_RUN_TIME tag to trust the checksum and the extension's schema
+# requires Z or +00:00. One predicate for both documents, so neither can
+# accept what the other refuses.
+has_processing_provenance <- function(x) {
+  dt <- x$`processing:datetime`
+  !is.na(entry_sha(x)) &&
+    is.character(dt) && length(dt) == 1L && grepl("(Z|\\+00:00)$", dt)
+}
+
+# Why a catalog's items do not all carry processing:* provenance, or
+# character(0) (#128). Published COGs are always tagged (provenance_problems()),
+# so an item without it was written by a cd from before #128: an installed cd
+# rather than the checkout, or a catalog not yet republished.
+catalog_vocab_problems <- function(catalog_json) {
+  items <- catalog_json$items
+  ids <- vapply(items, function(i) as.character(i$id), character(1))
+  bad <- ids[!vapply(items, function(i) has_processing_provenance(i$properties),
+                     logical(1))]
+  if (length(bad) == 0L) return(character(0))
+  paste0(length(bad), " of ", length(ids), " catalog item(s) without ",
+         "processing:software's cd commit and a UTC processing:datetime (",
+         paste(utils::head(bad, 5), collapse = ", "),
+         if (length(bad) > 5) ", ..." else "",
+         "): written by a cd from before #128; rebuild it from the checkout: ",
+         "Rscript scripts/catalog_publish.R, when the COGs and the catalog agree")
 }
 
 # The last year a manifest holds every variable for, or NA.

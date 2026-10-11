@@ -198,6 +198,9 @@ check(grepl("s3://stac-era5-land/catalog.json", h, fixed = TRUE) &&
         grepl("--exclude 'daily/*'", h, fixed = TRUE) &&
         grepl("pipeline_stage3_edh.R", h, fixed = TRUE),
       "catalog_repair_hint names the target key, skips daily/, and the stage 3 fallback")
+check(grepl("load_cd(); cd_stac_catalog(", h, fixed = TRUE) &&
+        !grepl("cd::cd_stac_catalog", h, fixed = TRUE),
+      "catalog_repair_hint builds the catalog with the checkout, never an installed cd")
 # Rebuilt from COGs a partial sync left out of step, the catalog lists mixed
 # spans (#119), so the hint must say when it applies.
 check(grepl("ends in the same year", h, fixed = TRUE) &&
@@ -376,7 +379,7 @@ names(ck_r) <- c("2001", "2002")
 terra::writeRaster(ck_r, file.path(ck_dir, "tmean_annual.tif"), filetype = "COG",
                    overwrite = TRUE)
 ck_r2 <- ck_r
-terra::metags(ck_r2) <- c(CD_VERSION = "1", CD_SHA = "a", CD_RUN_TIME = "t",
+terra::metags(ck_r2) <- c(CD_VERSION = "1", CD_SHA = "a", CD_RUN_TIME = "2026-01-01T00:00:00Z",
                           CD_RUN_ID = "local")
 terra::writeRaster(ck_r2, file.path(ck_dir, "prcp_annual.tif"), filetype = "COG",
                    overwrite = TRUE)
@@ -475,8 +478,40 @@ for (v in c("tmean", "tmax", "tmin")) for (y in 2001:2002) {
 mf_local <- manifest_entries(list.files(mf_dir, full.names = TRUE))
 check(identical(manifest_problems(mf_local), character(0)) &&
         identical(checksum_problems(mf_local, mf_dir), character(0)) &&
-        identical(mf_local[["tmax_daily_2001.tif"]]$`cd:run_id`, "local"),
-      "manifest entries for a whole cube pass, and carry each file's provenance")
+        identical(entry_sha(mf_local[["tmax_daily_2001.tif"]]), "a") &&
+        identical(mf_local[["tmax_daily_2001.tif"]]$`processing:datetime`, "2026-01-01T00:00:00Z") &&
+        is.null(mf_local[["tmax_daily_2001.tif"]]$links) &&
+        !any(grepl("^cd:", unlist(lapply(mf_local, names)))),
+      "manifest entries for a whole cube pass, and carry each file's provenance as processing:*")
+mf_old <- mf_local
+mf_old[["tmin_daily_2002.tif"]] <- list(
+  `file:checksum` = mf_local[["tmin_daily_2002.tif"]]$`file:checksum`,
+  `file:size` = mf_local[["tmin_daily_2002.tif"]]$`file:size`,
+  `cd:sha` = "a", `cd:run_time` = "t"
+)
+check(any(grepl("1 entry without processing:software's cd commit and a UTC processing:datetime (tmin_daily_2002.tif)",
+                manifest_problems(mf_old), fixed = TRUE)),
+      "a manifest left with one entry on the old cd:* keys is refused, by name")
+mf_nodt <- mf_local
+mf_nodt[["tmean_daily_2001.tif"]]$`processing:datetime` <- NULL
+mf_utc <- mf_local
+mf_utc[["tmax_daily_2002.tif"]]$`processing:datetime` <- "2026-10-10T15:19:00-07:00"
+mf_ok <- mf_local
+for (n in names(mf_ok)) mf_ok[[n]]$`processing:datetime` <- "2026-10-10T22:19:00+00:00"
+check(any(grepl("(tmean_daily_2001.tif)", manifest_problems(mf_nodt), fixed = TRUE)) &&
+        any(grepl("(tmax_daily_2002.tif)", manifest_problems(mf_utc), fixed = TRUE)) &&
+        identical(manifest_problems(mf_ok), character(0)),
+      "a manifest entry without a UTC processing:datetime is refused, +00:00 accepted")
+mf_ci_dir <- tempfile("mf_ci_")
+dir.create(mf_ci_dir)
+mf_ci_r <- ck_r2
+terra::metags(mf_ci_r) <- c(CD_RUN_ID = "12345")
+terra::writeRaster(mf_ci_r, file.path(mf_ci_dir, "tmean_daily_2001.tif"))
+mf_ci <- manifest_entries(file.path(mf_ci_dir, "tmean_daily_2001.tif"))[[1]]
+check(identical(mf_ci$links[[1]]$rel, "processing-execution") &&
+        identical(mf_ci$links[[1]]$href,
+                  "https://github.com/NewGraphEnvironment/cd/actions/runs/12345"),
+      "a CI-built file's manifest entry links its run")
 check(grepl("1 file(s) missing from the span 2001-2002 (tmin_daily_2002.tif)",
             manifest_problems(mf_local[names(mf_local) != "tmin_daily_2002.tif"]), fixed = TRUE),
       "a manifest missing one variable-year is refused, by name")
@@ -488,11 +523,32 @@ mf_bad <- mf_local
 mf_bad[[1]]$`file:checksum` <- substring(mf_bad[[1]]$`file:checksum`, 5)
 check(any(grepl("without a sha256 multihash", manifest_problems(mf_bad), fixed = TRUE)),
       "a bare digest in the manifest is refused")
+# The catalog's items are held to the same vocabulary (#128).
+cv_item <- function(id, props) list(id = id, properties = props)
+cv_new <- list(`processing:software` = list(cd = "a"),
+               `processing:datetime` = "2026-01-01T00:00:00Z")
+cv_ok <- list(items = list(cv_item("tmean-annual", cv_new), cv_item("prcp-annual", cv_new)))
+cv_old <- cv_ok
+cv_old$items[[2]]$properties <- list(`cd:sha` = "a", `cd:run_time` = "2026-01-01T00:00:00Z")
+cv_local <- cv_ok
+cv_local$items[[1]]$properties$`processing:datetime` <- "2026-01-01T00:00:00-08:00"
+check(identical(catalog_vocab_problems(cv_ok), character(0)) &&
+        grepl(paste0("1 of 2 catalog item(s) without processing:software's cd commit ",
+                     "and a UTC processing:datetime (prcp-annual)"),
+              catalog_vocab_problems(cv_old), fixed = TRUE) &&
+        grepl("(tmean-annual)", catalog_vocab_problems(cv_local), fixed = TRUE),
+      "a catalog item without processing:* provenance, or with a non-UTC time, is refused by id")
+# A catalog built here, by the checkout's cd_stac_catalog(), passes.
+ck_vocab <- catalog_vocab_problems(jsonlite::read_json(ck_json))
+check(length(ck_vocab) == 1L && grepl("1 of 2 catalog item(s)", ck_vocab, fixed = TRUE) &&
+        grepl("(tmean-annual)", ck_vocab, fixed = TRUE) &&
+        grepl("Rscript scripts/catalog_publish.R", ck_vocab, fixed = TRUE),
+      "a catalog built by the checkout carries processing:* on every tagged item (the untagged one is refused)")
 mf_live <- mf_local
-mf_live[["tmax_daily_2001.tif"]]$`cd:run_id` <- "older"
+mf_live[["tmax_daily_2001.tif"]]$`processing:datetime` <- "older"
 mf_new <- list(tmean_daily_2003.tif = mf_local[[1]], tmax_daily_2001.tif = mf_local[["tmax_daily_2001.tif"]])
 mf_m <- manifest_merge(mf_live, mf_new)
-check(identical(mf_m[["tmax_daily_2001.tif"]]$`cd:run_id`, "local") &&
+check(identical(mf_m[["tmax_daily_2001.tif"]]$`processing:datetime`, "2026-01-01T00:00:00Z") &&
         identical(names(mf_m), sort(names(mf_m), method = "radix")) &&
         length(mf_m) == 7L && manifest_last_year(mf_m) == 2003L &&
         identical(names(manifest_merge(NULL, mf_new)), sort(names(mf_new), method = "radix")),

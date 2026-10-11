@@ -10,8 +10,12 @@
 #' [STAC file extension](https://github.com/stac-extensions/file) v2.1.0,
 #' taken from the local file, so build the catalog after the COGs are final.
 #' Run provenance written into a COG by [cd_cog_write()] (`CD_VERSION`,
-#' `CD_SHA`, `CD_RUN_TIME`, `CD_RUN_ID` tags) is copied into the item's
-#' properties as `cd:version`, `cd:sha`, `cd:run_time` and `cd:run_id`.
+#' `CD_SHA`, `CD_RUN_TIME`, `CD_RUN_ID` tags) is copied into the item in the
+#' [STAC processing extension](https://github.com/stac-extensions/processing)
+#' v1.2.0: `processing:version`, `processing:software` (`{"cd": "<sha>"}`),
+#' `processing:datetime` (the tag's string, unchanged) and, for a GitHub
+#' Actions run, a `processing-execution` link to the run. An item from an
+#' untagged COG carries none of them and does not declare the extension.
 #' Because the run time is part of the bytes, a checksum identifies a build,
 #' not values: rebuilding unchanged data gives a new checksum.
 #'
@@ -125,18 +129,16 @@ cd_stac_item <- function(cog_path, base_url) {
 
   item_id <- paste(variable, period, sep = "-")
 
-  # Absent tags are left out rather than written: jsonlite writes NULL as {}.
-  provenance <- Filter(Negate(is.null), list(
-    `cd:version` = tag("CD_VERSION"),
-    `cd:sha` = tag("CD_SHA"),
-    `cd:run_time` = tag("CD_RUN_TIME"),
-    `cd:run_id` = tag("CD_RUN_ID")
-  ))
+  provenance <- stac_provenance(tag("CD_VERSION"), tag("CD_SHA"),
+                                tag("CD_RUN_TIME"), tag("CD_RUN_ID"))
+  # The extension's schema requires a processing: field once it is declared.
+  extensions <- c(list(stac_file_extension),
+                  if (length(provenance$properties) > 0) list(stac_processing_extension))
 
   list(
     type = "Feature",
     stac_version = "1.0.0",
-    stac_extensions = list(stac_file_extension),
+    stac_extensions = extensions,
     id = item_id,
     geometry = NA,
     bbox = e[c(1, 3, 2, 4)],
@@ -146,8 +148,8 @@ cd_stac_item <- function(cog_path, base_url) {
       datetime = NA,
       start_datetime = if (length(years) > 0) paste0(min(years), "-01-01T00:00:00Z") else NULL,
       end_datetime = if (length(years) > 0) paste0(max(years), "-12-31T23:59:59Z") else NULL
-    ) |> c(provenance),
-    links = list(),
+    ) |> c(provenance$properties),
+    links = provenance$links,
     assets = list(
       data = list(
         href = paste0(base_url, "/", fname),
@@ -161,6 +163,45 @@ cd_stac_item <- function(cog_path, base_url) {
 }
 
 stac_file_extension <- "https://stac-extensions.github.io/file/v2.1.0/schema.json"
+stac_processing_extension <- "https://stac-extensions.github.io/processing/v1.2.0/schema.json"
+
+#' Run provenance in the STAC processing extension's vocabulary
+#'
+#' Maps the four provenance tags a producer writes into a file (#124) to
+#' `processing:version`, `processing:software` (`list(cd = sha)`) and
+#' `processing:datetime`, plus a `processing-execution` link when the run id is
+#' a GitHub Actions run id (digits; a local build's `"local"` gets no link).
+#' Shared by the catalog items and the daily manifest
+#' (`manifest_entries()` in `scripts/_lib.R`), so both use one vocabulary.
+#'
+#' The run time is copied as the exact string: readers compare it with the
+#' file's own `CD_RUN_TIME` tag to tell whether the file read is the build the
+#' entry describes, so any reformat would break that match.
+#'
+#' @param version,sha,run_time,run_id The `CD_VERSION`, `CD_SHA`,
+#'   `CD_RUN_TIME` and `CD_RUN_ID` tag values, each a string or `NULL` when
+#'   absent.
+#' @return `list(properties = <named list>, links = <list of 0 or 1 link>)`.
+#'   Absent tags are left out rather than written: jsonlite writes `NULL` as
+#'   `{}`.
+#' @noRd
+stac_provenance <- function(version = NULL, sha = NULL, run_time = NULL,
+                            run_id = NULL) {
+  properties <- Filter(Negate(is.null), list(
+    `processing:version` = version,
+    `processing:software` = if (!is.null(sha)) list(cd = sha),
+    `processing:datetime` = run_time
+  ))
+  links <- list()
+  if (!is.null(run_id) && grepl("^[0-9]+$", run_id)) {
+    links <- list(list(
+      rel = "processing-execution",
+      href = paste0("https://github.com/NewGraphEnvironment/cd/actions/runs/", run_id),
+      type = "text/html"
+    ))
+  }
+  list(properties = properties, links = links)
+}
 
 #' sha256 of a file as a hex multihash
 #'
