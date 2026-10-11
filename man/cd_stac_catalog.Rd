@@ -44,8 +44,12 @@ Each item's \code{data} asset carries \code{file:checksum} (a sha256 multihash,
 \href{https://github.com/stac-extensions/file}{STAC file extension} v2.1.0,
 taken from the local file, so build the catalog after the COGs are final.
 Run provenance written into a COG by \code{\link[=cd_cog_write]{cd_cog_write()}} (\code{CD_VERSION},
-\code{CD_SHA}, \code{CD_RUN_TIME}, \code{CD_RUN_ID} tags) is copied into the item's
-properties as \code{cd:version}, \code{cd:sha}, \code{cd:run_time} and \code{cd:run_id}.
+\code{CD_SHA}, \code{CD_RUN_TIME}, \code{CD_RUN_ID} tags) is copied into the item in the
+\href{https://github.com/stac-extensions/processing}{STAC processing extension}
+v1.2.0: \code{processing:version}, \code{processing:software} (\code{{"cd": "<sha>"}}),
+\code{processing:datetime} (the tag's string, unchanged) and, for a GitHub
+Actions run, a \code{processing-execution} link to the run. An item from an
+untagged COG carries none of them and does not declare the extension.
 Because the run time is part of the bytes, a checksum identifies a build,
 not values: rebuilding unchanged data gives a new checksum.
 }

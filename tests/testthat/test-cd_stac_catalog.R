@@ -94,19 +94,63 @@ test_that("cd_stac_catalog carries file:checksum, file:size and provenance", {
     expect_true("https://stac-extensions.github.io/file/v2.1.0/schema.json" %in%
                   unlist(item$stac_extensions))
   }
-  p <- items[["tmean-annual"]]$properties
-  expect_equal(p$`cd:version`, "9.9.9")
-  expect_equal(p$`cd:sha`, "abc123")
-  expect_equal(p$`cd:run_time`, "2026-01-01T00:00:00Z")
-  expect_equal(p$`cd:run_id`, "42")
-  # An untagged COG has no provenance properties, not empty objects.
-  expect_false(any(startsWith(names(items[["prcp-annual"]]$properties), "cd:run")))
-  expect_null(items[["prcp-annual"]]$properties$`cd:sha`)
+  processing <- "https://stac-extensions.github.io/processing/v1.2.0/schema.json"
+  tagged_item <- items[["tmean-annual"]]
+  p <- tagged_item$properties
+  expect_identical(p$`processing:version`, "9.9.9")
+  expect_identical(p$`processing:software`, list(cd = "abc123"))
+  expect_identical(p$`processing:datetime`, "2026-01-01T00:00:00Z")
+  expect_true(processing %in% unlist(tagged_item$stac_extensions))
+  expect_length(tagged_item$links, 1)
+  expect_identical(tagged_item$links[[1]]$rel, "processing-execution")
+  expect_identical(tagged_item$links[[1]]$href,
+                   "https://github.com/NewGraphEnvironment/cd/actions/runs/42")
+  # The only cd: keys left are the two no extension covers.
+  for (item in items) {
+    expect_setequal(grep("^cd:", names(item$properties), value = TRUE),
+                    c("cd:variable", "cd:period"))
+  }
+  # An untagged COG has no provenance, not empty objects, and does not declare
+  # an extension whose schema would then require a processing: field.
+  untagged <- items[["prcp-annual"]]
+  expect_false(any(startsWith(names(untagged$properties), "processing:")))
+  expect_length(untagged$links, 0)
+  expect_false(processing %in% unlist(untagged$stac_extensions))
 
   # cd_catalog() reads it as before.
   catalog <- cd_catalog(output)
   expect_setequal(paste(catalog$variable, catalog$period), c("tmean annual", "prcp annual"))
   unlink(c(dir, output), recursive = TRUE)
+})
+
+test_that("the run time is copied as the exact string and only a CI run id links", {
+  dir <- tempfile("cd_cogs_")
+  dir.create(dir)
+  r <- terra::rast(nrows = 4, ncols = 5, nlyrs = 1, vals = 1:20)
+  names(r) <- "2001"
+  # A valid RFC 3339 form other than the writer's own: any reformat to "Z"
+  # would break the exact-string match readers make against the file's tag.
+  cd_cog_write(r, file.path(dir, "tmean_annual.tif"),
+               tags = c(CD_VERSION = "1.0.0", CD_SHA = "def456",
+                        CD_RUN_TIME = "2026-02-03T04:05:06+00:00", CD_RUN_ID = "local"))
+  output <- tempfile(fileext = ".json")
+  cd_stac_catalog(dir, output_path = output, base_url = "https://example.com")
+  item <- jsonlite::read_json(output)$items[[1]]
+  expect_identical(item$properties$`processing:datetime`, "2026-02-03T04:05:06+00:00")
+  expect_length(item$links, 0)
+  unlink(c(dir, output), recursive = TRUE)
+})
+
+test_that("stac_provenance keeps absent tags out and links only digit run ids", {
+  none <- stac_provenance()
+  expect_length(none$properties, 0)
+  expect_length(none$links, 0)
+  only_sha <- stac_provenance(sha = "abc")
+  expect_identical(only_sha$properties, list(`processing:software` = list(cd = "abc")))
+  expect_length(stac_provenance(run_id = "12a")$links, 0)
+  expect_length(stac_provenance(run_id = "")$links, 0)
+  expect_identical(stac_provenance(run_id = "987")$links[[1]]$href,
+                   "https://github.com/NewGraphEnvironment/cd/actions/runs/987")
 })
 
 test_that("file_multihash is the sha256 multihash of the bytes", {

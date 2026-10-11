@@ -8,16 +8,16 @@ writers; manifest entries carry the run link as STAC-shaped `links`; the catalog
 republish gets `scripts/catalog_publish.R`; the live republish runs post-merge from main.
 
 ## Phase 1: STAC item writer
-- [ ] `stac_provenance(tags)` in `R/cd_stac_catalog.R`: `processing:version` ←
+- [x] `stac_provenance(tags)` in `R/cd_stac_catalog.R`: `processing:version` ←
       `CD_VERSION`, `processing:software` ← `list(cd = CD_SHA)`, `processing:datetime`
       ← `CD_RUN_TIME` byte for byte, a `processing-execution` link to
       `https://github.com/NewGraphEnvironment/cd/actions/runs/<id>` only when
       `CD_RUN_ID` matches `^[0-9]+$`; absent tags omitted (jsonlite writes NULL as `{}`)
-- [ ] `cd_stac_item()` uses it; declares
+- [x] `cd_stac_item()` uses it; declares
       `https://stac-extensions.github.io/processing/v1.2.0/schema.json` beside the file
       extension only when the item carries a `processing:*` field; roxygen updated,
       `devtools::document()`
-- [ ] Tests (`test-cd_stac_catalog.R`): new keys and values; `processing:datetime`
+- [x] Tests (`test-cd_stac_catalog.R`): new keys and values; `processing:datetime`
       identical to the tag string; link for a numeric id, none for `"local"`; an
       untagged COG has no `processing:*`, no link, no processing extension; no `cd:`
       key other than `cd:variable`/`cd:period` on any item; `cd_catalog()` still reads
