@@ -59,10 +59,14 @@ the local file, so build the catalog after the COGs are final. Run
 provenance written into a COG by
 [`cd_cog_write()`](https://newgraphenvironment.github.io/cd/reference/cd_cog_write.md)
 (`CD_VERSION`, `CD_SHA`, `CD_RUN_TIME`, `CD_RUN_ID` tags) is copied into
-the item's properties as `cd:version`, `cd:sha`, `cd:run_time` and
-`cd:run_id`. Because the run time is part of the bytes, a checksum
-identifies a build, not values: rebuilding unchanged data gives a new
-checksum.
+the item in the [STAC processing
+extension](https://github.com/stac-extensions/processing) v1.2.0:
+`processing:version`, `processing:software` (`{"cd": "<sha>"}`),
+`processing:datetime` (the tag's string, unchanged) and, for a GitHub
+Actions run, a `processing-execution` link to the run. An item from an
+untagged COG carries none of them and does not declare the extension.
+Because the run time is part of the bytes, a checksum identifies a
+build, not values: rebuilding unchanged data gives a new checksum.
 
 ## Examples
 
