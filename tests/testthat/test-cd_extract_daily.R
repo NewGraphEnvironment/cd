@@ -262,6 +262,11 @@ test_that("a file that is not the manifest's build gets NA checksum and a warnin
     d <- cd_extract_daily(daily_pts(16), "2003-06-01", "2003-06-02", source = src),
     paste0(src, "/tmax_daily_2003.tif"), fixed = TRUE
   )
+  # The advice names the manifest as a copy that can be stale too.
+  expect_warning(
+    cd_extract_daily(daily_pts(16), "2003-06-01", "2003-06-02", source = src),
+    paste0(src, "/manifest.json"), fixed = TRUE
+  )
   expect_equal(unique(d$checksum[d$variable == "tmean"]), "1220aa")
   expect_true(all(is.na(d$checksum[d$variable == "tmax"])))
   expect_equal(unique(d$checksum[d$variable == "tmin"]), "1220cc")
@@ -305,6 +310,20 @@ test_that("a malformed manifest gives NA rather than stopping the read", {
   expect_warning(
     d <- cd_extract_daily(daily_pts(16), "2003-06-01", "2003-06-01", source = src),
     "manifest"
+  )
+  expect_true(all(is.na(d$checksum)))
+  # `files` an array, not an object keyed by file name.
+  jsonlite::write_json(list(files = list(list(`file:checksum` = "1220aa"))),
+                       file.path(src, "manifest.json"), auto_unbox = TRUE)
+  expect_warning(
+    d <- cd_extract_daily(daily_pts(16), "2003-06-01", "2003-06-01", source = src),
+    "manifest"
+  )
+  expect_true(all(is.na(d$checksum)))
+  # An empty `files` lists nothing: silent.
+  writeLines('{"files": {}}', file.path(src, "manifest.json"))
+  d <- expect_no_warning(
+    cd_extract_daily(daily_pts(16), "2003-06-01", "2003-06-01", source = src)
   )
   expect_true(all(is.na(d$checksum)))
   # An entry that is a scalar, not an object.

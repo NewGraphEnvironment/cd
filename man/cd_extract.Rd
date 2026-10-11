@@ -59,8 +59,9 @@ from, so a later run can tell when a republish changed it. \code{cd_sha} is
 read from the file itself. \code{checksum} comes from \code{catalog} (see
 \code{\link[=cd_catalog]{cd_catalog()}}) and is kept only when the file's run-time tag matches the
 catalog's \code{run_time}, so a stale cached copy or an out-of-date catalog
-gives \code{NA} and a warning rather than another build's checksum. A catalog
-row with no \code{run_time} cannot be checked and gives \code{NA} without a warning.
+gives \code{NA} rather than another build's checksum, and a warning for a row
+carrying both a checksum and a \code{run_time}. A catalog row with no \code{run_time}
+cannot be checked and gives \code{NA} without a warning.
 A checksum identifies a build, not values.
 }
 

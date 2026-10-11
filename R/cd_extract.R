@@ -37,8 +37,9 @@
 #' read from the file itself. `checksum` comes from `catalog` (see
 #' [cd_catalog()]) and is kept only when the file's run-time tag matches the
 #' catalog's `run_time`, so a stale cached copy or an out-of-date catalog
-#' gives `NA` and a warning rather than another build's checksum. A catalog
-#' row with no `run_time` cannot be checked and gives `NA` without a warning.
+#' gives `NA` rather than another build's checksum, and a warning for a row
+#' carrying both a checksum and a `run_time`. A catalog row with no `run_time`
+#' cannot be checked and gives `NA` without a warning.
 #' A checksum identifies a build, not values.
 #'
 #' @examples

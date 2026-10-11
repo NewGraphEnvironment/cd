@@ -108,13 +108,19 @@ file itself. \code{checksum} comes from \verb{<source>/manifest.json}, read once
 call (through the cache when \code{cache = TRUE}, so it follows
 \code{cd.cache_revalidate} like the files), and is kept only when the file's
 run-time tag matches the manifest's
-\code{processing:datetime} for it, so a stale cached copy gives \code{NA} and a
-warning rather than another build's checksum. An entry with no
+\code{processing:datetime} for it, so a stale cached copy gives \code{NA} and, for
+an entry carrying both a checksum and a run time, a warning rather than
+another build's checksum. An entry with no
 \code{processing:datetime} cannot be checked and gives \code{NA} silently, as does
 a file the manifest does not list. A local \code{source} with no manifest (such
-as the bundled example) gives \code{NA} silently; a manifest that cannot be
-read (a remote one missing or unreachable, or one that is not JSON) gives
-\code{NA} and a warning. A checksum identifies a build, not values.
+as the bundled example) gives \code{NA} silently. A manifest that cannot be
+read or is not the published shape (\code{files}, an object keyed by file name)
+gives \code{NA} and a warning; with \code{cache = TRUE}, a cached manifest is used
+instead when the remote one cannot be reached. A cached manifest can be
+older than a file downloaded after it (with \code{cd.cache_revalidate = FALSE}):
+a republished year then warns, and a year it does not list yet is \code{NA}
+silently. \code{cd_cache_fetch("<source>/manifest.json", refresh = TRUE)}
+replaces it. A checksum identifies a build, not values.
 }
 
 \examples{

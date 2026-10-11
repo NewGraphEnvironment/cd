@@ -41,13 +41,19 @@
 #' call (through the cache when `cache = TRUE`, so it follows
 #' `cd.cache_revalidate` like the files), and is kept only when the file's
 #' run-time tag matches the manifest's
-#' `processing:datetime` for it, so a stale cached copy gives `NA` and a
-#' warning rather than another build's checksum. An entry with no
+#' `processing:datetime` for it, so a stale cached copy gives `NA` and, for
+#' an entry carrying both a checksum and a run time, a warning rather than
+#' another build's checksum. An entry with no
 #' `processing:datetime` cannot be checked and gives `NA` silently, as does
 #' a file the manifest does not list. A local `source` with no manifest (such
-#' as the bundled example) gives `NA` silently; a manifest that cannot be
-#' read (a remote one missing or unreachable, or one that is not JSON) gives
-#' `NA` and a warning. A checksum identifies a build, not values.
+#' as the bundled example) gives `NA` silently. A manifest that cannot be
+#' read or is not the published shape (`files`, an object keyed by file name)
+#' gives `NA` and a warning; with `cache = TRUE`, a cached manifest is used
+#' instead when the remote one cannot be reached. A cached manifest can be
+#' older than a file downloaded after it (with `cd.cache_revalidate = FALSE`):
+#' a republished year then warns, and a year it does not list yet is `NA`
+#' silently. `cd_cache_fetch("<source>/manifest.json", refresh = TRUE)`
+#' replaces it. A checksum identifies a build, not values.
 #'
 #' @param points Point locations: an `sf` or [terra::SpatVector] of points
 #'   in any CRS, carrying the `id` column, or a data frame with longitude/latitude columns
@@ -204,7 +210,11 @@ cd_extract_daily <- function(points, from, to,
 
   build_warn(unmatched, "the cube's manifest", paste0(
     if (isTRUE(cache)) {
-      "If a cached copy is stale, `cd_cache_fetch(href, refresh = TRUE)` replaces it. "
+      paste0(
+        "If a cached copy is stale, of a file or of the manifest (",
+        sub("/+$", "", source), "/manifest.json), ",
+        "`cd_cache_fetch(href, refresh = TRUE)` replaces it. "
+      )
     },
     "A publish still in progress also shows this until it completes."
   ))
@@ -248,14 +258,16 @@ daily_manifest <- function(source, cache = TRUE) {
   } else {
     daily_manifest_fetch(url)
   }
-  if (!is.list(m) || !is.list(m[["files"]])) {
+  files <- if (is.list(m)) m[["files"]]
+  # JSON's {} and [] both parse to list(); a non-empty unnamed one is an array.
+  if (!is.list(files) || (length(files) > 0L && is.null(names(files)))) {
     rlang::warn(paste0(
       "Could not read the daily cube's manifest at '", url, "'; ",
       "`checksum` is NA."
     ))
     return(NULL)
   }
-  m[["files"]]
+  files
 }
 
 #' GET a remote manifest and parse it, or NULL on any failure.
