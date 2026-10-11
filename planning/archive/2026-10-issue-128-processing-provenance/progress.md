@@ -21,4 +21,4 @@
 - PR #131 merged as `d2fb0a0`; released v0.6.4 (`62cd4d0`)
 - Phase 5 from a clean main at `62cd4d0`: both dry runs green (manifest-only 228/228 live byte for byte; catalog 59 items, ETags match, 59/59 checksums unchanged), then `daily_publish.R --manifest-only` at 16:58:08 UTC and `catalog_publish.R` at 16:58:34 UTC, both conditional uploads read back
 - `compare_128.py` on `data/backfill/pre_128/*` vs the live documents: 0 problems over 59 items and 228 entries; all 287 published `.tif` objects kept their 2026-10-10 LastModified
-- PR #129 (#126) merged as v0.6.5; its test suite on the merged tree ran the live canary against the republished catalog, FAIL 0, no skips
+- PR #129 (#126) merged as v0.6.5; its test suite, run on a trial merge of main and the PR just before merging, ran the live canary against the republished catalog, FAIL 0, no skips
