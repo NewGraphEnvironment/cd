@@ -63,12 +63,12 @@ republish gets `scripts/catalog_publish.R`; the live republish runs post-merge f
 - [x] `devtools::test()` + `lintr::lint_package()` clean; `/code-check branch`
       (three-round floor)
 
-## Phase 5: republish (after merge, on your go) — open at archive time; see README
-- [ ] From a clean `main`: `Rscript scripts/daily_publish.R --manifest-only`, then
+## Phase 5: republish (after merge, on your go) — done 2026-10-11; see README
+- [x] From a clean `main`: `Rscript scripts/daily_publish.R --manifest-only`, then
       `Rscript scripts/catalog_publish.R` — before the next Monday 06:00 UTC dry run
-- [ ] `uv run planning/archive/2026-10-issue-128-processing-provenance/compare_128.py` on `data/backfill/pre_128/*` vs the live
+- [x] `uv run planning/archive/2026-10-issue-128-processing-provenance/compare_128.py` on `data/backfill/pre_128/*` vs the live
       documents: only the rename, every checksum unchanged
-- [ ] Tell #126 / PR #129 it can merge
+- [x] Tell #126 / PR #129 it can merge
 
 ## Validation
 

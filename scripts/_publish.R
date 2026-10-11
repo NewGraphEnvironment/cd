@@ -298,8 +298,11 @@ daily_publish <- function(daily_dir, bucket, manifest_path, dry_run = FALSE,
   problems <- readback_problems(paste0(s3_base(bucket), "/daily/manifest.json"),
                                 manifest_path)
   if (length(problems) > 0) stop(problems, call. = FALSE)
-  log(paste0("Published ", length(local), " daily file(s); manifest lists ",
-             length(merged), ", through ", manifest_last_year(merged)))
+  log(paste0(if (sync) paste0("Published ", length(local), " daily file(s)") else
+               paste0("Published the manifest only; ", length(local),
+                      " local file(s) already live"),
+             "; manifest lists ", length(merged), ", through ",
+             manifest_last_year(merged)))
   invisible(TRUE)
 }
 
