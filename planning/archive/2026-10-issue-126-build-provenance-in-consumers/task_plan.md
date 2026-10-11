@@ -70,7 +70,7 @@ carry no provenance, so the examples show `NA`.
       are under `$files`. Update
       `@return`. Document that the manifest is read live while `cache = TRUE` files
       are ETag-validated at fetch, so the two agree unless a publish lands mid-call.
-- [ ] Live canary (`test-cd_extract_daily_live.R`, `skip_on_ci`): the published cube
+- [x] Live canary (`test-cd_extract_daily_live.R`, `skip_on_ci`): the published cube
       returns a non-`NA` checksum. It can only pass after the prerequisite republish.
 
 ## Phase 4: Docs
@@ -81,11 +81,11 @@ carry no provenance, so the examples show `NA`.
 - [x] CLAUDE.md consumer section: one line saying the extract outputs carry
       `checksum`/`cd_sha` and where they come from.
 - [x] `lintr::lint_package()` (no lints in changed files) and `pkgdown::check_pkgdown()` (clean)
-- [ ] `devtools::test()` full suite
+- [x] `devtools::test()` full suite (628 pass, 0 fail, live tests run)
 
 ## Validation
 
-- [ ] Tests pass
-- [ ] `/code-check` clean (each commit, or once over the branch with `/code-check branch`)
-- [ ] PWF checkboxes match landed work
-- [ ] `/planning-archive` on completion
+- [x] Tests pass
+- [x] `/code-check` clean (each commit, or once over the branch with `/code-check branch`)
+- [x] PWF checkboxes match landed work
+- [x] `/planning-archive` on completion
