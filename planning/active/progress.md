@@ -12,3 +12,4 @@
 - Phase 3: `scripts/catalog_publish.R`; `daily_publish(sync = FALSE)`; datetime guard (test_lib 104/104, guard proven by restore-the-bug)
 - Dry runs 2026-10-11 16:09 UTC: catalog 59 items 1950-2025, ETags match, 59/59 checksums unchanged; manifest-only 228/228 live byte for byte. `compare_128.py`: 0 problems; planted errors (old key left, bad processing key, reformatted datetime) all caught
 - The first catalog dry run's aws sync took ~12 min for 300 MB (slow transfer, not a hang; two partial temp files were seen mid-download)
+- Phase 4: CLAUDE.md updated; devtools::test() FAIL 0 | PASS 566 (6 warnings, pre-existing); 41 package lints, none new (`n_bands` unused predates #128)

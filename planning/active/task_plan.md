@@ -58,7 +58,7 @@ republish gets `scripts/catalog_publish.R`; the live republish runs post-merge f
       (STAC core is skipped: `geometry: null` with `bbox` predates #128)
 
 ## Phase 4: docs
-- [ ] `CLAUDE.md` #124 paragraph: `cd:version`/… → the processing keys and link;
+- [x] `CLAUDE.md` #124 paragraph: `cd:version`/… → the processing keys and link;
       `scripts/catalog_publish.R` in the Scripts list; `daily_publish.R` header comment
 - [ ] `devtools::test()` + `lintr::lint_package()` clean; `/code-check branch`
       (three-round floor)
