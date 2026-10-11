@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">cd</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,11 +36,6 @@
       <small>Source: <a href="https://github.com/NewGraphEnvironment/cd/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
-    <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.6.4" id="cd-064-2026-10-11">cd 0.6.4 (2026-10-11)<a class="anchor" aria-label="anchor" href="#cd-064-2026-10-11"></a></h2>
-<ul><li>Run provenance in <code>catalog.json</code> and <code>daily/manifest.json</code> moves to the <strong>STAC processing extension</strong> (v1.2.0), a standard any STAC reader understands, in place of the four <code>cd:</code> fields added in 0.6.3. The fields are now <code>processing:version</code>, <code>processing:software</code> (<code>{"cd": "&lt;sha&gt;"}</code>) and <code>processing:datetime</code> (the COG’s <code>CD_RUN_TIME</code> tag, copied exactly), plus a <code>processing-execution</code> link to the GitHub Actions run that built the file. <code>cd:variable</code> and <code>cd:period</code> are unchanged. The COGs are not rebuilt, so their checksums and ETags stay the same and no cache downloads them again; only the two metadata documents are republished. (<a href="https://github.com/NewGraphEnvironment/cd/issues/128" class="external-link">#128</a>, <a href="https://github.com/NewGraphEnvironment/cd/pull/131" class="external-link">#131</a>)</li>
-<li>Producer side, the catalog and the manifest are both refused unless every item or entry carries the new keys, so a partial publish cannot mix the two vocabularies. <code>scripts/catalog_publish.R</code> and <code>scripts/daily_publish.R --manifest-only</code> republish the metadata alone and never upload a COG.</li>
-</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.6.3" id="cd-063-2026-10-10">cd 0.6.3 (2026-10-10)<a class="anchor" aria-label="anchor" href="#cd-063-2026-10-10"></a></h2>
 <ul><li>Every published COG now carries a <strong>checksum and the run that made it</strong>. Each catalog item’s <code>data</code> asset has <code>file:checksum</code> (a sha256 multihash) and <code>file:size</code> (STAC file extension v2.1.0), and the item’s properties carry <code>cd:version</code>, <code>cd:sha</code>, <code>cd:run_time</code> and <code>cd:run_id</code>, read from GDAL tags written into the COG itself. The daily cube, which is not in the catalog, gets the same per file in <code>s3://stac-era5-land/daily/manifest.json</code>. So a changed checksum means changed bytes, and an analysis can record which build it read. A checksum identifies a <strong>build</strong>, not values: the run time is in the bytes, so a rebuild of unchanged data changes it. Every published file is republished once to carry them, so caches validated by ETag download each file again once; if you set <code>options(cd.cache_revalidate = FALSE)</code>, run <code><a href="../reference/cd_cache_clear.html">cd_cache_clear()</a></code>. (<a href="https://github.com/NewGraphEnvironment/cd/issues/124" class="external-link">#124</a>, <a href="https://github.com/NewGraphEnvironment/cd/pull/127" class="external-link">#127</a>)</li>

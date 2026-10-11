@@ -1,25 +1,5 @@
 # Changelog
 
-## cd 0.6.4 (2026-10-11)
-
-- Run provenance in `catalog.json` and `daily/manifest.json` moves to
-  the **STAC processing extension** (v1.2.0), a standard any STAC reader
-  understands, in place of the four `cd:` fields added in 0.6.3. The
-  fields are now `processing:version`, `processing:software`
-  (`{"cd": "<sha>"}`) and `processing:datetime` (the COG’s `CD_RUN_TIME`
-  tag, copied exactly), plus a `processing-execution` link to the GitHub
-  Actions run that built the file. `cd:variable` and `cd:period` are
-  unchanged. The COGs are not rebuilt, so their checksums and ETags stay
-  the same and no cache downloads them again; only the two metadata
-  documents are republished.
-  ([\#128](https://github.com/NewGraphEnvironment/cd/issues/128),
-  [\#131](https://github.com/NewGraphEnvironment/cd/pull/131))
-- Producer side, the catalog and the manifest are both refused unless
-  every item or entry carries the new keys, so a partial publish cannot
-  mix the two vocabularies. `scripts/catalog_publish.R` and
-  `scripts/daily_publish.R --manifest-only` republish the metadata alone
-  and never upload a COG.
-
 ## cd 0.6.3 (2026-10-10)
 
 - Every published COG now carries a **checksum and the run that made
