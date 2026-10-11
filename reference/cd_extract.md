@@ -76,6 +76,29 @@ A tibble with columns:
 
   Spatial mean of the climate value for this AOI.
 
+- checksum:
+
+  The checksum `catalog` gives for the file read, kept only when the
+  file is shown to be that build (see Provenance); otherwise `NA`.
+
+- cd_sha:
+
+  Git commit of the cd code that built the file read, from the file's
+  own tags; `NA` for an untagged file.
+
+## Provenance
+
+`checksum` and `cd_sha` record which build of each file the values came
+from, so a later run can tell when a republish changed it. `cd_sha` is
+read from the file itself. `checksum` comes from `catalog` (see
+[`cd_catalog()`](https://newgraphenvironment.github.io/cd/reference/cd_catalog.md))
+and is kept only when the file's run-time tag matches the catalog's
+`run_time`, so a stale cached copy or an out-of-date catalog gives `NA`
+rather than another build's checksum, and a warning for a row carrying
+both a checksum and a `run_time`. A catalog row with no `run_time`
+cannot be checked and gives `NA` without a warning. A checksum
+identifies a build, not values.
+
 ## Examples
 
 ``` r
@@ -87,17 +110,17 @@ aoi <- sf::st_read(
   quiet = TRUE
 )
 cd_extract(catalog, aoi)
-#> # A tibble: 10 × 4
-#>    variable period  year  value
-#>    <chr>    <chr>  <int>  <dbl>
-#>  1 tmean    annual  1951 -2.87 
-#>  2 tmean    annual  1952 -2.01 
-#>  3 tmean    annual  1953 -0.881
-#>  4 tmean    annual  1954 -0.223
-#>  5 tmean    annual  1955 -1.22 
-#>  6 tmean    annual  1956 -2.88 
-#>  7 tmean    annual  1957 -1.37 
-#>  8 tmean    annual  1958 -1.34 
-#>  9 tmean    annual  1959  0.537
-#> 10 tmean    annual  1960 -1.61 
+#> # A tibble: 10 × 6
+#>    variable period  year  value checksum cd_sha
+#>    <chr>    <chr>  <int>  <dbl> <chr>    <chr> 
+#>  1 tmean    annual  1951 -2.87  NA       NA    
+#>  2 tmean    annual  1952 -2.01  NA       NA    
+#>  3 tmean    annual  1953 -0.881 NA       NA    
+#>  4 tmean    annual  1954 -0.223 NA       NA    
+#>  5 tmean    annual  1955 -1.22  NA       NA    
+#>  6 tmean    annual  1956 -2.88  NA       NA    
+#>  7 tmean    annual  1957 -1.37  NA       NA    
+#>  8 tmean    annual  1958 -1.34  NA       NA    
+#>  9 tmean    annual  1959  0.537 NA       NA    
+#> 10 tmean    annual  1960 -1.61  NA       NA    
 ```

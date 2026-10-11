@@ -144,6 +144,15 @@ point outside the cube.</p></dd>
 <dd><p><code>TRUE</code> when the point's own cell had no data and a
 neighbour was used.</p></dd>
 
+<dt>checksum</dt>
+<dd><p>The checksum the cube's manifest gives for the file the
+row was read from, kept only when the file is shown to be that build
+(see Provenance); otherwise <code>NA</code>.</p></dd>
+
+<dt>cd_sha</dt>
+<dd><p>Git commit of the cd code that built that file, from the
+file's own tags; <code>NA</code> for an untagged file.</p></dd>
+
 
 </dl><p>Rows are ordered by point (input order), variable, then date.</p>
     </div>
@@ -177,6 +186,30 @@ no elevation adjustment between the cell and the point.</p>
 140.05–113.95° W) gets <code>NA</code> values and <code>NA</code> cell columns, and a warning
 names it with the cube's extent; the other points are unaffected.</p>
     </div>
+    <div class="section level2">
+    <h2 id="provenance">Provenance<a class="anchor" aria-label="anchor" href="#provenance"></a></h2>
+
+
+<p>Each file of the cube is one variable and year, and <code>checksum</code> and
+<code>cd_sha</code> say which build of it a row came from. <code>cd_sha</code> is read from the
+file itself. <code>checksum</code> comes from <code>&lt;source&gt;/manifest.json</code>, read once per
+call (through the cache when <code>cache = TRUE</code>, so it follows
+<code>cd.cache_revalidate</code> like the files), and is kept only when the file's
+run-time tag matches the manifest's
+<code>processing:datetime</code> for it, so a stale cached copy gives <code>NA</code> and, for
+an entry carrying both a checksum and a run time, a warning rather than
+another build's checksum. An entry with no
+<code>processing:datetime</code> cannot be checked and gives <code>NA</code> silently, as does
+a file the manifest does not list. A local <code>source</code> with no manifest (such
+as the bundled example) gives <code>NA</code> silently. A manifest that cannot be
+read or is not the published shape (<code>files</code>, an object keyed by file name)
+gives <code>NA</code> and a warning; with <code>cache = TRUE</code>, a cached manifest is used
+instead when the remote one cannot be reached. A cached manifest can be
+older than a file downloaded after it (with <code>cd.cache_revalidate = FALSE</code>):
+a republished year then warns, and a year it does not list yet is <code>NA</code>
+silently. <code>cd_cache_fetch("&lt;source&gt;/manifest.json", refresh = TRUE)</code>
+replaces it. A checksum identifies a build, not values.</p>
+    </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
@@ -189,15 +222,15 @@ names it with the cube's extent; the other points are unaffected.</p>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu">cd_extract_daily</span><span class="op">(</span><span class="va">stations</span>, <span class="st">"2002-06-01"</span>, <span class="st">"2002-08-31"</span>, source <span class="op">=</span> <span class="va">src</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">d</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 6 × 8</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   id    date       variable value  cell cell_x cell_y cell_moved</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> upper 2002-06-01 tmean     4.34     6  -<span style="color: #BB0000;">126.</span>   54.6 FALSE     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> upper 2002-06-02 tmean     6.54     6  -<span style="color: #BB0000;">126.</span>   54.6 FALSE     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> upper 2002-06-03 tmean     6.73     6  -<span style="color: #BB0000;">126.</span>   54.6 FALSE     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> upper 2002-06-04 tmean     5.89     6  -<span style="color: #BB0000;">126.</span>   54.6 FALSE     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> upper 2002-06-05 tmean     4.14     6  -<span style="color: #BB0000;">126.</span>   54.6 FALSE     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span> upper 2002-06-06 tmean     3.44     6  -<span style="color: #BB0000;">126.</span>   54.6 FALSE     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 6 × 10</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   id    date       variable value  cell cell_x cell_y cell_moved checksum cd_sha</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> upper 2002-06-01 tmean     4.34     6  -<span style="color: #BB0000;">126.</span>   54.6 FALSE      <span style="color: #BB0000;">NA</span>       <span style="color: #BB0000;">NA</span>    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> upper 2002-06-02 tmean     6.54     6  -<span style="color: #BB0000;">126.</span>   54.6 FALSE      <span style="color: #BB0000;">NA</span>       <span style="color: #BB0000;">NA</span>    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> upper 2002-06-03 tmean     6.73     6  -<span style="color: #BB0000;">126.</span>   54.6 FALSE      <span style="color: #BB0000;">NA</span>       <span style="color: #BB0000;">NA</span>    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> upper 2002-06-04 tmean     5.89     6  -<span style="color: #BB0000;">126.</span>   54.6 FALSE      <span style="color: #BB0000;">NA</span>       <span style="color: #BB0000;">NA</span>    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> upper 2002-06-05 tmean     4.14     6  -<span style="color: #BB0000;">126.</span>   54.6 FALSE      <span style="color: #BB0000;">NA</span>       <span style="color: #BB0000;">NA</span>    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span> upper 2002-06-06 tmean     3.44     6  -<span style="color: #BB0000;">126.</span>   54.6 FALSE      <span style="color: #BB0000;">NA</span>       <span style="color: #BB0000;">NA</span>    </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Growing degree-days above 5 °C over the summer, per station</span></span></span>
 <span class="r-in"><span><span class="va">tm</span> <span class="op">&lt;-</span> <span class="va">d</span><span class="op">[</span><span class="va">d</span><span class="op">$</span><span class="va">variable</span> <span class="op">==</span> <span class="st">"tmean"</span>, <span class="op">]</span></span></span>

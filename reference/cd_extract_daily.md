@@ -102,6 +102,17 @@ A tibble with one row per point, variable and day:
 
   `TRUE` when the point's own cell had no data and a neighbour was used.
 
+- checksum:
+
+  The checksum the cube's manifest gives for the file the row was read
+  from, kept only when the file is shown to be that build (see
+  Provenance); otherwise `NA`.
+
+- cd_sha:
+
+  Git commit of the cd code that built that file, from the file's own
+  tags; `NA` for an untagged file.
+
 Rows are ordered by point (input order), variable, then date.
 
 ## Day boundary
@@ -131,6 +142,28 @@ A point outside the cube (British Columbia's box, 47.95–60.05° N,
 140.05–113.95° W) gets `NA` values and `NA` cell columns, and a warning
 names it with the cube's extent; the other points are unaffected.
 
+## Provenance
+
+Each file of the cube is one variable and year, and `checksum` and
+`cd_sha` say which build of it a row came from. `cd_sha` is read from
+the file itself. `checksum` comes from `<source>/manifest.json`, read
+once per call (through the cache when `cache = TRUE`, so it follows
+`cd.cache_revalidate` like the files), and is kept only when the file's
+run-time tag matches the manifest's `processing:datetime` for it, so a
+stale cached copy gives `NA` and, for an entry carrying both a checksum
+and a run time, a warning rather than another build's checksum. An entry
+with no `processing:datetime` cannot be checked and gives `NA` silently,
+as does a file the manifest does not list. A local `source` with no
+manifest (such as the bundled example) gives `NA` silently. A manifest
+that cannot be read or is not the published shape (`files`, an object
+keyed by file name) gives `NA` and a warning; with `cache = TRUE`, a
+cached manifest is used instead when the remote one cannot be reached. A
+cached manifest can be older than a file downloaded after it (with
+`cd.cache_revalidate = FALSE`): a republished year then warns, and a
+year it does not list yet is `NA` silently.
+`cd_cache_fetch("<source>/manifest.json", refresh = TRUE)` replaces it.
+A checksum identifies a build, not values.
+
 ## Examples
 
 ``` r
@@ -143,15 +176,15 @@ stations <- data.frame(
 )
 d <- cd_extract_daily(stations, "2002-06-01", "2002-08-31", source = src)
 head(d)
-#> # A tibble: 6 × 8
-#>   id    date       variable value  cell cell_x cell_y cell_moved
-#>   <chr> <date>     <chr>    <dbl> <int>  <dbl>  <dbl> <lgl>     
-#> 1 upper 2002-06-01 tmean     4.34     6  -126.   54.6 FALSE     
-#> 2 upper 2002-06-02 tmean     6.54     6  -126.   54.6 FALSE     
-#> 3 upper 2002-06-03 tmean     6.73     6  -126.   54.6 FALSE     
-#> 4 upper 2002-06-04 tmean     5.89     6  -126.   54.6 FALSE     
-#> 5 upper 2002-06-05 tmean     4.14     6  -126.   54.6 FALSE     
-#> 6 upper 2002-06-06 tmean     3.44     6  -126.   54.6 FALSE     
+#> # A tibble: 6 × 10
+#>   id    date       variable value  cell cell_x cell_y cell_moved checksum cd_sha
+#>   <chr> <date>     <chr>    <dbl> <int>  <dbl>  <dbl> <lgl>      <chr>    <chr> 
+#> 1 upper 2002-06-01 tmean     4.34     6  -126.   54.6 FALSE      NA       NA    
+#> 2 upper 2002-06-02 tmean     6.54     6  -126.   54.6 FALSE      NA       NA    
+#> 3 upper 2002-06-03 tmean     6.73     6  -126.   54.6 FALSE      NA       NA    
+#> 4 upper 2002-06-04 tmean     5.89     6  -126.   54.6 FALSE      NA       NA    
+#> 5 upper 2002-06-05 tmean     4.14     6  -126.   54.6 FALSE      NA       NA    
+#> 6 upper 2002-06-06 tmean     3.44     6  -126.   54.6 FALSE      NA       NA    
 
 # Growing degree-days above 5 °C over the summer, per station
 tm <- d[d$variable == "tmean", ]

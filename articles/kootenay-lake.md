@@ -67,67 +67,67 @@ kableExtra::kable_styling(
   kableExtra::scroll_box(height = "320px")
 ```
 
-| variable | period | href |
-|:---|:---|:---|
-| prcp | annual | <https://stac-era5-land.s3.us-west-2.amazonaws.com/prcp_annual.tif> |
-| prcp | fall | <https://stac-era5-land.s3.us-west-2.amazonaws.com/prcp_fall.tif> |
-| prcp | spring | <https://stac-era5-land.s3.us-west-2.amazonaws.com/prcp_spring.tif> |
-| prcp | summer | <https://stac-era5-land.s3.us-west-2.amazonaws.com/prcp_summer.tif> |
-| prcp | winter | <https://stac-era5-land.s3.us-west-2.amazonaws.com/prcp_winter.tif> |
-| rh | annual | <https://stac-era5-land.s3.us-west-2.amazonaws.com/rh_annual.tif> |
-| rh | fall | <https://stac-era5-land.s3.us-west-2.amazonaws.com/rh_fall.tif> |
-| rh | spring | <https://stac-era5-land.s3.us-west-2.amazonaws.com/rh_spring.tif> |
-| rh | summer | <https://stac-era5-land.s3.us-west-2.amazonaws.com/rh_summer.tif> |
-| rh | winter | <https://stac-era5-land.s3.us-west-2.amazonaws.com/rh_winter.tif> |
-| snow_cover | annual | <https://stac-era5-land.s3.us-west-2.amazonaws.com/snow_cover_annual.tif> |
-| snow_cover | fall | <https://stac-era5-land.s3.us-west-2.amazonaws.com/snow_cover_fall.tif> |
-| snow_cover | spring | <https://stac-era5-land.s3.us-west-2.amazonaws.com/snow_cover_spring.tif> |
-| snow_cover | summer | <https://stac-era5-land.s3.us-west-2.amazonaws.com/snow_cover_summer.tif> |
-| snow_cover | winter | <https://stac-era5-land.s3.us-west-2.amazonaws.com/snow_cover_winter.tif> |
-| snowfall | annual | <https://stac-era5-land.s3.us-west-2.amazonaws.com/snowfall_annual.tif> |
-| snowfall | fall | <https://stac-era5-land.s3.us-west-2.amazonaws.com/snowfall_fall.tif> |
-| snowfall_fraction | annual | <https://stac-era5-land.s3.us-west-2.amazonaws.com/snowfall_fraction_annual.tif> |
-| snowfall | spring | <https://stac-era5-land.s3.us-west-2.amazonaws.com/snowfall_spring.tif> |
-| snowfall | summer | <https://stac-era5-land.s3.us-west-2.amazonaws.com/snowfall_summer.tif> |
-| snowfall | winter | <https://stac-era5-land.s3.us-west-2.amazonaws.com/snowfall_winter.tif> |
-| snowmelt | annual | <https://stac-era5-land.s3.us-west-2.amazonaws.com/snowmelt_annual.tif> |
-| snowmelt_doy_50 | annual | <https://stac-era5-land.s3.us-west-2.amazonaws.com/snowmelt_doy_50_annual.tif> |
-| snowmelt | fall | <https://stac-era5-land.s3.us-west-2.amazonaws.com/snowmelt_fall.tif> |
-| snowmelt_rate_peak | annual | <https://stac-era5-land.s3.us-west-2.amazonaws.com/snowmelt_rate_peak_annual.tif> |
-| snowmelt | spring | <https://stac-era5-land.s3.us-west-2.amazonaws.com/snowmelt_spring.tif> |
-| snowmelt | summer | <https://stac-era5-land.s3.us-west-2.amazonaws.com/snowmelt_summer.tif> |
-| snowmelt | winter | <https://stac-era5-land.s3.us-west-2.amazonaws.com/snowmelt_winter.tif> |
-| soil_moisture | annual | <https://stac-era5-land.s3.us-west-2.amazonaws.com/soil_moisture_annual.tif> |
-| soil_moisture | fall | <https://stac-era5-land.s3.us-west-2.amazonaws.com/soil_moisture_fall.tif> |
-| soil_moisture | spring | <https://stac-era5-land.s3.us-west-2.amazonaws.com/soil_moisture_spring.tif> |
-| soil_moisture | summer | <https://stac-era5-land.s3.us-west-2.amazonaws.com/soil_moisture_summer.tif> |
-| soil_moisture | winter | <https://stac-era5-land.s3.us-west-2.amazonaws.com/soil_moisture_winter.tif> |
-| swe | annual | <https://stac-era5-land.s3.us-west-2.amazonaws.com/swe_annual.tif> |
-| swe | fall | <https://stac-era5-land.s3.us-west-2.amazonaws.com/swe_fall.tif> |
-| swe_max | annual | <https://stac-era5-land.s3.us-west-2.amazonaws.com/swe_max_annual.tif> |
-| swe | spring | <https://stac-era5-land.s3.us-west-2.amazonaws.com/swe_spring.tif> |
-| swe | summer | <https://stac-era5-land.s3.us-west-2.amazonaws.com/swe_summer.tif> |
-| swe | winter | <https://stac-era5-land.s3.us-west-2.amazonaws.com/swe_winter.tif> |
-| tmax | annual | <https://stac-era5-land.s3.us-west-2.amazonaws.com/tmax_annual.tif> |
-| tmax | fall | <https://stac-era5-land.s3.us-west-2.amazonaws.com/tmax_fall.tif> |
-| tmax | spring | <https://stac-era5-land.s3.us-west-2.amazonaws.com/tmax_spring.tif> |
-| tmax | summer | <https://stac-era5-land.s3.us-west-2.amazonaws.com/tmax_summer.tif> |
-| tmax | winter | <https://stac-era5-land.s3.us-west-2.amazonaws.com/tmax_winter.tif> |
-| tmean | annual | <https://stac-era5-land.s3.us-west-2.amazonaws.com/tmean_annual.tif> |
-| tmean | fall | <https://stac-era5-land.s3.us-west-2.amazonaws.com/tmean_fall.tif> |
-| tmean | spring | <https://stac-era5-land.s3.us-west-2.amazonaws.com/tmean_spring.tif> |
-| tmean | summer | <https://stac-era5-land.s3.us-west-2.amazonaws.com/tmean_summer.tif> |
-| tmean | winter | <https://stac-era5-land.s3.us-west-2.amazonaws.com/tmean_winter.tif> |
-| tmin | annual | <https://stac-era5-land.s3.us-west-2.amazonaws.com/tmin_annual.tif> |
-| tmin | fall | <https://stac-era5-land.s3.us-west-2.amazonaws.com/tmin_fall.tif> |
-| tmin | spring | <https://stac-era5-land.s3.us-west-2.amazonaws.com/tmin_spring.tif> |
-| tmin | summer | <https://stac-era5-land.s3.us-west-2.amazonaws.com/tmin_summer.tif> |
-| tmin | winter | <https://stac-era5-land.s3.us-west-2.amazonaws.com/tmin_winter.tif> |
-| vpd | annual | <https://stac-era5-land.s3.us-west-2.amazonaws.com/vpd_annual.tif> |
-| vpd | fall | <https://stac-era5-land.s3.us-west-2.amazonaws.com/vpd_fall.tif> |
-| vpd | spring | <https://stac-era5-land.s3.us-west-2.amazonaws.com/vpd_spring.tif> |
-| vpd | summer | <https://stac-era5-land.s3.us-west-2.amazonaws.com/vpd_summer.tif> |
-| vpd | winter | <https://stac-era5-land.s3.us-west-2.amazonaws.com/vpd_winter.tif> |
+| variable | period | href | checksum | size | cd_version | cd_sha | run_time | run_url |
+|:---|:---|:---|:---|---:|:---|:---|:---|:---|
+| prcp | annual | <https://stac-era5-land.s3.us-west-2.amazonaws.com/prcp_annual.tif> | 1220730c1dd528b251a472d0bf5be00a36e5b0c458f115547c4b23b4ca2f98229e35 | 5625182 | 0.6.3 | 349f9d72e1687761ce98ebd62e6a086be30cc2a6 | 2026-10-10T22:36:36Z | NA |
+| prcp | fall | <https://stac-era5-land.s3.us-west-2.amazonaws.com/prcp_fall.tif> | 122013cdcc6f5dfafc3f78bf2413de23522860f277931466d3a50688039b5ec31f96 | 5677983 | 0.6.3 | 349f9d72e1687761ce98ebd62e6a086be30cc2a6 | 2026-10-10T22:36:36Z | NA |
+| prcp | spring | <https://stac-era5-land.s3.us-west-2.amazonaws.com/prcp_spring.tif> | 12200c079fedd71cf072c20e2282cbaf1640be398e45412859cf5b52ed30ca225693 | 5682614 | 0.6.3 | 349f9d72e1687761ce98ebd62e6a086be30cc2a6 | 2026-10-10T22:36:36Z | NA |
+| prcp | summer | <https://stac-era5-land.s3.us-west-2.amazonaws.com/prcp_summer.tif> | 122021712e164766de9bd28f3340638a25e0782500678ca8f69608ba4108f0d8441b | 5612241 | 0.6.3 | 349f9d72e1687761ce98ebd62e6a086be30cc2a6 | 2026-10-10T22:36:36Z | NA |
+| prcp | winter | <https://stac-era5-land.s3.us-west-2.amazonaws.com/prcp_winter.tif> | 1220850bc3ef2145e795d7cfca1bbb0ad2eb991d44e9b924e8a6303ec6124fe2de4c | 5678272 | 0.6.3 | 349f9d72e1687761ce98ebd62e6a086be30cc2a6 | 2026-10-10T22:36:36Z | NA |
+| rh | annual | <https://stac-era5-land.s3.us-west-2.amazonaws.com/rh_annual.tif> | 12207743767feb01fc5dc6a6478c8ebea7bbeee126327a14c992eb766ecca47f2088 | 5243520 | 0.6.3 | 349f9d72e1687761ce98ebd62e6a086be30cc2a6 | 2026-10-10T22:36:36Z | NA |
+| rh | fall | <https://stac-era5-land.s3.us-west-2.amazonaws.com/rh_fall.tif> | 122026b2e8596ff7b70d1db40b8d03d00b27eeac73102404873afc294fcd028c81e5 | 5300345 | 0.6.3 | 349f9d72e1687761ce98ebd62e6a086be30cc2a6 | 2026-10-10T22:36:36Z | NA |
+| rh | spring | <https://stac-era5-land.s3.us-west-2.amazonaws.com/rh_spring.tif> | 12207512907a87a299ed200c7fe488535f4911fc1cce32bfdbaed90c66813f551b77 | 5325493 | 0.6.3 | 349f9d72e1687761ce98ebd62e6a086be30cc2a6 | 2026-10-10T22:36:36Z | NA |
+| rh | summer | <https://stac-era5-land.s3.us-west-2.amazonaws.com/rh_summer.tif> | 12208bed1d51fe1f7107953ed6378908e7e261557235ff7245488f5858125b0daf2b | 5386484 | 0.6.3 | 349f9d72e1687761ce98ebd62e6a086be30cc2a6 | 2026-10-10T22:36:36Z | NA |
+| rh | winter | <https://stac-era5-land.s3.us-west-2.amazonaws.com/rh_winter.tif> | 1220e69676b861ed1241e5582491b9c4ce302ce5a8e272c47c23179dde7e56c6ed9a | 5250798 | 0.6.3 | 349f9d72e1687761ce98ebd62e6a086be30cc2a6 | 2026-10-10T22:36:36Z | NA |
+| snow_cover | annual | <https://stac-era5-land.s3.us-west-2.amazonaws.com/snow_cover_annual.tif> | 1220b0b30134a3faeed6acfb017a7b6b1c2baf128d3ce18c712bcd8c037706f70f40 | 5422007 | 0.6.3 | 349f9d72e1687761ce98ebd62e6a086be30cc2a6 | 2026-10-10T22:36:36Z | NA |
+| snow_cover | fall | <https://stac-era5-land.s3.us-west-2.amazonaws.com/snow_cover_fall.tif> | 1220d15167465f6772c69cd0c48ef427687215a271ee56bfcc991bc94786bf150988 | 5605503 | 0.6.3 | 349f9d72e1687761ce98ebd62e6a086be30cc2a6 | 2026-10-10T22:36:36Z | NA |
+| snow_cover | spring | <https://stac-era5-land.s3.us-west-2.amazonaws.com/snow_cover_spring.tif> | 12206ad837fe006631bcb51ad2d4dc4d11e33993efef33d06dfa7e43d1f00292fbeb | 3944891 | 0.6.3 | 349f9d72e1687761ce98ebd62e6a086be30cc2a6 | 2026-10-10T22:36:36Z | NA |
+| snow_cover | summer | <https://stac-era5-land.s3.us-west-2.amazonaws.com/snow_cover_summer.tif> | 122088166d64ad112646e0568a6e3a08e49e524c39c2b54eb266137d7adfb69d8735 | 4521903 | 0.6.3 | 349f9d72e1687761ce98ebd62e6a086be30cc2a6 | 2026-10-10T22:36:36Z | NA |
+| snow_cover | winter | <https://stac-era5-land.s3.us-west-2.amazonaws.com/snow_cover_winter.tif> | 122055bcfdfb98c278e351ea6519ec6c8ef2aedd3387322c0407c13ea3e7bd4c808b | 1732905 | 0.6.3 | 349f9d72e1687761ce98ebd62e6a086be30cc2a6 | 2026-10-10T22:36:36Z | NA |
+| snowfall | annual | <https://stac-era5-land.s3.us-west-2.amazonaws.com/snowfall_annual.tif> | 12209fb134f10c3a049d6b7c7360499ae03a12221a49b959d2b4abd1c440ce2b491d | 5700112 | 0.6.3 | 349f9d72e1687761ce98ebd62e6a086be30cc2a6 | 2026-10-10T22:36:36Z | NA |
+| snowfall | fall | <https://stac-era5-land.s3.us-west-2.amazonaws.com/snowfall_fall.tif> | 1220bbd5806820ae0c469fded5ad2f7cd3a3bb0a8bd4821fe3f4af5b5ac9f66409f4 | 5767075 | 0.6.3 | 349f9d72e1687761ce98ebd62e6a086be30cc2a6 | 2026-10-10T22:36:36Z | NA |
+| snowfall_fraction | annual | <https://stac-era5-land.s3.us-west-2.amazonaws.com/snowfall_fraction_annual.tif> | 1220be14c4eee562684ef99aec87af37395c2fc12cfab44296feb8ee2b67c3f42aeb | 5624936 | 0.6.3 | 349f9d72e1687761ce98ebd62e6a086be30cc2a6 | 2026-10-10T22:36:36Z | NA |
+| snowfall | spring | <https://stac-era5-land.s3.us-west-2.amazonaws.com/snowfall_spring.tif> | 12202089ce001d0f18522c24b949b5501b942e7fde1b5413d40ab502440b591a733f | 5748630 | 0.6.3 | 349f9d72e1687761ce98ebd62e6a086be30cc2a6 | 2026-10-10T22:36:36Z | NA |
+| snowfall | summer | <https://stac-era5-land.s3.us-west-2.amazonaws.com/snowfall_summer.tif> | 122057f16deffe3b1d6c114a300d3e83025fb2c0cd8b9d90699f7f49d0090b9f2baf | 4058121 | 0.6.3 | 349f9d72e1687761ce98ebd62e6a086be30cc2a6 | 2026-10-10T22:36:36Z | NA |
+| snowfall | winter | <https://stac-era5-land.s3.us-west-2.amazonaws.com/snowfall_winter.tif> | 122068b8ebd0fd10eab7a995af3560fd5f585db9e78b8a5641d9ffde9f4b6673a78f | 5691517 | 0.6.3 | 349f9d72e1687761ce98ebd62e6a086be30cc2a6 | 2026-10-10T22:36:36Z | NA |
+| snowmelt | annual | <https://stac-era5-land.s3.us-west-2.amazonaws.com/snowmelt_annual.tif> | 1220513a1f7799fcd01e95a4edc4b1b5ae0bbf05e3ef53db5eeebe6fff4f3df8d872 | 5723384 | 0.6.3 | 349f9d72e1687761ce98ebd62e6a086be30cc2a6 | 2026-10-10T22:36:36Z | NA |
+| snowmelt_doy_50 | annual | <https://stac-era5-land.s3.us-west-2.amazonaws.com/snowmelt_doy_50_annual.tif> | 12206afd27587054c214b68e323d0c86681510ad3a86a3d5bd6fea4f9bc4010d64df | 2070285 | 0.6.3 | 349f9d72e1687761ce98ebd62e6a086be30cc2a6 | 2026-10-10T22:36:36Z | NA |
+| snowmelt | fall | <https://stac-era5-land.s3.us-west-2.amazonaws.com/snowmelt_fall.tif> | 1220dc1ce028acfa3a789d460bd354bff5963e04df1c38722ab5bc42b31090b557e0 | 5804333 | 0.6.3 | 349f9d72e1687761ce98ebd62e6a086be30cc2a6 | 2026-10-10T22:36:36Z | NA |
+| snowmelt_rate_peak | annual | <https://stac-era5-land.s3.us-west-2.amazonaws.com/snowmelt_rate_peak_annual.tif> | 12203ddbaf20308dd64658409b647630ec71410e89fa42fd7fbe8e616c58916c795e | 5411977 | 0.6.3 | 349f9d72e1687761ce98ebd62e6a086be30cc2a6 | 2026-10-10T22:36:36Z | NA |
+| snowmelt | spring | <https://stac-era5-land.s3.us-west-2.amazonaws.com/snowmelt_spring.tif> | 1220a03a122839c80363acbd2d39726c2d8eb7a5adf0fa96fb2c8fa26c8f475007bb | 5726183 | 0.6.3 | 349f9d72e1687761ce98ebd62e6a086be30cc2a6 | 2026-10-10T22:36:36Z | NA |
+| snowmelt | summer | <https://stac-era5-land.s3.us-west-2.amazonaws.com/snowmelt_summer.tif> | 1220f6b38f4623781230443bac67dbf6979a9d5f8bedf87fbe06ee0aa7571d5e7488 | 5219813 | 0.6.3 | 349f9d72e1687761ce98ebd62e6a086be30cc2a6 | 2026-10-10T22:36:36Z | NA |
+| snowmelt | winter | <https://stac-era5-land.s3.us-west-2.amazonaws.com/snowmelt_winter.tif> | 1220dded6569451df2fa7738a9bc59dbe5c3171513e15fafd6cd242e69b3c681eb56 | 3606366 | 0.6.3 | 349f9d72e1687761ce98ebd62e6a086be30cc2a6 | 2026-10-10T22:36:36Z | NA |
+| soil_moisture | annual | <https://stac-era5-land.s3.us-west-2.amazonaws.com/soil_moisture_annual.tif> | 12207509e872c4cbf984a5fbb2ccd40265bd5bb3fd59de10eba88b8d2d827b7ab8ac | 5438873 | 0.6.3 | 349f9d72e1687761ce98ebd62e6a086be30cc2a6 | 2026-10-10T22:36:36Z | NA |
+| soil_moisture | fall | <https://stac-era5-land.s3.us-west-2.amazonaws.com/soil_moisture_fall.tif> | 1220bf5b6a3c0fce86aa26ac675d0bbc5f057607cf3eef6b35417109211e32a8ebe0 | 5478515 | 0.6.3 | 349f9d72e1687761ce98ebd62e6a086be30cc2a6 | 2026-10-10T22:36:36Z | NA |
+| soil_moisture | spring | <https://stac-era5-land.s3.us-west-2.amazonaws.com/soil_moisture_spring.tif> | 12205f2835191b27ac51d740893d1e1cd8f4cf1fc28e46575c66bb2776f1234f723b | 5433015 | 0.6.3 | 349f9d72e1687761ce98ebd62e6a086be30cc2a6 | 2026-10-10T22:36:36Z | NA |
+| soil_moisture | summer | <https://stac-era5-land.s3.us-west-2.amazonaws.com/soil_moisture_summer.tif> | 12202a85d198eb45efabd0e7f0b58fba40439244df12a3232f9dbd27050302b4c46d | 5471863 | 0.6.3 | 349f9d72e1687761ce98ebd62e6a086be30cc2a6 | 2026-10-10T22:36:36Z | NA |
+| soil_moisture | winter | <https://stac-era5-land.s3.us-west-2.amazonaws.com/soil_moisture_winter.tif> | 1220edea061f1beeee5a6260cbc2aa112d7edc1a02ce61306041024ede3d3b641983 | 5429617 | 0.6.3 | 349f9d72e1687761ce98ebd62e6a086be30cc2a6 | 2026-10-10T22:36:36Z | NA |
+| swe | annual | <https://stac-era5-land.s3.us-west-2.amazonaws.com/swe_annual.tif> | 122074db0d5c61f04a1fef80d10b1deb8c216a869f6cb212f97b954bc482c814b1ba | 5734077 | 0.6.3 | 349f9d72e1687761ce98ebd62e6a086be30cc2a6 | 2026-10-10T22:36:36Z | NA |
+| swe | fall | <https://stac-era5-land.s3.us-west-2.amazonaws.com/swe_fall.tif> | 1220cf70872194681fd93ab8c67b04da6442454dee61701543338c7d17d375703d02 | 5785044 | 0.6.3 | 349f9d72e1687761ce98ebd62e6a086be30cc2a6 | 2026-10-10T22:36:36Z | NA |
+| swe_max | annual | <https://stac-era5-land.s3.us-west-2.amazonaws.com/swe_max_annual.tif> | 12207d8ba95f3052f1d36a2d2da7699035692c23f89e79989dc19f86c63f0c3b2309 | 5676384 | 0.6.3 | 349f9d72e1687761ce98ebd62e6a086be30cc2a6 | 2026-10-10T22:36:36Z | NA |
+| swe | spring | <https://stac-era5-land.s3.us-west-2.amazonaws.com/swe_spring.tif> | 1220b7369a1e82a6b9f22eee4c2728e6898f26d731e6e73265039eef01e20b6e2933 | 5758804 | 0.6.3 | 349f9d72e1687761ce98ebd62e6a086be30cc2a6 | 2026-10-10T22:36:36Z | NA |
+| swe | summer | <https://stac-era5-land.s3.us-west-2.amazonaws.com/swe_summer.tif> | 12203b7a3eb75eeff8d1ba058ce0143cc4d8004bd00682305d8d07798914a8ca97f6 | 5545877 | 0.6.3 | 349f9d72e1687761ce98ebd62e6a086be30cc2a6 | 2026-10-10T22:36:36Z | NA |
+| swe | winter | <https://stac-era5-land.s3.us-west-2.amazonaws.com/swe_winter.tif> | 12206747d837fd634af197b0f94b827178eae7f7023e0f2ee281b33bfdee32ab67c1 | 5677866 | 0.6.3 | 349f9d72e1687761ce98ebd62e6a086be30cc2a6 | 2026-10-10T22:36:36Z | NA |
+| tmax | annual | <https://stac-era5-land.s3.us-west-2.amazonaws.com/tmax_annual.tif> | 1220650998a1ada8b9344d6b031ee2564b2caba213d437df34386837073a16b7b09b | 5753431 | 0.6.3 | 349f9d72e1687761ce98ebd62e6a086be30cc2a6 | 2026-10-10T22:36:36Z | NA |
+| tmax | fall | <https://stac-era5-land.s3.us-west-2.amazonaws.com/tmax_fall.tif> | 1220404422d8c5d4b0f6311028822392481c2cc4c32c06027af6500f19eaffde8267 | 5741968 | 0.6.3 | 349f9d72e1687761ce98ebd62e6a086be30cc2a6 | 2026-10-10T22:36:36Z | NA |
+| tmax | spring | <https://stac-era5-land.s3.us-west-2.amazonaws.com/tmax_spring.tif> | 1220065617396c31fce6e39ef856df2687702980b716a886ffd5f19ad7de90e6011c | 5753355 | 0.6.3 | 349f9d72e1687761ce98ebd62e6a086be30cc2a6 | 2026-10-10T22:36:36Z | NA |
+| tmax | summer | <https://stac-era5-land.s3.us-west-2.amazonaws.com/tmax_summer.tif> | 1220bf3c64800ad5ff9c14f5cd1489e9274745e68f004e95bd30267ba7f7a2b8bdf8 | 5388925 | 0.6.3 | 349f9d72e1687761ce98ebd62e6a086be30cc2a6 | 2026-10-10T22:36:36Z | NA |
+| tmax | winter | <https://stac-era5-land.s3.us-west-2.amazonaws.com/tmax_winter.tif> | 1220c6d7a6126a6439933f890a30fc348b9b72ce926df24ed94946eb0ccb6c173ef7 | 5670937 | 0.6.3 | 349f9d72e1687761ce98ebd62e6a086be30cc2a6 | 2026-10-10T22:36:36Z | NA |
+| tmean | annual | <https://stac-era5-land.s3.us-west-2.amazonaws.com/tmean_annual.tif> | 1220a34508b33ab7b7a857a2a861a89fc8d03709545ee53ff0ed33d0b0afb5775e5c | 5608951 | 0.6.3 | 349f9d72e1687761ce98ebd62e6a086be30cc2a6 | 2026-10-10T22:36:36Z | NA |
+| tmean | fall | <https://stac-era5-land.s3.us-west-2.amazonaws.com/tmean_fall.tif> | 122007414537f538b5a2cc09a11d6c4459c1d8306201d6ea303c9a3736e04419eee6 | 5317964 | 0.6.3 | 349f9d72e1687761ce98ebd62e6a086be30cc2a6 | 2026-10-10T22:36:36Z | NA |
+| tmean | spring | <https://stac-era5-land.s3.us-west-2.amazonaws.com/tmean_spring.tif> | 1220f8efb9f82c9dbf1bd3bbfd65f8710852a90856f683c371ca4973bdc3ebc721d1 | 5312672 | 0.6.3 | 349f9d72e1687761ce98ebd62e6a086be30cc2a6 | 2026-10-10T22:36:36Z | NA |
+| tmean | summer | <https://stac-era5-land.s3.us-west-2.amazonaws.com/tmean_summer.tif> | 1220cceae64740902b13ec1847bc398b38cbfdc7811dc6a91ec7b25aa2c00f103025 | 5226582 | 0.6.3 | 349f9d72e1687761ce98ebd62e6a086be30cc2a6 | 2026-10-10T22:36:36Z | NA |
+| tmean | winter | <https://stac-era5-land.s3.us-west-2.amazonaws.com/tmean_winter.tif> | 12200ca82f93457c7210f1d9537086a592a3af3ed961ac9f8bb9caffc67ab7622a54 | 5388268 | 0.6.3 | 349f9d72e1687761ce98ebd62e6a086be30cc2a6 | 2026-10-10T22:36:36Z | NA |
+| tmin | annual | <https://stac-era5-land.s3.us-west-2.amazonaws.com/tmin_annual.tif> | 12204b319730790fb72f976dd7c05b2e72e3bc5656c079c995688eb90ff4b1eae9c1 | 5761205 | 0.6.3 | 349f9d72e1687761ce98ebd62e6a086be30cc2a6 | 2026-10-10T22:36:36Z | NA |
+| tmin | fall | <https://stac-era5-land.s3.us-west-2.amazonaws.com/tmin_fall.tif> | 1220e5bf897bf5e5208b53248a38ea3b60836afbdfbd66a15dbef1e2538478386ba1 | 5839215 | 0.6.3 | 349f9d72e1687761ce98ebd62e6a086be30cc2a6 | 2026-10-10T22:36:36Z | NA |
+| tmin | spring | <https://stac-era5-land.s3.us-west-2.amazonaws.com/tmin_spring.tif> | 12209141a9afdb7156a815c2f4357389d1dc7cd68ca9809b273256a9e7dadc21666c | 5707615 | 0.6.3 | 349f9d72e1687761ce98ebd62e6a086be30cc2a6 | 2026-10-10T22:36:36Z | NA |
+| tmin | summer | <https://stac-era5-land.s3.us-west-2.amazonaws.com/tmin_summer.tif> | 1220efc7e01b8d0fcd54b5f238f1a767614fa5f1991fd68b368b0c16177195ce9242 | 5529805 | 0.6.3 | 349f9d72e1687761ce98ebd62e6a086be30cc2a6 | 2026-10-10T22:36:36Z | NA |
+| tmin | winter | <https://stac-era5-land.s3.us-west-2.amazonaws.com/tmin_winter.tif> | 1220b4d88d94aa7fc266edc11e02762ac9cd5d81a3e095536bbffa1d8a23c299c5d5 | 5560354 | 0.6.3 | 349f9d72e1687761ce98ebd62e6a086be30cc2a6 | 2026-10-10T22:36:36Z | NA |
+| vpd | annual | <https://stac-era5-land.s3.us-west-2.amazonaws.com/vpd_annual.tif> | 122077c9dbee6272472ff2396b9d27bbfbd90f053332d7ed973930c5a6769b55b737 | 5607999 | 0.6.3 | 349f9d72e1687761ce98ebd62e6a086be30cc2a6 | 2026-10-10T22:36:36Z | NA |
+| vpd | fall | <https://stac-era5-land.s3.us-west-2.amazonaws.com/vpd_fall.tif> | 12203018a5ab47320d473f089b7815662291256081b8248a25af0c3a7fa495984b23 | 5643105 | 0.6.3 | 349f9d72e1687761ce98ebd62e6a086be30cc2a6 | 2026-10-10T22:36:36Z | NA |
+| vpd | spring | <https://stac-era5-land.s3.us-west-2.amazonaws.com/vpd_spring.tif> | 12208112591028115f486b018ae0219b213d89edafd6fb912941e6a1e27fd64f4276 | 5636858 | 0.6.3 | 349f9d72e1687761ce98ebd62e6a086be30cc2a6 | 2026-10-10T22:36:36Z | NA |
+| vpd | summer | <https://stac-era5-land.s3.us-west-2.amazonaws.com/vpd_summer.tif> | 122080671903e2ebd97ed397a1226a442a59447ba4277fa8156aa78ed0e5cc2771dd | 5602565 | 0.6.3 | 349f9d72e1687761ce98ebd62e6a086be30cc2a6 | 2026-10-10T22:36:36Z | NA |
+| vpd | winter | <https://stac-era5-land.s3.us-west-2.amazonaws.com/vpd_winter.tif> | 1220141bda27d56726f5f221be5c69c74f19e8d831d4f0d1a49b47e3a4797218415c | 5586138 | 0.6.3 | 349f9d72e1687761ce98ebd62e6a086be30cc2a6 | 2026-10-10T22:36:36Z | NA |
 
 Available climate variables and periods in the STAC catalog. {.table
 .table .table-striped .table-hover .table-condensed
