@@ -591,9 +591,13 @@ s3_etag_matches <- function(path, etag) {
 # -- Daily cube manifest (#124) -------------------------------------------------
 # The daily cube is not in catalog.json, so s3://<bucket>/daily/manifest.json
 # carries what the catalog carries for the monthly COGs: per file, its size,
-# sha256 multihash and the provenance tags of the run that wrote it.
+# sha256 multihash and the provenance of the run that wrote it, in the STAC
+# processing extension's keys (#128): processing:version, processing:software
+# {cd: sha}, processing:datetime, and a processing-execution link for a CI run.
 
-# Manifest entries for local files, keyed by file name.
+# Manifest entries for local files, keyed by file name. The provenance comes
+# from cd's own stac_provenance(), which writes the catalog items, so the two
+# documents share one vocabulary.
 manifest_entries <- function(paths) {
   out <- lapply(paths, function(f) {
     m <- terra::metags(terra::rast(f))
@@ -601,16 +605,20 @@ manifest_entries <- function(paths) {
       v <- as.character(m$value)[as.character(m$name) == key]
       if (length(v) == 1L && nzchar(v)) v else NULL
     }
-    Filter(Negate(is.null), list(
-      `file:checksum` = multihash(f),
-      `file:size` = file.size(f),
-      `cd:version` = tag("CD_VERSION"),
-      `cd:sha` = tag("CD_SHA"),
-      `cd:run_time` = tag("CD_RUN_TIME"),
-      `cd:run_id` = tag("CD_RUN_ID")
-    ))
+    prov <- cd:::stac_provenance(tag("CD_VERSION"), tag("CD_SHA"),
+                                 tag("CD_RUN_TIME"), tag("CD_RUN_ID"))
+    c(list(`file:checksum` = multihash(f), `file:size` = file.size(f)),
+      prov$properties,
+      if (length(prov$links) > 0) list(links = prov$links))
   })
   stats::setNames(out, basename(paths))
+}
+
+# The cd commit an entry names (processing:software's cd), or NA.
+entry_sha <- function(e) {
+  sw <- e$`processing:software`
+  sha <- if (is.list(sw)) sw[["cd"]] else NULL
+  if (is.character(sha) && length(sha) == 1L && nzchar(sha)) sha else NA_character_
 }
 
 # The live manifest's entries with this run's local ones laid over them, keys
@@ -657,6 +665,18 @@ manifest_problems <- function(entries, vars = c("tmean", "tmax", "tmin")) {
   if (length(bad) > 0) {
     problems <- c(problems, paste0("entries without a sha256 multihash and size (",
                                    paste(utils::head(bad, 5), collapse = ", "), ")"))
+  }
+  # Every entry in one vocabulary (#128): a publish holding only some years
+  # would otherwise leave the rest on the old cd:* keys.
+  unprov <- keys[is.na(vapply(entries, entry_sha, character(1)))]
+  if (length(unprov) > 0) {
+    problems <- c(problems, paste0(
+      length(unprov), " entr", if (length(unprov) == 1L) "y" else "ies",
+      " without processing:software's cd commit (",
+      paste(utils::head(unprov, 5), collapse = ", "),
+      if (length(unprov) > 5) ", ..." else "",
+      "); republish from the whole cube: Rscript scripts/daily_publish.R"
+    ))
   }
   problems
 }

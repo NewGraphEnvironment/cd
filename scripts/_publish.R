@@ -218,7 +218,8 @@ daily_publish <- function(daily_dir, bucket, manifest_path, dry_run = FALSE,
   )
   if (!dry_run) {
     shas <- vapply(local, function(e) {
-      if (is.null(e$`cd:sha`)) "unknown" else e$`cd:sha`
+      sha <- entry_sha(e)
+      if (is.na(sha)) "unknown" else sha
     }, character(1))
     problems <- c(problems, publish_sha_problems(shas))
   }

@@ -475,8 +475,30 @@ for (v in c("tmean", "tmax", "tmin")) for (y in 2001:2002) {
 mf_local <- manifest_entries(list.files(mf_dir, full.names = TRUE))
 check(identical(manifest_problems(mf_local), character(0)) &&
         identical(checksum_problems(mf_local, mf_dir), character(0)) &&
-        identical(mf_local[["tmax_daily_2001.tif"]]$`cd:run_id`, "local"),
-      "manifest entries for a whole cube pass, and carry each file's provenance")
+        identical(entry_sha(mf_local[["tmax_daily_2001.tif"]]), "a") &&
+        identical(mf_local[["tmax_daily_2001.tif"]]$`processing:datetime`, "t") &&
+        is.null(mf_local[["tmax_daily_2001.tif"]]$links) &&
+        !any(grepl("^cd:", unlist(lapply(mf_local, names)))),
+      "manifest entries for a whole cube pass, and carry each file's provenance as processing:*")
+mf_old <- mf_local
+mf_old[["tmin_daily_2002.tif"]] <- list(
+  `file:checksum` = mf_local[["tmin_daily_2002.tif"]]$`file:checksum`,
+  `file:size` = mf_local[["tmin_daily_2002.tif"]]$`file:size`,
+  `cd:sha` = "a", `cd:run_time` = "t"
+)
+check(any(grepl("1 entry without processing:software's cd commit (tmin_daily_2002.tif)",
+                manifest_problems(mf_old), fixed = TRUE)),
+      "a manifest left with one entry on the old cd:* keys is refused, by name")
+mf_ci_dir <- tempfile("mf_ci_")
+dir.create(mf_ci_dir)
+mf_ci_r <- ck_r2
+terra::metags(mf_ci_r) <- c(CD_RUN_ID = "12345")
+terra::writeRaster(mf_ci_r, file.path(mf_ci_dir, "tmean_daily_2001.tif"))
+mf_ci <- manifest_entries(file.path(mf_ci_dir, "tmean_daily_2001.tif"))[[1]]
+check(identical(mf_ci$links[[1]]$rel, "processing-execution") &&
+        identical(mf_ci$links[[1]]$href,
+                  "https://github.com/NewGraphEnvironment/cd/actions/runs/12345"),
+      "a CI-built file's manifest entry links its run")
 check(grepl("1 file(s) missing from the span 2001-2002 (tmin_daily_2002.tif)",
             manifest_problems(mf_local[names(mf_local) != "tmin_daily_2002.tif"]), fixed = TRUE),
       "a manifest missing one variable-year is refused, by name")
@@ -489,10 +511,10 @@ mf_bad[[1]]$`file:checksum` <- substring(mf_bad[[1]]$`file:checksum`, 5)
 check(any(grepl("without a sha256 multihash", manifest_problems(mf_bad), fixed = TRUE)),
       "a bare digest in the manifest is refused")
 mf_live <- mf_local
-mf_live[["tmax_daily_2001.tif"]]$`cd:run_id` <- "older"
+mf_live[["tmax_daily_2001.tif"]]$`processing:datetime` <- "older"
 mf_new <- list(tmean_daily_2003.tif = mf_local[[1]], tmax_daily_2001.tif = mf_local[["tmax_daily_2001.tif"]])
 mf_m <- manifest_merge(mf_live, mf_new)
-check(identical(mf_m[["tmax_daily_2001.tif"]]$`cd:run_id`, "local") &&
+check(identical(mf_m[["tmax_daily_2001.tif"]]$`processing:datetime`, "t") &&
         identical(names(mf_m), sort(names(mf_m), method = "radix")) &&
         length(mf_m) == 7L && manifest_last_year(mf_m) == 2003L &&
         identical(names(manifest_merge(NULL, mf_new)), sort(names(mf_new), method = "radix")),

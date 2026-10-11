@@ -24,13 +24,13 @@ republish gets `scripts/catalog_publish.R`; the live republish runs post-merge f
       the catalog. Restore the old writer once and confirm the new tests go red
 
 ## Phase 2: daily manifest writer and guard
-- [ ] `manifest_entries()` (`scripts/_lib.R`) uses `cd:::stac_provenance()`
-- [ ] `daily_publish()` (`scripts/_publish.R`) reads the SHA from
+- [x] `manifest_entries()` (`scripts/_lib.R`) uses `cd:::stac_provenance()`
+- [x] `daily_publish()` (`scripts/_publish.R`) reads the SHA from
       `processing:software$cd`
-- [ ] `manifest_problems()` refuses, by name, any entry without a
+- [x] `manifest_problems()` refuses, by name, any entry without a
       `processing:software` holding a one-string `cd` (so a partial publish can never
       leave a mixed `cd:*`/`processing:*` manifest)
-- [ ] `scripts/test_lib.R`: update the entry/merge checks to the new keys; add a check
+- [x] `scripts/test_lib.R`: update the entry/merge checks to the new keys; add a check
       that a manifest with one `cd:*`-only entry is refused; restore-the-bug once;
       `Rscript scripts/test_lib.R` green
 
