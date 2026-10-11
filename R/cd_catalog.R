@@ -117,7 +117,9 @@ build_tags <- function(r) {
 #' A catalog or manifest checksum, kept only where the file read can be shown
 #' to be the build the entry describes: its `CD_RUN_TIME` tag equals the
 #' entry's run time. The run time is in the bytes, so two builds never share
-#' one. Anything else is NA, never the entry's value.
+#' one. Anything else is NA, never the entry's value. The comparison is of
+#' exact strings, so the catalog and manifest writers must copy the tag
+#' verbatim into `processing:datetime` (#128).
 #' @noRd
 build_checksum <- function(checksum, entry_run_time, file_run_time) {
   ok <- !is.na(checksum) & !is.na(entry_run_time) & !is.na(file_run_time) &
@@ -136,14 +138,14 @@ build_stale <- function(checksum, entry_run_time, file_run_time) {
     (is.na(file_run_time) | entry_run_time != file_run_time)
 }
 
-#' Warn once about the files build_stale() picked out.
+#' Warn once about the files build_stale() picked out. `advice` says what
+#' clears it, which differs by caller.
 #' @noRd
-build_warn <- function(files, what) {
+build_warn <- function(files, what, advice) {
   if (length(files) == 0L) return(invisible())
   rlang::warn(paste0(
     "Not the build ", what, " describes (its run-time tag differs or is ",
-    "missing), so `checksum` is NA: ",
-    paste(files, collapse = ", "), ". A stale cached copy is the usual cause; ",
-    "`cd_cache_fetch(href, refresh = TRUE)` replaces it."
+    "missing), so `checksum` is NA: ", paste(files, collapse = ", "), ". ",
+    advice
   ))
 }

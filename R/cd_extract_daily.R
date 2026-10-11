@@ -178,7 +178,7 @@ cd_extract_daily <- function(points, from, to,
       build <- build_tags(r)
       ck <- build_checksum(claimed, entry_run, build$run_time)
       if (build_stale(claimed, entry_run, build$run_time)) {
-        unmatched <- c(unmatched, file)
+        unmatched <- c(unmatched, paste0(sub("/+$", "", source), "/", file))
       }
       vals <- if (length(ucell) > 0L) {
         as.matrix(terra::extract(r, ucell)[, keep, drop = FALSE])
@@ -199,7 +199,10 @@ cd_extract_daily <- function(points, from, to,
     }
   }
 
-  build_warn(unmatched, "the cube's manifest")
+  build_warn(unmatched, "the cube's manifest", paste0(
+    "A cached copy is the usual cause: `cd_cache_fetch(href, refresh = TRUE)` ",
+    "replaces it."
+  ))
 
   long <- dplyr::bind_rows(pieces)
   long <- long[order(long$.pt, match(long$variable, variables), long$date), ]

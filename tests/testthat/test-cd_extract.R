@@ -110,7 +110,7 @@ test_that("cd_extract gives NA checksum for a file that is another build", {
   # A stale cached copy: built earlier than the catalog says.
   catalog <- tagged_catalog("sha_old", "2026-01-01T00:00:00Z",
                             catalog_run_time = "2026-10-10T22:36:36Z")
-  expect_warning(ts <- cd_extract(catalog, extract_aoi()), "stale cached copy")
+  expect_warning(ts <- cd_extract(catalog, extract_aoi()), "read it again with cd_catalog")
   expect_identical(ts$checksum, rep(NA_character_, 10))
   expect_equal(ts$cd_sha, rep("sha_old", 10))
 })

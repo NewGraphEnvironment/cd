@@ -84,7 +84,11 @@ cd_extract <- function(catalog, aoi,
       cd_sha = build$sha
     )
   })
-  build_warn(unmatched, "the catalog")
+  build_warn(unmatched, "the catalog", paste0(
+    "If `catalog` was read before a republish, read it again with ",
+    "cd_catalog(); otherwise a cached copy is stale, and ",
+    "`cd_cache_fetch(href, refresh = TRUE)` replaces it."
+  ))
 
   out <- dplyr::bind_rows(
     tibble::tibble(

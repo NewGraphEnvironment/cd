@@ -14,3 +14,4 @@
 - Phase 2: `cd_extract()` gains `checksum`/`cd_sha`, verified against the file's own tags; typed empty return
 - Phase 3: `cd_extract_daily()` gains `checksum`/`cd_sha` per file, manifest read once (`daily_manifest()` / mockable `daily_manifest_fetch()`); guard proven (manifest checksum unverified → 2 tests red). Live canary skips until #128's republish
 - code-check round 1 (planning/active/review-round1.md): 2 fragile (malformed manifest stops the read; `%||%` needs R 4.4), both fixed. Plus the live 60 N test failure: warn only on a stale copy, NA silently when the entry has no run time
+- code-check round 2 (planning/active/review-round2.md): 3 fragile, all fixed — CLAUDE.md claimed every NA warns (stale after round 1's fix: inside-a-fix, so the loop ends by enumeration); verbatim run-time contract written into #128 and at build_checksum(); warning advice per caller, daily warning names hrefs. testthat floor to 3.2.0 (local_mocked_bindings)

@@ -260,7 +260,7 @@ test_that("a file that is not the manifest's build gets NA checksum and a warnin
   ))
   expect_warning(
     d <- cd_extract_daily(daily_pts(16), "2003-06-01", "2003-06-02", source = src),
-    "tmax_daily_2003.tif"
+    paste0(src, "/tmax_daily_2003.tif"), fixed = TRUE
   )
   expect_equal(unique(d$checksum[d$variable == "tmean"]), "1220aa")
   expect_true(all(is.na(d$checksum[d$variable == "tmax"])))
