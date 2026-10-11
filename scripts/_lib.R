@@ -597,7 +597,9 @@ s3_etag_matches <- function(path, etag) {
 
 # Manifest entries for local files, keyed by file name. The provenance comes
 # from cd's own stac_provenance(), which writes the catalog items, so the two
-# documents share one vocabulary.
+# documents share one vocabulary. An internal, so it needs the checkout
+# (load_cd(), test_lib.R) or a cd installed from it, as CI's is; an installed
+# cd from before #128 has no stac_provenance().
 manifest_entries <- function(paths) {
   out <- lapply(paths, function(f) {
     m <- terra::metags(terra::rast(f))
@@ -667,12 +669,18 @@ manifest_problems <- function(entries, vars = c("tmean", "tmax", "tmin")) {
                                    paste(utils::head(bad, 5), collapse = ", "), ")"))
   }
   # Every entry in one vocabulary (#128): a publish holding only some years
-  # would otherwise leave the rest on the old cd:* keys.
-  unprov <- keys[is.na(vapply(entries, entry_sha, character(1)))]
+  # would otherwise leave the rest on the old cd:* keys. processing:datetime
+  # too, since readers match it against the file's CD_RUN_TIME tag to trust
+  # the checksum, and the extension's schema requires UTC (Z or +00:00).
+  unprov <- keys[vapply(entries, function(e) {
+    dt <- e$`processing:datetime`
+    is.na(entry_sha(e)) ||
+      !(is.character(dt) && length(dt) == 1L && grepl("(Z|\\+00:00)$", dt))
+  }, logical(1))]
   if (length(unprov) > 0) {
     problems <- c(problems, paste0(
       length(unprov), " entr", if (length(unprov) == 1L) "y" else "ies",
-      " without processing:software's cd commit (",
+      " without processing:software's cd commit and a UTC processing:datetime (",
       paste(utils::head(unprov, 5), collapse = ", "),
       if (length(unprov) > 5) ", ..." else "",
       "); republish from the whole cube: Rscript scripts/daily_publish.R"

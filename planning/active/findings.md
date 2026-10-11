@@ -58,3 +58,11 @@ The timing matters. The `cd:` provenance keys shipped in v0.6.3 (#124) and nothi
 
 | Error | Resolution |
 |-------|------------|
+| Restore-the-bug backup to `$TMPDIR/new.R` failed (`TMPDIR` unset), leaving the mutation in place | Reverted by hand; later mutations back up to the scratchpad |
+| Fixture `CD_RUN_TIME = "t"` failed the new UTC datetime guard | Fixture uses `2026-01-01T00:00:00Z` |
+
+## Schema facts (processing v1.2.0, fetched 2026-10-11)
+
+- Declaring the extension on an Item requires >= 1 `processing:*` field in properties; unknown `processing:` keys fail.
+- `processing:datetime`: date-time ending `Z` or `+00:00`. `processing:software`: string map. `processing-execution`: documented link rel.
+- STAC core item validation fails every cd item (`geometry: null` with `bbox`); pre-existing, not #128's.

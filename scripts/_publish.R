@@ -182,9 +182,13 @@ daily_manifest_live <- function(bucket) {
 #
 #   manifest_path  where to write the manifest locally; outside daily_dir, so
 #                  the sync never carries it (it goes up on its own, last).
+#   sync           FALSE republishes the manifest alone (#128): no file is
+#                  uploaded, so no live object's bytes or ETag can change, and
+#                  every local file must already be live, which its ETag check
+#                  proves before the manifest goes up.
 #   log            a function of one string, for progress lines.
 daily_publish <- function(daily_dir, bucket, manifest_path, dry_run = FALSE,
-                          log = message) {
+                          sync = TRUE, log = message) {
   # A backfill or --rewrite still writing would change files after they are
   # hashed here. Not on GitHub Actions, where STEP D has already waited for the
   # backfill and pgrep matches wrapper shells (preflight_single_instance() in
@@ -244,15 +248,25 @@ daily_publish <- function(daily_dir, bucket, manifest_path, dry_run = FALSE,
   jsonlite::write_json(list(files = merged), manifest_path, pretty = TRUE,
                        auto_unbox = TRUE, digits = NA)
   if (dry_run) {
-    log(paste0("DRY RUN: would sync ", length(local), " file(s) to s3://", bucket,
-               "/daily/ and upload a manifest of ", length(merged), " (",
-               manifest_path, ")"))
-    cd::cd_s3_push(daily_dir, bucket = bucket, prefix = "daily", dry_run = TRUE,
-                   size_only = FALSE)
+    if (sync) {
+      log(paste0("DRY RUN: would sync ", length(local), " file(s) to s3://", bucket,
+                 "/daily/ and upload a manifest of ", length(merged), " (",
+                 manifest_path, ")"))
+      cd::cd_s3_push(daily_dir, bucket = bucket, prefix = "daily", dry_run = TRUE,
+                     size_only = FALSE)
+    } else {
+      problems <- etag_problems(paste0(s3_base(bucket), "/daily"), daily_dir, names(local))
+      if (length(problems) > 0) stop(problems, call. = FALSE)
+      log(paste0("DRY RUN: all ", length(local), " local file(s) are live byte for ",
+                 "byte; would upload only a manifest of ", length(merged), " (",
+                 manifest_path, ")"))
+    }
     return(invisible(TRUE))
   }
 
-  cd::cd_s3_push(daily_dir, bucket = bucket, prefix = "daily", size_only = FALSE)
+  if (sync) {
+    cd::cd_s3_push(daily_dir, bucket = bucket, prefix = "daily", size_only = FALSE)
+  }
   # What is live is what is on disk (ETags), and what is on disk is still what
   # was hashed: a file rewritten after manifest_entries() would pass the ETag
   # check alone.
@@ -262,7 +276,8 @@ daily_publish <- function(daily_dir, bucket, manifest_path, dry_run = FALSE,
     problems <- c(problems, "the live daily/ listing is not the manifest's file set")
   }
   if (length(problems) > 0) {
-    stop("Daily files synced, manifest NOT uploaded:\n  - ",
+    stop(if (sync) "Daily files synced, " else "No file uploaded, ",
+         "manifest NOT uploaded:\n  - ",
          paste(problems, collapse = "\n  - "), call. = FALSE)
   }
   s3_put_if(manifest_path, bucket, "daily/manifest.json",

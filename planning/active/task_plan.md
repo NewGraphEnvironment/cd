@@ -35,20 +35,27 @@ republish gets `scripts/catalog_publish.R`; the live republish runs post-merge f
       `Rscript scripts/test_lib.R` green
 
 ## Phase 3: catalog republish tooling and dry runs
-- [ ] `scripts/catalog_publish.R` (`--dry-run`): sync live COGs (excluding `daily/`,
+- [x] `scripts/catalog_publish.R` (`--dry-run`): sync live COGs (excluding `daily/`,
       `_backup/`, `_healthcheck/`) to a temp dir; refuse unless all 59 are present and
       end in the same year (`cog_expected()`, `live_spans()`), `stray_problems()` is
       clean; build with `cd_stac_catalog()`; `catalog_problems()` and
       `checksum_problems()` on the result; live: `aws s3 cp` to `catalog.json` then
       `readback_problems()`; dry run writes locally and prints what would go up
-- [ ] `catalog_repair_hint()` names the script; `scripts/test_lib.R` still green
-- [ ] Dry runs from the branch: `Rscript scripts/catalog_publish.R --dry-run` and
+- [x] ~~`catalog_repair_hint()` names the script~~ — dropped on review B1: the hint fires when the COGs are ahead of the catalog, which a metadata republish refuses. Hint unchanged; `scripts/test_lib.R` green (104/104)
+- [x] Dry runs from the branch: `Rscript scripts/catalog_publish.R --dry-run` and
       `Rscript scripts/daily_publish.R --dry-run` — expect `aws --dryrun` to list **no**
       COG uploads (local cube = live bytes), 228 manifest entries all `processing:*`;
       compare local checksums with the live manifest's
-- [ ] Validate one built item and the item shape against the official processing
+- [x] Validate one built item and the item shape against the official processing
       v1.2.0 and file v2.1.0 schemas (`uvx stac-validator` or python `jsonschema`);
       verification only, not a test
+- [x] Review fixes folded in (`review-plan.md`): item set and span from the live catalog;
+      conditional upload (`s3_put_if()`), `publish_sha_problems()` on the checkout,
+      checksums refused if changed; `daily_publish(sync = FALSE)` / `--manifest-only` so the
+      manifest republish cannot upload a COG; `manifest_problems()` also requires a UTC
+      `processing:datetime`; `planning/active/compare_128.py` checks old vs new documents
+      differ only by the rename and validates items against the processing + file schemas
+      (STAC core is skipped: `geometry: null` with `bbox` predates #128)
 
 ## Phase 4: docs
 - [ ] `CLAUDE.md` #124 paragraph: `cd:version`/… → the processing keys and link;
@@ -57,10 +64,10 @@ republish gets `scripts/catalog_publish.R`; the live republish runs post-merge f
       (three-round floor)
 
 ## Phase 5: republish (after merge, on your go)
-- [ ] From a clean `main`: `Rscript scripts/daily_publish.R`, then
+- [ ] From a clean `main`: `Rscript scripts/daily_publish.R --manifest-only`, then
       `Rscript scripts/catalog_publish.R` — before the next Monday 06:00 UTC dry run
-- [ ] Spot-check one live catalog item and one live manifest entry for the new keys,
-      and that every `file:checksum` is unchanged from before the republish
+- [ ] `uv run planning/archive/<dir>/compare_128.py` on `data/backfill/pre_128/*` vs the live
+      documents: only the rename, every checksum unchanged
 - [ ] Tell #126 / PR #129 it can merge
 
 ## Validation

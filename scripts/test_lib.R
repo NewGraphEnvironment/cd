@@ -376,7 +376,7 @@ names(ck_r) <- c("2001", "2002")
 terra::writeRaster(ck_r, file.path(ck_dir, "tmean_annual.tif"), filetype = "COG",
                    overwrite = TRUE)
 ck_r2 <- ck_r
-terra::metags(ck_r2) <- c(CD_VERSION = "1", CD_SHA = "a", CD_RUN_TIME = "t",
+terra::metags(ck_r2) <- c(CD_VERSION = "1", CD_SHA = "a", CD_RUN_TIME = "2026-01-01T00:00:00Z",
                           CD_RUN_ID = "local")
 terra::writeRaster(ck_r2, file.path(ck_dir, "prcp_annual.tif"), filetype = "COG",
                    overwrite = TRUE)
@@ -476,7 +476,7 @@ mf_local <- manifest_entries(list.files(mf_dir, full.names = TRUE))
 check(identical(manifest_problems(mf_local), character(0)) &&
         identical(checksum_problems(mf_local, mf_dir), character(0)) &&
         identical(entry_sha(mf_local[["tmax_daily_2001.tif"]]), "a") &&
-        identical(mf_local[["tmax_daily_2001.tif"]]$`processing:datetime`, "t") &&
+        identical(mf_local[["tmax_daily_2001.tif"]]$`processing:datetime`, "2026-01-01T00:00:00Z") &&
         is.null(mf_local[["tmax_daily_2001.tif"]]$links) &&
         !any(grepl("^cd:", unlist(lapply(mf_local, names)))),
       "manifest entries for a whole cube pass, and carry each file's provenance as processing:*")
@@ -486,9 +486,19 @@ mf_old[["tmin_daily_2002.tif"]] <- list(
   `file:size` = mf_local[["tmin_daily_2002.tif"]]$`file:size`,
   `cd:sha` = "a", `cd:run_time` = "t"
 )
-check(any(grepl("1 entry without processing:software's cd commit (tmin_daily_2002.tif)",
+check(any(grepl("1 entry without processing:software's cd commit and a UTC processing:datetime (tmin_daily_2002.tif)",
                 manifest_problems(mf_old), fixed = TRUE)),
       "a manifest left with one entry on the old cd:* keys is refused, by name")
+mf_nodt <- mf_local
+mf_nodt[["tmean_daily_2001.tif"]]$`processing:datetime` <- NULL
+mf_utc <- mf_local
+mf_utc[["tmax_daily_2002.tif"]]$`processing:datetime` <- "2026-10-10T15:19:00-07:00"
+mf_ok <- mf_local
+for (n in names(mf_ok)) mf_ok[[n]]$`processing:datetime` <- "2026-10-10T22:19:00+00:00"
+check(any(grepl("(tmean_daily_2001.tif)", manifest_problems(mf_nodt), fixed = TRUE)) &&
+        any(grepl("(tmax_daily_2002.tif)", manifest_problems(mf_utc), fixed = TRUE)) &&
+        identical(manifest_problems(mf_ok), character(0)),
+      "a manifest entry without a UTC processing:datetime is refused, +00:00 accepted")
 mf_ci_dir <- tempfile("mf_ci_")
 dir.create(mf_ci_dir)
 mf_ci_r <- ck_r2
@@ -514,7 +524,7 @@ mf_live <- mf_local
 mf_live[["tmax_daily_2001.tif"]]$`processing:datetime` <- "older"
 mf_new <- list(tmean_daily_2003.tif = mf_local[[1]], tmax_daily_2001.tif = mf_local[["tmax_daily_2001.tif"]])
 mf_m <- manifest_merge(mf_live, mf_new)
-check(identical(mf_m[["tmax_daily_2001.tif"]]$`processing:datetime`, "t") &&
+check(identical(mf_m[["tmax_daily_2001.tif"]]$`processing:datetime`, "2026-01-01T00:00:00Z") &&
         identical(names(mf_m), sort(names(mf_m), method = "radix")) &&
         length(mf_m) == 7L && manifest_last_year(mf_m) == 2003L &&
         identical(names(manifest_merge(NULL, mf_new)), sort(names(mf_new), method = "radix")),
