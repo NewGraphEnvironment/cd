@@ -15,3 +15,10 @@
 - Phase 4: CLAUDE.md updated; devtools::test() FAIL 0 | PASS 566 (6 warnings, pre-existing); 41 package lints, none new (`n_bands` unused predates #128)
 - /code-check branch: round 1 (2 fragile, fixed 26f9d0a), round 2 Clean, round 3 (2 fragile; the repair hint finding is inside the B1 revert). Round 3 fixes: shared `has_processing_provenance()`, `catalog_vocab_problems()` in all four catalog-check callers (STEP 1 live, STEP 5, stage 3, catalog_publish.R), hint loads the checkout, `s3_put_if(on_conflict =)`. test_lib 107/107; forcing the predicate TRUE turns the vocabulary checks red
 - Loop ended by enumeration: 6 publish entry points x 6 guards (checkout SHA, built-doc vocabulary, live-doc vocabulary, checksums, conditional upload, read-back). Every cell guarded except the pipelines' unconditional catalog `aws s3 cp`, which predates #128 and is covered by the workflow's concurrency group (out of scope)
+
+## Session 2026-10-11 (after the merge)
+
+- PR #131 merged as `d2fb0a0`; released v0.6.4 (`62cd4d0`)
+- Phase 5 from a clean main at `62cd4d0`: both dry runs green (manifest-only 228/228 live byte for byte; catalog 59 items, ETags match, 59/59 checksums unchanged), then `daily_publish.R --manifest-only` at 16:58:08 UTC and `catalog_publish.R` at 16:58:34 UTC, both conditional uploads read back
+- `compare_128.py` on `data/backfill/pre_128/*` vs the live documents: 0 problems over 59 items and 228 entries; all 287 published `.tif` objects kept their 2026-10-10 LastModified
+- PR #129 (#126) merged as v0.6.5; its test suite on the merged tree ran the live canary against the republished catalog, FAIL 0, no skips
