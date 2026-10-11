@@ -86,8 +86,11 @@ cd_extract <- function(catalog, aoi,
   })
   build_warn(unmatched, "the catalog", paste0(
     "If `catalog` was read before a republish, read it again with ",
-    "cd_catalog(); otherwise a cached copy is stale, and ",
-    "`cd_cache_fetch(href, refresh = TRUE)` replaces it."
+    "cd_catalog(). ",
+    if (isTRUE(cache)) {
+      "If a cached copy is stale, `cd_cache_fetch(href, refresh = TRUE)` replaces it. "
+    },
+    "A publish still in progress also shows this until it completes."
   ))
 
   out <- dplyr::bind_rows(

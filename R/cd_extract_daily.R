@@ -38,13 +38,16 @@
 #' Each file of the cube is one variable and year, and `checksum` and
 #' `cd_sha` say which build of it a row came from. `cd_sha` is read from the
 #' file itself. `checksum` comes from `<source>/manifest.json`, read once per
-#' call, and is kept only when the file's run-time tag matches the manifest's
+#' call (through the cache when `cache = TRUE`, so it follows
+#' `cd.cache_revalidate` like the files), and is kept only when the file's
+#' run-time tag matches the manifest's
 #' `processing:datetime` for it, so a stale cached copy gives `NA` and a
 #' warning rather than another build's checksum. An entry with no
-#' `processing:datetime` cannot be checked and gives `NA` silently. A `source` with no manifest
-#' (such as the bundled example) gives `NA` silently; a remote manifest that
-#' cannot be read gives `NA` and a warning. A checksum identifies a build, not
-#' values.
+#' `processing:datetime` cannot be checked and gives `NA` silently, as does
+#' a file the manifest does not list. A local `source` with no manifest (such
+#' as the bundled example) gives `NA` silently; a manifest that cannot be
+#' read (a remote one missing or unreachable, or one that is not JSON) gives
+#' `NA` and a warning. A checksum identifies a build, not values.
 #'
 #' @param points Point locations: an `sf` or [terra::SpatVector] of points
 #'   in any CRS, carrying the `id` column, or a data frame with longitude/latitude columns
@@ -142,7 +145,7 @@ cd_extract_daily <- function(points, from, to,
   template <- daily_read(source, variables[1], years[1], cache)
 
   cells <- daily_cells(template, pts$xy, ids)
-  manifest <- daily_manifest(source)
+  manifest <- daily_manifest(source, cache)
   unmatched <- character()
   # sort() drops the NA of points outside the cube; match() gives them NA rows.
   ucell <- sort(unique(cells$cell))
@@ -200,8 +203,10 @@ cd_extract_daily <- function(points, from, to,
   }
 
   build_warn(unmatched, "the cube's manifest", paste0(
-    "A cached copy is the usual cause: `cd_cache_fetch(href, refresh = TRUE)` ",
-    "replaces it."
+    if (isTRUE(cache)) {
+      "If a cached copy is stale, `cd_cache_fetch(href, refresh = TRUE)` replaces it. "
+    },
+    "A publish still in progress also shows this until it completes."
   ))
 
   long <- dplyr::bind_rows(pieces)
@@ -220,20 +225,28 @@ cd_extract_daily <- function(points, from, to,
   )
 }
 
-#' The daily cube's manifest entries, keyed by file name, or NULL. A source
-#' with no manifest is NULL silently (a local cube need not have one); one
-#' that cannot be read warns, since provenance is informational and must not
-#' stop the read.
+#' The daily cube's manifest entries, keyed by file name, or NULL. A local
+#' source with no manifest is NULL silently (a local cube need not have one);
+#' one that cannot be read warns, since provenance is informational and must
+#' not stop the read. A remote manifest goes through the cache when `cache` is
+#' TRUE, so `cd.cache_revalidate = FALSE` makes no request, as it does for the
+#' files.
 #' @noRd
-daily_manifest <- function(source) {
+daily_manifest <- function(source, cache = TRUE) {
   url <- paste0(sub("/+$", "", source), "/manifest.json")
   if (!cd_is_remote(url) && !file.exists(url)) {
     return(NULL)
   }
-  m <- if (cd_is_remote(url)) {
-    daily_manifest_fetch(url)
+  read_local <- function(path) {
+    tryCatch(jsonlite::read_json(path), error = function(e) NULL)
+  }
+  m <- if (!cd_is_remote(url)) {
+    read_local(url)
+  } else if (isTRUE(cache)) {
+    path <- tryCatch(cd_cache_fetch(url), error = function(e) NULL)
+    if (is.null(path)) NULL else read_local(path)
   } else {
-    tryCatch(jsonlite::read_json(url), error = function(e) NULL)
+    daily_manifest_fetch(url)
   }
   if (!is.list(m) || !is.list(m[["files"]])) {
     rlang::warn(paste0(

@@ -105,13 +105,16 @@ names it with the cube's extent; the other points are unaffected.
 Each file of the cube is one variable and year, and \code{checksum} and
 \code{cd_sha} say which build of it a row came from. \code{cd_sha} is read from the
 file itself. \code{checksum} comes from \verb{<source>/manifest.json}, read once per
-call, and is kept only when the file's run-time tag matches the manifest's
+call (through the cache when \code{cache = TRUE}, so it follows
+\code{cd.cache_revalidate} like the files), and is kept only when the file's
+run-time tag matches the manifest's
 \code{processing:datetime} for it, so a stale cached copy gives \code{NA} and a
 warning rather than another build's checksum. An entry with no
-\code{processing:datetime} cannot be checked and gives \code{NA} silently. A \code{source} with no manifest
-(such as the bundled example) gives \code{NA} silently; a remote manifest that
-cannot be read gives \code{NA} and a warning. A checksum identifies a build, not
-values.
+\code{processing:datetime} cannot be checked and gives \code{NA} silently, as does
+a file the manifest does not list. A local \code{source} with no manifest (such
+as the bundled example) gives \code{NA} silently; a manifest that cannot be
+read (a remote one missing or unreachable, or one that is not JSON) gives
+\code{NA} and a warning. A checksum identifies a build, not values.
 }
 
 \examples{

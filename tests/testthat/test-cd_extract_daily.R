@@ -319,7 +319,7 @@ test_that("a malformed manifest gives NA rather than stopping the read", {
 test_that("an unreadable remote manifest warns and gives NULL", {
   local_mocked_bindings(daily_manifest_fetch = function(url) NULL)
   expect_warning(
-    m <- daily_manifest("https://example.com/daily"),
+    m <- daily_manifest("https://example.com/daily", cache = FALSE),
     "https://example.com/daily/manifest.json"
   )
   expect_null(m)
@@ -329,8 +329,33 @@ test_that("a readable remote manifest returns its files", {
   local_mocked_bindings(daily_manifest_fetch = function(url) {
     list(files = list(tmean_daily_2003.tif = daily_entry("1220aa")))
   })
-  m <- expect_no_warning(daily_manifest("https://example.com/daily/"))
+  m <- expect_no_warning(daily_manifest("https://example.com/daily/", cache = FALSE))
   expect_equal(m$tmean_daily_2003.tif$`file:checksum`, "1220aa")
+})
+
+test_that("with cache = TRUE a remote manifest is read through the cache, not fetched", {
+  f <- tempfile(fileext = ".json")
+  jsonlite::write_json(list(files = list(tmean_daily_2003.tif = daily_entry("1220aa"))),
+                       f, auto_unbox = TRUE)
+  local_mocked_bindings(
+    cd_cache_fetch = function(href, ...) {
+      expect_equal(href, "https://example.com/daily/manifest.json")
+      f
+    },
+    daily_manifest_fetch = function(url) stop("fetched past the cache")
+  )
+  m <- expect_no_warning(daily_manifest("https://example.com/daily", cache = TRUE))
+  expect_equal(m$tmean_daily_2003.tif$`file:checksum`, "1220aa")
+})
+
+test_that("an offline cache with no manifest copy warns and gives NULL", {
+  local_mocked_bindings(
+    cd_cache_fetch = function(href, ...) stop("no cached copy"),
+    daily_manifest_fetch = function(url) stop("fetched past the cache")
+  )
+  expect_warning(m <- daily_manifest("https://example.com/daily", cache = TRUE),
+                 "manifest")
+  expect_null(m)
 })
 
 test_that("an unparseable local manifest warns and gives NA", {
