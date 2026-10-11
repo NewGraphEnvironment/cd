@@ -23,4 +23,4 @@ The four code-check rounds then found one defect class, over and over: the prose
 
 `planning/archive/2026-10-issue-126-build-provenance-in-consumers/review-*.md`
 
-Closed by: PR for #126 (merge after #128)
+Closed by: PR #129 (merge `ea88ddb`), released as v0.6.5 after #128's republish
