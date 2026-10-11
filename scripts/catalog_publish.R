@@ -4,9 +4,10 @@
 #
 # Rebuild s3://stac-era5-land/catalog.json from the live COGs and publish it,
 # without touching a COG (#128). For a catalog whose COGs are right but whose
-# metadata is not: a change to what cd_stac_catalog() writes (the processing:*
-# provenance of #128), or a catalog a failed STEP 5 left behind its COGs
-# (catalog_repair_hint() in _lib.R points here).
+# metadata is not: a change to what cd_stac_catalog() writes, such as the
+# processing:* provenance of #128. Not for a catalog a failed STEP 5 left
+# behind its COGs: those COGs are ahead of the live catalog's span, which this
+# script refuses; follow catalog_repair_hint() in _lib.R instead.
 #
 # The COGs are downloaded from the bucket, so every checksum in the new
 # catalog is of the bytes live, by construction, and each download's ETag is

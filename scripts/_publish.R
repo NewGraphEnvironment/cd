@@ -225,7 +225,10 @@ daily_publish <- function(daily_dir, bucket, manifest_path, dry_run = FALSE,
       sha <- entry_sha(e)
       if (is.na(sha)) "unknown" else sha
     }, character(1))
-    problems <- c(problems, publish_sha_problems(shas))
+    # The files' SHAs name the code that made their bytes; the checkout's names
+    # the code that writes the manifest (stac_provenance(), manifest_problems()),
+    # which in a manifest-only republish is the only new code (#128).
+    problems <- c(problems, publish_sha_problems(c(shas, run_provenance()[["CD_SHA"]])))
   }
   after <- sort(union(s3_tifs(bucket, "daily"), names(local)), method = "radix")
   if (!identical(after, names(merged))) {
