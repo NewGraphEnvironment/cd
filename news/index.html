@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">cd</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -33,9 +33,14 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/NewGraphEnvironment/cd/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/NewGraphEnvironment/cd/blob/v0.6.6/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.6.6" id="cd-066-2026-10-13">cd 0.6.6 (2026-10-13)<a class="anchor" aria-label="anchor" href="#cd-066-2026-10-13"></a></h2>
+<ul><li>
+<code><a href="../reference/cd_cache_fetch.html">cd_cache_fetch()</a></code> (so every <code>cache = TRUE</code> extract) and <code><a href="../reference/cd_stac_catalog.html">cd_stac_catalog()</a></code> now work on R 4.1-4.3, as <code>Depends: R (&gt;= 4.1)</code> promises: <code>%||%</code> is now imported from rlang, since base R exports it only from 4.4.0. (<a href="https://github.com/NewGraphEnvironment/cd/issues/130" class="external-link">#130</a>, <a href="https://github.com/NewGraphEnvironment/cd/pull/133" class="external-link">#133</a>)</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.6.5" id="cd-065-2026-10-11">cd 0.6.5 (2026-10-11)<a class="anchor" aria-label="anchor" href="#cd-065-2026-10-11"></a></h2>
 <ul><li>

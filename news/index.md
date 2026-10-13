@@ -1,5 +1,15 @@
 # Changelog
 
+## cd 0.6.6 (2026-10-13)
+
+- [`cd_cache_fetch()`](https://newgraphenvironment.github.io/cd/reference/cd_cache_fetch.md)
+  (so every `cache = TRUE` extract) and
+  [`cd_stac_catalog()`](https://newgraphenvironment.github.io/cd/reference/cd_stac_catalog.md)
+  now work on R 4.1-4.3, as `Depends: R (>= 4.1)` promises: `%||%` is
+  now imported from rlang, since base R exports it only from 4.4.0.
+  ([\#130](https://github.com/NewGraphEnvironment/cd/issues/130),
+  [\#133](https://github.com/NewGraphEnvironment/cd/pull/133))
+
 ## cd 0.6.5 (2026-10-11)
 
 - [`cd_catalog()`](https://newgraphenvironment.github.io/cd/reference/cd_catalog.md)
