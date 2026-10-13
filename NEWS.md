@@ -1,3 +1,7 @@
+# cd 0.6.6 (2026-10-13)
+
+* `cd_cache_fetch()` (so every `cache = TRUE` extract) and `cd_stac_catalog()` now work on R 4.1-4.3, as `Depends: R (>= 4.1)` promises: `%||%` is now imported from rlang, since base R exports it only from 4.4.0. ([#130](https://github.com/NewGraphEnvironment/cd/issues/130), [#133](https://github.com/NewGraphEnvironment/cd/pull/133))
+
 # cd 0.6.5 (2026-10-11)
 
 * `cd_catalog()` gains `checksum`, `size`, `cd_version`, `cd_sha`, `run_time` and `run_url`, and `cd_extract()` and `cd_extract_daily()` gain `checksum` and `cd_sha` on every row, so an analysis can record which build of each file it read and notice a republish. `cd_sha` is read from the file itself; the checksum is kept only when the file is shown to be the build the catalog or manifest describes, so a stale cached copy gives `NA` and a warning rather than another build's checksum. A checksum identifies a build, not values. The vignettes' precomputed series lack the new columns until `data-raw/*_vignette_data.R` is re-run. ([#126](https://github.com/NewGraphEnvironment/cd/issues/126), [#129](https://github.com/NewGraphEnvironment/cd/pull/129))
