@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">cd</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.6</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.7</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -33,9 +33,14 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/NewGraphEnvironment/cd/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/NewGraphEnvironment/cd/blob/v0.6.7/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.6.7" id="cd-067-2026-10-14">cd 0.6.7 (2026-10-14)<a class="anchor" aria-label="anchor" href="#cd-067-2026-10-14"></a></h2>
+<ul><li>
+<code><a href="../reference/cd_variables.html">cd_variables()</a></code> gives <code>vpd</code> the unit <code>"hPa"</code>, the unit its data has always been in. It said <code>"Pa"</code>, so the vpd <code>Unit</code> from <code><a href="../reference/cd_anomaly.html">cd_anomaly()</a></code>, <code><a href="../reference/cd_trend.html">cd_trend()</a></code>, <code><a href="../reference/cd_summary.html">cd_summary()</a></code> and on the <code><a href="../reference/cd_plot_timeseries.html">cd_plot_timeseries()</a></code> axis was off by 100×. Values are unchanged. A table saved under an older cd keeps the <code>"Pa"</code> it carries, because a carried <code>unit</code> wins over the registry, and binding it to new output now errors (two units in one series). Relabel it with <code>x$unit[x$variable == "vpd"] &lt;- "hPa"</code>, or recompute from the extracted series. (<a href="https://github.com/NewGraphEnvironment/cd/issues/96" class="external-link">#96</a>, <a href="https://github.com/NewGraphEnvironment/cd/pull/134" class="external-link">#134</a>)</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.6.6" id="cd-066-2026-10-13">cd 0.6.6 (2026-10-13)<a class="anchor" aria-label="anchor" href="#cd-066-2026-10-13"></a></h2>
 <ul><li>

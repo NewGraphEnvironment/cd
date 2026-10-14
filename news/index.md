@@ -1,5 +1,24 @@
 # Changelog
 
+## cd 0.6.7 (2026-10-14)
+
+- [`cd_variables()`](https://newgraphenvironment.github.io/cd/reference/cd_variables.md)
+  gives `vpd` the unit `"hPa"`, the unit its data has always been in. It
+  said `"Pa"`, so the vpd `Unit` from
+  [`cd_anomaly()`](https://newgraphenvironment.github.io/cd/reference/cd_anomaly.md),
+  [`cd_trend()`](https://newgraphenvironment.github.io/cd/reference/cd_trend.md),
+  [`cd_summary()`](https://newgraphenvironment.github.io/cd/reference/cd_summary.md)
+  and on the
+  [`cd_plot_timeseries()`](https://newgraphenvironment.github.io/cd/reference/cd_plot_timeseries.md)
+  axis was off by 100×. Values are unchanged. A table saved under an
+  older cd keeps the `"Pa"` it carries, because a carried `unit` wins
+  over the registry, and binding it to new output now errors (two units
+  in one series). Relabel it with
+  `x$unit[x$variable == "vpd"] <- "hPa"`, or recompute from the
+  extracted series.
+  ([\#96](https://github.com/NewGraphEnvironment/cd/issues/96),
+  [\#134](https://github.com/NewGraphEnvironment/cd/pull/134))
+
 ## cd 0.6.6 (2026-10-13)
 
 - [`cd_cache_fetch()`](https://newgraphenvironment.github.io/cd/reference/cd_cache_fetch.md)
