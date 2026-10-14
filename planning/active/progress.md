@@ -12,3 +12,4 @@
 - Plan review (background Plan agent) returned 2 blockers, 4 ordering and 12 gap findings; all verdicts recorded in `planning/active/review-plan.md` and folded into task_plan (validation gate is `install` + `build_article`, since there is no VignetteBuilder; no figure numbers under pkgdown; per-year dots; assertions in the data script).
 - Phase 2 fix: replaced the circular "upper + lower = BULK" check with "clipping the upper Bulkley to BULK removes < 0.5 %". Re-run gave identical geometry and attributes, so the committed gpkg is unchanged.
 - Phase 4: `northern_bc.rds` (41 KB) and `northern_bc_bulkley.tif` (4 KB). Numbers in findings.md.
+- Phase 6 (part): `regenerate_bib.R` now globs `vignettes/*.Rmd`; vignette header comments and CLAUDE.md say "any vignette". Reference claims are being checked against the PDFs by a background agent (→ `review-references.md`).

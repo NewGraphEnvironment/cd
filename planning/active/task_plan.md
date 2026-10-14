@@ -87,7 +87,7 @@ Full issue body in findings.md. Plan-gate decisions (baseline 1951–1980, hide 
 ## Phase 6: References
 - [ ] Check each mechanism claim against its PDF (Zotero full text) for the six keys;
       cut or reword any claim the source does not make
-- [ ] `data-raw/regenerate_bib.R` reads every `vignettes/*.Rmd` (code change; also the
+- [x] `data-raw/regenerate_bib.R` reads every `vignettes/*.Rmd` (code change; also the
       peace-fwcp.Rmd header comment and CLAUDE.md's "Bibliography regen" wording)
 - [ ] Run it if any key is added (Zotero + BBT up), otherwise confirm the bib already
       holds every key cited
