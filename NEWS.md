@@ -1,3 +1,7 @@
+# cd 0.6.7 (2026-10-14)
+
+* `cd_variables()` gives `vpd` the unit `"hPa"`, the unit its data has always been in. It said `"Pa"`, so the vpd `Unit` from `cd_anomaly()`, `cd_trend()`, `cd_summary()` and on the `cd_plot_timeseries()` axis was off by 100×. Values are unchanged. A table saved under an older cd keeps the `"Pa"` it carries, because a carried `unit` wins over the registry, and binding it to new output now errors (two units in one series). Relabel it with `x$unit[x$variable == "vpd"] <- "hPa"`, or recompute from the extracted series. ([#96](https://github.com/NewGraphEnvironment/cd/issues/96), [#134](https://github.com/NewGraphEnvironment/cd/pull/134))
+
 # cd 0.6.6 (2026-10-13)
 
 * `cd_cache_fetch()` (so every `cache = TRUE` extract) and `cd_stac_catalog()` now work on R 4.1-4.3, as `Depends: R (>= 4.1)` promises: `%||%` is now imported from rlang, since base R exports it only from 4.4.0. ([#130](https://github.com/NewGraphEnvironment/cd/issues/130), [#133](https://github.com/NewGraphEnvironment/cd/pull/133))
