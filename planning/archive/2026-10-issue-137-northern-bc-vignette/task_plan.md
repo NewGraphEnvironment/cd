@@ -112,10 +112,10 @@ Full issue body in findings.md. Plan-gate decisions (baseline 1951–1980, hide 
 
 ## Validation
 
-- [ ] Tests pass (`devtools::test()`)
-- [ ] `devtools::install()` then `pkgdown::build_article("northern-bc")` renders offline
+- [x] Tests pass (`devtools::test()`)
+- [x] `devtools::install()` then `pkgdown::build_article("northern-bc")` renders offline
       (no `VignetteBuilder`, so `devtools::check()` does not build vignettes, review B1);
       no evaluated chunk calls the catalog or the network; `pkgdown::check_pkgdown()` clean
-- [ ] `/code-check` clean (each commit, or once over the branch with `/code-check branch`)
-- [ ] PWF checkboxes match landed work
-- [ ] `/planning-archive` on completion
+- [x] `/code-check` clean (each commit, or once over the branch with `/code-check branch`)
+- [x] PWF checkboxes match landed work
+- [x] `/planning-archive` on completion
