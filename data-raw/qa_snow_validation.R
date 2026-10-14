@@ -21,7 +21,7 @@
 #     scripts manage their own deps per the cd convention). Install with:
 #       pak::pak("bcgov/bcsnowdata")
 #     (also requires `reshape` as a transitive dep)
-#   - cd package installed (or devtools::load_all())
+#   - pkgload installed; the script loads this checkout's cd, not an installed one
 #   - Network access for ASWS / manual data + S3 reads
 #
 # Usage:
@@ -37,8 +37,9 @@ suppressMessages({
   library(dplyr)
   library(ggplot2)
   library(terra)
-  library(cd)
 })
+# The checkout's cd, not an installed one (#135). Run from the package root.
+pkgload::load_all(export_all = FALSE, quiet = TRUE)
 
 # -- Site selection ----------------------------------------------------------
 # Five active ASWS sites in the FWCP Peace Region spanning the elevation

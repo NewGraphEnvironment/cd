@@ -19,7 +19,11 @@ Sys.setenv(
   VSI_CACHE = "TRUE"
 )
 
-library(cd)
+# The checkout's cd, not an installed one: library(cd) would compute with
+# whatever version is installed, and its registry's units and anomaly types
+# would land in inst/vignette-data/ (#135). Run from the package root, since
+# the outputs below are written to root-relative paths.
+pkgload::load_all(export_all = FALSE, quiet = TRUE)
 library(sf)
 library(terra)
 
