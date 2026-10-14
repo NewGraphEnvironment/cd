@@ -136,3 +136,8 @@ The vignette closes with a short "How this was made" note: two or three sentence
 
 | Error | Resolution |
 |-------|------------|
+
+## Context data sources (Phase 3)
+
+- `whse_basemapping.gns_geographical_names_sp` is absent from the current fwapg, although `example_context_fwcp_peace.R` and `example_context_kootenay_lake.R` query it; those two scripts would fail if re-run today. Towns here come from `bcdc_query_geodata("WHSE_BASEMAPPING.GNS_GEOGRAPHICAL_NAMES_SP")`.
+- The union of all FWA watershed groups (2 km simplify) is 939,760 km², BC's land area to within half a percent. It serves as the keymap outline.

@@ -33,11 +33,11 @@ Full issue body in findings.md. Plan-gate decisions (baseline 1951–1980, hide 
 - [x] Write `inst/extdata/example_aoi_northern_bc.gpkg`
 
 ## Phase 3: Map context
-- [ ] `data-raw/example_context_northern_bc.R` (pattern of `example_context_fwcp_peace.R`):
+- [x] `data-raw/example_context_northern_bc.R` (pattern of `example_context_fwcp_peace.R`):
       towns (Smithers, Houston, Vanderhoof, Prince George, Mackenzie), named mainstems
       (Skeena, Bulkley, Fraser, Nechako, Peace, Parsnip), Williston Lake polygon, a BC
       outline for the keymap; clipped to a padded envelope, simplified
-- [ ] Write `inst/extdata/context_northern_bc.gpkg`, kept small (target < 1 MB)
+- [x] Write `inst/extdata/context_northern_bc.gpkg`, kept small (target < 1 MB)
 
 ## Phase 4: Vignette data
 - [ ] `data-raw/northern_bc_vignette_data.R` (`pkgload::load_all()`, #135): `cd_extract()`
