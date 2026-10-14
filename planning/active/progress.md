@@ -8,3 +8,4 @@
 - Next: start Phase 1
 - Phase 1: vpd unit test failed against "Pa" (FAIL 1), passes after the registry fix; full suite FAIL 0 | WARN 6 | PASS 647. The 6 warnings are pre-existing (`test-cd_plot_comparison.R` fixtures, "row names were found from a short variable"), untouched.
 - Phase 2: agreement test failed on the committed .rds (one failure per vpd-bearing table), passes after `data-raw/vignette_data_vpd_unit_patch.R`. The patch relabelled 3510 (kootenay_lake, 9 AOIs × 390) and 2340 (peace_fwcp, 6 × 390) vpd rows; second run wrote nothing. Independent diff against HEAD's .rds (unlist, element-wise): only `*.ano.unit` / `*.trn.unit` cells differ, all `Pa -> hPa`. `cd_summary(regional$trn)` now prints hPa for both vignettes.
+- Phase 3: NEWS moved to the PR body (repo practice: release commit writes NEWS). CLAUDE.md and `research/` already right. Lint clean on touched files; `cd_summary()` of both vignettes' regional trends prints hPa.

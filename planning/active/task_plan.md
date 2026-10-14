@@ -24,13 +24,13 @@
 
 ## Phase 3: NEWS + docs
 
-- [ ] NEWS.md entry under a dev heading (`/gh-pr-merge` sets the version). It is a behaviour change: the `Unit` for vpd in `cd_anomaly()`, `cd_summary()` and the plot labels is now hPa, and the values are unchanged. A series saved earlier keeps its `"Pa"`, because a carried `unit` wins, so re-label or re-run `cd_anomaly()`.
-- [ ] Grep `CLAUDE.md` and `research/` for a vpd unit claim (CLAUDE.md:75 already says hPa: no change expected)
+- [x] ~~NEWS.md entry under a dev heading~~ → NEWS text goes in the PR body for `/gh-pr-merge`: every NEWS entry in this repo is written by the release commit, and no feature branch has touched NEWS.md (`git log -- NEWS.md`). Content unchanged: vpd `Unit` is now hPa in `cd_anomaly()`, `cd_summary()` and plot labels, values unchanged; a series saved earlier keeps its carried `"Pa"`, so re-label or re-run `cd_anomaly()`.
+- [x] Grep `CLAUDE.md` and `research/` for a vpd unit claim (CLAUDE.md:75 already says hPa; `research/` names no vpd unit: no change)
 
 ## Validation
 
-- [ ] Tests pass (`devtools::test()`); `lintr::lint_package()` clean on touched files
-- [ ] Build the peace-fwcp vignette's trend table locally and confirm the vpd rows read hPa
+- [x] Tests pass (`devtools::test()`); `lintr::lint_package()` clean on touched files
+- [x] Build the peace-fwcp vignette's trend table locally and confirm the vpd rows read hPa
 - [ ] `/code-check` clean (each commit, or once over the branch with `/code-check branch`)
 - [ ] PWF checkboxes match landed work
 - [ ] `/planning-archive` on completion
