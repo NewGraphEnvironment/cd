@@ -24,10 +24,8 @@ library(ggplot2)
 library(patchwork)
 
 d <- readRDS(system.file("vignette-data", "northern_bc.rds", package = "cd"))
-aoi <- sf::st_read(
-  system.file("extdata", "example_aoi_northern_bc.gpkg", package = "cd"),
-  quiet = TRUE
-)
+aoi <- sf::st_read(system.file("extdata", "example_aoi_northern_bc.gpkg",
+                               package = "cd"), quiet = TRUE)
 ctx <- system.file("extdata", "context_northern_bc.gpkg", package = "cd")
 w <- d$windows
 yrs <- function(x) paste0(min(x), "–", max(x))
@@ -42,9 +40,10 @@ chg <- function(code, variable, period = "annual", window = "last10") {
   x$difference[x$code == code & x$variable == variable & x$period == period &
                  x$window == window]
 }
-r1 <- function(x) format(round(abs(x), 1), nsmall = 1)  # size of a change;
-r0 <- function(x) format(round(abs(x)))                 # the words carry sign
-# The closing reproduce chunk, written for the windows the page shows
+# Size of a change; the words around it carry the sign
+r1 <- function(x) format(round(abs(x), 1), nsmall = 1)
+r0 <- function(x) format(round(abs(x)))
+# The closing reproduce chunk, for the windows the page shows
 reproduce_code <- sprintf('library(cd)
 aoi <- sf::st_read(system.file("extdata", "example_aoi_northern_bc.gpkg",
                                package = "cd"))
@@ -54,26 +53,26 @@ cd_compare(ts[ts$variable == "tmean", ], window_a = %1$d:%2$d,
 cd_compare(ts[ts$variable == "prcp", ], window_a = %1$d:%2$d,
            window_b = %3$d:%4$d, method = "pct_change", test = NULL)',
   min(w$last10), max(w$last10), min(w$normal), max(w$normal))
+prcp_max <- r0(max(abs(sapply(names(sheds), chg, "prcp"))))
 melt <- -sapply(names(sheds), chg, "snowmelt_doy_50")
 melt_range <- paste0(r0(min(melt)), " to ", r0(max(melt)))
 warm <- d$warm[match(names(sheds), d$warm$code), ]
 rownames(warm) <- names(sheds)
 
-# Colours: warm/dry and cool/wet (Okabe-Ito, colour-blind safe), neutral grey
-col_warm <- "#D55E00"
-col_cool <- "#0072B2"
-col_grey <- "grey55"
+# Warm/dry and cool/wet (Okabe-Ito, colour-blind safe), and a neutral grey
+col_warm <- "#D55E00"; col_cool <- "#0072B2"; col_grey <- "grey55"
 theme_set(theme_minimal(base_size = 11) +
             theme(panel.grid.minor = element_blank(),
                   plot.title.position = "plot"))
 ```
 
 Three watersheds in northern British Columbia, each feeding a different great
-river: two run to the Pacific and one to the Arctic. This page compares the weather of the last
-ten years, and of the last three, with what was normal in
+river: two run to the Pacific and one to the Arctic. This page compares the
+weather of the last ten years, and of the last three, with what was normal in
 `r yrs(w$normal)`. The short answer: **all three are clearly warmer, they hold
 less snow, the snow melts sooner, and summers are thirstier.** Total rain and
-snow moved little over ten years, though the last three were drier.
+snow changed by `r prcp_max` % or less over ten years, and the last three
+years swung between dry and wet.
 
 Ten years is long enough to start to show the climate. Three years is mostly
 weather, so the figures show each of the last three years on its own, not just
@@ -135,8 +134,7 @@ main <- ggplot() +
 key <- ggplot() +
   geom_sf(data = bc, fill = "grey90", colour = "grey60", linewidth = 0.2) +
   geom_sf(data = win, fill = NA, colour = "black", linewidth = 0.5) +
-  coord_sf(crs = 3005) +
-  theme_void() +
+  coord_sf(crs = 3005) + theme_void() +
   theme(panel.background = element_rect(fill = "white", colour = "grey40"))
 
 main + inset_element(key, left = 0.005, bottom = 0.005, right = 0.2,
@@ -165,14 +163,20 @@ names(tab) <- c("Change from normal (last 10 yr / last 3 yr)", sheds)
 kableExtra::kable_styling(
   kableExtra::kbl(tab, escape = FALSE, align = "lccc",
                   caption = paste0(
-                    "Every watershed is warmer, with a smaller snowpack that ",
-                    "melts sooner and drier summer air and soil. Rain and ",
-                    "snow in total moved little over ten years, and the last ",
-                    "three were drier. Each cell ",
+                    "Every watershed is warmer, its snow melts sooner and its ",
+                    "summer air is drier; peak snowpack and summer soil ",
+                    "moisture are down everywhere",
+                    if (any(sc$direction[sc$variable %in% c("swe_max",
+                        "soil_moisture")] == "mixed")) ", in places only a little",
+                    ". ",
+                    "Rain and ",
+                    "snow in total changed by ", prcp_max, " % or less over ",
+                    "ten years. Each cell ",
                     "compares ", yrs(w$last10), " (first number) and ",
                     yrs(w$last3), " (second) with ", yrs(w$normal), ". ",
-                    "Orange: warmer or drier in both. Blue: cooler or wetter ",
-                    "in both. White: the two disagree.")),
+                    "Orange: warmer or drier in both, by more than a little. ",
+                    "Blue: cooler or wetter in both. White: a small change, ",
+                    "or the two disagree.")),
   full_width = FALSE
 )
 ```
@@ -214,9 +218,9 @@ ggplot(tm, aes(year, change)) +
   theme(strip.text = element_text(face = "bold", hjust = 0, size = 11))
 ```
 
-## Every season is warmer; the last three summers were drier on average
+## Every season is warmer; the last three springs and summers were drier
 
-```{r seasons, fig.height = 5, fig.cap = paste0("Every season is warmer than normal; over the last three years winters warmed most and were wetter, while springs and summers were drier. Large dots: the ", yrs(w$last10), " average. Small open circles: each of ", paste(w$last3, collapse = ", "), ". Winter is December, January and February of the same calendar year.")}
+```{r seasons, fig.height = 5, fig.cap = paste0("Every season is warmer than normal, and in all three watersheds the last three springs and summers were drier and the winters wetter, on average and in at least two of the three years. Large dots: the ", yrs(w$last10), " average. Small open circles: each of ", paste(w$last3, collapse = ", "), ". Winter is December, January and February of the same calendar year.")}
 seas <- c("winter", "spring", "summer", "fall")
 ss <- d$ts[d$ts$variable %in% c("tmean", "prcp") & d$ts$period %in% seas &
              d$ts$code %in% names(sheds), ]
@@ -229,7 +233,7 @@ ss$change <- ifelse(ss$variable == "tmean", ss$value - ss$value_normal,
 avg <- aggregate(change ~ code + variable + period,
                  ss[ss$year %in% w$last10, ], mean)
 yr3 <- ss[ss$year %in% w$last3, ]
-measure <- c(tmean = "Temperature\n°C warmer than normal",
+measure <- c(tmean = "Temperature\n°C warmer (+) or cooler (−)",
              prcp = "Rain and snow\n% more (+) or less (−) than normal")
 tidy <- function(x) {
   x$shed <- shed_factor(x$code)
@@ -300,8 +304,7 @@ p1 + p2 + plot_annotation(subtitle = paste0(
 r <- terra::rast(system.file("vignette-data", "northern_bc_bulkley.tif",
                              package = "cd"))
 parts <- aoi[aoi$role == "bulkley_part", ]
-bp <- d$bulkley_parts
-rownames(bp) <- bp$code
+bp <- d$bulkley_parts; rownames(bp) <- bp$code
 btowns <- towns[towns$name %in% c("Smithers", "Houston", "Hazelton"), ]
 blabels <- rbind(
   sf::st_sf(label = btowns$name, face = "bold", geom = sf::st_geometry(btowns)),
@@ -323,16 +326,16 @@ bmap <- function(layer, fill_scale) {
     scale_discrete_identity("fontface") +
     coord_sf(expand = FALSE) +
     theme_void() +
-    theme(legend.position = "bottom", legend.key.width = unit(1.1, "cm"),
-          legend.key.height = unit(0.25, "cm"),
-          legend.title = element_text(size = 9), legend.title.position = "top")
+    theme(legend.position = "bottom", legend.title.position = "top",
+          legend.key.width = unit(1.1, "cm"), legend.key.height = unit(0.25, "cm"),
+          legend.title = element_text(size = 9))
 }
 bmap("swe_max_normal", scale_fill_distiller(
   palette = "Blues", direction = 1, na.value = NA,
   name = "Normal peak snowpack (mm of water)")) +
   bmap("tmean_change_last10", scale_fill_distiller(
     palette = "Oranges", direction = 1, na.value = NA,
-    limits = c(0, max(2.5, terra::minmax(r[["tmean_change_last10"]])[2])),
+    limits = range(0, 2.5, terra::minmax(r[["tmean_change_last10"]])),
     name = "°C warmer than normal"))
 ```
 
@@ -349,7 +352,7 @@ and both lost about the same share of their peak snowpack
 three years fell `r if (bp["BULK_UPPER", "prcp_summer_pct_last3"] < bp["BULK_LOWER", "prcp_summer_pct_last3"]) "further" else "less"`
 upstream (`r r0(bp["BULK_UPPER", "prcp_summer_pct_last3"])`
 % less than normal, against `r r0(bp["BULK_LOWER", "prcp_summer_pct_last3"])`
-%). The same warming and the same loss of snow are landing on a drier upper
+%). About the same warming and loss of snow, landing on a drier upper
 watershed.
 
 ## What this means for watershed health

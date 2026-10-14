@@ -169,9 +169,11 @@ scorecard <- merge(
 )
 scorecard <- tidyr::pivot_wider(scorecard, names_from = window,
                                 values_from = difference)
-# Tint a cell only when both windows moved the same way.
+# Tint a cell only when both windows moved the same way and the 10-year
+# change is beyond a small band (the same band the vignette calls "little").
+band <- c(degC = 0.5, days = 5, points = 2, pct = 5)
 scorecard$direction <- with(scorecard, ifelse(
-  sign(last10) != sign(last3), "mixed",
+  sign(last10) != sign(last3) | abs(last10) < band[unit], "mixed",
   ifelse((last10 > 0) == (warm_if == "up"), "warm_dry", "cool_wet")
 ))
 scorecard <- scorecard[order(match(scorecard$signal, signals$signal),
@@ -180,42 +182,60 @@ scorecard <- scorecard[order(match(scorecard$signal, signals$signal),
 # -- Sentences the vignette states as fact ------------------------------------
 # The vignette prints the size of a change and lets its words carry the
 # direction ("% less", "days earlier"), so each direction it names is checked
-# here. A regen that turns one false stops before it writes.
+# here, and a regen that turns one false stops before it writes. One rule for
+# every sentence about the last three years: the 3-year mean AND at least two
+# of the three single years must point the same way, so no one year (2023 was
+# exceptional) can carry it alone. Quantities such as "no more than 5 %" are
+# printed from the data rather than worded, so they need no check.
 wsg_codes <- c("BULK", "NECR", "PARS")
 d_ <- function(variable, period, window, codes = wsg_codes) {
   vapply(codes, value_of, numeric(1), variable, period, window)
 }
+# Each of the last three years' change from normal, in the lookup's units
+year_changes <- function(code, variable, period) {
+  x <- ts[ts$code == code & ts$variable == variable & ts$period == period, ]
+  normal <- mean(x$value[x$year %in% windows$normal])
+  v <- x$value[match(windows$last3, x$year)]
+  if (compare_method[[variable]] == "pct_change") 100 * (v - normal) / normal else v - normal
+}
+last3_holds <- function(variable, period, direction, codes = wsg_codes) {
+  all(vapply(codes, function(code) {
+    y <- year_changes(code, variable, period)
+    hit <- if (direction == "up") y > 0 else y < 0
+    sum(hit) >= 2 && (if (direction == "up") mean(y) > 0 else mean(y) < 0)
+  }, logical(1)))
+}
 claims <- c(
   # intro, scorecard caption, temperature heading
-  warmer_both          = all(d_("tmean", "annual", "last10") > 0,
-                             d_("tmean", "annual", "last3") > 0),
+  warmer_both          = all(d_("tmean", "annual", "last10") > 0) &&
+                         last3_holds("tmean", "annual", "up"),
   every_recent_year_warm = all(sapply(wsg_codes, function(code) {
     x <- tmean_annual[tmean_annual$code == code, ]
     # "almost every": at most one of the last 10 at or below normal
     sum(x$value[x$year %in% windows$last10] >
           warm$normal_mean[warm$code == code]) >= length(windows$last10) - 1
   })),
-  smaller_snowpack     = all(d_("swe_max", "annual", "last10") < 0,
-                             d_("swe_max", "annual", "last3") < 0),
+  smaller_snowpack     = all(d_("swe_max", "annual", "last10") < 0) &&
+                         last3_holds("swe_max", "annual", "down"),
   melt_earlier         = all(d_("snowmelt_doy_50", "annual", "last10") < 0,
                              d_("snowmelt_doy_50", "annual", "last3") < 0),
   drier_summer_air     = all(d_("vpd", "summer", "last10") > 0,
                              d_("vpd", "summer", "last3") > 0),
   drier_summer_soil    = all(d_("soil_moisture", "summer", "last10") < 0,
                              d_("soil_moisture", "summer", "last3") < 0),
+  # "changed by no more than N %" is printed; the story needs N small
   prcp_moved_little    = all(abs(d_("prcp", "annual", "last10")) < 6),
-  last3_drier          = all(d_("prcp", "annual", "last3") < 0),
+  # "the last three years swung between dry and wet": each area had both
+  prcp_last3_swung     = all(vapply(wsg_codes, function(code) {
+    y <- year_changes(code, "prcp", "annual")
+    any(y < 0) && any(y > 0)
+  }, logical(1))),
   # seasons heading and caption
   every_season_warmer  = all(sapply(c("winter", "spring", "summer", "fall"),
                                     function(p) d_("tmean", p, "last10") > 0)),
-  winter_warmed_most_last3 = all(sapply(wsg_codes, function(code) {
-    s <- sapply(c("winter", "spring", "summer", "fall"),
-                function(p) value_of(code, "tmean", p, "last3"))
-    names(which.max(s)) == "winter"
-  })),
-  winter_wetter_last3  = all(d_("prcp", "winter", "last3") > 0),
-  spring_summer_drier_last3 = all(d_("prcp", "spring", "last3") < 0,
-                                  d_("prcp", "summer", "last3") < 0),
+  spring_drier_last3   = last3_holds("prcp", "spring", "down"),
+  summer_drier_last3   = last3_holds("prcp", "summer", "down"),
+  winter_wetter_last3  = last3_holds("prcp", "winter", "up"),
   # temperature caption: a year warmer than any normal year "is now common"
   warmer_than_any_common = all(warm$n_last10_warmer[warm$code %in% wsg_codes] >= 3),
   # Bulkley paragraph and caption: "warmed by", "both lost", "far less snow",
