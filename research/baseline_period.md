@@ -4,7 +4,7 @@
 
 ## Decision
 
-cd measures departure against **1951–1980**. It starts one year into the ERA5-Land record (which begins in 1950), so it is the closest this data gets to IPCC's pre-industrial baseline (1850–1900). It is also NASA GISS's base period, the one `hansen_etal2012Perceptionclimate` uses. Some warming had already happened by 1951–1980, so departures against it **understate** the change since pre-industrial times. Vignettes say so in plain words.
+cd measures departure against **1951–1980**. It starts one year into the ERA5-Land record (which begins in 1950), so it is all but the earliest 30-year window this data holds and about as close as it gets to IPCC's pre-industrial baseline (1850–1900). It is also NASA GISS's base period, the one `hansen_etal2012Perceptionclimate` uses. Some warming had already happened by 1951–1980, so departures against it **understate** the change since pre-industrial times. Vignettes say so in plain words.
 
 The archived lit reviews reached the same choice (`planning/archive/2026-05-issue-53-*`, `*-issue-58-*`, `*-issue-63-*`), calling it a defensible "alternative climate normal" (`arguez_vose2011`) on the early side of WMO's 1961–1990.
 

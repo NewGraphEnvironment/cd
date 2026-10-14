@@ -44,6 +44,16 @@ chg <- function(code, variable, period = "annual", window = "last10") {
 }
 r1 <- function(x) format(round(abs(x), 1), nsmall = 1)  # size of a change;
 r0 <- function(x) format(round(abs(x)))                 # the words carry sign
+# The closing reproduce chunk, written for the windows the page shows
+reproduce_code <- sprintf('library(cd)
+aoi <- sf::st_read(system.file("extdata", "example_aoi_northern_bc.gpkg",
+                               package = "cd"))
+ts <- cd_extract(cd_catalog(), aoi[aoi$code == "BULK", ])
+cd_compare(ts[ts$variable == "tmean", ], window_a = %1$d:%2$d,
+           window_b = %3$d:%4$d, test = NULL)
+cd_compare(ts[ts$variable == "prcp", ], window_a = %1$d:%2$d,
+           window_b = %3$d:%4$d, method = "pct_change", test = NULL)',
+  min(w$last10), max(w$last10), min(w$normal), max(w$normal))
 melt <- -sapply(names(sheds), chg, "snowmelt_doy_50")
 melt_range <- paste0(r0(min(melt)), " to ", r0(max(melt)))
 warm <- d$warm[match(names(sheds), d$warm$code), ]
@@ -58,16 +68,16 @@ theme_set(theme_minimal(base_size = 11) +
                   plot.title.position = "plot"))
 ```
 
-Three watersheds in northern British Columbia, each draining to a different
-ocean by a different great river. This page compares the weather of the last
+Three watersheds in northern British Columbia, each feeding a different great
+river: two run to the Pacific and one to the Arctic. This page compares the weather of the last
 ten years, and of the last three, with what was normal in
 `r yrs(w$normal)`. The short answer: **all three are clearly warmer, they hold
 less snow, the snow melts sooner, and summers are thirstier.** Total rain and
 snow moved little over ten years, though the last three were drier.
 
 Ten years is long enough to start to show the climate. Three years is mostly
-weather, so the last three years are shown one at a time, never as one
-average.
+weather, so the figures show each of the last three years on its own, not just
+their average.
 
 ## Where these watersheds are
 
@@ -146,9 +156,11 @@ sc$text <- mapply(fmt_cell, sc$unit, sc$last10, sc$last3)
 tint <- c(warm_dry = "#FBDCC8", cool_wet = "#CFE3F2", mixed = "white")
 sc$cell <- kableExtra::cell_spec(sc$text, format = "html",
                                  background = tint[sc$direction])
-tab <- tidyr::pivot_wider(sc[, c("signal", "code", "cell")],
-                          names_from = code, values_from = cell)
-tab <- tab[match(unique(sc$signal), tab$signal), c("signal", names(sheds))]
+signals <- unique(sc$signal)
+tab <- data.frame(signal = signals, sapply(names(sheds), function(code) {
+  x <- sc[sc$code == code, ]
+  x$cell[match(signals, x$signal)]
+}))
 names(tab) <- c("Change from normal (last 10 yr / last 3 yr)", sheds)
 kableExtra::kable_styling(
   kableExtra::kbl(tab, escape = FALSE, align = "lccc",
@@ -377,15 +389,7 @@ are `r yrs(w$last3)`. The two regional reports,
 explain the method and its statistics in full; they compare 2015–2025, so
 their numbers differ slightly from these. To reproduce the Bulkley's numbers:
 
-```{r reproduce, echo = TRUE, eval = FALSE}
-library(cd)
-aoi <- sf::st_read(system.file("extdata", "example_aoi_northern_bc.gpkg",
-                               package = "cd"))
-ts <- cd_extract(cd_catalog(), aoi[aoi$code == "BULK", ])
-cd_compare(ts[ts$variable == "tmean", ], window_a = 2016:2025,
-           window_b = 1951:1980, test = NULL)
-cd_compare(ts[ts$variable == "prcp", ], window_a = 2016:2025,
-           window_b = 1951:1980, method = "pct_change", test = NULL)
+```{r reproduce, echo = TRUE, eval = FALSE, code = reproduce_code}
 ```
 
 ## References

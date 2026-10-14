@@ -177,6 +177,54 @@ scorecard$direction <- with(scorecard, ifelse(
 scorecard <- scorecard[order(match(scorecard$signal, signals$signal),
                              scorecard$code), ]
 
+# -- Sentences the vignette states as fact ------------------------------------
+# The vignette prints the size of a change and lets its words carry the
+# direction ("% less", "days earlier"), so each direction it names is checked
+# here. A regen that turns one false stops before it writes.
+wsg_codes <- c("BULK", "NECR", "PARS")
+d_ <- function(variable, period, window, codes = wsg_codes) {
+  vapply(codes, value_of, numeric(1), variable, period, window)
+}
+claims <- c(
+  # intro, scorecard caption, temperature heading
+  warmer_both          = all(d_("tmean", "annual", "last10") > 0,
+                             d_("tmean", "annual", "last3") > 0),
+  every_recent_year_warm = all(sapply(wsg_codes, function(code) {
+    x <- tmean_annual[tmean_annual$code == code, ]
+    # "almost every": at most one of the last 10 at or below normal
+    sum(x$value[x$year %in% windows$last10] >
+          warm$normal_mean[warm$code == code]) >= length(windows$last10) - 1
+  })),
+  smaller_snowpack     = all(d_("swe_max", "annual", "last10") < 0,
+                             d_("swe_max", "annual", "last3") < 0),
+  melt_earlier         = all(d_("snowmelt_doy_50", "annual", "last10") < 0,
+                             d_("snowmelt_doy_50", "annual", "last3") < 0),
+  drier_summer_air     = all(d_("vpd", "summer", "last10") > 0,
+                             d_("vpd", "summer", "last3") > 0),
+  drier_summer_soil    = all(d_("soil_moisture", "summer", "last10") < 0,
+                             d_("soil_moisture", "summer", "last3") < 0),
+  prcp_moved_little    = all(abs(d_("prcp", "annual", "last10")) < 6),
+  last3_drier          = all(d_("prcp", "annual", "last3") < 0),
+  # seasons heading and caption
+  every_season_warmer  = all(sapply(c("winter", "spring", "summer", "fall"),
+                                    function(p) d_("tmean", p, "last10") > 0)),
+  winter_warmed_most_last3 = all(sapply(wsg_codes, function(code) {
+    s <- sapply(c("winter", "spring", "summer", "fall"),
+                function(p) value_of(code, "tmean", p, "last3"))
+    names(which.max(s)) == "winter"
+  })),
+  winter_wetter_last3  = all(d_("prcp", "winter", "last3") > 0),
+  spring_summer_drier_last3 = all(d_("prcp", "spring", "last3") < 0,
+                                  d_("prcp", "summer", "last3") < 0),
+  # Bulkley paragraph: "both lost", "% less than normal"
+  bulkley_both_lost_snow = all(bulkley_parts$swe_max_pct_last10 < 0),
+  bulkley_summer_rain_less = all(bulkley_parts$prcp_summer_pct_last3 < 0)
+)
+if (!all(claims)) {
+  stop("Vignette sentences no longer true of the data: ",
+       paste(names(claims)[!claims], collapse = ", "))
+}
+
 # -- BULK rasters for the Bulkley maps ----------------------------------------
 message("Bulkley rasters ...")
 bulk <- aoi[aoi$code == "BULK", ]
