@@ -141,3 +141,17 @@ The vignette closes with a short "How this was made" note: two or three sentence
 
 - `whse_basemapping.gns_geographical_names_sp` is absent from the current fwapg, although `example_context_fwcp_peace.R` and `example_context_kootenay_lake.R` query it; those two scripts would fail if re-run today. Towns here come from `bcdc_query_geodata("WHSE_BASEMAPPING.GNS_GEOGRAPHICAL_NAMES_SP")`.
 - The union of all FWA watershed groups (2 km simplify) is 939,760 km², BC's land area to within half a percent. It serves as the keymap outline.
+
+## Vignette data (Phase 4, measured 2026-10-14)
+
+Producer: `data-raw/northern_bc_vignette_data.R`, run against the live catalog (34 s with a warm cache). Windows derived from the last year every area holds: 2016–2025 and 2023–2025.
+
+- **The issue's probe table reproduces to its rounding** for BULK, NECR, PARS, every row.
+- **Warmer than the warmest normal year (1958 everywhere):** BULK 7, NECR 5, PARS 4 of the last 10, as the issue said. Upper Bulkley 6, lower 7.
+- **2023 does not carry the 3-yr result:** without 2023, the 3-yr warming is BULK +2.1, NECR +1.9, PARS +1.7 °C (with 2023: +2.6, +2.4, +2.3).
+- **No recent peak snowpack fell below the lowest normal year** in any area (asserted in the script).
+- **Upper vs lower Bulkley (Houston split):** 10-yr warming +1.86 vs +1.97 °C; peak snowpack −9.2 vs −8.1 %. Normal precipitation 758 vs 1,055 mm; normal peak snowpack 293 vs 534 mm. Summer rain over the last 3 years −25 vs −14 %. The issue's median-longitude halves gave the same story (+2.0 / +1.9 °C; 803 vs 1,094 mm). Over 10 years summer rain went opposite ways: upper −6 %, lower +8 %.
+- **Winter precipitation fell** over the last 10 years in every area (−2 to −5 %). The last 3 were wetter (+1 to +8 %). "More winter rain → more winter high flows" is therefore not supported as a total-precipitation statement; only the snowfall share (−1 to −4 points over 10 yr) supports a "less of it falls as snow" row.
+- **Grid cells touched:** BULK 156, NECR 81, PARS 112, upper Bulkley 49, lower 111.
+- **No glacier artefact in BULK:** normal peak snowpack per cell runs 225–1,000 mm.
+- **Semantics (review A1, A2):** "winter" for year Y = Jan, Feb and Dec of Y (`cd_aggregate()` over one calendar year). `swe_max` = the mean over cells of each cell's calendar-year peak. `snowmelt_doy_50` = the day by which half of that calendar year's snowmelt has happened (`backfill_edh_snow.py:290-299`).

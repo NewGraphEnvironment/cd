@@ -75,7 +75,11 @@ stopifnot(!any(st_intersects(st_zm(morice, drop = TRUE, what = "ZM"), upper,
 DBI::dbDisconnect(conn)
 
 bulk <- st_geometry(wsgs[wsgs$code == "BULK", ])
+# The upper Bulkley should already lie inside BULK: clipping it to BULK may
+# trim boundary slivers, never a real piece of watershed.
+area_unclipped <- as.numeric(st_area(upper))
 upper <- st_intersection(upper, bulk)
+stopifnot(abs(as.numeric(sum(st_area(upper))) / area_unclipped - 1) < 0.005)
 lower <- st_difference(bulk, upper)
 # An overlay can return a GEOMETRYCOLLECTION where the pieces touch along a
 # line, which QGIS will not draw; keep only the polygons when it does.
@@ -104,11 +108,9 @@ aoi$area_km2 <- round(as.numeric(st_area(aoi)) / 1e6, 1)
 area <- setNames(aoi$area_km2, aoi$code)
 print(sf::st_drop_geometry(aoi))
 
-# Areas from #137's table, and the split must add back up to BULK.
+# Areas from #137's table.
 expected <- c(BULK = 7762, NECR = 4148, PARS = 5597)
 stopifnot(all(abs(area[names(expected)] / expected - 1) < 0.01))
-stopifnot(abs((area[["BULK_UPPER"]] + area[["BULK_LOWER"]]) /
-                area[["BULK"]] - 1) < 0.01)
 
 # A 50 m tolerance is nothing against the ~9 km ERA5-Land grid and cuts the
 # vertex count several-fold.
