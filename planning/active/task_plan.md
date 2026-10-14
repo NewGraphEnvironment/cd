@@ -11,9 +11,9 @@
 
 ## Phase 1: Registry fix (test first)
 
-- [ ] `tests/testthat/test-cd_variables.R`: new test that the `vpd` unit is `"hPa"`; it fails against current code
-- [ ] `R/cd_variables.R`: `"Pa"` → `"hPa"` in `unit`, and the `@return` doc line (`degree C, percent, hPa, mm, day, mm/wk`)
-- [ ] `devtools::document()` regenerates `man/cd_variables.Rd`; `devtools::test()` passes
+- [x] `tests/testthat/test-cd_variables.R`: new test that the `vpd` unit is `"hPa"`; it fails against current code
+- [x] `R/cd_variables.R`: `"Pa"` → `"hPa"` in `unit`, and the `@return` doc line (`degree C, percent, hPa, mm, day, mm/wk`)
+- [x] `devtools::document()` regenerates `man/cd_variables.Rd`; `devtools::test()` passes
 
 ## Phase 2: Vignette data carries the unit it is in
 

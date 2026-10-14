@@ -37,3 +37,9 @@ test_that("cd_variables pct_point_diff variables are correct", {
   pp_vars <- vars$variable[vars$anomaly_type == "pct_point_diff"]
   expect_equal(sort(pp_vars), c("snow_cover", "snowfall_fraction"))
 })
+
+test_that("cd_variables gives vpd the unit its data is in (hPa)", {
+  # Tetens in cd_derive_vpd() and the EDH backfiller both produce hPa (#96)
+  vars <- cd_variables()
+  expect_equal(vars$unit[vars$variable == "vpd"], "hPa")
+})

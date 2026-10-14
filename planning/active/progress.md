@@ -6,3 +6,4 @@
 - Created branch `96-cd-variables-vpd-unit-is-pa-but-the-data` off main
 - Scaffolded PWF baseline from issue #96 with approved phases
 - Next: start Phase 1
+- Phase 1: vpd unit test failed against "Pa" (FAIL 1), passes after the registry fix; full suite FAIL 0 | WARN 6 | PASS 647. The 6 warnings are pre-existing (`test-cd_plot_comparison.R` fixtures, "row names were found from a short variable"), untouched.

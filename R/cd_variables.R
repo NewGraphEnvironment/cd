@@ -19,7 +19,7 @@
 #'   \describe{
 #'     \item{variable}{Short name used throughout the package.}
 #'     \item{long_name}{Human-readable label for plots and tables.}
-#'     \item{unit}{Measurement unit (degree C, percent, Pa, mm, day, mm/wk).}
+#'     \item{unit}{Measurement unit (degree C, percent, hPa, mm, day, mm/wk).}
 #'     \item{anomaly_type}{"absolute" for direct departures (value - baseline,
 #'       reported in the variable's native unit), "pct_normal" for
 #'       percent-of-normal anomalies (100 * value / baseline - 100, capped),
@@ -52,7 +52,7 @@ cd_variables <- function() {
       "Day of 50% melt", "Peak weekly melt rate"
     ),
     unit = c(
-      "\u00b0C", "\u00b0C", "\u00b0C", "%", "Pa", "%", "%",
+      "\u00b0C", "\u00b0C", "\u00b0C", "%", "hPa", "%", "%",
       "%", "%", "%", "%",
       "mm", "%", "day", "mm/wk"
     ),
