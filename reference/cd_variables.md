@@ -26,7 +26,7 @@ A tibble with columns:
 
 - unit:
 
-  Measurement unit (degree C, percent, Pa, mm, day, mm/wk).
+  Measurement unit (degree C, percent, hPa, mm, day, mm/wk).
 
 - anomaly_type:
 
@@ -66,7 +66,7 @@ cd_variables()
 #>  2 tmax               Maximum temperature           °C    absolute     NA       
 #>  3 tmin               Minimum temperature           °C    absolute     NA       
 #>  4 prcp               Precipitation                 %     pct_normal   total_pr…
-#>  5 vpd                Vapour pressure deficit       Pa    absolute     NA       
+#>  5 vpd                Vapour pressure deficit       hPa   absolute     NA       
 #>  6 rh                 Relative humidity             %     absolute     NA       
 #>  7 soil_moisture      Soil moisture                 %     pct_normal   NA       
 #>  8 swe                Snow water equivalent         %     pct_normal   NA       

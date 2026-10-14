@@ -306,16 +306,16 @@ cd::cd_summary(trn)
 | Minimum temperature | Summer | 1981 | 0.046 | 45 | 2.1 | °C | 0.0002 |
 | Minimum temperature | Winter | 1951 | 0.014 | 75 | 1.0 | °C | 0.0941 |
 | Minimum temperature | Winter | 1981 | 0.022 | 45 | 1.0 | °C | 0.2000 |
-| Vapour pressure deficit | Annual | 1951 | 0.012 | 75 | 0.9 | Pa | 0.0000 |
-| Vapour pressure deficit | Annual | 1981 | 0.024 | 45 | 1.1 | Pa | 0.0000 |
-| Vapour pressure deficit | Fall | 1951 | 0.008 | 75 | 0.6 | Pa | 0.0088 |
-| Vapour pressure deficit | Fall | 1981 | 0.014 | 45 | 0.6 | Pa | 0.0617 |
-| Vapour pressure deficit | Spring | 1951 | 0.008 | 75 | 0.6 | Pa | 0.0000 |
-| Vapour pressure deficit | Spring | 1981 | 0.010 | 45 | 0.4 | Pa | 0.0264 |
-| Vapour pressure deficit | Summer | 1951 | 0.028 | 75 | 2.1 | Pa | 0.0003 |
-| Vapour pressure deficit | Summer | 1981 | 0.066 | 45 | 3.0 | Pa | 0.0001 |
-| Vapour pressure deficit | Winter | 1951 | 0.001 | 75 | 0.1 | Pa | 0.0007 |
-| Vapour pressure deficit | Winter | 1981 | 0.000 | 45 | 0.0 | Pa | 0.7767 |
+| Vapour pressure deficit | Annual | 1951 | 0.012 | 75 | 0.9 | hPa | 0.0000 |
+| Vapour pressure deficit | Annual | 1981 | 0.024 | 45 | 1.1 | hPa | 0.0000 |
+| Vapour pressure deficit | Fall | 1951 | 0.008 | 75 | 0.6 | hPa | 0.0088 |
+| Vapour pressure deficit | Fall | 1981 | 0.014 | 45 | 0.6 | hPa | 0.0617 |
+| Vapour pressure deficit | Spring | 1951 | 0.008 | 75 | 0.6 | hPa | 0.0000 |
+| Vapour pressure deficit | Spring | 1981 | 0.010 | 45 | 0.4 | hPa | 0.0264 |
+| Vapour pressure deficit | Summer | 1951 | 0.028 | 75 | 2.1 | hPa | 0.0003 |
+| Vapour pressure deficit | Summer | 1981 | 0.066 | 45 | 3.0 | hPa | 0.0001 |
+| Vapour pressure deficit | Winter | 1951 | 0.001 | 75 | 0.1 | hPa | 0.0007 |
+| Vapour pressure deficit | Winter | 1981 | 0.000 | 45 | 0.0 | hPa | 0.7767 |
 
 Trend statistics for all variables and periods, Kootenay Lake Region.
 {.table .table .table-striped .table-hover .table-condensed

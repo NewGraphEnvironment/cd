@@ -300,16 +300,16 @@ cd::cd_summary(trn)
 | Minimum temperature | Summer | 1981 | 0.036 | 45 | 1.6 | °C | 0.0014 |
 | Minimum temperature | Winter | 1951 | 0.044 | 75 | 3.3 | °C | 0.0005 |
 | Minimum temperature | Winter | 1981 | 0.004 | 45 | 0.2 | °C | 0.8679 |
-| Vapour pressure deficit | Annual | 1951 | 0.005 | 75 | 0.3 | Pa | 0.0008 |
-| Vapour pressure deficit | Annual | 1981 | 0.005 | 45 | 0.2 | Pa | 0.0963 |
-| Vapour pressure deficit | Fall | 1951 | 0.002 | 75 | 0.2 | Pa | 0.0323 |
-| Vapour pressure deficit | Fall | 1981 | 0.005 | 45 | 0.2 | Pa | 0.0834 |
-| Vapour pressure deficit | Spring | 1951 | 0.005 | 75 | 0.4 | Pa | 0.0001 |
-| Vapour pressure deficit | Spring | 1981 | 0.008 | 45 | 0.4 | Pa | 0.0141 |
-| Vapour pressure deficit | Summer | 1951 | 0.009 | 75 | 0.7 | Pa | 0.0338 |
-| Vapour pressure deficit | Summer | 1981 | 0.009 | 45 | 0.4 | Pa | 0.4057 |
-| Vapour pressure deficit | Winter | 1951 | 0.001 | 75 | 0.1 | Pa | 0.0007 |
-| Vapour pressure deficit | Winter | 1981 | 0.000 | 45 | 0.0 | Pa | 0.8220 |
+| Vapour pressure deficit | Annual | 1951 | 0.005 | 75 | 0.3 | hPa | 0.0008 |
+| Vapour pressure deficit | Annual | 1981 | 0.005 | 45 | 0.2 | hPa | 0.0963 |
+| Vapour pressure deficit | Fall | 1951 | 0.002 | 75 | 0.2 | hPa | 0.0323 |
+| Vapour pressure deficit | Fall | 1981 | 0.005 | 45 | 0.2 | hPa | 0.0834 |
+| Vapour pressure deficit | Spring | 1951 | 0.005 | 75 | 0.4 | hPa | 0.0001 |
+| Vapour pressure deficit | Spring | 1981 | 0.008 | 45 | 0.4 | hPa | 0.0141 |
+| Vapour pressure deficit | Summer | 1951 | 0.009 | 75 | 0.7 | hPa | 0.0338 |
+| Vapour pressure deficit | Summer | 1981 | 0.009 | 45 | 0.4 | hPa | 0.4057 |
+| Vapour pressure deficit | Winter | 1951 | 0.001 | 75 | 0.1 | hPa | 0.0007 |
+| Vapour pressure deficit | Winter | 1981 | 0.000 | 45 | 0.0 | hPa | 0.8220 |
 
 Trend statistics for all variables and periods, FWCP Peace Region.
 {.table .table .table-striped .table-hover .table-condensed
