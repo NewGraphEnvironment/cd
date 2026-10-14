@@ -155,3 +155,23 @@ Producer: `data-raw/northern_bc_vignette_data.R`, run against the live catalog (
 - **Grid cells touched:** BULK 156, NECR 81, PARS 112, upper Bulkley 49, lower 111.
 - **No glacier artefact in BULK:** normal peak snowpack per cell runs 225–1,000 mm.
 - **Semantics (review A1, A2):** "winter" for year Y = Jan, Feb and Dec of Y (`cd_aggregate()` over one calendar year). `swe_max` = the mean over cells of each cell's calendar-year peak. `snowmelt_doy_50` = the day by which half of that calendar year's snowmelt has happened (`backfill_edh_snow.py:290-299`).
+
+## Seasonal pattern (checked before writing captions)
+
+- **"Winters warmed most" holds for the last 3 years only.** Over 10 years summer warmed more than winter in BULK (+2.3 vs +2.0 °C) and PARS (+1.9 vs +1.7); NECR's winter led (+2.2 vs +1.9). Over the last 3 years winter led everywhere (+3.2, +3.4, +3.0). The issue's figure title "Winters warmed most" would be wrong as a 10-year statement; the caption says what the data show.
+- **Last 3 years: wetter winters, drier springs and summers.** Winter precipitation +5 / +7 / +7.5 %; spring −6 / −18 / −19 %; summer −17 / −22 / −6 %.
+- **Melt date:** half the year's snowmelt done by day 149 (≈ 29 May) in BULK's normal, day 136 (≈ 16 May) over the last 10 years.
+
+## Reference check (Phase 6)
+
+`planning/active/review-references.md` (background agent, PDFs read from Zotero storage; the Zotero MCP has no API key on this machine). Verdicts: Stewart 2005, Kang 2016 and Eaton & Scheller 1996 SUPPORTED. Najafi 2017, Mantua 2010 and Ficklin & Novick 2017 PARTLY, so the vignette uses the narrower supported wording: four BC basins 1961–2005; salmon and steelhead in Washington projections; VPD rise shown for the US 1979–2013. I re-checked Kang's abstract sentence against the PDF myself: it matches word for word. The vignette names each source's study region.
+
+## Figure QA (Phase 7)
+
+- pkgdown 2.2.0 renders the article without bookdown numbering, as the review said; figures are referred to by name.
+- ggrepel 0.9.8 with ggplot2 4.0.3 ignores `label.size = 0`; `linewidth = 0` removes the label border.
+- Separate ggrepel layers do not avoid each other's text, so the map uses one label layer for watershed, river and town names, with per-row style via identity scales.
+- Simplifying each watershed group before the union left slivers in the BC keymap; a 2 km buffer out and back in closes them (context gpkg 392 → 272 KB).
+- The Bulkley temperature-change map on a 1.5–2.3 °C scale made a nearly uniform change look patchy; the scale now starts at 0.
+- Captions corrected against data: "most years warmer than the warmest normal year" (PARS 4 of 10) → "now common"; "about two weeks sooner" → computed range (9 to 13 days); "winters warmed most" restricted to the last 3 years.
+- `pkgdown::init_site()` generated `pkgdown/favicon/` through an external service; removed, not part of this work.

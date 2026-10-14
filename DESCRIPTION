@@ -33,6 +33,7 @@ Suggests:
     kableExtra,
     Kendall,
     knitr,
+    patchwork,
     rmarkdown,
     sf,
     testthat (>= 3.2.0),

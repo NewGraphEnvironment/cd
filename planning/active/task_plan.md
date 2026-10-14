@@ -59,44 +59,44 @@ Full issue body in findings.md. Plan-gate decisions (baseline 1951–1980, hide 
       (A5); scorecard built in the script (G7)
 
 ## Phase 5: Vignette `vignettes/northern-bc.Rmd`
-- [ ] Skeleton: header as the other two plus `bibliography: references.bib`, hidden
+- [x] Skeleton: header as the other two plus `bibliography: references.bib`, hidden
       setup, `fig.width` ≈ 7 in, every number in prose and captions computed inline from
       the rds (none typed); figures referred to by name, never by number (pkgdown 2.2.0
       ignores bookdown numbering, review B2); hard budget ≤ 400 lines
-- [ ] patchwork in DESCRIPTION Suggests for the two-part figures (CRAN; gq stays out)
-- [ ] Fig 1 map (three WSGs in one gq fill, named by label, rivers named, "Williston
+- [x] patchwork in DESCRIPTION Suggests for the two-part figures (CRAN; gq stays out)
+- [x] Fig 1 map (three WSGs in one gq fill, named by label, rivers named, "Williston
       Reservoir", towns, Pacific/Pacific/Arctic note, keymap) and Table 2 scorecard (≈6 signals × 3 watersheds, "10 yr / 3 yr",
       warm/dry vs cool/wet tint, kableExtra)
-- [ ] Fig 3 annual temperature bars 1950–2025 (three stacked panels, warm/cool colours,
+- [x] Fig 3 annual temperature bars 1950–2025 (three stacked panels, warm/cool colours,
       normal shaded, last 10 / last 3 bracketed, dashed warmest-normal-year line)
-- [ ] Fig 4 seasonal dot chart (temperature + precipitation; 10-yr mean and each of the
+- [x] Fig 4 seasonal dot chart (temperature + precipitation; 10-yr mean and each of the
       last 3 years as its own dot; winter labelled as Dec, Jan and Feb of one year)
-- [ ] Fig 5 snow: (a) peak snowpack normal / 10-yr mean / each of 2023–2025, (b) half-melt
+- [x] Fig 5 snow: (a) peak snowpack normal / 10-yr mean / each of 2023–2025, (b) half-melt
       date (half of the year's snowmelt done) on a calendar axis, each recent year a dot;
       text makes no record-low claim
-- [ ] Fig 6 Bulkley grid maps (normal peak snowpack; 10-yr temperature change) + the
+- [x] Fig 6 Bulkley grid maps (normal peak snowpack; 10-yr temperature change) + the
       upper-vs-lower one-liner: same change, drier starting point upstream
-- [ ] Fig 7 summer dryness (VPD, soil moisture) only if the Rmd stays under ~400 lines;
-      otherwise those rows live in the scorecard
-- [ ] Prose: "What this means for watershed health" (changed → streams → fish table) and
+- [x] Fig 7 summer dryness (VPD, soil moisture) only if the Rmd stays under ~400 lines;
+      otherwise those rows live in the scorecard — folded into the scorecard (Rmd at 392 lines)
+- [x] Prose: "What this means for watershed health" (changed → streams → fish table) and
       "Next steps: from weather to water" (wet home page only); each stream row gated on
       its measured change (A8); "How this was made" with the one-sentence baseline caveat,
       the weather-vs-climate sentence, links to the two regional vignettes (which use
       2015–2025) and one `eval = FALSE` reproduce chunk
 
 ## Phase 6: References
-- [ ] Check each mechanism claim against its PDF (Zotero full text) for the six keys;
+- [x] Check each mechanism claim against its PDF (Zotero full text) for the six keys;
       cut or reword any claim the source does not make
 - [x] `data-raw/regenerate_bib.R` reads every `vignettes/*.Rmd` (code change; also the
       peace-fwcp.Rmd header comment and CLAUDE.md's "Bibliography regen" wording)
-- [ ] Run it if any key is added (Zotero + BBT up), otherwise confirm the bib already
+- [x] Run it if any key is added (Zotero + BBT up), otherwise confirm the bib already
       holds every key cited
 
 ## Phase 7: Figure and language QA
-- [ ] Render (`pkgdown::build_article("northern-bc")`) and read every figure PNG at
+- [x] Render (`pkgdown::build_article("northern-bc")`) and read every figure PNG at
       ~700 px: type size, ≤ 3 colours per panel, colour-blind-safe, direct labels
-- [ ] Cartography self-review, all 12 checks, on figures 1 and 6
-- [ ] Plain-language grep of the rendered HTML text (p-value, Mann-Kendall, Theil-Sen,
+- [x] Cartography self-review, all 12 checks, on figures 1 and 6
+- [x] Plain-language grep of the rendered HTML text (p-value, Mann-Kendall, Theil-Sen,
       anomaly, reanalysis, SWE, VPD, DOY, ERA5, day of year) — only "How this was made"
       may name a technical term; units in words on every axis; captions lead with the
       takeaway; a captions-only read-through tells the story; no footnotes; Rmd ≤ 400 lines

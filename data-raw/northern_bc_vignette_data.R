@@ -142,9 +142,11 @@ bulkley_parts$tmean_change_last10 <- sapply(bulkley_parts$code, value_of, "tmean
 bulkley_parts$swe_max_pct_last10 <- sapply(bulkley_parts$code, value_of, "swe_max", "annual", "last10")
 bulkley_parts$prcp_summer_pct_last3 <- sapply(bulkley_parts$code, value_of, "prcp", "summer", "last3")
 # "The same change on a drier starting point" holds only while the two halves
-# warmed alike and the upper one starts with less water.
+# warmed alike, lost a like share of snowpack, and the upper one starts with
+# less water.
 stopifnot(
   abs(diff(bulkley_parts$tmean_change_last10)) < 0.2,
+  abs(diff(bulkley_parts$swe_max_pct_last10)) < 3,
   bulkley_parts$prcp_normal_mm[1] < bulkley_parts$prcp_normal_mm[2],
   bulkley_parts$swe_max_normal_mm[1] < bulkley_parts$swe_max_normal_mm[2]
 )
@@ -211,6 +213,7 @@ style <- list(
   lake_fill    = reg$layers$lake$fill$color,
   lake_stroke  = reg$layers$lake$stroke$color,
   river        = reg$layers$rivers_poly$fill$color,
+  wsg_fill     = reg$layers$watershed_group_boundary$fill$color,
   wsg_stroke   = reg$layers$watershed_group_boundary$stroke$color
 )
 stopifnot(all(vapply(style, function(x) is.character(x) && nzchar(x), logical(1))))

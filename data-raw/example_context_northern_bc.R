@@ -87,7 +87,10 @@ towns  <- st_transform(towns, 4326)
 
 # The keymap is about an inch wide: drop islands under 500 km^2 and keep
 # 5 km detail.
-bc <- st_cast(st_transform(bc, 3005), "POLYGON")
+# Simplifying each group before the union leaves slivers along shared edges;
+# a 2 km buffer out and back in closes them.
+bc <- st_buffer(st_buffer(st_transform(bc, 3005), 2000), -2000)
+bc <- st_cast(bc, "POLYGON")
 bc <- bc[as.numeric(st_area(bc)) > 500e6, ]
 bc <- st_sf(name = "British Columbia",
             geom = st_union(st_simplify(bc, dTolerance = 5000,
