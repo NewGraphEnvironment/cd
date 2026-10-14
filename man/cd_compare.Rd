@@ -20,7 +20,8 @@ cd_compare(
 window. Default \code{2015:2025}.}
 
 \item{window_b}{Integer vector of years for the reference
-window. Default \code{1951:1980} (WMO-style standard normal).}
+window. Default \code{1951:1980} (pre-warming reference, the GISS base
+period).}
 
 \item{method}{Character. Comparison method: \code{"mean_diff"} for
 \code{mean_a - mean_b}, or \code{"pct_change"} for percentage change
@@ -46,10 +47,11 @@ difference between them, and (by default) a p-value testing
 whether the two windows differ.
 }
 \details{
-Defaults compare a recent decade (\code{2015:2025}) to the WMO-style
-standard normal reference period (\code{1951:1980}) — the framing
-used in the package vignettes. This is a \emph{cumulative-impact}
-comparison ("how much warmer is the recent decade than the
+Defaults compare a recent decade (\code{2015:2025}) to a pre-warming
+reference (\code{1951:1980}, the GISS base period) — the framing used
+in the package vignettes. It is not a WMO climatological standard
+normal, whose fixed periods were 1901-1930, 1931-1960 and
+1961-1990. This is a \emph{cumulative-impact} comparison ("how much warmer is the recent decade than the
 pre-warming reference?") rather than a rate-of-change
 comparison; for the latter use \code{\link[=cd_trend]{cd_trend()}}.
 

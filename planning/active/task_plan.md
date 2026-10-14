@@ -17,9 +17,9 @@ Each one is also the anchor watershed of a 2025 fish-passage report's climate ap
 Full issue body in findings.md. Plan-gate decisions (baseline 1951–1980, hide code, upper/lower Bulkley at Houston) are decided in the issue.
 
 ## Phase 1: `cd_compare()` wording (decision 1)
-- [ ] Reword `R/cd_compare.R` description and `window_b` param: 1951–1980 is the
+- [x] Reword `R/cd_compare.R` description and `window_b` param: 1951–1980 is the
       "pre-warming reference (the GISS base period)", not a WMO standard normal
-- [ ] `devtools::document()`; man/cd_compare.Rd regenerated; tests still pass
+- [x] `devtools::document()`; man/cd_compare.Rd regenerated; tests still pass
 
 ## Phase 2: AOI — three watershed groups + the Bulkley split
 - [ ] `data-raw/example_aoi_northern_bc.R`: BULK, NECR, PARS from
