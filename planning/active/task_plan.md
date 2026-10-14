@@ -102,13 +102,13 @@ Full issue body in findings.md. Plan-gate decisions (baseline 1951–1980, hide 
       takeaway; a captions-only read-through tells the story; no footnotes; Rmd ≤ 400 lines
 
 ## Phase 8: Docs and follow-ups
-- [ ] README.md vignette list and CLAUDE.md "Vignettes" section name the third vignette
-- [ ] File follow-up issue: `cd_variables()` says `swe_max` is `absolute`
+- [x] README.md vignette list and CLAUDE.md "Vignettes" section name the third vignette
+- [x] File follow-up issue: `cd_variables()` says `swe_max` is `absolute`
       (`R/cd_variables.R`), CLAUDE.md's table says `pct_normal`; also `cd_compare()`'s
-      default `2015:2025` is called "a recent decade" but is 11 years
-- [ ] File follow-up: the fwcp/kootenay context scripts query `gns_geographical_names_sp`,
-      which the current fwapg lacks
-- [ ] research/baseline_period.md: drop "earliest 30-year window" (the record starts in 1950)
+      default `2015:2025` is called "a recent decade" but is 11 years — #139
+- [x] File follow-up: the fwcp/kootenay context scripts query `gns_geographical_names_sp`,
+      which the current fwapg lacks — #140
+- [x] research/baseline_period.md: drop "earliest 30-year window" (the record starts in 1950)
 
 ## Validation
 
