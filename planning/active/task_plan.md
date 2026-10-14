@@ -22,15 +22,15 @@ Full issue body in findings.md. Plan-gate decisions (baseline 1951–1980, hide 
 - [x] `devtools::document()`; man/cd_compare.Rd regenerated; tests still pass
 
 ## Phase 2: AOI — three watershed groups + the Bulkley split
-- [ ] `data-raw/example_aoi_northern_bc.R`: BULK, NECR, PARS from
+- [x] `data-raw/example_aoi_northern_bc.R`: BULK, NECR, PARS from
       `fwa_watershed_groups_poly`, plus upper Bulkley (Neexdzii Kwa, above Houston, via
       `frs_watershed_at_measure` just upstream of the Morice confluence) and lower
       Bulkley (BULK − upper); columns `code`, `name`, `river_system`, `drains_to`, `role`;
       EPSG:4326
-- [ ] Checks printed and asserted: WSG areas match the issue table (7,762 / 4,148 /
+- [x] Checks printed and asserted: WSG areas match the issue table (7,762 / 4,148 /
       5,597 km²) within 1 %; upper + lower = BULK within 1 %; upper contains Houston's
       upstream mainstem and not the Morice
-- [ ] Write `inst/extdata/example_aoi_northern_bc.gpkg`
+- [x] Write `inst/extdata/example_aoi_northern_bc.gpkg`
 
 ## Phase 3: Map context
 - [ ] `data-raw/example_context_northern_bc.R` (pattern of `example_context_fwcp_peace.R`):
