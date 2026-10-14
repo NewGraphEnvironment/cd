@@ -207,16 +207,16 @@ last3_holds <- function(variable, period, direction, codes = wsg_codes) {
 }
 claims <- c(
   # intro, scorecard caption, temperature heading
-  warmer_both          = all(d_("tmean", "annual", "last10") > 0) &&
-                         last3_holds("tmean", "annual", "up"),
+  warmer_both          = all(all(d_("tmean", "annual", "last10") > 0),
+                             last3_holds("tmean", "annual", "up")),
   every_recent_year_warm = all(sapply(wsg_codes, function(code) {
     x <- tmean_annual[tmean_annual$code == code, ]
     # "almost every": at most one of the last 10 at or below normal
     sum(x$value[x$year %in% windows$last10] >
           warm$normal_mean[warm$code == code]) >= length(windows$last10) - 1
   })),
-  smaller_snowpack     = all(d_("swe_max", "annual", "last10") < 0) &&
-                         last3_holds("swe_max", "annual", "down"),
+  smaller_snowpack     = all(all(d_("swe_max", "annual", "last10") < 0),
+                             last3_holds("swe_max", "annual", "down")),
   melt_earlier         = all(d_("snowmelt_doy_50", "annual", "last10") < 0,
                              d_("snowmelt_doy_50", "annual", "last3") < 0),
   drier_summer_air     = all(d_("vpd", "summer", "last10") > 0,
