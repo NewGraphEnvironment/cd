@@ -15,7 +15,7 @@ The descriptions below come from the session's background knowledge and were **n
 - **WMO climatological standard normals:** 30-year averages, recomputed every decade (currently 1991–2020). Canada's official normals follow them. They are an operational standard for national weather services: "what to expect now".
 - **WMO's fixed reference for long-term climate-change monitoring:** 1961–1990.
 - **IPCC AR6:** 1850–1900 for warming levels, and other periods (e.g. 1995–2014) for projections.
-- 1951–1980 was **never** a WMO standard normal; WMO's fixed periods were 1901–30, 1931–60 and 1961–90. `cd_compare()`'s roxygen calling it "WMO-style" is wrong (fix in #137).
+- 1951–1980 was **never** a WMO standard normal; WMO's fixed periods were 1901–30, 1931–60 and 1961–90. `cd_compare()`'s roxygen called it "WMO-style"; #137 changed that to "pre-warming reference (the GISS base period)" and quotes no WMO dates, since these are unverified.
 
 ## The measured spread
 

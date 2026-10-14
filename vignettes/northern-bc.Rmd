@@ -214,9 +214,9 @@ ggplot(tm, aes(year, change)) +
   theme(strip.text = element_text(face = "bold", hjust = 0, size = 11))
 ```
 
-## Every season is warmer, and recent summers were dry
+## Every season is warmer; the last three summers were drier on average
 
-```{r seasons, fig.height = 5, fig.cap = paste0("Every season is warmer than normal; over the last three years winters warmed most and were a little wetter, while springs and summers were drier. Large dots: the ", yrs(w$last10), " average. Small open circles: each of ", paste(w$last3, collapse = ", "), ". Winter is December, January and February of the same calendar year.")}
+```{r seasons, fig.height = 5, fig.cap = paste0("Every season is warmer than normal; over the last three years winters warmed most and were wetter, while springs and summers were drier. Large dots: the ", yrs(w$last10), " average. Small open circles: each of ", paste(w$last3, collapse = ", "), ". Winter is December, January and February of the same calendar year.")}
 seas <- c("winter", "spring", "summer", "fall")
 ss <- d$ts[d$ts$variable %in% c("tmean", "prcp") & d$ts$period %in% seas &
              d$ts$code %in% names(sheds), ]
@@ -331,7 +331,8 @@ bmap("swe_max_normal", scale_fill_distiller(
   palette = "Blues", direction = 1, na.value = NA,
   name = "Normal peak snowpack (mm of water)")) +
   bmap("tmean_change_last10", scale_fill_distiller(
-    palette = "Oranges", direction = 1, na.value = NA, limits = c(0, 2.5),
+    palette = "Oranges", direction = 1, na.value = NA,
+    limits = c(0, max(2.5, terra::minmax(r[["tmean_change_last10"]])[2])),
     name = "°C warmer than normal"))
 ```
 
@@ -348,7 +349,8 @@ and both lost about the same share of their peak snowpack
 three years fell `r if (bp["BULK_UPPER", "prcp_summer_pct_last3"] < bp["BULK_LOWER", "prcp_summer_pct_last3"]) "further" else "less"`
 upstream (`r r0(bp["BULK_UPPER", "prcp_summer_pct_last3"])`
 % less than normal, against `r r0(bp["BULK_LOWER", "prcp_summer_pct_last3"])`
-%). It is the same change, landing on a drier upper watershed.
+%). The same warming and the same loss of snow are landing on a drier upper
+watershed.
 
 ## What this means for watershed health
 

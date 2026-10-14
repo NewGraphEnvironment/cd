@@ -49,9 +49,7 @@ whether the two windows differ.
 \details{
 Defaults compare a recent decade (\code{2015:2025}) to a pre-warming
 reference (\code{1951:1980}, the GISS base period) — the framing used
-in the package vignettes. It is not a WMO climatological standard
-normal, whose fixed periods were 1901-1930, 1931-1960 and
-1961-1990. This is a \emph{cumulative-impact} comparison ("how much warmer is the recent decade than the
+in the package vignettes. This is a \emph{cumulative-impact} comparison ("how much warmer is the recent decade than the
 pre-warming reference?") rather than a rate-of-change
 comparison; for the latter use \code{\link[=cd_trend]{cd_trend()}}.
 

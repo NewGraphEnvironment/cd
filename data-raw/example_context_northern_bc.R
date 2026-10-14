@@ -72,6 +72,9 @@ towns <- bcdc_query_geodata("WHSE_BASEMAPPING.GNS_GEOGRAPHICAL_NAMES_SP") |>
   bcdata::filter(GEOGRAPHICAL_NAME %in% town_names) |>
   collect()
 towns <- towns[!grepl("Indian Reserve|Regional District", towns$FEATURE_TYPE), ]
+# A name is not a key: keep only features inside the map window, so a
+# same-named place elsewhere in BC cannot stand in for the one meant.
+towns <- towns[lengths(st_intersects(st_transform(towns, 4326), env_sf)) > 0, ]
 towns <- towns[!duplicated(towns$GEOGRAPHICAL_NAME), ]
 towns <- st_sf(name = towns$GEOGRAPHICAL_NAME, geom = st_geometry(towns))
 stopifnot(setequal(towns$name, town_names))

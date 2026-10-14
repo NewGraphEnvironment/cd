@@ -216,7 +216,13 @@ claims <- c(
   winter_wetter_last3  = all(d_("prcp", "winter", "last3") > 0),
   spring_summer_drier_last3 = all(d_("prcp", "spring", "last3") < 0,
                                   d_("prcp", "summer", "last3") < 0),
-  # Bulkley paragraph: "both lost", "% less than normal"
+  # temperature caption: a year warmer than any normal year "is now common"
+  warmer_than_any_common = all(warm$n_last10_warmer[warm$code %in% wsg_codes] >= 3),
+  # Bulkley paragraph and caption: "warmed by", "both lost", "far less snow",
+  # "% less than normal"
+  bulkley_both_warmed  = all(bulkley_parts$tmean_change_last10 > 0),
+  bulkley_far_less_snow_upstream = bulkley_parts$swe_max_normal_mm[1] <
+    0.75 * bulkley_parts$swe_max_normal_mm[2],
   bulkley_both_lost_snow = all(bulkley_parts$swe_max_pct_last10 < 0),
   bulkley_summer_rain_less = all(bulkley_parts$prcp_summer_pct_last3 < 0)
 )
