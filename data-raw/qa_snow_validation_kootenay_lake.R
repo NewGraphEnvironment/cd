@@ -18,7 +18,7 @@
 #   - bcgov/bcsnowdata installed locally:
 #       pak::pak("bcgov/bcsnowdata")
 #     (also requires `reshape` as a transitive dep)
-#   - cd package installed
+#   - pkgload installed; the script loads this checkout's cd, not an installed one
 #   - Network for ASWS data + S3 reads
 #
 # Usage:
@@ -34,8 +34,9 @@ suppressMessages({
   library(dplyr)
   library(ggplot2)
   library(terra)
-  library(cd)
 })
+# The checkout's cd, not an installed one (#135). Run from the package root.
+pkgload::load_all(export_all = FALSE, quiet = TRUE)
 
 sites <- tibble::tribble(
   ~location_id, ~name,                ~elevation,
