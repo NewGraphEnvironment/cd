@@ -31,6 +31,6 @@
 
 - [x] Tests pass (`devtools::test()`); `lintr::lint_package()` clean on touched files
 - [x] Build the peace-fwcp vignette's trend table locally and confirm the vpd rows read hPa
-- [ ] `/code-check` clean (each commit, or once over the branch with `/code-check branch`)
-- [ ] PWF checkboxes match landed work
+- [x] `/code-check` clean (each commit, or once over the branch with `/code-check branch`)
+- [x] PWF checkboxes match landed work
 - [ ] `/planning-archive` on completion
