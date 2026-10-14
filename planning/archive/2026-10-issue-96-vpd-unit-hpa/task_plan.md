@@ -20,7 +20,7 @@
 - [x] `tests/testthat/test-cd_variables.R`: new test walking both bundled `vignette-data` .rds (`system.file()`). Every table with `variable`/`unit`/`anomaly_type` must carry the registry's unit wherever its `anomaly_type` matches the registry's. Show it fails on the current .rds.
 - [x] `data-raw/vignette_data_vpd_unit_patch.R`: a one-off local script that loads the source tree (`pkgload::load_all()`). For each .rds it sets `unit` from `"Pa"` to `"hPa"` on vpd rows only, then asserts the result equals the original except that column (values, rows, every other column identical), and writes it back with `saveRDS(compress = "xz")`, as the generators do. Run a second time, it finds nothing to change and writes nothing.
 - [x] Run it and commit both .rds; the Phase 2 test passes
-- [x] The header comment of each `data-raw/*_vignette_data.R` is left alone. The generators take units from `cd_variables()` through `library(cd)`, so a regen writes hPa only once a post-#96 cd is installed (plan review #5, code-check round 2); the agreement test catches a regen under an older one
+- [x] The header comment of each `data-raw/*_vignette_data.R` is left alone. The generators take units from `cd_variables()` through `library(cd)`, so a regen writes hPa only once a post-#96 cd is installed (plan review finding 5, code-check round 2); the agreement test catches a regen under an older one
 
 ## Phase 3: NEWS + docs
 
