@@ -7,8 +7,10 @@
 # that one column on vpd rows and nothing else: values, rows, other columns
 # and attributes are checked unchanged before anything is written.
 #
-# A full regen (data-raw/*_vignette_data.R) would also write "hPa", since the
-# generators take units from cd_variables(); it is pending for other reasons
+# A full regen (data-raw/*_vignette_data.R) takes units from cd_variables(),
+# but through library(cd), so it writes "hPa" only once a cd from after #96 is
+# installed; under an older one it writes "Pa" back, which the bundled-data
+# test in test-cd_variables.R fails on. The regen is pending for other reasons
 # (#123's grid, #126's columns), and this patch keeps the vignette numbers as
 # they are until then. Re-running finds nothing to change and writes nothing.
 #
