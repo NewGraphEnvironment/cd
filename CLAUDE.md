@@ -406,7 +406,7 @@ definition and report the spread beside it.** If the spread is material against 
 being made, the definition is a blocker, so schedule it first. A share is invariant to a
 filter only when the filter is uncorrelated with the thing being measured.
 
-*13 lines of evidence for this rule are in `conventions/agent-operations.md`.*
+*20 lines of evidence for this rule are in `conventions/agent-operations.md`.*
 
 ### Presence is not provenance
 
