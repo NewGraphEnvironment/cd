@@ -402,3 +402,18 @@ test_that("a numeric pct_change column does not reach other consumers (#138)", {
   expect_no_error(meta_resolve(cmp))
   expect_s3_class(cd_plot_comparison(cmp), "ggplot")
 })
+
+test_that("cd_compare keys the guard by column, not a pasted string (#138)", {
+  # "a b" / "c" and "a" / "b c" paste to the same "a b c"
+  ts <- dplyr::bind_rows(
+    dplyr::mutate(pct_series("a b"), period = "c", pct_change = TRUE),
+    dplyr::mutate(pct_series("a"), period = "b c", pct_change = FALSE)
+  )
+  expect_warning(
+    cmp <- cd_compare(ts, window_a = 1956:1960, window_b = 1951:1955,
+                      method = "pct_change", test = NULL),
+    "a/b c"
+  )
+  expect_equal(cmp$difference[cmp$variable == "a b"], 400)
+  expect_true(is.na(cmp$difference[cmp$variable == "a"]))
+})

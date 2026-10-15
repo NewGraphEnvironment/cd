@@ -119,8 +119,11 @@ cd_compare <- function(x,
   out$method <- method
 
   if (method == "pct_change") {
-    ok <- dplyr::distinct(x[c("variable", "period", "pct_change")])
-    ok <- ok$pct_change[match(paste(out$variable, out$period), paste(ok$variable, ok$period))]
+    ok <- dplyr::left_join(
+      out[c("variable", "period")],
+      dplyr::distinct(x[c("variable", "period", "pct_change")]),
+      by = c("variable", "period")
+    )$pct_change
     bad <- which(!ok)
     if (length(bad) > 0) {
       out$difference[bad] <- NA_real_

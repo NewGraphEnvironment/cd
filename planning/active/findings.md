@@ -27,6 +27,8 @@ Options: warn or refuse `pct_change` where `cd_variables()$anomaly_type` is `abs
 - Callers checked: `data-raw/northern_bc_vignette_data.R:74` sends pct_change only prcp/swe_max/vpd/soil_moisture; peace-fwcp and kootenay-lake send only `pct_normal_vars`; the `northern-bc.Rmd:54` reproduce chunk is prcp only. None hits the guard, so nothing is regenerated.
 - Not done here: the hand-kept `no_pct_vars` in `peace-fwcp.Rmd:280` / `kootenay-lake.Rmd:289` could read `cd_variables()$pct_change`. That would drop their rh percent, which is a change to published tables and its own decision.
 
+- Live repro (2026-10-15, live catalog): BULK annual, `window_a = 2016:2025`, `method = "pct_change"`. tmean mean_b −0.566 °C now gives `difference = NA` plus the warning. prcp +1.48 %, swe_max −8.32 %, vpd +20.3 % are still computed (the formula is untouched; values before the change were not measured). `pkgdown::check_pkgdown()`: no problems.
+
 ## Plan review (Plan agent, 2026-10-15): triage
 
 - B1 (example cannot use prcp from the toy catalog): fixed with a hand-built series.
