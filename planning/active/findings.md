@@ -21,3 +21,4 @@ Options: warn or refuse `pct_change` where `cd_variables()$anomaly_type` is `abs
 
 | Error | Resolution |
 |-------|------------|
+| Test helper `pct_series(variable, ...)` built a 10-row column then failed `length(variable)` inside `tibble()` | `tibble()` evaluates arguments in order, so a later argument sees the column, not the function argument; renamed it `vars` |

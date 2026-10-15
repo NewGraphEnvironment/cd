@@ -24,14 +24,14 @@ and stays there: swe_max can take a percent whichever anomaly type it ends up wi
 ## Phase 1: Tests first
 
 `tests/testthat/test-cd_compare.R`, `tests/testthat/test-cd_variables.R`
-- [ ] `cd_variables()` has a logical `pct_change` column, FALSE for exactly tmean, tmax, tmin, snow_cover, snowfall_fraction, snowmelt_doy_50; update the `expect_named()` at `test-cd_variables.R:5`
-- [ ] Change the existing "computes pct_change" test (`test-cd_compare.R:18`) from `tmean` to a ratio-scale variable (`prcp`) so it keeps testing the arithmetic
-- [ ] tmean with `pct_change` gives `difference = NA` and one warning naming `tmean/annual`; `mean_a` and `mean_b` are still returned
-- [ ] Mixed input (tmean + prcp) gives a number for prcp, NA for tmean, and exactly one warning
-- [ ] `mean_diff` on tmean gives no warning and no NA (the guard is pct_change-only)
-- [ ] Carried column: a non-registry series with `pct_change = FALSE` is blocked; `pct_change = TRUE` on tmean overrides the registry
-- [ ] Fallback for a non-registry series with no `pct_change` column: `anomaly_type = "pct_point_diff"` is blocked; `absolute`, `pct_normal` or no anomaly_type at all is computed as today (wet's streamflow keeps working)
-- [ ] A carried `pct_change` that is not logical, or varies within a series, aborts (via `meta_check()`)
+- [x] `cd_variables()` has a logical `pct_change` column, FALSE for exactly tmean, tmax, tmin, snow_cover, snowfall_fraction, snowmelt_doy_50; update the `expect_named()` at `test-cd_variables.R:5`
+- [x] Change the existing "computes pct_change" test (`test-cd_compare.R:18`) from `tmean` to a ratio-scale variable (`prcp`) so it keeps testing the arithmetic
+- [x] tmean with `pct_change` gives `difference = NA` and one warning naming `tmean/annual`; `mean_a` and `mean_b` are still returned
+- [x] Mixed input (tmean + prcp) gives a number for prcp, NA for tmean, and exactly one warning
+- [x] `mean_diff` on tmean gives no warning and no NA (the guard is pct_change-only)
+- [x] Carried column: a non-registry series with `pct_change = FALSE` is blocked; `pct_change = TRUE` on tmean overrides the registry
+- [x] Fallback for a non-registry series with no `pct_change` column: `anomaly_type = "pct_point_diff"` is blocked; `absolute`, `pct_normal` or no anomaly_type at all is computed as today (wet's streamflow keeps working)
+- [x] A carried `pct_change` that is not logical, or varies within a series, aborts (via `meta_check()`)
 - [ ] Restore-the-bug check: with the guard removed, the tmean and mixed tests go red (testthat counting `failed | error`)
 
 ## Phase 2: Registry + resolver

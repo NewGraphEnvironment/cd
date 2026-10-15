@@ -2,7 +2,7 @@ test_that("cd_variables returns expected structure", {
   vars <- cd_variables()
   expect_s3_class(vars, "tbl_df")
   expect_equal(nrow(vars), 15)
-  expect_named(vars, c("variable", "long_name", "unit", "anomaly_type", "era5_name"))
+  expect_named(vars, c("variable", "long_name", "unit", "anomaly_type", "pct_change", "era5_name"))
 })
 
 test_that("cd_variables contains all expected variables", {
@@ -36,6 +36,16 @@ test_that("cd_variables pct_point_diff variables are correct", {
   vars <- cd_variables()
   pp_vars <- vars$variable[vars$anomaly_type == "pct_point_diff"]
   expect_equal(sort(pp_vars), c("snow_cover", "snowfall_fraction"))
+})
+
+test_that("cd_variables allows a percent change only where values have a real zero (#138)", {
+  vars <- cd_variables()
+  expect_type(vars$pct_change, "logical")
+  expect_false(anyNA(vars$pct_change))
+  expect_equal(
+    sort(vars$variable[!vars$pct_change]),
+    sort(c("tmean", "tmax", "tmin", "snow_cover", "snowfall_fraction", "snowmelt_doy_50"))
+  )
 })
 
 test_that("cd_variables gives vpd the unit its data is in (hPa)", {

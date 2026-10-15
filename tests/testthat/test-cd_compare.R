@@ -17,7 +17,7 @@ test_that("cd_compare computes mean_diff", {
 
 test_that("cd_compare computes pct_change", {
   ts <- tibble::tibble(
-    variable = rep("tmean", 10),
+    variable = rep("prcp", 10),
     period = rep("annual", 10),
     year = 1951:1960,
     value = c(rep(100, 5), rep(150, 5))
@@ -224,4 +224,138 @@ test_that("cd_compare accepts a partly NA long_name that matches the registry", 
   ts$variable <- "tmean"
   cmp <- cd_compare(ts, window_a = 2006:2010, window_b = 2001:2005, test = NULL)
   expect_identical(cmp$long_name, "Mean temperature")
+})
+
+# ---------------------------------------------------------------------------
+# pct_change only where the values have a real zero (#138)
+# ---------------------------------------------------------------------------
+
+# tibble() evaluates in order, so the argument cannot be called `variable`
+pct_series <- function(vars, ...) {
+  tibble::tibble(
+    variable = rep(vars, each = 10),
+    period = "annual",
+    year = rep(1951:1960, length(vars)),
+    value = rep(c(rep(-0.5, 5), rep(1.5, 5)), length(vars)),
+    ...
+  )
+}
+
+test_that("cd_compare gives no percent for temperature, with a warning (#138)", {
+  ts <- pct_series("tmean")
+  expect_warning(
+    cmp <- cd_compare(ts, window_a = 1956:1960, window_b = 1951:1955,
+                      method = "pct_change", test = NULL),
+    "tmean/annual"
+  )
+  expect_true(is.na(cmp$difference))
+  expect_equal(cmp$mean_a, 1.5)
+  expect_equal(cmp$mean_b, -0.5)
+  expect_equal(cmp$method, "pct_change")
+})
+
+test_that("cd_compare blocks every variable without a real zero (#138)", {
+  blocked <- c("tmean", "tmax", "tmin", "snow_cover", "snowfall_fraction",
+               "snowmelt_doy_50")
+  ts <- pct_series(blocked)
+  w <- testthat::capture_warnings(
+    cmp <- cd_compare(ts, window_a = 1956:1960, window_b = 1951:1955,
+                      method = "pct_change", test = NULL)
+  )
+  expect_length(w, 1)
+  expect_true(all(is.na(cmp$difference)))
+  for (v in blocked) expect_match(w, paste0(v, "/annual"), fixed = TRUE)
+})
+
+test_that("cd_compare keeps the percent for the rest of a mixed table (#138)", {
+  ts <- pct_series(c("tmean", "prcp", "vpd", "swe_max"))
+  ts$value[ts$variable != "tmean"] <- rep(c(rep(100, 5), rep(150, 5)), 3)
+  w <- testthat::capture_warnings(
+    cmp <- cd_compare(ts, window_a = 1956:1960, window_b = 1951:1955,
+                      method = "pct_change", test = NULL)
+  )
+  expect_length(w, 1)
+  expect_match(w, "tmean/annual", fixed = TRUE)
+  expect_false(grepl("prcp|vpd|swe_max", w))
+  expect_equal(nrow(cmp), 4)
+  expect_true(is.na(cmp$difference[cmp$variable == "tmean"]))
+  expect_equal(cmp$difference[cmp$variable != "tmean"], rep(50, 3))
+})
+
+test_that("cd_compare mean_diff on temperature neither warns nor drops (#138)", {
+  ts <- pct_series("tmean")
+  expect_no_warning(
+    cmp <- cd_compare(ts, window_a = 1956:1960, window_b = 1951:1955,
+                      test = NULL)
+  )
+  expect_equal(cmp$difference, 2)
+})
+
+test_that("cd_compare reads a carried pct_change before the registry (#138)", {
+  ts <- pct_series("q_mean", pct_change = FALSE)
+  expect_warning(
+    cmp <- cd_compare(ts, window_a = 1956:1960, window_b = 1951:1955,
+                      method = "pct_change", test = NULL),
+    "q_mean/annual"
+  )
+  expect_true(is.na(cmp$difference))
+
+  ts <- pct_series("tmean", pct_change = TRUE)
+  expect_no_warning(
+    cmp <- cd_compare(ts, window_a = 1956:1960, window_b = 1951:1955,
+                      method = "pct_change", test = NULL)
+  )
+  expect_equal(cmp$difference, 400)
+  expect_false("pct_change" %in% names(cmp))
+})
+
+test_that("cd_compare falls back to anomaly_type off the registry (#138)", {
+  ts <- pct_series("share", anomaly_type = "pct_point_diff")
+  expect_warning(
+    cmp <- cd_compare(ts, window_a = 1956:1960, window_b = 1951:1955,
+                      method = "pct_change", test = NULL),
+    "share/annual"
+  )
+  expect_true(is.na(cmp$difference))
+
+  for (at in c("absolute", "pct_normal", NA)) {
+    ts <- pct_series("q_mean", anomaly_type = at)
+    expect_no_warning(
+      cmp <- cd_compare(ts, window_a = 1956:1960, window_b = 1951:1955,
+                        method = "pct_change", test = NULL)
+    )
+    expect_equal(cmp$difference, 400, info = at)
+  }
+  ts <- pct_series("q_mean")
+  expect_no_warning(
+    cmp <- cd_compare(ts, window_a = 1956:1960, window_b = 1951:1955,
+                      method = "pct_change", test = NULL)
+  )
+  expect_equal(cmp$difference, 400)
+})
+
+test_that("cd_compare fills an NA carried pct_change from the registry (#138)", {
+  ts <- pct_series(c("tmean", "prcp"), pct_change = NA)
+  expect_warning(
+    cmp <- cd_compare(ts, window_a = 1956:1960, window_b = 1951:1955,
+                      method = "pct_change", test = NULL),
+    "tmean/annual"
+  )
+  expect_true(is.na(cmp$difference[cmp$variable == "tmean"]))
+  expect_equal(cmp$difference[cmp$variable == "prcp"], 400)
+})
+
+test_that("cd_compare refuses a pct_change that is not logical or not one per series (#138)", {
+  ts <- pct_series("q_mean", pct_change = "no")
+  expect_error(
+    cd_compare(ts, window_a = 1956:1960, window_b = 1951:1955,
+               method = "pct_change", test = NULL),
+    "pct_change"
+  )
+  ts <- pct_series("q_mean", pct_change = rep(c(TRUE, FALSE), 5))
+  expect_error(
+    cd_compare(ts, window_a = 1956:1960, window_b = 1951:1955,
+               method = "pct_change", test = NULL),
+    "pct_change"
+  )
 })
