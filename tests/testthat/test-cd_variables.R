@@ -44,7 +44,7 @@ test_that("cd_variables allows a percent change only where values have a real ze
   expect_false(anyNA(vars$pct_change))
   expect_equal(
     sort(vars$variable[!vars$pct_change]),
-    sort(c("tmean", "tmax", "tmin", "snow_cover", "snowfall_fraction", "snowmelt_doy_50"))
+    sort(c("tmean", "tmax", "tmin", "rh", "snow_cover", "snowfall_fraction", "snowmelt_doy_50"))
   )
 })
 

@@ -16,6 +16,10 @@ because the values have a real zero. The variables that cannot take a percent ar
 the two regional vignettes already exclude by hand (`no_pct_vars`, `vignettes/peace-fwcp.Rmd:280`):
 tmean, tmax, tmin, snow_cover, snowfall_fraction, snowmelt_doy_50.
 
+**Corrected during the build:** `rh` is blocked too. Its values are already in percent, the
+same reason as snow_cover and snowfall_fraction, and the list at the gate missed it. That makes
+seven, one more than the vignettes' `no_pct_vars`.
+
 **Decisions taken at the gate:** a new logical registry column decides it, and blocked rows get
 `difference = NA` with one batched warning. There is no `method = "auto"`. The swe_max
 registry-vs-CLAUDE.md question is [#139](https://github.com/NewGraphEnvironment/cd/issues/139)
@@ -24,7 +28,7 @@ and stays there: swe_max can take a percent whichever anomaly type it ends up wi
 ## Phase 1: Tests first
 
 `tests/testthat/test-cd_compare.R`, `tests/testthat/test-cd_variables.R`
-- [x] `cd_variables()` has a logical `pct_change` column, FALSE for exactly tmean, tmax, tmin, snow_cover, snowfall_fraction, snowmelt_doy_50; update the `expect_named()` at `test-cd_variables.R:5`
+- [x] `cd_variables()` has a logical `pct_change` column, FALSE for exactly tmean, tmax, tmin, rh, snow_cover, snowfall_fraction, snowmelt_doy_50; update the `expect_named()` at `test-cd_variables.R:5`
 - [x] Change the existing "computes pct_change" test (`test-cd_compare.R:18`) from `tmean` to a ratio-scale variable (`prcp`) so it keeps testing the arithmetic
 - [x] tmean with `pct_change` gives `difference = NA` and one warning naming `tmean/annual`; `mean_a` and `mean_b` are still returned
 - [x] Mixed input (tmean + prcp) gives a number for prcp, NA for tmean, and exactly one warning
@@ -32,22 +36,22 @@ and stays there: swe_max can take a percent whichever anomaly type it ends up wi
 - [x] Carried column: a non-registry series with `pct_change = FALSE` is blocked; `pct_change = TRUE` on tmean overrides the registry
 - [x] Fallback for a non-registry series with no `pct_change` column: `anomaly_type = "pct_point_diff"` is blocked; `absolute`, `pct_normal` or no anomaly_type at all is computed as today (wet's streamflow keeps working)
 - [x] A carried `pct_change` that is not logical, or varies within a series, aborts (via `meta_check()`)
-- [ ] Restore-the-bug check: with the guard removed, the tmean and mixed tests go red (testthat counting `failed | error`)
+- [x] Restore-the-bug check: with the guard removed, the tmean and mixed tests go red (testthat counting `failed | error`)
 
 ## Phase 2: Registry + resolver
 
 `R/cd_variables.R`, `R/cd_anomaly.R`
-- [ ] Add a `pct_change` column to `cd_variables()` and its roxygen `@return` (`\item{pct_change}`: TRUE where the values have a real zero, so a percent change means something)
-- [ ] Resolve it in `meta_resolve()` (`R/cd_anomaly.R:166`), the one place the rules live: carried column, then registry, then `anomaly_type != "pct_point_diff"` (NA type → TRUE)
-- [ ] Document the optional `pct_change` input column in `?cd_anomaly`'s input contract, next to `anomaly_type`/`unit`/`long_name`
+- [x] Add a `pct_change` column to `cd_variables()` and its roxygen `@return` (`\item{pct_change}`: TRUE where the values have a real zero, so a percent change means something)
+- [x] Resolve it in `meta_resolve()` (`R/cd_anomaly.R:166`), the one place the rules live: carried column, then registry, then `anomaly_type != "pct_point_diff"` (NA type → TRUE)
+- [x] Document the optional `pct_change` input column in `?cd_anomaly`'s input contract, next to `anomaly_type`/`unit`/`long_name`
 
 ## Phase 3: Guard in cd_compare()
 
 `R/cd_compare.R`
-- [ ] After `series_check()`, validate a carried `pct_change` is logical and run `meta_check(x, "pct_change")`
-- [ ] For `method = "pct_change"`, set `difference = NA` on rows whose resolved `pct_change` is FALSE, and emit one warning listing them as `variable/period` (same shape as the p_value warning at `cd_compare.R:122`)
-- [ ] Roxygen: `@param method` says which variables get NA and why; keep the example's `pct_change` call warning-free (the toy catalog is tmean/prcp, so subset to prcp or pass `variables`)
-- [ ] `devtools::document()`, `lintr::lint_package()`, `devtools::test()`
+- [x] After `series_check()`, validate a carried `pct_change` is logical and run `meta_check(x, "pct_change")`
+- [x] For `method = "pct_change"`, set `difference = NA` on rows whose resolved `pct_change` is FALSE, and emit one warning listing them as `variable/period` (same shape as the p_value warning at `cd_compare.R:122`)
+- [x] Roxygen: `@param method` says which variables get NA and why; keep the example's `pct_change` call warning-free (the toy catalog is tmean only, so the example uses a hand-built prcp series)
+- [x] `devtools::document()`, `lintr::lint_package()`, `devtools::test()`
 
 ## Phase 4: Docs and callers
 

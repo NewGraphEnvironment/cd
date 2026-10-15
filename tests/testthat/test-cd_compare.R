@@ -255,7 +255,7 @@ test_that("cd_compare gives no percent for temperature, with a warning (#138)", 
 })
 
 test_that("cd_compare blocks every variable without a real zero (#138)", {
-  blocked <- c("tmean", "tmax", "tmin", "snow_cover", "snowfall_fraction",
+  blocked <- c("tmean", "tmax", "tmin", "rh", "snow_cover", "snowfall_fraction",
                "snowmelt_doy_50")
   ts <- pct_series(blocked)
   w <- testthat::capture_warnings(
@@ -358,4 +358,47 @@ test_that("cd_compare refuses a pct_change that is not logical or not one per se
                method = "pct_change", test = NULL),
     "pct_change"
   )
+})
+
+test_that("cd_compare accepts a partly NA pct_change that matches the registry (#138)", {
+  ts <- pct_series("tmean", pct_change = c(FALSE, rep(NA, 9)))
+  expect_warning(
+    cmp <- cd_compare(ts, window_a = 1956:1960, window_b = 1951:1955,
+                      method = "pct_change", test = NULL),
+    "tmean/annual"
+  )
+  expect_true(is.na(cmp$difference))
+})
+
+test_that("cd_compare matches the guard by name on a factor variable (#138)", {
+  ts <- pct_series(c("prcp", "tmean"))
+  ts$variable <- factor(ts$variable, levels = c("tmean", "prcp"))
+  expect_warning(
+    cmp <- cd_compare(ts, window_a = 1956:1960, window_b = 1951:1955,
+                      method = "pct_change", test = NULL),
+    "tmean/annual"
+  )
+  expect_true(is.na(cmp$difference[cmp$variable == "tmean"]))
+  expect_equal(cmp$difference[cmp$variable == "prcp"], 400)
+})
+
+test_that("cd_compare keeps the p_value and percent warnings apart (#138)", {
+  ts <- pct_series(c("tmean", "prcp"))
+  w <- testthat::capture_warnings(
+    cmp <- cd_compare(ts, window_a = 1956:1960, window_b = 1951:1955,
+                      method = "pct_change")
+  )
+  expect_length(w, 2)
+  expect_match(w[grepl("p_value", w)], "tmean/annual")
+  expect_match(w[grepl("difference", w)], "tmean/annual")
+  expect_false(any(grepl("prcp", w[grepl("difference", w)])))
+})
+
+test_that("a numeric pct_change column does not reach other consumers (#138)", {
+  # The vignettes add a numeric percent called pct_change to compare output
+  ts <- pct_series("tmean")
+  cmp <- cd_compare(ts, window_a = 1956:1960, window_b = 1951:1955, test = NULL)
+  cmp$pct_change <- 12.5
+  expect_no_error(meta_resolve(cmp))
+  expect_s3_class(cd_plot_comparison(cmp), "ggplot")
 })

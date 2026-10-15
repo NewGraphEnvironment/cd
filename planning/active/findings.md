@@ -17,6 +17,26 @@ Options: warn or refuse `pct_change` where `cd_variables()$anomaly_type` is `abs
 - Gate decisions (user, 2026-10-15): new logical `pct_change` column in `cd_variables()`, resolved in `meta_resolve()`; blocked rows get `difference = NA` plus one batched warning; no `method = "auto"`.
 - `cd_compare()` must keep working on a non-registry series with no `anomaly_type` (meta_resolve gives NA type there), so the fallback treats NA type as allowed.
 
+## Build (2026-10-15)
+
+- `rh` added to the blocked set (seven, not six): its values are already in percent. The peace-fwcp and kootenay-lake tables compute their own percent and still print one for rh. That is their hand-kept `no_pct_vars`, untouched here; switching them to `cd_variables()$pct_change` would drop that column for rh.
+- The toy `example_catalog.json` holds only `tmean`, so `?cd_compare`'s pct_change example now uses a hand-built prcp series (warning-free, checked from the Rd).
+- Restore-the-bug: with the guard off (`if (FALSE && ...)`, in a scratch copy), 9 of the new cd_compare tests go red. With the `anomaly_type` fallback replaced by `TRUE`, the fallback test goes red.
+- Full suite: `[ FAIL 0 | WARN 6 | SKIP 0 | PASS 735 ]`. The 6 warnings are in `test-cd_plot_comparison.R` and are the same count on main.
+
+## Plan review (Plan agent, 2026-10-15): triage
+
+- B1 (example cannot use prcp from the toy catalog): fixed with a hand-built series.
+- B2 (rh drift between plan and tree): resolved as rh FALSE, plan text corrected.
+- O1/G1: `meta_resolve()` reads a carried `pct_change` only when it is logical and never aborts, so a numeric `pct_change` (the vignettes' percent on compare output) cannot break `cd_plot_comparison()` or any other consumer. `cd_compare()` refuses a non-logical one before resolving. Tested.
+- O2: `meta_check()` runs on the resolved values, as for `long_name`, so a partly NA column that agrees with the registry passes. Tested.
+- G2: the flag is matched to `out` by variable/period, not position. Tested with a factor `variable`.
+- G3, accepted and documented: a stream temperature off the registry, carried as `absolute`, still gets a percent unless it carries `pct_change = FALSE`. A unit-based tier (`°C`, `day`) was rejected as a proxy, since unit strings are free text. The input contract says to carry FALSE.
+- G4: contract wording covers the third fallback and the one-value-per-series rule; the `cd_variables()` description names percent-change eligibility.
+- A1: the `meta_resolve()` header now says the registry's `pct_change` holds whatever type is carried.
+- A2: a non-logical `pct_change` aborts under `mean_diff` too. Deliberate: the column is wrong whatever the method.
+- Acceptance (ii) (two warnings with `test = "t"`): tested, they stay separate.
+
 ## Errors Encountered
 
 | Error | Resolution |

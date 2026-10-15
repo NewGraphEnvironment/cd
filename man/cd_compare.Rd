@@ -25,7 +25,13 @@ period).}
 
 \item{method}{Character. Comparison method: \code{"mean_diff"} for
 \code{mean_a - mean_b}, or \code{"pct_change"} for percentage change
-relative to window_b.}
+relative to window_b. A percent change needs values with a real
+zero, so \code{"pct_change"} gives \code{difference = NA}, with one warning
+naming the rows, for a series whose \code{pct_change} resolves \code{FALSE}:
+temperatures in degrees C, the day of 50\% melt, and variables
+already in percent (\code{cd_variables()$pct_change}; a series can carry
+its own, see the input contract in \code{\link[=cd_anomaly]{cd_anomaly()}}). A base mean of
+-0.57 degrees C would otherwise read as +343\% warmer.}
 
 \item{test}{Character or NULL. Window-vs-window significance
 test: \code{"t"} for Welch's two-sample t-test (default) or
@@ -82,8 +88,14 @@ ts <- cd_extract(catalog, aoi)
 # because the toy windows have < 8 years.
 cd_compare(ts, window_a = 1956:1960, window_b = 1951:1955, test = NULL)
 
-# Same comparison as percentage change
-cd_compare(ts, window_a = 1956:1960, window_b = 1951:1955,
+# Percentage change suits a variable with a real zero, such as
+# precipitation. For temperature it returns NA with a warning: a base
+# mean near 0 degrees C would make any percent meaningless.
+prcp <- data.frame(
+  variable = "prcp", period = "annual", year = 1951:1960,
+  value = c(610, 580, 655, 600, 640, 690, 700, 640, 720, 705)
+)
+cd_compare(prcp, window_a = 1956:1960, window_b = 1951:1955,
            method = "pct_change", test = NULL)
 
 }
