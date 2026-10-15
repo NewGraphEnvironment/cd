@@ -1,0 +1,9 @@
+## Outcome
+
+`cd_compare(method = "pct_change")` no longer returns a percent for a variable without a real zero. `cd_variables()` gained a logical `pct_change` column, FALSE for tmean, tmax, tmin, rh, snow_cover, snowfall_fraction and snowmelt_doy_50. `meta_resolve()` resolves it per row: a carried logical column first, then the registry, then FALSE only for an off-registry `pct_point_diff` series. Blocked rows get `difference = NA` and one warning naming them. The issue suggested keying the guard on `anomaly_type`, and exploration showed that would be wrong: `vpd`, `swe_max` and `snowmelt_rate_peak` are `absolute` but ratio-scale, and the northern-bc data script already relies on percents for two of them. What breaks a percent is an arbitrary zero (°C, a day of year) or values already in percent. `rh` was added to the blocked set during the build, by that same rule; the gate's list had missed it. The Plan review caught that the toy example catalog holds only tmean, so the example now uses a hand-built prcp series. `/code-check` round 1 caught a space-pasted join key that could hand one series' flag to another, which is now a column join. Not done: the regional vignettes' hand-kept `no_pct_vars` could read the registry, but that would drop their rh percent, which is a published-table change. `swe_max`'s anomaly type is #139.
+
+## Measurement
+
+Live catalog, BULK annual, 2016–2025 against 1951–1980, `method = "pct_change"`: tmean base mean −0.566 °C, now `NA` with the warning, where the issue measured +342.6 %. prcp +1.48 %, swe_max −8.32 %, vpd +20.3 % are still computed. Restore-the-bug: with the guard disabled, 9 of the new cd_compare tests go red; with the `anomaly_type` fallback replaced by TRUE, the fallback test goes red. Full suite before review `[ FAIL 0 | WARN 6 | SKIP 0 | PASS 735 ]`; the 6 warnings predate the branch.
+
+Closed by: commit a6e9e79 (Fixes #138), PR to follow
