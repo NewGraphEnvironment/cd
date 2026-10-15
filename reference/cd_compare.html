@@ -23,6 +23,7 @@ whether the two windows differ."><meta property="og:image" content="https://newg
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/kootenay-lake.html">Climate Departure for the Kootenay Lake Region</a></li>
+    <li><a class="dropdown-item" href="../articles/northern-bc.html">How the Weather Has Changed in Three Northern BC Watersheds</a></li>
     <li><a class="dropdown-item" href="../articles/peace-fwcp.html">Climate Departure for the FWCP Peace Region</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -74,7 +75,8 @@ window. Default <code>2015:2025</code>.</p></dd>
 
 <dt id="arg-window-b">window_b<a class="anchor" aria-label="anchor" href="#arg-window-b"></a></dt>
 <dd><p>Integer vector of years for the reference
-window. Default <code>1951:1980</code> (WMO-style standard normal).</p></dd>
+window. Default <code>1951:1980</code> (pre-warming reference, the GISS base
+period).</p></dd>
 
 
 <dt id="arg-method">method<a class="anchor" aria-label="anchor" href="#arg-method"></a></dt>
@@ -102,10 +104,9 @@ batched warning.</p></dd>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>Defaults compare a recent decade (<code>2015:2025</code>) to the WMO-style
-standard normal reference period (<code>1951:1980</code>) — the framing
-used in the package vignettes. This is a <em>cumulative-impact</em>
-comparison ("how much warmer is the recent decade than the
+    <p>Defaults compare a recent decade (<code>2015:2025</code>) to a pre-warming
+reference (<code>1951:1980</code>, the GISS base period) — the framing used
+in the package vignettes. This is a <em>cumulative-impact</em> comparison ("how much warmer is the recent decade than the
 pre-warming reference?") rather than a rate-of-change
 comparison; for the latter use <code><a href="cd_trend.html">cd_trend()</a></code>.</p>
 <p>The window-vs-window p-value (<code>test = "t"</code> Welch t-test or

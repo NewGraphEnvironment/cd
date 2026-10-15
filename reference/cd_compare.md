@@ -32,7 +32,7 @@ cd_compare(
 - window_b:
 
   Integer vector of years for the reference window. Default `1951:1980`
-  (WMO-style standard normal).
+  (pre-warming reference, the GISS base period).
 
 - method:
 
@@ -60,11 +60,11 @@ and read by
 
 ## Details
 
-Defaults compare a recent decade (`2015:2025`) to the WMO-style standard
-normal reference period (`1951:1980`) — the framing used in the package
-vignettes. This is a *cumulative-impact* comparison ("how much warmer is
-the recent decade than the pre-warming reference?") rather than a
-rate-of-change comparison; for the latter use
+Defaults compare a recent decade (`2015:2025`) to a pre-warming
+reference (`1951:1980`, the GISS base period) — the framing used in the
+package vignettes. This is a *cumulative-impact* comparison ("how much
+warmer is the recent decade than the pre-warming reference?") rather
+than a rate-of-change comparison; for the latter use
 [`cd_trend()`](https://newgraphenvironment.github.io/cd/reference/cd_trend.md).
 
 The window-vs-window p-value (`test = "t"` Welch t-test or
