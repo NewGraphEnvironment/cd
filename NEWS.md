@@ -1,3 +1,8 @@
+# cd 0.6.8 (2026-10-15)
+
+* New article, [How the Weather Has Changed in Three Northern BC Watersheds](https://newgraphenvironment.github.io/cd/articles/northern-bc.html): a short, plain-language story of the Bulkley, Nechako and Parsnip watershed groups against 1951–1980, written for readers with no climate background, with the upper and lower Bulkley compared and a table of what the changes mean for streams and fish. Every number on the page is computed from bundled data, and the data script stops a regen that would make one of its sentences false. ([#137](https://github.com/NewGraphEnvironment/cd/issues/137), [#141](https://github.com/NewGraphEnvironment/cd/pull/141))
+* `cd_compare()` now describes its default reference window, 1951–1980, as the pre-warming reference (the GISS base period) rather than a WMO-style standard normal. Behaviour is unchanged.
+
 # cd 0.6.7 (2026-10-14)
 
 * `cd_variables()` gives `vpd` the unit `"hPa"`, the unit its data has always been in. It said `"Pa"`, so the vpd `Unit` from `cd_anomaly()`, `cd_trend()`, `cd_summary()` and on the `cd_plot_timeseries()` axis was off by 100×. Values are unchanged. A table saved under an older cd keeps the `"Pa"` it carries, because a carried `unit` wins over the registry, and binding it to new output now errors (two units in one series). Relabel it with `x$unit[x$variable == "vpd"] <- "hPa"`, or recompute from the extracted series. ([#96](https://github.com/NewGraphEnvironment/cd/issues/96), [#134](https://github.com/NewGraphEnvironment/cd/pull/134))
