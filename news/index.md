@@ -1,5 +1,22 @@
 # Changelog
 
+## cd 0.6.8 (2026-10-15)
+
+- New article, [How the Weather Has Changed in Three Northern BC
+  Watersheds](https://newgraphenvironment.github.io/cd/articles/northern-bc.html):
+  a short, plain-language story of the Bulkley, Nechako and Parsnip
+  watershed groups against 1951–1980, written for readers with no
+  climate background, with the upper and lower Bulkley compared and a
+  table of what the changes mean for streams and fish. Every number on
+  the page is computed from bundled data, and the data script stops a
+  regen that would make one of its sentences false.
+  ([\#137](https://github.com/NewGraphEnvironment/cd/issues/137),
+  [\#141](https://github.com/NewGraphEnvironment/cd/pull/141))
+- [`cd_compare()`](https://newgraphenvironment.github.io/cd/reference/cd_compare.md)
+  now describes its default reference window, 1951–1980, as the
+  pre-warming reference (the GISS base period) rather than a WMO-style
+  standard normal. Behaviour is unchanged.
+
 ## cd 0.6.7 (2026-10-14)
 
 - [`cd_variables()`](https://newgraphenvironment.github.io/cd/reference/cd_variables.md)
