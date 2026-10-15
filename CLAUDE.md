@@ -96,6 +96,8 @@ Key gotchas:
 
 The `pct_point_diff` anomaly type is for already-percentage variables (treats anomaly as percentage-point difference, not relative percent).
 
+**A percent change needs a real zero, and that is not the anomaly type (#138).** `cd_variables()$pct_change` is `FALSE` for tmean, tmax, tmin, rh, snow_cover, snowfall_fraction and snowmelt_doy_50: °C and a day of year have an arbitrary zero (a base mean of −0.57 °C read as +343 %), and the others are already in percent. `vpd`, `swe_max` and `snowmelt_rate_peak` are `absolute` and still take a percent, so never key this on `anomaly_type`. `meta_resolve()` resolves it per row (carried logical column, then registry, then `FALSE` only for `pct_point_diff`), and `cd_compare(method = "pct_change")` sets those rows' `difference` to `NA` with one warning. A series off the registry in °C must carry `pct_change = FALSE`; nothing else can tell.
+
 ## Season Definitions
 
 Configurable via `cd_seasons()`. Default: standard meteorological (DJF, MAM, JJA, SON). Override for custom seasons (e.g., wet/dry, growing season).

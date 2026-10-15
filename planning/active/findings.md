@@ -24,6 +24,9 @@ Options: warn or refuse `pct_change` where `cd_variables()$anomaly_type` is `abs
 - Restore-the-bug: with the guard off (`if (FALSE && ...)`, in a scratch copy), 9 of the new cd_compare tests go red. With the `anomaly_type` fallback replaced by `TRUE`, the fallback test goes red.
 - Full suite: `[ FAIL 0 | WARN 6 | SKIP 0 | PASS 735 ]`. The 6 warnings are in `test-cd_plot_comparison.R` and are the same count on main.
 
+- Callers checked: `data-raw/northern_bc_vignette_data.R:74` sends pct_change only prcp/swe_max/vpd/soil_moisture; peace-fwcp and kootenay-lake send only `pct_normal_vars`; the `northern-bc.Rmd:54` reproduce chunk is prcp only. None hits the guard, so nothing is regenerated.
+- Not done here: the hand-kept `no_pct_vars` in `peace-fwcp.Rmd:280` / `kootenay-lake.Rmd:289` could read `cd_variables()$pct_change`. That would drop their rh percent, which is a change to published tables and its own decision.
+
 ## Plan review (Plan agent, 2026-10-15): triage
 
 - B1 (example cannot use prcp from the toy catalog): fixed with a hand-built series.

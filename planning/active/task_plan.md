@@ -55,9 +55,9 @@ and stays there: swe_max can take a percent whichever anomaly type it ends up wi
 
 ## Phase 4: Docs and callers
 
-- [ ] CLAUDE.md: one sentence in the consumer-chain notes naming the `pct_change` column and the NA + warning behaviour
-- [ ] Grep vignettes and `data-raw/` for `pct_change` calls that now hit the guard. Expected: none, since northern-bc passes only prcp/swe_max/vpd/soil_moisture and peace/kootenay pass only pct_normal vars. Record it in findings either way; regen nothing unless a call changes
-- [ ] Note in findings (not done here): the hand-kept `no_pct_vars` vectors in `peace-fwcp.Rmd` / `kootenay-lake.Rmd` could read `cd_variables()$pct_change`
+- [x] CLAUDE.md: one sentence in the consumer-chain notes naming the `pct_change` column and the NA + warning behaviour
+- [x] Grep vignettes and `data-raw/` for `pct_change` calls that now hit the guard. Expected: none, since northern-bc passes only prcp/swe_max/vpd/soil_moisture and peace/kootenay pass only pct_normal vars. Record it in findings either way; regen nothing unless a call changes
+- [x] Note in findings (not done here): the hand-kept `no_pct_vars` vectors in `peace-fwcp.Rmd` / `kootenay-lake.Rmd` could read `cd_variables()$pct_change`
 - [ ] Edit #138's body to record the decision (registry column, not anomaly_type, and why)
 
 ## Validation
