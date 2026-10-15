@@ -4,10 +4,9 @@
 #' difference between them, and (by default) a p-value testing
 #' whether the two windows differ.
 #'
-#' Defaults compare a recent decade (`2015:2025`) to the WMO-style
-#' standard normal reference period (`1951:1980`) — the framing
-#' used in the package vignettes. This is a *cumulative-impact*
-#' comparison ("how much warmer is the recent decade than the
+#' Defaults compare a recent decade (`2015:2025`) to a pre-warming
+#' reference (`1951:1980`, the GISS base period) — the framing used
+#' in the package vignettes. This is a *cumulative-impact* comparison ("how much warmer is the recent decade than the
 #' pre-warming reference?") rather than a rate-of-change
 #' comparison; for the latter use [cd_trend()].
 #'
@@ -29,7 +28,8 @@
 #' @param window_a Integer vector of years for the recent / impact
 #'   window. Default `2015:2025`.
 #' @param window_b Integer vector of years for the reference
-#'   window. Default `1951:1980` (WMO-style standard normal).
+#'   window. Default `1951:1980` (pre-warming reference, the GISS base
+#'   period).
 #' @param method Character. Comparison method: `"mean_diff"` for
 #'   `mean_a - mean_b`, or `"pct_change"` for percentage change
 #'   relative to window_b.

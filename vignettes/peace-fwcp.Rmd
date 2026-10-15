@@ -13,7 +13,7 @@ vignette: >
 
 <!--
 After adding or removing pandoc citation markers in this vignette
-(or in kootenay-lake.Rmd), regenerate vignettes/references.bib by
+(or in any other vignette), regenerate vignettes/references.bib by
 running:
 
   Rscript data-raw/regenerate_bib.R

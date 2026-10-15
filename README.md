@@ -119,6 +119,7 @@ Anyone can compute climate departure against any baseline period, in any AOI, wi
 - Vignettes:
   - [Climate Departure for the FWCP Peace Region](https://newgraphenvironment.github.io/cd/articles/peace-fwcp.html)
   - [Climate Departure for the Kootenay Lake Region](https://newgraphenvironment.github.io/cd/articles/kootenay-lake.html)
+  - [How the Weather Has Changed in Three Northern BC Watersheds](https://newgraphenvironment.github.io/cd/articles/northern-bc.html) — a short, plain-language story for readers with no climate background
 
 ## Acknowledgements
 

@@ -1,10 +1,10 @@
 # Baseline period: why cd's "normal" is 1951–1980
 
-**Verified:** 2026-10-14 · **Issues:** #20 and #43 (set the `cd_compare()` default), #137 (re-asked the question for the plain-language vignette) · **Produced by:** a probe in the #137 planning session: `cd_extract()` from the live catalog (1950–2025) over the BULK, NECR and PARS polygons from `WHSE_BASEMAPPING.FWA_WATERSHED_GROUPS_POLY`, then window means. `data-raw/northern_bc_vignette_data.R` (#137) is to re-derive the numbers · **Status:** decided, 1951–1980 kept
+**Verified:** 2026-10-14 · **Issues:** #20 and #43 (set the `cd_compare()` default), #137 (re-asked the question for the plain-language vignette) · **Produced by:** a probe in the #137 planning session: `cd_extract()` from the live catalog (1950–2025) over the BULK, NECR and PARS polygons from `WHSE_BASEMAPPING.FWA_WATERSHED_GROUPS_POLY`, then window means. `data-raw/northern_bc_vignette_data.R` (#137) re-derives the 1951–1980 numbers, which matched on 2026-10-14 · **Status:** decided, 1951–1980 kept
 
 ## Decision
 
-cd measures departure against **1951–1980**. It is the earliest 30-year window ERA5-Land holds (the record starts in 1950), so it is the closest this data gets to IPCC's pre-industrial baseline (1850–1900). It is also NASA GISS's base period, the one `hansen_etal2012Perceptionclimate` uses. Some warming had already happened by 1951–1980, so departures against it **understate** the change since pre-industrial times. Vignettes say so in plain words.
+cd measures departure against **1951–1980**. It starts one year into the ERA5-Land record (which begins in 1950), so it is all but the earliest 30-year window this data holds and about as close as it gets to IPCC's pre-industrial baseline (1850–1900). It is also NASA GISS's base period, the one `hansen_etal2012Perceptionclimate` uses. Some warming had already happened by 1951–1980, so departures against it **understate** the change since pre-industrial times. Vignettes say so in plain words.
 
 The archived lit reviews reached the same choice (`planning/archive/2026-05-issue-53-*`, `*-issue-58-*`, `*-issue-63-*`), calling it a defensible "alternative climate normal" (`arguez_vose2011`) on the early side of WMO's 1961–1990.
 
@@ -15,7 +15,7 @@ The descriptions below come from the session's background knowledge and were **n
 - **WMO climatological standard normals:** 30-year averages, recomputed every decade (currently 1991–2020). Canada's official normals follow them. They are an operational standard for national weather services: "what to expect now".
 - **WMO's fixed reference for long-term climate-change monitoring:** 1961–1990.
 - **IPCC AR6:** 1850–1900 for warming levels, and other periods (e.g. 1995–2014) for projections.
-- 1951–1980 was **never** a WMO standard normal; WMO's fixed periods were 1901–30, 1931–60 and 1961–90. `cd_compare()`'s roxygen calling it "WMO-style" is wrong (fix in #137).
+- 1951–1980 was **never** a WMO standard normal; WMO's fixed periods were 1901–30, 1931–60 and 1961–90. `cd_compare()`'s roxygen called it "WMO-style"; #137 changed that to "pre-warming reference (the GISS base period)" and quotes no WMO dates, since these are unverified.
 
 ## The measured spread
 

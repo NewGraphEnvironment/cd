@@ -3,10 +3,10 @@
 # data-raw/regenerate_bib.R
 #
 # Regenerate vignettes/references.bib from the union of [@key] markers
-# used in the regional vignettes (kootenay-lake.Rmd, peace-fwcp.Rmd).
+# used in every vignette (vignettes/*.Rmd).
 # Pulls source records from Zotero via Better BibTeX (rbbt → BBT).
 #
-# Run after adding/removing [@key] markers in either vignette:
+# Run after adding/removing [@key] markers in any vignette:
 #   Rscript data-raw/regenerate_bib.R
 #
 # Prerequisites:
@@ -14,17 +14,17 @@
 #       BBT 9.x for Zotero 8/9; BBT 8.x for Zotero 7
 #       (if BBT shows "disabled by Zotero" in the plugin manager,
 #       reinstall the matching version per soul#43)
-#   - All [@key] markers in either vignette must resolve to items
+#   - All [@key] markers in every vignette must resolve to items
 #     in the NewGraphEnvironment Zotero library
 #
 # CI does not run this script — vignettes/references.bib is committed
 # and pkgdown reads the static file. Re-run + commit whenever cites
 # change. Keys not used in the vignettes are dropped automatically.
 
-vignettes <- c(
-  here::here("vignettes", "kootenay-lake.Rmd"),
-  here::here("vignettes", "peace-fwcp.Rmd")
-)
+# Every vignette, so a key cited in only one of them is never dropped.
+vignettes <- list.files(here::here("vignettes"), pattern = "\\.Rmd$",
+                        full.names = TRUE)
+if (length(vignettes) == 0) stop("No vignettes/*.Rmd found under ", here::here())
 out_path <- here::here("vignettes", "references.bib")
 
 # --- Detect citation keys per vignette ---
