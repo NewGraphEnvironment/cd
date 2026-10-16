@@ -1,5 +1,19 @@
 # Changelog
 
+## cd 0.6.11 (2026-10-16)
+
+- The two regional articles’ per-ecoregion roll-up tables labelled the
+  precipitation trend as mm per year; it is a trend of percent
+  anomalies, so the column is now `prcp %/yr` and the caption reads
+  “percent of the 1951-1980 baseline mean per year”. The numbers are
+  unchanged. The Kootenay article’s precipitation captions now describe
+  its own ecoregions: the facet caption no longer names the Peace
+  ecoregions BMP and NRM, PTR is Purcell Transitional Ranges on the
+  eastern edge, and the captions cover the three ecoregions drawn
+  (Thompson-Okanagan Plateau falls under the 50 km² filter).
+  ([\#102](https://github.com/NewGraphEnvironment/cd/issues/102),
+  [\#147](https://github.com/NewGraphEnvironment/cd/pull/147))
+
 ## cd 0.6.10 (2026-10-16)
 
 - [`cd_variables()`](https://newgraphenvironment.github.io/cd/reference/cd_variables.md)
