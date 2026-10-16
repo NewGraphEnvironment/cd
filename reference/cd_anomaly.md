@@ -74,7 +74,8 @@ Required columns:
 
 Optional columns, resolved row by row; where absent or `NA` they fall
 back to
-[`cd_variables()`](https://newgraphenvironment.github.io/cd/reference/cd_variables.md):
+[`cd_variables()`](https://newgraphenvironment.github.io/cd/reference/cd_variables.md)
+(`pct_change` has one more fallback, below):
 
 - `anomaly_type`:
 
@@ -107,8 +108,22 @@ back to
   and
   [`cd_plot_comparison()`](https://newgraphenvironment.github.io/cd/reference/cd_plot_comparison.md).
 
-Each variable and period must resolve to a single `anomaly_type`, `unit`
-and `long_name`, so for a variable outside
+- `pct_change`:
+
+  Logical: can a percent change between two windows be read, because the
+  values have a real zero? Read only by
+  [`cd_compare()`](https://newgraphenvironment.github.io/cd/reference/cd_compare.md),
+  which refuses one that is not logical. Where absent or `NA`,
+  `cd_variables()$pct_change`; for a variable outside the registry,
+  `FALSE` only for `pct_point_diff`. A series off the registry in
+  degrees C or as a day of year (stream temperature, say) has no real
+  zero, and nothing else can tell: carry `FALSE` on it. This is the
+  input flag, not the percent some tables compute from
+  [`cd_compare()`](https://newgraphenvironment.github.io/cd/reference/cd_compare.md)
+  output under the same name.
+
+Each variable and period must resolve to a single `anomaly_type`,
+`unit`, `long_name` and `pct_change`, so for a variable outside
 [`cd_variables()`](https://newgraphenvironment.github.io/cd/reference/cd_variables.md)
 carry each on every row or on none. A registered variable that carries
 an `anomaly_type` different from the registry's gets no registry unit. A

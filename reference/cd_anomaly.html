@@ -115,7 +115,7 @@ not pooled.</p></dd>
 
 
 </dl><p>Optional columns, resolved row by row; where absent or <code>NA</code> they fall
-back to <code><a href="cd_variables.html">cd_variables()</a></code>:</p>
+back to <code><a href="cd_variables.html">cd_variables()</a></code> (<code>pct_change</code> has one more fallback, below):</p>
 <dl><dt><code>anomaly_type</code></dt>
 <dd><p>One of <code>"absolute"</code>, <code>"pct_normal"</code>,
 <code>"pct_point_diff"</code>. Required for any variable not in
@@ -134,9 +134,20 @@ show it only for <code>absolute</code> and <code>pct_point_diff</code> series.</
 <code><a href="cd_compare.html">cd_compare()</a></code> and used by <code><a href="cd_summary.html">cd_summary()</a></code>, <code><a href="cd_plot_timeseries.html">cd_plot_timeseries()</a></code>
 and <code><a href="cd_plot_comparison.html">cd_plot_comparison()</a></code>.</p></dd>
 
+<dt><code>pct_change</code></dt>
+<dd><p>Logical: can a percent change between two windows
+be read, because the values have a real zero? Read only by
+<code><a href="cd_compare.html">cd_compare()</a></code>, which refuses one that is not logical. Where absent
+or <code>NA</code>, <code>cd_variables()$pct_change</code>; for a variable outside the
+registry, <code>FALSE</code> only for <code>pct_point_diff</code>. A series off the
+registry in degrees C or as a day of year (stream temperature, say)
+has no real zero, and nothing else can tell: carry <code>FALSE</code> on it.
+This is the input flag, not the percent some tables compute from
+<code><a href="cd_compare.html">cd_compare()</a></code> output under the same name.</p></dd>
+
 
 </dl><p>Each variable and period must resolve to a single <code>anomaly_type</code>,
-<code>unit</code> and <code>long_name</code>, so for a variable outside <code><a href="cd_variables.html">cd_variables()</a></code>
+<code>unit</code>, <code>long_name</code> and <code>pct_change</code>, so for a variable outside <code><a href="cd_variables.html">cd_variables()</a></code>
 carry each on every row or on none. A registered variable that carries
 an <code>anomaly_type</code> different from the registry's gets no registry unit. A <code>pct_normal</code> series whose baseline mean is <code>0</code> (a dry-window
 minimum flow, say) has no percent of normal: its anomalies come back

@@ -1,10 +1,10 @@
 # Climate variable metadata
 
 Returns a tibble of metadata for the climate variables supported by the
-cd package. Used internally for unit labels, anomaly type routing, and
-ERA5-Land API variable names. Covers the seven core climate variables
-plus eight snow-related variables (four monthly natives, four annual
-derived) added in v0.2.0.
+cd package. Used internally for unit labels, anomaly type routing, which
+variables can take a percent change, and ERA5-Land API variable names.
+Covers the seven core climate variables plus eight snow-related
+variables (four monthly natives, four annual derived) added in v0.2.0.
 
 ## Usage
 
@@ -38,6 +38,18 @@ A tibble with columns:
   pct-of-normal is meaningless and the natural delta is value - baseline
   interpreted as percentage points).
 
+- pct_change:
+
+  `TRUE` where a percent change between two windows means something,
+  because the values have a real zero. `FALSE` for temperatures in
+  degree C and the day of 50% melt, whose zero is arbitrary (a base mean
+  near 0 degree C makes the percent unbounded and its sign arbitrary),
+  and for variables whose values are already in percent (`rh`,
+  `snow_cover`, `snowfall_fraction`). Read by
+  [`cd_compare()`](https://newgraphenvironment.github.io/cd/reference/cd_compare.md).
+  Independent of `anomaly_type`: `vpd` and `swe_max` are `absolute` and
+  still take a percent.
+
 - era5_name:
 
   ERA5-Land variable name for CDS API requests, or NA for derived
@@ -59,24 +71,24 @@ months.
 
 ``` r
 cd_variables()
-#> # A tibble: 15 × 5
-#>    variable           long_name                     unit  anomaly_type era5_name
-#>    <chr>              <chr>                         <chr> <chr>        <chr>    
-#>  1 tmean              Mean temperature              °C    absolute     2m_tempe…
-#>  2 tmax               Maximum temperature           °C    absolute     NA       
-#>  3 tmin               Minimum temperature           °C    absolute     NA       
-#>  4 prcp               Precipitation                 %     pct_normal   total_pr…
-#>  5 vpd                Vapour pressure deficit       hPa   absolute     NA       
-#>  6 rh                 Relative humidity             %     absolute     NA       
-#>  7 soil_moisture      Soil moisture                 %     pct_normal   NA       
-#>  8 swe                Snow water equivalent         %     pct_normal   NA       
-#>  9 snowfall           Snowfall                      %     pct_normal   NA       
-#> 10 snowmelt           Snowmelt                      %     pct_normal   NA       
-#> 11 snow_cover         Snow cover                    %     pct_point_d… NA       
-#> 12 swe_max            Annual peak snow water equiv… mm    absolute     NA       
-#> 13 snowfall_fraction  Snowfall fraction             %     pct_point_d… NA       
-#> 14 snowmelt_doy_50    Day of 50% melt               day   absolute     NA       
-#> 15 snowmelt_rate_peak Peak weekly melt rate         mm/wk absolute     NA       
+#> # A tibble: 15 × 6
+#>    variable           long_name          unit  anomaly_type pct_change era5_name
+#>    <chr>              <chr>              <chr> <chr>        <lgl>      <chr>    
+#>  1 tmean              Mean temperature   °C    absolute     FALSE      2m_tempe…
+#>  2 tmax               Maximum temperatu… °C    absolute     FALSE      NA       
+#>  3 tmin               Minimum temperatu… °C    absolute     FALSE      NA       
+#>  4 prcp               Precipitation      %     pct_normal   TRUE       total_pr…
+#>  5 vpd                Vapour pressure d… hPa   absolute     TRUE       NA       
+#>  6 rh                 Relative humidity  %     absolute     FALSE      NA       
+#>  7 soil_moisture      Soil moisture      %     pct_normal   TRUE       NA       
+#>  8 swe                Snow water equiva… %     pct_normal   TRUE       NA       
+#>  9 snowfall           Snowfall           %     pct_normal   TRUE       NA       
+#> 10 snowmelt           Snowmelt           %     pct_normal   TRUE       NA       
+#> 11 snow_cover         Snow cover         %     pct_point_d… FALSE      NA       
+#> 12 swe_max            Annual peak snow … mm    absolute     TRUE       NA       
+#> 13 snowfall_fraction  Snowfall fraction  %     pct_point_d… FALSE      NA       
+#> 14 snowmelt_doy_50    Day of 50% melt    day   absolute     FALSE      NA       
+#> 15 snowmelt_rate_peak Peak weekly melt … mm/wk absolute     TRUE       NA       
 cd_variables()$variable
 #>  [1] "tmean"              "tmax"               "tmin"              
 #>  [4] "prcp"               "vpd"                "rh"                

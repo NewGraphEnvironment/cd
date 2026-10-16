@@ -37,7 +37,15 @@ cd_compare(
 - method:
 
   Character. Comparison method: `"mean_diff"` for `mean_a - mean_b`, or
-  `"pct_change"` for percentage change relative to window_b.
+  `"pct_change"` for percentage change relative to window_b. A percent
+  change needs values with a real zero, so `"pct_change"` gives
+  `difference = NA`, with one warning naming the rows, for a series
+  whose `pct_change` resolves `FALSE`: temperatures in degrees C, the
+  day of 50% melt, and variables already in percent
+  (`cd_variables()$pct_change`; a series can carry its own, see the
+  input contract in
+  [`cd_anomaly()`](https://newgraphenvironment.github.io/cd/reference/cd_anomaly.md)).
+  A base mean of -0.57 degrees C would otherwise read as +343% warmer.
 
 - test:
 
@@ -101,11 +109,15 @@ cd_compare(ts, window_a = 1956:1960, window_b = 1951:1955, test = NULL)
 #>   <chr>    <chr>   <dbl>  <dbl>      <dbl> <chr>    
 #> 1 tmean    annual  -1.33  -1.44      0.110 mean_diff
 
-# Same comparison as percentage change
-cd_compare(ts, window_a = 1956:1960, window_b = 1951:1955,
+# Percentage change suits a variable with a real zero, such as
+# precipitation. For temperature it returns NA with a warning: a base
+# mean near 0 degrees C would make any percent meaningless.
+prcp <- data.frame(
+  variable = "prcp", period = "annual", year = 1951:1960,
+  value = c(610, 580, 655, 600, 640, 690, 700, 640, 720, 705)
+)
+cd_compare(prcp, window_a = 1956:1960, window_b = 1951:1955,
            method = "pct_change", test = NULL)
-#> # A tibble: 1 × 6
-#>   variable period mean_a mean_b difference method    
-#>   <chr>    <chr>   <dbl>  <dbl>      <dbl> <chr>     
-#> 1 tmean    annual  -1.33  -1.44       7.63 pct_change
+#>   variable period mean_a mean_b difference     method
+#> 1     prcp annual    691    617   11.99352 pct_change
 ```
