@@ -49,4 +49,4 @@ Also folded in at the plan gate: the Kootenay `facet-prcp` caption (`kootenay-la
 - [x] Both articles render; rendered-HTML greps pass
 - [x] `/code-check` clean (once over the branch with `/code-check branch`)
 - [x] PWF checkboxes match landed work
-- [ ] `/planning-archive` on completion
+- [x] `/planning-archive` on completion
