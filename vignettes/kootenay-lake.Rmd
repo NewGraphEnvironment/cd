@@ -437,8 +437,8 @@ the four standard meteorological seasons — winter (December–February),
 spring (March–May), summer (June–August), and fall
 (September–November) — the table below compares the recent decade
 (2015-2025) against the pre-warming reference (1951-1980) directly.
-The headline numbers above (summer SWE collapse, spring snowmelt rise)
-are in the **summer** and **spring** rows.
+The **summer** rows carry the snow-free-summer finding below, and
+winter and spring snowmelt rose as melt moved earlier.
 
 ```{r snow-seasonal-table, echo = FALSE}
 snow_monthly <- c("swe", "snowfall", "snowmelt", "snow_cover")
@@ -454,6 +454,17 @@ snow_seasonal <- snow_seasonal[order(snow_seasonal$variable, snow_seasonal$perio
 snow_seasonal$mean_a <- round(snow_seasonal$mean_a, 1)
 snow_seasonal$mean_b <- round(snow_seasonal$mean_b, 1)
 snow_seasonal$difference <- round(snow_seasonal$difference, 1)
+pct_of <- function(var, season) {
+  sprintf("%+.0f%%", snow_seasonal$difference[snow_seasonal$variable == var &
+                                                snow_seasonal$period == season])
+}
+snow_caption <- paste0(
+  "Seasonal snowpack: recent decade compared to pre-warming reference for ",
+  "the Kootenay Lake Region. Summer SWE (", pct_of("SWE (mm)", "summer"),
+  ") and summer snowmelt (", pct_of("Snowmelt (mm)", "summer"),
+  ") carry the largest losses; winter (", pct_of("Snowmelt (mm)", "winter"),
+  ") and spring (", pct_of("Snowmelt (mm)", "spring"), ") snowmelt rose."
+)
 snow_seasonal <- snow_seasonal[, c("variable", "period", "mean_b",
                                     "mean_a", "difference")]
 names(snow_seasonal) <- c("Variable", "Season",
@@ -462,7 +473,7 @@ names(snow_seasonal) <- c("Variable", "Season",
 
 kableExtra::kable_styling(
   knitr::kable(snow_seasonal, label = NA,
-    caption = "Seasonal snowpack: recent decade compared to pre-warming reference for the Kootenay Lake Region. Summer SWE collapse (-75%) and spring snowmelt rise (+37%) are the headline signals.",
+    caption = snow_caption,
     row.names = FALSE),
   bootstrap_options = c("striped", "hover", "condensed")
 )

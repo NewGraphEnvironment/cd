@@ -39,6 +39,28 @@ All issue numbers reproduce. Additional values:
 - WSG prcp 1951 slope / p: DUNC −0.091 / 0.094, KOTL −0.143 / 0.015, LARL −0.113 / 0.054, SLOC −0.118 / 0.051.
 - Ecoregion areas (km²): Kootenay TOP 26, PTR 495, SBF 4201, NCM 19445; Peace PRB 66 (dropped at 100), smallest kept NRM 9109. A 100 km² Kootenay filter shows the same three as 50.
 
+## Phase 6 sweep — remaining quantified sentences (measured 2026-10-16, committed rds)
+
+| sentence | verdict |
+|---|---|
+| Trends: "1.6 to 1.8 °C warmer … tmean/tmax/tmin, window and trend p < 0.001" | true (1.56 / 1.65 / 1.66; all p < 0.001) |
+| "VPD up significantly on both tests"; "RH small significant decline" | true (VPD p < 0.001 both; RH window 0.0003, trend 0.0006) |
+| "precipitation 6 to 7 % lower … trend p ≈ 0.02" | true (−6.5 %, p 0.021) |
+| tmax/tmin: "+0.024 °C/yr (+1.8)", "+0.027 (+2.0)", "roughly 0.2 °C more" | true (0.0245 / 1.81; 0.0271 / 2.01; gap 0.19) |
+| Snowpack: SWE −23 % (206 → 160), snowfall and snowmelt ~15 %, DOY-50 12.6 d, peak SWE −92 mm (−16 %) | true |
+| **Seasonal table caption: "Summer SWE collapse (−75%) and spring snowmelt rise (+37%)"** | **false — Peace's numbers.** Kootenay: summer SWE −72.9 %, spring snowmelt +12.1 % (winter snowmelt +138 %). Caption now computed inline; claims `snow_summer_largest_losses`, `snowmelt_winter_spring_rose` |
+| **"The headline numbers above (summer SWE collapse, spring snowmelt rise)"** | **false** — the Kootenay text above the table states neither. Rewritten |
+| "Summer SWE collapsed by 73 % and summer snowmelt is down 61 %" | true (−72.9, −60.9) |
+| Spatial: departure "+1.2 °C to +2.2 °C, regional mean near +1.7 °C" | true (1.24 / 2.19 / 1.65) |
+| Spatial: "Higher-elevation pixels tend to show stronger warming" | not checked: needs a DEM, which the vignette data does not carry |
+| Per-ecoregion "VPD is up significantly across the region" | true in every ecoregion shown (p < 0.001) |
+| Roll-up caption "All temperature p-values are below 0.001" | true; now asserted (`temperature_p_below_0.001_every_shown`) |
+| WSG text/caption: KOTL, DUNC, SLOC "almost entirely" / "essentially" NCM; LARL the only meaningful split | true (DUNC 99.8, SLOC 99.8, KOTL 93.8 + PTR 5.2; LARL NCM 37.5 / SBF 62.1) |
+| Interpretation "no warming hot-spot at the ecoregion scale" | judgment, left: ecoregion window Δ 1.5–1.9 °C, now printed inline beside it |
+| Interpretation "freshet-timing shift … in all four watershed groups; not concentrated in any one ecoregion" | true (DOY-50 1951 trend p ≤ 0.002 in every WSG; window Δ −11.1 to −13.8 d across ecoregions) |
+
+Static numbers that are true today (tmax/tmin rates, snow percentages, spatial range) are not inline: a full regen would move them, which is the article's existing state and the job of a regen's patch script, not this issue.
+
 ## Errors Encountered
 
 | Error | Resolution |

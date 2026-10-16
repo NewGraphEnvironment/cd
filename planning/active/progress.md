@@ -9,3 +9,5 @@
 - Phases 1–5 landed in one commit (the edits interleave in one file): filter 100 km², three-ecoregion prose, soil/warming/WSG sentences with inline numbers, "Four findings" in both articles, six new `claims` in the data script
 - Offline claims harness (scratchpad): claims section of the data script evaluated against the committed rds → PASS; seven perturbations (one or more per new claim) each stop with the matching claim name; perturbing TOP (not shown) still passes
 - Branch installed, Kootenay article rendered (10 s); each rewritten sentence read back from the HTML
+- Phase 6 sweep: two more inherited sentences found false (seasonal snow caption carried Peace's −75 % / +37 %; the sentence above it cited "headline numbers above" the text never states). Caption computed inline; two more claims; verdict per sentence in findings.md
+- Harness re-run: PASS unperturbed, all nine perturbations fire; both articles re-render with the branch installed

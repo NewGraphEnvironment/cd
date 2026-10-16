@@ -143,6 +143,15 @@ wsg_prcp <- do.call(rbind, lapply(names(wsg_results), function(code) {
   r <- annual_trend(wsg_results[[code]]$trn, "prcp", 1951)
   data.frame(code = code, slope = r$slope, p = r$mk_pvalue)
 }))
+# The seasonal snow table's rows (variables as in its snow_monthly; snow_cover
+# has no pct_change row)
+snow_season <- regional_cmp_pct[
+  regional_cmp_pct$variable %in% c("swe", "snowfall", "snowmelt") &
+    regional_cmp_pct$period %in% c("winter", "spring", "summer", "fall"),
+]
+snow_season_pct <- setNames(snow_season$difference,
+                            paste(snow_season$variable, snow_season$period))
+stopifnot(length(snow_season_pct) == 12)
 # The roll-up's `prcp %/yr` header: its slopes are trends of pct_normal anomalies
 prcp_rows <- do.call(rbind, lapply(ecoregion_results[shown], function(x) {
   x$trn[x$trn$variable == "prcp", ]
@@ -176,7 +185,14 @@ claims <- c(
   ),
   # "points down in all four, but only in KOTL is it statistically significant"
   wsg_prcp_declines_everywhere = nrow(wsg_prcp) == 4 && all(wsg_prcp$slope < 0),
-  wsg_prcp_significant_kotl_only = setequal(wsg_prcp$code[wsg_prcp$p < 0.05], "KOTL")
+  wsg_prcp_significant_kotl_only = setequal(wsg_prcp$code[wsg_prcp$p < 0.05], "KOTL"),
+  # Seasonal snow caption: summer SWE and summer snowmelt "carry the largest
+  # losses"; "winter and spring snowmelt rose"
+  snow_summer_largest_losses = setequal(
+    names(sort(snow_season_pct))[1:2], c("swe summer", "snowmelt summer")
+  ),
+  snowmelt_winter_spring_rose = all(snow_season_pct[c("snowmelt winter",
+                                                      "snowmelt spring")] > 0)
 )
 if (!all(claims %in% TRUE)) {
   stop("Vignette sentences no longer true of the data: ",

@@ -52,13 +52,13 @@ ecoregion") are added to the existing `claims` block in `data-raw/kootenay_lake_
 - [x] `claims`: every WSG 1951 prcp slope < 0; significant set is exactly KOTL (the sentence names it)
 
 ## Phase 6: Sweep the article's remaining quantified sentences
-- [ ] Walk every "all / every / each / both / none / no" and stated number in the Kootenay prose and captions (grep list in findings.md) against the rds; record a verdict per sentence in findings.md
-- [ ] Fix any found false, with inline numbers or a `claims` entry, same pattern as above
+- [x] Walk every "all / every / each / both / none / no" and stated number in the Kootenay prose and captions (grep list in findings.md) against the rds; record a verdict per sentence in findings.md
+- [x] Fix any found false, with inline numbers or a `claims` entry, same pattern as above
 
 ## Validation
 
 - [x] Offline claims harness passes on the committed rds, and each new claim fires when its input is perturbed
-- [ ] Branch installed; both changed articles render; rewritten sentences present in the HTML with no `NA`
+- [x] Branch installed; both changed articles render; rewritten sentences present in the HTML with no `NA`
 - [ ] Tests pass
 - [ ] `/code-check` clean (once over the branch with `/code-check branch`)
 - [ ] PWF checkboxes match landed work
