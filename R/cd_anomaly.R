@@ -25,7 +25,7 @@
 #' }
 #'
 #' Optional columns, resolved row by row; where absent or `NA` they fall
-#' back to [cd_variables()]:
+#' back to [cd_variables()] (`pct_change` has one more fallback, below):
 #'
 #' \describe{
 #'   \item{`anomaly_type`}{One of `"absolute"`, `"pct_normal"`,
@@ -40,10 +40,19 @@
 #'   \item{`long_name`}{Label, carried through to [cd_trend()] and
 #'     [cd_compare()] and used by [cd_summary()], [cd_plot_timeseries()]
 #'     and [cd_plot_comparison()].}
+#'   \item{`pct_change`}{Logical: can a percent change between two windows
+#'     be read, because the values have a real zero? Read only by
+#'     [cd_compare()], which refuses one that is not logical. Where absent
+#'     or `NA`, `cd_variables()$pct_change`; for a variable outside the
+#'     registry, `FALSE` only for `pct_point_diff`. A series off the
+#'     registry in degrees C or as a day of year (stream temperature, say)
+#'     has no real zero, and nothing else can tell: carry `FALSE` on it.
+#'     This is the input flag, not the percent some tables compute from
+#'     [cd_compare()] output under the same name.}
 #' }
 #'
 #' Each variable and period must resolve to a single `anomaly_type`,
-#' `unit` and `long_name`, so for a variable outside [cd_variables()]
+#' `unit`, `long_name` and `pct_change`, so for a variable outside [cd_variables()]
 #' carry each on every row or on none. A registered variable that carries
 #' an `anomaly_type` different from the registry's gets no registry unit. A `pct_normal` series whose baseline mean is `0` (a dry-window
 #' minimum flow, say) has no percent of normal: its anomalies come back
@@ -159,7 +168,13 @@ series_check <- function(x) {
 }
 
 #' Resolve series metadata row by row: carried column first, then
-#' cd_variables(). The registry's unit belongs to the registry's type, so a
+#' cd_variables(). `pct_change` falls back last to the resolved type: off the
+#' registry, only a `pct_point_diff` series is refused a percent change, so an
+#' untyped series keeps it. Unlike the unit, the registry's `pct_change` holds
+#' whatever type is carried: it is a property of the values, not of the
+#' anomaly arithmetic. A carried `pct_change` that is not logical (a numeric
+#' percent on compare output) is ignored here, so no consumer that never reads
+#' it can fail on it; cd_compare() refuses it itself. The registry's unit belongs to the registry's type, so a
 #' carried type that overrides it (prcp as "absolute") gets no registry unit.
 #' `unit` is the anomaly's unit; `raw = TRUE` keeps it only where that is also
 #' the unit of the values (`absolute`, `pct_point_diff`), for callers labelling
@@ -178,10 +193,14 @@ meta_resolve <- function(x, raw = FALSE) {
   unit <- dplyr::coalesce(col_or_na(x, "unit"), unit_registry)
   raw <- rep_len(raw, length(unit))
   unit[raw & !anomaly_type %in% c("absolute", "pct_point_diff")] <- NA_character_
+  carried <- if ("pct_change" %in% names(x)) x[["pct_change"]]
+  pct_change <- if (is.logical(carried)) carried else rep(NA, nrow(x))
+  pct_change <- dplyr::coalesce(pct_change, vars$pct_change[idx], !anomaly_type %in% "pct_point_diff")
   list(
     anomaly_type = anomaly_type,
     unit = unit,
-    long_name = dplyr::coalesce(col_or_na(x, "long_name"), vars$long_name[idx])
+    long_name = dplyr::coalesce(col_or_na(x, "long_name"), vars$long_name[idx]),
+    pct_change = pct_change
   )
 }
 

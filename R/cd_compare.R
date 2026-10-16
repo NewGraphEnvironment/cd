@@ -32,7 +32,13 @@
 #'   period).
 #' @param method Character. Comparison method: `"mean_diff"` for
 #'   `mean_a - mean_b`, or `"pct_change"` for percentage change
-#'   relative to window_b.
+#'   relative to window_b. A percent change needs values with a real
+#'   zero, so `"pct_change"` gives `difference = NA`, with one warning
+#'   naming the rows, for a series whose `pct_change` resolves `FALSE`:
+#'   temperatures in degrees C, the day of 50% melt, and variables
+#'   already in percent (`cd_variables()$pct_change`; a series can carry
+#'   its own, see the input contract in [cd_anomaly()]). A base mean of
+#'   -0.57 degrees C would otherwise read as +343% warmer.
 #' @param test Character or NULL. Window-vs-window significance
 #'   test: `"t"` for Welch's two-sample t-test (default) or
 #'   `"wilcox"` for Mann-Whitney U. Set to `NULL` to skip — output
@@ -62,8 +68,14 @@
 #' # because the toy windows have < 8 years.
 #' cd_compare(ts, window_a = 1956:1960, window_b = 1951:1955, test = NULL)
 #'
-#' # Same comparison as percentage change
-#' cd_compare(ts, window_a = 1956:1960, window_b = 1951:1955,
+#' # Percentage change suits a variable with a real zero, such as
+#' # precipitation. For temperature it returns NA with a warning: a base
+#' # mean near 0 degrees C would make any percent meaningless.
+#' prcp <- data.frame(
+#'   variable = "prcp", period = "annual", year = 1951:1960,
+#'   value = c(610, 580, 655, 600, 640, 690, 700, 640, 720, 705)
+#' )
+#' cd_compare(prcp, window_a = 1956:1960, window_b = 1951:1955,
 #'            method = "pct_change", test = NULL)
 #'
 #' @export
@@ -75,11 +87,15 @@ cd_compare <- function(x,
   method <- match.arg(method, c("mean_diff", "pct_change"))
   if (!is.null(test)) test <- match.arg(test, c("t", "wilcox"))
   x <- series_check(x)
+  if ("pct_change" %in% names(x) && !is.logical(x$pct_change)) {
+    rlang::abort("`pct_change` must be logical (TRUE, FALSE or NA).")
+  }
   # Only long_name passes through: the unit of `difference` depends on `method`
   cols_meta <- intersect("long_name", names(x))
   meta <- meta_resolve(x)
   for (col in cols_meta) x[[col]] <- meta[[col]]
-  meta_check(x, cols_meta)
+  x$pct_change <- meta$pct_change
+  meta_check(x, c(cols_meta, "pct_change"))
 
   mean_a <- x |>
     dplyr::filter(.data$year %in% window_a) |>
@@ -101,6 +117,27 @@ cd_compare <- function(x,
     pct_change = (out$mean_a - out$mean_b) / abs(out$mean_b) * 100
   )
   out$method <- method
+
+  if (method == "pct_change") {
+    ok <- dplyr::left_join(
+      out[c("variable", "period")],
+      dplyr::distinct(x[c("variable", "period", "pct_change")]),
+      by = c("variable", "period")
+    )$pct_change
+    bad <- which(!ok)
+    if (length(bad) > 0) {
+      out$difference[bad] <- NA_real_
+      warning(sprintf(
+        paste0(
+          "difference set to NA for %d row(s) whose values have no real zero ",
+          "or are already in percent, so a percent change means nothing: %s. ",
+          "Use method = \"mean_diff\" for these."
+        ),
+        length(bad),
+        paste(sprintf("%s/%s", out$variable[bad], out$period[bad]), collapse = ", ")
+      ), call. = FALSE)
+    }
+  }
 
   if (!is.null(test)) {
     p <- vapply(seq_len(nrow(out)), function(i) {

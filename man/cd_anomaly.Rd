@@ -50,7 +50,7 @@ not pooled.}
 }
 
 Optional columns, resolved row by row; where absent or \code{NA} they fall
-back to \code{\link[=cd_variables]{cd_variables()}}:
+back to \code{\link[=cd_variables]{cd_variables()}} (\code{pct_change} has one more fallback, below):
 
 \describe{
 \item{\code{anomaly_type}}{One of \code{"absolute"}, \code{"pct_normal"},
@@ -65,10 +65,19 @@ show it only for \code{absolute} and \code{pct_point_diff} series.}
 \item{\code{long_name}}{Label, carried through to \code{\link[=cd_trend]{cd_trend()}} and
 \code{\link[=cd_compare]{cd_compare()}} and used by \code{\link[=cd_summary]{cd_summary()}}, \code{\link[=cd_plot_timeseries]{cd_plot_timeseries()}}
 and \code{\link[=cd_plot_comparison]{cd_plot_comparison()}}.}
+\item{\code{pct_change}}{Logical: can a percent change between two windows
+be read, because the values have a real zero? Read only by
+\code{\link[=cd_compare]{cd_compare()}}, which refuses one that is not logical. Where absent
+or \code{NA}, \code{cd_variables()$pct_change}; for a variable outside the
+registry, \code{FALSE} only for \code{pct_point_diff}. A series off the
+registry in degrees C or as a day of year (stream temperature, say)
+has no real zero, and nothing else can tell: carry \code{FALSE} on it.
+This is the input flag, not the percent some tables compute from
+\code{\link[=cd_compare]{cd_compare()}} output under the same name.}
 }
 
 Each variable and period must resolve to a single \code{anomaly_type},
-\code{unit} and \code{long_name}, so for a variable outside \code{\link[=cd_variables]{cd_variables()}}
+\code{unit}, \code{long_name} and \code{pct_change}, so for a variable outside \code{\link[=cd_variables]{cd_variables()}}
 carry each on every row or on none. A registered variable that carries
 an \code{anomaly_type} different from the registry's gets no registry unit. A \code{pct_normal} series whose baseline mean is \code{0} (a dry-window
 minimum flow, say) has no percent of normal: its anomalies come back

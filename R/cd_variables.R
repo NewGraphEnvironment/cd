@@ -1,8 +1,8 @@
 #' Climate variable metadata
 #'
 #' Returns a tibble of metadata for the climate variables supported by the
-#' cd package. Used internally for unit labels, anomaly type routing, and
-#' ERA5-Land API variable names. Covers the seven core climate variables
+#' cd package. Used internally for unit labels, anomaly type routing, which
+#' variables can take a percent change, and ERA5-Land API variable names. Covers the seven core climate variables
 #' plus eight snow-related variables (four monthly natives, four annual
 #' derived) added in v0.2.0.
 #'
@@ -27,6 +27,14 @@
 #'       variables that are already fractions/percentages, e.g. snow cover,
 #'       snowfall fraction, where pct-of-normal is meaningless and the
 #'       natural delta is value - baseline interpreted as percentage points).}
+#'     \item{pct_change}{`TRUE` where a percent change between two windows
+#'       means something, because the values have a real zero. `FALSE` for
+#'       temperatures in degree C and the day of 50% melt, whose zero is
+#'       arbitrary (a base mean near 0 degree C makes the percent unbounded
+#'       and its sign arbitrary), and for variables whose values are already in percent (`rh`,
+#'       `snow_cover`, `snowfall_fraction`). Read
+#'       by [cd_compare()]. Independent of `anomaly_type`: `vpd` and `swe_max`
+#'       are `absolute` and still take a percent.}
 #'     \item{era5_name}{ERA5-Land variable name for CDS API requests,
 #'       or NA for derived variables.}
 #'   }
@@ -63,6 +71,14 @@ cd_variables <- function() {
       "pct_normal",
       "pct_normal", "pct_normal", "pct_normal", "pct_point_diff",
       "absolute", "pct_point_diff", "absolute", "absolute"
+    ),
+    pct_change = c(
+      FALSE, FALSE, FALSE,
+      TRUE,
+      TRUE, FALSE,
+      TRUE,
+      TRUE, TRUE, TRUE, FALSE,
+      TRUE, FALSE, FALSE, TRUE
     ),
     era5_name = c(
       "2m_temperature", NA_character_, NA_character_,
