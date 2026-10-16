@@ -36,13 +36,21 @@ ecoregions <- st_read(
   layer = "ecoregions", quiet = TRUE
 )
 # The ecoregions the vignette shows: it filters by area in its load-context
-# chunk, so read its threshold rather than restate it here. The pattern takes
-# only a bare `> N, ]`, so a filter extended with another condition stops.
+# chunk, so read its threshold rather than restate it here. This reads source
+# text, so it refuses any shape it was not written for: `ecoregions` assigned
+# only by st_read() and one bare area filter, and `results` subset only by
+# `results[ecoregions$code]`. The rendered page is still the final check.
 vignette_min_km2 <- function(rmd) {
   lines <- readLines(rmd)
-  hit <- regmatches(lines, regexpr("ecoregions\\$area_km2 > [0-9.]+, \\]", lines))
-  stopifnot(length(hit) == 1)
-  as.numeric(gsub("[^0-9.]", "", sub(".*> ", "", hit)))
+  filt <- "^\\s*ecoregions\\s*<-\\s*ecoregions\\[ecoregions\\$area_km2 > ([0-9.]+), \\]\\s*$"
+  stopifnot(
+    sum(grepl(filt, lines)) == 1,
+    sum(grepl("^\\s*ecoregions\\s*<-", lines)) == 2,
+    sum(grepl("^\\s*ecoregions\\s*<-\\s*st_read\\(", lines)) == 1,
+    sum(grepl("^\\s*results\\s*<-\\s*results\\[", lines)) == 1,
+    sum(grepl("^\\s*results\\s*<-\\s*results\\[ecoregions\\$code\\]\\s*$", lines)) == 1
+  )
+  as.numeric(sub(filt, "\\1", grep(filt, lines, value = TRUE)))
 }
 ecoregions <- ecoregions[
   ecoregions$area_km2 > vignette_min_km2("vignettes/peace-fwcp.Rmd"), ]

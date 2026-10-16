@@ -81,7 +81,7 @@ AOI bbox lon -118.51 to -115.52. The vignette called PTR "Pacific and Cascade Ra
 
 **Mechanism (round 3):** every check on this branch, mine and the reviewers', was made against something upstream of the rendered article: the rds, data-raw's `ecoregions`, the findings table. `kootenay-lake.Rmd:98` keeps only ecoregions over 50 km², so TOP (26 km²) is in the rds but in no Kootenay per-ecoregion trend figure or roll-up table. (It does appear in the WSG × ecoregion overlap table, which is built from data-raw's unfiltered set: round 4.) The vignette showed three panels while the caption said "all four ... not in SBF or TOP", and data-raw's unfiltered ecoregion set agreed with the vignette's only in Peace (both filter at 100 km²). The first render check printed the roll-up's three rows and nobody counted them.
 
-**Remedy:** each data-raw block reads the vignette's own area threshold (`vignette_min_km2()`, a regex on a bare `ecoregions$area_km2 > N, ]`, which must match exactly once; Peace's data script also filters with it, so the two cannot disagree) and asserts on the ecoregions the vignette shows. The final check is the rendered page: `facet-prcp-1.png` has three panels (SBF, NCM, PTR), and the codes line lists those three.
+**Remedy:** each data-raw block reads the vignette's own area threshold (`vignette_min_km2()`, a regex on a bare `ecoregions$area_km2 > N, ]`, anchored to the whole statement; Peace's data script also filters with it) and asserts on the ecoregions the vignette shows. The final check is the rendered page: `facet-prcp-1.png` has three panels (SBF, NCM, PTR), and the codes line lists those three.
 
 | caption clause (as rendered) | claim |
 |---|---|
@@ -100,3 +100,11 @@ Not asserted, on purpose: the dashed/solid sentence is plotting code; the PTR "e
 Mutation table (blocks extracted from the files; `ecoregion_results` from the committed rds; `ecoregions` from the gpkg, Peace filtered >100 km²): clean passes in both; a significant TOP trend passes (TOP is not shown, correctly). Each of these stops: SBF significant, PTR slope up, NCM 1981 significant, PTR dropped (on `NROW(r) == 1`), NCM p NA, PTR renamed, `trend_on = "value"`, the Kootenay vignette's threshold lowered to 10 (TOP shown), OMM significant, NRM slope down, FAB moved north of NRM, `anomaly_type = "pct_point_diff"`, and the Peace threshold raised past every ecoregion.
 
 Round 4 additions to the mutation table (`scratchpad t4.R`): the Kootenay filter extended in place (`> 50 & code != "PTR", ]`) stops on the regex; Peace's vignette threshold lowered to 60 (PRB shown, absent from the rds) stops on `NROW(r) == 1`; thresholds read as 50 and 100.
+
+## Round 5: the threshold reader, enumerated
+
+`vignette_min_km2()` reads source text, so it is checked against the full set of lines that could change which ecoregions the vignette shows. Measured in both Rmds with `grep -nE` for assignments to `ecoregions` and `results`: exactly `ecoregions <- st_read(...)`, `ecoregions <- ecoregions[ecoregions$area_km2 > N, ]`, two `results <- lapply(...)` (the eval=FALSE recipe and the rds load) and `results <- results[ecoregions$code]` (kootenay-lake.Rmd:97,98,621,637,641; peace-fwcp.Rmd:91,92,606,622,626). The reader now requires that shape: one whole-line bare filter, two `ecoregions <-` lines (one `st_read`), one `results <- results[` line, and it is `results[ecoregions$code]`. Mutations, each stopping: condition prepended, negated, appended; a second `ecoregions` filter; a second `results` subset; the subset changed; the filter removed. Clean reads 50 and 100.
+
+Residual, accepted: an assignment by `=` or in place (`ecoregions[...] <-`) is outside what the reader sees; the rendered page remains the final check.
+
+Accepted, not changed: the shown recipe passes all variables to `cd_compare(method = "pct_change")`, which gives NA and one warning for variables without a real zero (#138). That is the designed behaviour, and the two columns the roll-up reads are unaffected.

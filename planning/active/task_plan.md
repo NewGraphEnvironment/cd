@@ -37,6 +37,7 @@ Also folded in at the plan gate: the Kootenay `facet-prcp` caption (`kootenay-la
 - [x] Round 2: guard checks the ecoregion count; stale findings line
 - [x] Round 3: captions describe the three ecoregions shown (TOP filtered at >50 km²); guards read the vignette's threshold; cd#146 corrected
 - [x] Round 4: intro narrowed to the trend figures and roll-up table (the WSG overlap table does show TOP); Peace data script takes its area filter from the vignette; threshold regex anchored to a bare `> N, ]`
+- [x] Round 5: threshold reader anchored to the whole statement and to the only shape of `ecoregions`/`results` assignment the vignettes use (enumerated)
 
 ## Verification
 - Install the branch with `pak::local_install()`. The rds is unchanged, but `build_article` reads the installed cd.
@@ -45,7 +46,7 @@ Also folded in at the plan gate: the Kootenay `facet-prcp` caption (`kootenay-la
 - No R code changes, so the test suite is not re-run for this. `/code-check branch` before the PR.
 
 ## Validation
-- [ ] Both articles render; rendered-HTML greps pass
-- [ ] `/code-check` clean (once over the branch with `/code-check branch`)
-- [ ] PWF checkboxes match landed work
+- [x] Both articles render; rendered-HTML greps pass
+- [x] `/code-check` clean (once over the branch with `/code-check branch`)
+- [x] PWF checkboxes match landed work
 - [ ] `/planning-archive` on completion
