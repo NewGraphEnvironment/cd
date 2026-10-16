@@ -148,6 +148,13 @@ temp_trend <- do.call(rbind, lapply(c("tmean", "tmax", "tmin"), function(v) {
 }))
 stopifnot(length(sm_window_p) == 1, length(sm_window_pct) == 1,
           nrow(temp_window) == 3)
+# The prose prints p rounded (fp(): two significant figures; WSG p: three
+# decimals), so the significance words are tested on the printed value
+p_sig2 <- function(p) signif(p, 2)
+p_dp3  <- function(p) round(p, 3)
+rh51 <- annual_trend(regional_trn, "rh", 1951)
+rh_window <- regional_cmp[regional_cmp$variable == "rh" & regional_cmp$period == "annual", ]
+stopifnot(nrow(rh_window) == 1)
 wsg_prcp <- do.call(rbind, lapply(names(wsg_results), function(code) {
   r <- annual_trend(wsg_results[[code]]$trn, "prcp", 1951)
   data.frame(code = code, slope = r$slope, p = r$mk_pvalue)
@@ -193,9 +200,9 @@ claims <- c(
   prcp_none_significant_1981 = all(p81$p >= 0.05),
   # Soil moisture: "the trend test finds a steady decline" from 1951 and 1981
   soil_declines_both_starts = sm51$slope < 0 && sm81$slope < 0 &&
-    sm51$mk_pvalue < 0.05 && sm81$mk_pvalue < 0.05,
+    p_sig2(sm51$mk_pvalue) < 0.05 && p_sig2(sm81$mk_pvalue) < 0.05,
   # "too small a step for the window test"
-  soil_window_not_significant = sm_window_p >= 0.05,
+  soil_window_not_significant = p_sig2(sm_window_p) >= 0.05,
   # "Soil moisture is down <x> %" (twice)
   soil_window_down = sm_window_pct < 0,
   # "when the decline is significant in every ecoregion shown"
@@ -215,7 +222,12 @@ claims <- c(
              er_slope("tmin", 1951)) > 0),
   # "points down in all four, but only in KOTL is it statistically significant"
   wsg_prcp_declines_everywhere = nrow(wsg_prcp) == 4 && all(wsg_prcp$slope < 0),
-  wsg_prcp_significant_kotl_only = setequal(wsg_prcp$code[wsg_prcp$p < 0.05], "KOTL"),
+  wsg_prcp_significant_kotl_only = setequal(wsg_prcp$code[p_dp3(wsg_prcp$p) < 0.05], "KOTL"),
+  # "Relative humidity shows a small significant decline" (window and 75-yr trend)
+  rh_declines_significantly = rh_window$difference < 0 && rh_window$p_value < 0.05 &&
+    rh51$slope < 0 && rh51$mk_pvalue < 0.05,
+  # "snow cover, already a percentage, has no percent change to compare"
+  snow_cover_has_no_pct_change = !("snow_cover" %in% regional_cmp_pct$variable),
   # "Spatially the decline is consistent across the three ecoregions shown,
   # down between ..." (window percent change)
   prcp_window_down_every_shown = all(vapply(shown, function(code) {
@@ -234,14 +246,17 @@ claims <- c(
     names(sort(snow_season_pct))[1:2], c("swe summer", "snowmelt summer")
   ) && all(snow_season_pct[c("swe summer", "snowmelt summer")] < 0),
   # Summer snowpack "now holds about a quarter of what it did"
-  summer_swe_about_a_quarter = snow_season_pct[["swe summer"]] > -80 &&
-    snow_season_pct[["swe summer"]] < -67,
+  summer_swe_about_a_quarter = snow_season_pct[["swe summer"]] > -78 &&
+    snow_season_pct[["swe summer"]] < -70,
   # "The three ecoregions shown were between <x> °C warmer" and "differ by a
   # few tenths of a degree"
+  # ("a few tenths": 0.15 to 0.6 °C; "small beside the warming": under half the
+  # smallest ecoregion's warming)
   ecoregion_window_warmer_few_tenths = all(er_tmean_window > 0) &&
-    diff(range(er_tmean_window)) < 0.6,
+    diff(range(er_tmean_window)) >= 0.15 && diff(range(er_tmean_window)) < 0.6 &&
+    diff(range(er_tmean_window)) < 0.5 * min(er_tmean_window),
   # The freshet "is arriving nearly two weeks earlier" (DOY-50 window shift)
-  doy50_nearly_two_weeks_earlier = doy50_window > -14 && doy50_window < -10,
+  doy50_nearly_two_weeks_earlier = doy50_window > -14 && doy50_window < -11.5,
   snowmelt_winter_spring_rose = all(snow_season_pct[c("snowmelt winter",
                                                       "snowmelt spring")] > 0)
 )

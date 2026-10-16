@@ -86,19 +86,23 @@ Rounds 1 and 2 found one mechanism twice: a claim checked significance or order 
 | "too small a step for the window test" / "cannot separate from noise" | `soil_window_not_significant` |
 | "the trend test finds a steady decline" / "significant long-term decline" from 1951 and 1981 | `soil_declines_both_starts` |
 | "From 1981 the decline is significant in every ecoregion shown" | `soil_significant_every_shown_1981` (p and slope < 0) |
-| "Three of the monthly-native snow variables — SWE, snowfall and snowmelt" | structural: the table's rows; `stopifnot(length(snow_season_pct) == 12)` |
+| "Three of the monthly-native snow variables — SWE, snowfall and snowmelt" / "snow cover … has no percent change" | `snow_cover_has_no_pct_change` (the table reads `cmp_pct`, which `pct_normal_vars` builds without snow_cover) |
+| "Relative humidity shows a small significant decline" (re-wrapped line) | `rh_declines_significantly` (window and 1951 trend: sign and p) |
+| "(trend p ≈ 0.02)" for precipitation (re-wrapped line, words unchanged from main) | static number, true today (0.021): the static-number tradeoff |
 | "winter and spring snowmelt rose" (prose and caption) | `snowmelt_winter_spring_rose` |
 | caption "carry the largest losses" | `snow_summer_largest_losses` (two lowest and < 0) |
-| summer snowpack "now holds about a quarter" | `summer_swe_about_a_quarter` (−80 < Δ < −67 %) |
+| summer snowpack "now holds about a quarter" | `summer_swe_about_a_quarter` (−78 < Δ < −70 %: 22–30 % remains) |
 | "Ecoregions under 100 km² … so they show three" | `prose_states_filter`, `shown_are_ncm_sbf_ptr` |
 | "All three ecoregions shown warmed, at rates …" | `temperature_p_below_0.001_every_shown` (slopes > 0) |
 | "TOP … appears only in the table" | accepted: fixed by the context gpkg's geometry (TOP 26 km², in LARL), which a data regen does not change |
-| "between … °C warmer in 2015–2025", "differ by a few tenths of a degree" | `ecoregion_window_warmer_few_tenths` (Δ > 0, spread < 0.6 °C; 0.39 today) |
+| "between … °C warmer in 2015–2025", "differ by a few tenths of a degree" | `ecoregion_window_warmer_few_tenths` (Δ > 0; 0.15 ≤ spread < 0.6 °C and under half the smallest Δ; 0.39 today) |
 | "p-values below 0.001 in every ecoregion" | `temperature_p_below_0.001_every_shown` |
 | "Spatially the decline is consistent across the three ecoregions shown, down between" | `prcp_window_down_every_shown` |
 | "points down in all four" | `wsg_prcp_declines_everywhere` (4 rows, slopes < 0) |
 | "only in KOTL is it statistically significant … DUNC, LARL and SLOC it is not" | `wsg_prcp_significant_kotl_only` |
-| "arriving nearly two weeks earlier" | `doy50_nearly_two_weeks_earlier` (−14 < Δ < −10 d) |
+| "arriving nearly two weeks earlier" | `doy50_nearly_two_weeks_earlier` (−14 < Δ < −11.5 d) |
 | "Four findings" (both articles) | structural: four bold findings follow in each |
 
-Every row has a guard or a stated reason. Harness: 20 perturbations, one or more per claim, each fires; perturbing TOP (not shown) passes.
+Every row has a guard or a stated reason. Significance words are tested on the p-value as printed (`signif(p, 2)` for `fp()`, `round(p, 3)` for the WSG p), so a p of 0.0496 cannot print "0.050" beside "significant". Harness: 27 perturbations, one or more per claim, each fires where the words turn false; perturbing TOP (not shown) passes, and SLOC at p 0.0501 passes correctly (it prints 0.050 under "it is not").
+
+Round 3 audited this table and found three bounds that admitted false words ("a quarter" took a third, "nearly two weeks" took 10 d, "a few tenths" took 0), two missed rows (RH, the static prcp p) and a wrong guard named for snow cover; fixed above.
