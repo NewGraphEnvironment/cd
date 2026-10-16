@@ -14,3 +14,4 @@
 - Plan review landed after Phase 6; folded in (review-plan.md, dispositions in findings.md). Filed #148 (Peace "cumulative" mislabel)
 - Tests: devtools::test() FAIL 0 | PASS 768
 - Harness: PASS unperturbed; ten perturbations fire; filter set back to 50 fires `prose_states_filter`
+- code-check round 1: 3 findings, one mechanism (claims checked significance, not direction or sign). Fixed across every claim: soil 1981 slope < 0, soil window Δ < 0, regional temperature window/trend p and sign, ecoregion temperature slopes > 0. Harness: five more perturbations fire

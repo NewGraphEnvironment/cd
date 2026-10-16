@@ -128,16 +128,26 @@ annual_trend <- function(trn, var, start) {
   stopifnot(NROW(r) == 1)
   r
 }
-er_p <- function(var, start) {
+er_p <- function(var, start, col = "mk_pvalue") {
   vapply(shown, function(code) {
-    annual_trend(ecoregion_results[[code]]$trn, var, start)$mk_pvalue
+    annual_trend(ecoregion_results[[code]]$trn, var, start)[[col]]
   }, numeric(1))
 }
+er_slope <- function(var, start) er_p(var, start, col = "slope")
 sm51 <- annual_trend(regional_trn, "soil_moisture", 1951)
 sm81 <- annual_trend(regional_trn, "soil_moisture", 1981)
 sm_window_p <- regional_cmp$p_value[regional_cmp$variable == "soil_moisture" &
                                       regional_cmp$period == "annual"]
-stopifnot(length(sm_window_p) == 1)
+sm_window_pct <- regional_cmp_pct$difference[
+  regional_cmp_pct$variable == "soil_moisture" & regional_cmp_pct$period == "annual"
+]
+temp_window <- regional_cmp[regional_cmp$variable %in% c("tmean", "tmax", "tmin") &
+                              regional_cmp$period == "annual", ]
+temp_trend <- do.call(rbind, lapply(c("tmean", "tmax", "tmin"), function(v) {
+  annual_trend(regional_trn, v, 1951)
+}))
+stopifnot(length(sm_window_p) == 1, length(sm_window_pct) == 1,
+          nrow(temp_window) == 3)
 wsg_prcp <- do.call(rbind, lapply(names(wsg_results), function(code) {
   r <- annual_trend(wsg_results[[code]]$trn, "prcp", 1951)
   data.frame(code = code, slope = r$slope, p = r$mk_pvalue)
@@ -175,13 +185,23 @@ claims <- c(
     sm51$mk_pvalue < 0.05 && sm81$mk_pvalue < 0.05,
   # "too small a step for the window test"
   soil_window_not_significant = sm_window_p >= 0.05,
+  # "Soil moisture is down <x> %" (twice)
+  soil_window_down = sm_window_pct < 0,
   # "when the decline is significant in every ecoregion shown"
-  soil_significant_every_shown_1981 = all(er_p("soil_moisture", 1981) < 0.05),
+  soil_significant_every_shown_1981 = all(er_p("soil_moisture", 1981) < 0.05 &
+                                            er_slope("soil_moisture", 1981) < 0),
+  # Trends: "The recent decade was between <x> °C warmer ... for annual mean,
+  # daytime maximum, and overnight minimum, with both window and trend p-values
+  # below 0.001" (trend = the table's 75-yr column)
+  regional_temperature_warmer_p_below_0.001 = all(temp_window$difference > 0) &&
+    all(temp_window$p_value < 0.001) && all(temp_trend$slope > 0) &&
+    all(temp_trend$mk_pvalue < 0.001),
   # "Mann-Kendall p-values below 0.001 in every ecoregion", and the roll-up's
   # "All temperature p-values are below 0.001"
   temperature_p_below_0.001_every_shown = all(
     c(er_p("tmean", 1951), er_p("tmax", 1951), er_p("tmin", 1951)) < 0.001
-  ),
+  ) && all(c(er_slope("tmean", 1951), er_slope("tmax", 1951),
+             er_slope("tmin", 1951)) > 0),
   # "points down in all four, but only in KOTL is it statistically significant"
   wsg_prcp_declines_everywhere = nrow(wsg_prcp) == 4 && all(wsg_prcp$slope < 0),
   wsg_prcp_significant_kotl_only = setequal(wsg_prcp$code[wsg_prcp$p < 0.05], "KOTL"),
