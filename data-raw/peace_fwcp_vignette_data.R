@@ -35,7 +35,17 @@ ecoregions <- st_read(
   system.file("extdata", "context_fwcp_peace.gpkg", package = "cd"),
   layer = "ecoregions", quiet = TRUE
 )
-ecoregions <- ecoregions[ecoregions$area_km2 > 100, ]
+# The ecoregions the vignette shows: it filters by area in its load-context
+# chunk, so read its threshold rather than restate it here. The pattern takes
+# only a bare `> N, ]`, so a filter extended with another condition stops.
+vignette_min_km2 <- function(rmd) {
+  lines <- readLines(rmd)
+  hit <- regmatches(lines, regexpr("ecoregions\\$area_km2 > [0-9.]+, \\]", lines))
+  stopifnot(length(hit) == 1)
+  as.numeric(gsub("[^0-9.]", "", sub(".*> ", "", hit)))
+}
+ecoregions <- ecoregions[
+  ecoregions$area_km2 > vignette_min_km2("vignettes/peace-fwcp.Rmd"), ]
 ecoregions <- ecoregions[order(-ecoregions$area_km2), ]
 
 catalog <- cd_catalog()
@@ -76,17 +86,8 @@ names(ecoregion_results) <- ecoregions$code
 # -- Sentences the prcp captions state (#102) ---------------------------------
 # peace-fwcp.Rmd's captions are static text, so refuse to save data they no
 # longer describe. Significance is Mann-Kendall p < 0.05.
-# The ecoregions the vignette shows: it filters by area in its load-context
-# chunk, so read its threshold rather than restate it here.
-vignette_min_km2 <- function(rmd) {
-  lines <- readLines(rmd)
-  hit <- regmatches(lines, regexpr("ecoregions\\$area_km2 > [0-9.]+", lines))
-  stopifnot(length(hit) == 1)
-  as.numeric(sub(".*> ", "", hit))
-}
-shown <- ecoregions$code[
-  ecoregions$area_km2 > vignette_min_km2("vignettes/peace-fwcp.Rmd")
-]
+# `ecoregions` was filtered with the vignette's own threshold above
+shown <- ecoregions$code
 p51 <- do.call(rbind, lapply(shown, function(code) {
   t <- ecoregion_results[[code]]$trn
   r <- t[t$variable == "prcp" & t$period == "annual" & t$trend_start == 1951, ]

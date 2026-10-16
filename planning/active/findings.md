@@ -64,7 +64,7 @@ So the Kootenay `facet-prcp` caption ("two northernmost ecoregions (BMP, NRM) sh
 | FAB | 0.032, 0.634 | 0.030, 0.837 |
 | NRM | 0.156, 0.015 | -0.033, 0.732 |
 
-Peace's facet-prcp caption (BMP, NRM significant increases) holds. Kootenay's new caption: all four decline from 1951; significant in NCM and PTR; no 1981 trend significant.
+Peace's facet-prcp caption (BMP, NRM significant increases) holds. Kootenay: all four decline from 1951; significant in NCM and PTR; no 1981 trend significant. The article shows only three of them (TOP filtered out, see the enumeration below), and the shipped caption says so.
 
 ## Kootenay ecoregion names and positions (inst/extdata/context_kootenay_lake.gpkg, intersected with the AOI)
 
@@ -79,9 +79,9 @@ AOI bbox lon -118.51 to -115.52. The vignette called PTR "Pacific and Cascade Ra
 
 ## Caption assertions: enumeration (rounds 2 and 3 found gaps inside earlier fixes)
 
-**Mechanism (round 3):** every check on this branch, mine and the reviewers', was made against something upstream of the rendered article: the rds, data-raw's `ecoregions`, the findings table. `kootenay-lake.Rmd:98` keeps only ecoregions over 50 km², so TOP (26 km²) is in the rds but in no Kootenay per-ecoregion figure or table. The vignette showed three panels while the caption said "all four ... not in SBF or TOP", and data-raw's unfiltered ecoregion set agreed with the vignette's only in Peace (both filter at 100 km²). The first render check printed the roll-up's three rows and nobody counted them.
+**Mechanism (round 3):** every check on this branch, mine and the reviewers', was made against something upstream of the rendered article: the rds, data-raw's `ecoregions`, the findings table. `kootenay-lake.Rmd:98` keeps only ecoregions over 50 km², so TOP (26 km²) is in the rds but in no Kootenay per-ecoregion trend figure or roll-up table. (It does appear in the WSG × ecoregion overlap table, which is built from data-raw's unfiltered set: round 4.) The vignette showed three panels while the caption said "all four ... not in SBF or TOP", and data-raw's unfiltered ecoregion set agreed with the vignette's only in Peace (both filter at 100 km²). The first render check printed the roll-up's three rows and nobody counted them.
 
-**Remedy:** each data-raw block reads the vignette's own area threshold (`vignette_min_km2()`, a regex on `ecoregions$area_km2 > N`, which must match exactly once) and asserts on the ecoregions the vignette shows. The final check is the rendered page: `facet-prcp-1.png` has three panels (SBF, NCM, PTR), and the codes line lists those three.
+**Remedy:** each data-raw block reads the vignette's own area threshold (`vignette_min_km2()`, a regex on a bare `ecoregions$area_km2 > N, ]`, which must match exactly once; Peace's data script also filters with it, so the two cannot disagree) and asserts on the ecoregions the vignette shows. The final check is the rendered page: `facet-prcp-1.png` has three panels (SBF, NCM, PTR), and the codes line lists those three.
 
 | caption clause (as rendered) | claim |
 |---|---|
@@ -98,3 +98,5 @@ AOI bbox lon -118.51 to -115.52. The vignette called PTR "Pacific and Cascade Ra
 Not asserted, on purpose: the dashed/solid sentence is plotting code; the PTR "eastern edge" in the intro and map caption comes from the context gpkg (`data-raw/example_context_kootenay_lake.R`), not this script; the map caption no longer mentions TOP, which the filtered map does not draw.
 
 Mutation table (blocks extracted from the files; `ecoregion_results` from the committed rds; `ecoregions` from the gpkg, Peace filtered >100 km²): clean passes in both; a significant TOP trend passes (TOP is not shown, correctly). Each of these stops: SBF significant, PTR slope up, NCM 1981 significant, PTR dropped (on `NROW(r) == 1`), NCM p NA, PTR renamed, `trend_on = "value"`, the Kootenay vignette's threshold lowered to 10 (TOP shown), OMM significant, NRM slope down, FAB moved north of NRM, `anomaly_type = "pct_point_diff"`, and the Peace threshold raised past every ecoregion.
+
+Round 4 additions to the mutation table (`scratchpad t4.R`): the Kootenay filter extended in place (`> 50 & code != "PTR", ]`) stops on the regex; Peace's vignette threshold lowered to 60 (PRB shown, absent from the rds) stops on `NROW(r) == 1`; thresholds read as 50 and 100.

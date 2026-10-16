@@ -605,8 +605,8 @@ elevations and exposures: Northern Columbia Mountains (NCM, the
 dominant zone covering most of the AOI including the Selkirks and
 Purcells), Selkirk-Bitterroot Foothills (SBF, the western lower-
 elevation tier of LARL), Thompson-Okanagan Plateau (TOP, a 26 km²
-sliver in LARL's far west, too small for the per-ecoregion figures and
-tables below, which leave it out), and Purcell Transitional Ranges (PTR,
+sliver in LARL's far west, too small for the per-ecoregion trend figures
+and roll-up table below, which leave it out), and Purcell Transitional Ranges (PTR,
 a small sliver on the eastern edge). To check whether the regional story holds
 within each ecoregion — and where it does not — we run the same
 pipeline on each ecoregion polygon individually.

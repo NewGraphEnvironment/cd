@@ -14,12 +14,12 @@ The plan review for #97 reports that the same label was ported into the `fish_pa
 Also folded in at the plan gate: the Kootenay `facet-prcp` caption (`kootenay-lake.Rmd:697`) was copied from Peace and names BMP/NRM, neither of which is in Kootenay.
 
 ## Phase 1: Relabel the roll-up prcp trend (#102)
-- [x] `vignettes/peace-fwcp.Rmd` rollup chunk: rename `` `prcp mm/yr` `` to `` `prcp %/yr` ``. Change the caption's "annual precipitation trend (mm per year)" to "annual precipitation trend (percentage points of the 1951-1980 normal per year)".
+- [x] `vignettes/peace-fwcp.Rmd` rollup chunk: rename `` `prcp mm/yr` `` to `` `prcp %/yr` ``. Change the caption's "annual precipitation trend (mm per year)" to "annual precipitation trend (percentage points of the 1951-1980 normal per year)". *(Shipped as "percent of the 1951-1980 baseline mean per year", Phase 4.)*
 - [x] `vignettes/kootenay-lake.Rmd` rollup chunk: the same two edits.
 - [x] Grep `vignettes/`, `R/`, `data-raw/` and `README*` for any remaining `mm/yr` or `mm per year` attached to an anomaly trend (expected: none).
 
 ## Phase 2: Kootenay facet-prcp caption
-- [x] Replace the copied sentence at `kootenay-lake.Rmd:697` with one written from the committed numbers: NCM and PTR show statistically significant precipitation decreases over the full record; SBF and TOP decline but not significantly.
+- [x] Replace the copied sentence at `kootenay-lake.Rmd:697` with one written from the committed numbers: NCM and PTR show statistically significant precipitation decreases over the full record; SBF and TOP decline but not significantly. *(Shipped for the three ecoregions the article shows; TOP is filtered out at `kootenay-lake.Rmd:98`, code-check round 3.)*
 
 - [x] (Added mid-run) PTR is Purcell Transitional Ranges, on the AOI's eastern edge, not "Pacific and Cascade Ranges" in the southwest: fix the name at the per-ecoregion intro (`:608`) and the `map-wsgs` caption (`:892`), from `inst/extdata/context_kootenay_lake.gpkg`.
 
@@ -32,6 +32,11 @@ Also folded in at the plan gate: the Kootenay `facet-prcp` caption (`kootenay-la
 - [x] Shown `per-ecoregion-recipe` passes `method = "pct_change"` to `cd_compare()`, matching the bundled data behind the `pct change` columns
 - [x] `data-raw/kootenay_lake_vignette_data.R` and `data-raw/peace_fwcp_vignette_data.R` assert their facet-prcp caption clauses before saving
 - [x] Out-of-scope Kootenay prose filed as cd#146; downstream issue bodies updated to the final wording
+
+## Phase 5: Code-check fixes (review-round2..4.md)
+- [x] Round 2: guard checks the ecoregion count; stale findings line
+- [x] Round 3: captions describe the three ecoregions shown (TOP filtered at >50 km²); guards read the vignette's threshold; cd#146 corrected
+- [x] Round 4: intro narrowed to the trend figures and roll-up table (the WSG overlap table does show TOP); Peace data script takes its area filter from the vignette; threshold regex anchored to a bare `> N, ]`
 
 ## Verification
 - Install the branch with `pak::local_install()`. The rds is unchanged, but `build_article` reads the installed cd.

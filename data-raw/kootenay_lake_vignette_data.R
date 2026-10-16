@@ -94,12 +94,13 @@ names(wsg_results) <- wsgs$code
 # kootenay-lake.Rmd's captions are static text, so refuse to save data they
 # no longer describe. Significance is Mann-Kendall p < 0.05.
 # The ecoregions the vignette shows: it filters by area in its load-context
-# chunk, so read its threshold rather than restate it here.
+# chunk, so read its threshold rather than restate it here. The pattern takes
+# only a bare `> N, ]`, so a filter extended with another condition stops.
 vignette_min_km2 <- function(rmd) {
   lines <- readLines(rmd)
-  hit <- regmatches(lines, regexpr("ecoregions\\$area_km2 > [0-9.]+", lines))
+  hit <- regmatches(lines, regexpr("ecoregions\\$area_km2 > [0-9.]+, \\]", lines))
   stopifnot(length(hit) == 1)
-  as.numeric(sub(".*> ", "", hit))
+  as.numeric(gsub("[^0-9.]", "", sub(".*> ", "", hit)))
 }
 shown <- ecoregions$code[
   ecoregions$area_km2 > vignette_min_km2("vignettes/kootenay-lake.Rmd")
