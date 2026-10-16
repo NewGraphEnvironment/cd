@@ -42,3 +42,7 @@ What the exploration found and the plan depends on:
 - `data-raw/vignette_data_swe_max_type_patch.R` rebuilt 6 peace and 9 kootenay groups. The guard (re-run as absolute == stored rows) passed on all; a mutant with `baseline_years = 1952:1980` was refused before writing.
 - Mann-Kendall p-values are identical for every group and slopes equal old × 100 / baseline (pct of normal is a positive linear rescale), so every significance statement in the vignettes still holds. Regional 1951 slopes: peace −0.0216 %/yr (p 0.77), kootenay −0.2928 %/yr (p 0.0042).
 - Plan review: `review-plan.md`.
+
+## Rendering reads the installed package
+
+`pkgdown::build_article(new_process = TRUE)` rendered the vignettes against the installed cd's `inst/vignette-data`, so the first render showed mm values (±250) under the new % labels. Installing the branch to a scratch library (`R CMD INSTALL --library=…`, then `R_LIBS=…`) gave the patched figures. CI installs from source, so the deployed site is unaffected.

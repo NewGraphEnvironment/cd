@@ -473,7 +473,7 @@ Three annual numbers capture how the snowpack is changing:
 
 ```{r snow-annual, fig.cap="Annual snowpack signals for the Kootenay Lake Region, relative to the 1951-1980 baseline. Each panel uses its own y-axis. Dashed line is the 75-year Theil-Sen trend; solid line is the 45-year trend.", echo = FALSE, fig.height=7}
 snow_vars <- c("swe_max", "snowmelt_doy_50", "snowfall_fraction")
-snow_labels <- c("Peak SWE (mm)",
+snow_labels <- c("Peak SWE (% departure)",
                  "Snowmelt 50% DOY (days)",
                  "Snowfall fraction (% points)")
 ano_snow <- ano[ano$variable %in% snow_vars & ano$period == "annual", ]
@@ -721,7 +721,7 @@ ecoregion to ecoregion. Pair them with the Watershed Groups Across
 Ecoregions section below to read each watershed group's dominant
 ecoregion's signal.
 
-```{r facet-swe-max, fig.cap="Annual peak snow water equivalent (SWE) anomaly by ecoregion, relative to the 1951-1980 baseline. Bars are mm of water-equivalent snowpack departure from baseline. Dashed line is the 75-year Theil-Sen trend (1951-present); solid line is the 45-year trend (1981-present).", fig.height=6, echo = FALSE}
+```{r facet-swe-max, fig.cap="Annual peak snow water equivalent (SWE) anomaly by ecoregion, relative to the 1951-1980 baseline. Bars are the percent departure of peak snowpack from its baseline mean. Dashed line is the 75-year Theil-Sen trend (1951-present); solid line is the 45-year trend (1981-present).", fig.height=6, echo = FALSE}
 ggplot(ano_all[ano_all$variable == "swe_max" & ano_all$period == "annual", ],
        aes(x = year, y = anomaly)) +
   geom_col(aes(fill = anomaly >= 0), width = 0.85, show.legend = FALSE) +
@@ -733,7 +733,7 @@ ggplot(ano_all[ano_all$variable == "swe_max" & ano_all$period == "annual", ],
   scale_linetype_manual(values = c("dashed", "solid"), name = "Trend window") +
   facet_wrap(~ ecoregion, ncol = 3,
              labeller = labeller(ecoregion = er_labels)) +
-  labs(x = NULL, y = "Peak SWE anomaly (mm)") +
+  labs(x = NULL, y = "Peak SWE anomaly (%)") +
   theme_minimal(base_size = 11) +
   theme(legend.position = "bottom")
 ```
@@ -805,7 +805,7 @@ trn_wsg_swe_max <- build_segments_wsg("swe_max")
 trn_wsg_doy_50  <- build_segments_wsg("snowmelt_doy_50")
 ```
 
-```{r facet-wsg-swe-max, fig.cap="Annual peak SWE anomaly by watershed group. Bars are mm of water-equivalent snowpack departure from the 1951-1980 baseline. Dashed line is the 75-year Theil-Sen trend; solid line is the 45-year trend.", fig.height=5, echo = FALSE}
+```{r facet-wsg-swe-max, fig.cap="Annual peak SWE anomaly by watershed group. Bars are the percent departure of peak snowpack from its 1951-1980 mean. Dashed line is the 75-year Theil-Sen trend; solid line is the 45-year trend.", fig.height=5, echo = FALSE}
 ggplot(ano_wsg[ano_wsg$variable == "swe_max" & ano_wsg$period == "annual", ],
        aes(x = year, y = anomaly)) +
   geom_col(aes(fill = anomaly >= 0), width = 0.85, show.legend = FALSE) +
@@ -816,7 +816,7 @@ ggplot(ano_wsg[ano_wsg$variable == "swe_max" & ano_wsg$period == "annual", ],
   scale_fill_manual(values = c(`TRUE` = "#4575b4", `FALSE` = "#d73027")) +
   scale_linetype_manual(values = c("dashed", "solid"), name = "Trend window") +
   facet_wrap(~ wsg, ncol = 2) +
-  labs(x = NULL, y = "Peak SWE anomaly (mm)") +
+  labs(x = NULL, y = "Peak SWE anomaly (%)") +
   theme_minimal(base_size = 11) +
   theme(legend.position = "bottom")
 ```

@@ -29,16 +29,16 @@ Decide which is right, then make the registry and `CLAUDE.md` agree. If the regi
 - [x] Run the patch, commit both rds files, and confirm the bundled-data test passes on the patched data
 
 ## Phase 3: Vignettes, docs, CLAUDE.md
-- [ ] `peace-fwcp.Rmd` and `kootenay-lake.Rmd` (incl. kootenay `facet-wsg-swe-max`, review G3; peace :912 mislabels annual `swe` as peak, A1): change the facet-swe-max caption ("Bars are mm…") and y label to percent of normal; change the snow-annual panel label "Peak SWE (mm)" to %. grep the prose for swe_max anomaly or trend figures stated in mm. The `cd_compare` mm values (135 → 122 mm) come from `value`, so they stay
-- [ ] `data-raw/northern_bc_vignette_data.R`: fix the lookup comment (only the comment; the lookup and the rds stay as they are)
-- [ ] Also check whether `peace_fwcp_vignette_data.R` and `kootenay_lake_vignette_data.R` need a note, so a future full regen picks up pct_normal from the registry with no extra step
-- [ ] `R/cd_compare.R`: change "a recent decade (`2015:2025`)" to "the recent 11 years (`2015:2025`)", including the "recent decade" in the cumulative-impact sentence; `document()`
-- [ ] `CLAUDE.md`: the swe_max row already says `pct_normal`. Change its unit column to match the registry's view if needed. Fix the #138 paragraph ("`vpd`, `swe_max` and `snowmelt_rate_peak` are `absolute`") to name only vpd and snowmelt_rate_peak
+- [x] `peace-fwcp.Rmd` and `kootenay-lake.Rmd` (incl. kootenay `facet-wsg-swe-max`, review G3; peace :912 mislabels annual `swe` as peak, A1): change the facet-swe-max caption ("Bars are mm…") and y label to percent of normal; change the snow-annual panel label "Peak SWE (mm)" to %. grep the prose for swe_max anomaly or trend figures stated in mm. The `cd_compare` mm values (135 → 122 mm) come from `value`, so they stay
+- [x] `data-raw/northern_bc_vignette_data.R`: fix the lookup comment (only the comment; the lookup and the rds stay as they are)
+- [x] Also check whether `peace_fwcp_vignette_data.R` and `kootenay_lake_vignette_data.R` need a note: a full regen reads the registry, so only their `pct_normal_vars` comment was false (review G4); reworded, list unchanged
+- [x] `R/cd_compare.R`: change "a recent decade (`2015:2025`)" to "the recent 11 years (`2015:2025`)", including the "recent decade" in the cumulative-impact sentence; `document()`
+- [x] `CLAUDE.md`: the swe_max row already says `pct_normal`; its Units column is the data unit, so it stays `mm` (review A2). Fix the #138 paragraph ("`vpd`, `swe_max` and `snowmelt_rate_peak` are `absolute`") to name only vpd and snowmelt_rate_peak
 - [ ] NEWS entry is left to `/gh-pr-merge`
 
 ## Validation
-- [ ] Tests pass (`devtools::test()`, grep FAIL/ERROR)
-- [ ] Render both regional vignettes (`pkgdown::build_article()` or `rmarkdown::render`) and look at the swe_max facet and snow-annual panels
+- [x] Tests pass (`devtools::test()`, grep FAIL/ERROR)
+- [x] Render both regional vignettes (`pkgdown::build_article()` or `rmarkdown::render`) and look at the swe_max facet and snow-annual panels
 - [ ] `lintr::lint_package()` clean on touched files
 - [ ] `/code-check` clean (each commit, or once over the branch with `/code-check branch`)
 - [ ] PWF checkboxes match landed work
