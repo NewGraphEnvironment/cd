@@ -148,10 +148,16 @@ temp_trend <- do.call(rbind, lapply(c("tmean", "tmax", "tmin"), function(v) {
 }))
 stopifnot(length(sm_window_p) == 1, length(sm_window_pct) == 1,
           nrow(temp_window) == 3)
-# The prose prints p rounded (fp(): two significant figures; WSG p: three
-# decimals), so the significance words are tested on the printed value
-p_sig2 <- function(p) signif(p, 2)
-p_dp3  <- function(p) round(p, 3)
+# A claim tests the value the page prints, not the raw one, wherever the words
+# sit beside a printed number: p_sig2 is fp() in the Rmd; p_dp3 is the tables'
+# round(p, 3) and the WSG sprintf("%.3f"); pr1 is sprintf("%.1f"); pr_pct0 is
+# the snow caption's sprintf("%+.0f") of a value rounded to 0.1. Slopes print as
+# round(slope, 3) in cd_summary()'s trend table and the roll-up's prcp column,
+# and as round(10 * slope, 2) in the roll-up's degC/dec columns.
+p_sig2  <- function(p) signif(p, 2)
+p_dp3   <- function(p) round(p, 3)
+pr1     <- function(x) as.numeric(sprintf("%.1f", x))
+pr_pct0 <- function(x) as.numeric(sprintf("%+.0f", round(x, 1)))
 rh51 <- annual_trend(regional_trn, "rh", 1951)
 rh_window <- regional_cmp[regional_cmp$variable == "rh" & regional_cmp$period == "annual", ]
 stopifnot(nrow(rh_window) == 1)
@@ -193,39 +199,44 @@ claims <- c(
     c("NORTHERN COLUMBIA MOUNTAINS", "PURCELL TRANSITIONAL RANGES")
   ),
   # "Precipitation declines in all three ecoregions shown over the full record"
-  prcp_declines_everywhere = all(p51$slope < 0),
+  prcp_declines_everywhere = all(round(p51$slope, 3) < 0),
   # "significant in ... (NCM) and ... (PTR), not in SBF"
-  prcp_significant_ncm_ptr = setequal(p51$code[p51$p < 0.05], c("NCM", "PTR")),
+  prcp_significant_ncm_ptr = setequal(p51$code[p_dp3(p51$p) < 0.05], c("NCM", "PTR")),
   # "None of the 45-year trends is significant"
-  prcp_none_significant_1981 = all(p81$p >= 0.05),
+  prcp_none_significant_1981 = all(p_dp3(p81$p) >= 0.05),
   # Soil moisture: "the trend test finds a steady decline" from 1951 and 1981
-  soil_declines_both_starts = sm51$slope < 0 && sm81$slope < 0 &&
+  soil_declines_both_starts = round(sm51$slope, 3) < 0 && round(sm81$slope, 3) < 0 &&
     p_sig2(sm51$mk_pvalue) < 0.05 && p_sig2(sm81$mk_pvalue) < 0.05,
   # "too small a step for the window test"
   soil_window_not_significant = p_sig2(sm_window_p) >= 0.05,
   # "Soil moisture is down <x> %" (twice)
-  soil_window_down = sm_window_pct < 0,
+  soil_window_down = pr1(sm_window_pct) < 0,
   # "when the decline is significant in every ecoregion shown"
   soil_significant_every_shown_1981 = all(er_p("soil_moisture", 1981) < 0.05 &
                                             er_slope("soil_moisture", 1981) < 0),
   # Trends: "The recent decade was between <x> °C warmer ... for annual mean,
   # daytime maximum, and overnight minimum, with both window and trend p-values
   # below 0.001" (trend = the table's 75-yr column)
-  regional_temperature_warmer_p_below_0.001 = all(temp_window$difference > 0) &&
-    all(temp_window$p_value < 0.001) && all(temp_trend$slope > 0) &&
-    all(temp_trend$mk_pvalue < 0.001),
+  regional_temperature_warmer_p_below_0.001 = all(pr1(temp_window$difference) > 0) &&
+    all(p_dp3(temp_window$p_value) < 0.001) && all(round(temp_trend$slope, 3) > 0) &&
+    all(p_dp3(temp_trend$mk_pvalue) < 0.001),
   # "Mann-Kendall p-values below 0.001 in every ecoregion", and the roll-up's
   # "All temperature p-values are below 0.001"
   temperature_p_below_0.001_every_shown = all(
     c(er_p("tmean", 1951), er_p("tmax", 1951), er_p("tmin", 1951)) < 0.001
-  ) && all(c(er_slope("tmean", 1951), er_slope("tmax", 1951),
-             er_slope("tmin", 1951)) > 0),
+  ) && all(round(10 * c(er_slope("tmean", 1951), er_slope("tmax", 1951),
+                        er_slope("tmin", 1951)), 2) > 0),
+  # "Daily maximum, daily minimum, and daily mean temperatures all tell the same
+  # story" is the line above: all three significant and warming in every
+  # ecoregion shown
   # "points down in all four, but only in KOTL is it statistically significant"
   wsg_prcp_declines_everywhere = nrow(wsg_prcp) == 4 && all(wsg_prcp$slope < 0),
   wsg_prcp_significant_kotl_only = setequal(wsg_prcp$code[p_dp3(wsg_prcp$p) < 0.05], "KOTL"),
   # "Relative humidity shows a small significant decline" (window and 75-yr trend)
-  rh_declines_significantly = rh_window$difference < 0 && rh_window$p_value < 0.05 &&
-    rh51$slope < 0 && rh51$mk_pvalue < 0.05,
+  # (the table prints Δ to two decimals and p to three)
+  rh_declines_significantly = round(rh_window$difference, 2) < 0 &&
+    p_dp3(rh_window$p_value) < 0.05 && round(rh51$slope, 3) < 0 &&
+    p_dp3(rh51$mk_pvalue) < 0.05,
   # "snow cover, already a percentage, has no percent change to compare"
   snow_cover_has_no_pct_change = !("snow_cover" %in% regional_cmp_pct$variable),
   # "Spatially the decline is consistent across the three ecoregions shown,
@@ -233,7 +244,7 @@ claims <- c(
   prcp_window_down_every_shown = all(vapply(shown, function(code) {
     x <- ecoregion_results[[code]]$cmp_pct
     d <- x$difference[x$variable == "prcp" & x$period == "annual"]
-    length(d) == 1 && d < 0
+    length(d) == 1 && pr1(d) < 0
   }, logical(1))),
   # The Per-Ecoregion intro states the filter: "Ecoregions under <N> km²"
   prose_states_filter = sum(grepl(
@@ -244,21 +255,23 @@ claims <- c(
   # losses"; "winter and spring snowmelt rose"
   snow_summer_largest_losses = setequal(
     names(sort(snow_season_pct))[1:2], c("swe summer", "snowmelt summer")
-  ) && all(snow_season_pct[c("swe summer", "snowmelt summer")] < 0),
+  ) && all(pr_pct0(snow_season_pct[c("swe summer", "snowmelt summer")]) < 0),
   # Summer snowpack "now holds about a quarter of what it did"
-  summer_swe_about_a_quarter = snow_season_pct[["swe summer"]] > -78 &&
-    snow_season_pct[["swe summer"]] < -70,
+  # (nearer a quarter than a fifth or a third: 22.5 to 29.2 % remains)
+  summer_swe_about_a_quarter = snow_season_pct[["swe summer"]] > -77.5 &&
+    snow_season_pct[["swe summer"]] < -70.8,
   # "The three ecoregions shown were between <x> °C warmer" and "differ by a
   # few tenths of a degree"
-  # ("a few tenths": 0.15 to 0.6 °C; "small beside the warming": under half the
-  # smallest ecoregion's warming)
-  ecoregion_window_warmer_few_tenths = all(er_tmean_window > 0) &&
-    diff(range(er_tmean_window)) >= 0.15 && diff(range(er_tmean_window)) < 0.6 &&
-    diff(range(er_tmean_window)) < 0.5 * min(er_tmean_window),
+  # On the printed range ("%.1f"): "a few tenths" is 0.2 to 0.5 °C apart, and
+  # "small beside the warming" is under half the smallest printed warming
+  ecoregion_window_warmer_few_tenths = all(pr1(er_tmean_window) > 0) &&
+    diff(range(pr1(er_tmean_window))) >= 0.2 &&
+    diff(range(pr1(er_tmean_window))) <= 0.5 &&
+    diff(range(pr1(er_tmean_window))) < 0.5 * min(pr1(er_tmean_window)),
   # The freshet "is arriving nearly two weeks earlier" (DOY-50 window shift)
   doy50_nearly_two_weeks_earlier = doy50_window > -14 && doy50_window < -11.5,
-  snowmelt_winter_spring_rose = all(snow_season_pct[c("snowmelt winter",
-                                                      "snowmelt spring")] > 0)
+  snowmelt_winter_spring_rose = all(pr_pct0(snow_season_pct[c("snowmelt winter",
+                                                              "snowmelt spring")]) > 0)
 )
 if (!all(claims %in% TRUE)) {
   stop("Vignette sentences no longer true of the data: ",

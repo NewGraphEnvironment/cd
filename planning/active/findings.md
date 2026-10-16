@@ -106,3 +106,33 @@ Rounds 1 and 2 found one mechanism twice: a claim checked significance or order 
 Every row has a guard or a stated reason. Significance words are tested on the p-value as printed (`signif(p, 2)` for `fp()`, `round(p, 3)` for the WSG p), so a p of 0.0496 cannot print "0.050" beside "significant". Harness: 27 perturbations, one or more per claim, each fires where the words turn false; perturbing TOP (not shown) passes, and SLOC at p 0.0501 passes correctly (it prints 0.050 under "it is not").
 
 Round 3 audited this table and found three bounds that admitted false words ("a quarter" took a third, "nearly two weeks" took 10 d, "a few tenths" took 0), two missed rows (RH, the static prcp p) and a wrong guard named for snow cover; fixed above.
+
+### Round 4 and the terminating enumeration: every claim against what the page prints
+
+Round 4 found the round-3 mechanism again (a raw value tested where the page prints a rounded one: regional temperature p, RH p, the printed ecoregion spread, sign words at ±0.04). Its fix was made structural: every claim whose words sit beside a printed number tests that number's printed form, through four helpers named for the Rmd's formats (`p_sig2` = `fp()`, `p_dp3` = `round(p, 3)` / `"%.3f"`, `pr1` = `"%.1f"`, `pr_pct0` = the caption's `"%+.0f"`), and slopes as `cd_summary()` and the roll-up print them (`round(slope, 3)`, `round(10 * slope, 2)`). Then each of the 23 claims, parsed from the script (not recalled), was checked against that rule:
+
+| claim | printed beside its words | tests |
+|---|---|---|
+| prcp_trend_pct_of_baseline, shown_are_ncm_sbf_ptr, ncm_ptr_names, snow_cover_has_no_pct_change, prose_states_filter | nothing numeric (sets, labels) | set equality |
+| prcp_declines_everywhere | roll-up `prcp %/yr`, round 3 | `round(slope, 3) < 0` |
+| prcp_significant_ncm_ptr | roll-up `prcp p`, round 3 | `p_dp3` |
+| prcp_none_significant_1981 | not printed (1981 ecoregion p) | `p_dp3` (harmless) |
+| soil_declines_both_starts | fp() in prose; trend table slope round 3 | `p_sig2`, `round(slope, 3)` |
+| soil_window_not_significant | fp(); table round 3 (agree at the 0.05 edge) | `p_sig2` |
+| soil_window_down | `"%.1f"`; table round 1 | `pr1` |
+| soil_significant_every_shown_1981 | not printed | raw |
+| regional_temperature_warmer_p_below_0.001 | `"%.1f"` Δ; table p round 3; trend slope round 3 | `pr1`, `p_dp3`, `round(slope, 3)` |
+| temperature_p_below_0.001_every_shown | rates `round(10 * slope, 2)` (prose and roll-up); p not printed | `round(10 * slope, 2) > 0`, raw p |
+| wsg_prcp_declines_everywhere | not printed (WSG slopes) | raw |
+| wsg_prcp_significant_kotl_only | `"%.3f"` | `p_dp3` |
+| rh_declines_significantly | table Δ round 2, p round 3; trend slope round 3 | printed forms |
+| prcp_window_down_every_shown | `"%.1f"`; roll-up round 1 | `pr1` |
+| snow_summer_largest_losses | caption `"%+.0f"` | `pr_pct0` for the sign; rank on raw (a tie at print precision still reads "largest") |
+| summer_swe_about_a_quarter | static "a quarter"; caption −73% | raw bounds −77.5 < Δ < −70.8 |
+| ecoregion_window_warmer_few_tenths | `"%.1f"` range | `pr1`: > 0, spread 0.2–0.5, under half the smallest |
+| doy50_nearly_two_weeks_earlier | static "nearly two weeks" | raw −14 < Δ < −11.5 |
+| snowmelt_winter_spring_rose | caption `"%+.0f"` | `pr_pct0` |
+
+Nothing sits above its source: every number printed beside a guarded word is tested in its printed form, or is not printed. Harness: 43 perturbations; 40 fire on the claim named; three pass correctly (TOP not shown; SLOC p 0.0501 and SBF p 0.0496 print 0.050, which reads not significant under p < 0.05).
+
+Accepted, recorded: "small" in "Relative humidity shows a small significant decline" (−2.6 points, −3.6 %) is a static judgment word with no bound; "Daily maximum, daily minimum, and daily mean temperatures all tell the same story" is covered by `temperature_p_below_0.001_every_shown` (all three significant and warming in every ecoregion shown).
