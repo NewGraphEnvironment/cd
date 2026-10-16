@@ -111,9 +111,8 @@ vignette_min_km2 <- function(rmd) {
   )
   as.numeric(sub(filt, "\\1", grep(filt, lines, value = TRUE)))
 }
-shown <- ecoregions$code[
-  ecoregions$area_km2 > vignette_min_km2("vignettes/kootenay-lake.Rmd")
-]
+min_km2 <- vignette_min_km2("vignettes/kootenay-lake.Rmd")
+shown <- ecoregions$code[ecoregions$area_km2 > min_km2]
 prcp_trend <- function(start) {
   do.call(rbind, lapply(shown, function(code) {
     t <- ecoregion_results[[code]]$trn
@@ -186,6 +185,18 @@ claims <- c(
   # "points down in all four, but only in KOTL is it statistically significant"
   wsg_prcp_declines_everywhere = nrow(wsg_prcp) == 4 && all(wsg_prcp$slope < 0),
   wsg_prcp_significant_kotl_only = setequal(wsg_prcp$code[wsg_prcp$p < 0.05], "KOTL"),
+  # "Spatially the decline is consistent across the three ecoregions shown,
+  # down between ..." (window percent change)
+  prcp_window_down_every_shown = all(vapply(shown, function(code) {
+    x <- ecoregion_results[[code]]$cmp_pct
+    d <- x$difference[x$variable == "prcp" & x$period == "annual"]
+    length(d) == 1 && d < 0
+  }, logical(1))),
+  # The Per-Ecoregion intro states the filter: "Ecoregions under <N> km²"
+  prose_states_filter = sum(grepl(
+    paste0("Ecoregions under ", format(min_km2), " km"),
+    readLines("vignettes/kootenay-lake.Rmd"), fixed = TRUE
+  )) == 1,
   # Seasonal snow caption: summer SWE and summer snowmelt "carry the largest
   # losses"; "winter and spring snowmelt rose"
   snow_summer_largest_losses = setequal(

@@ -65,3 +65,12 @@ Static numbers that are true today (tmax/tmin rates, snow percentages, spatial r
 
 | Error | Resolution |
 |-------|------------|
+
+## Plan review (review-plan.md) — dispositions
+
+- Three more false or overstated sentences fixed: "1.6 to 1.8 °C" (actual 1.6 to 1.7, now inline); "four monthly-native snow variables" (the table shows three); "arriving weeks earlier" (12.6 d → "nearly two weeks"); summer snowpack "no longer does" (27 % remains → "about a quarter"); "roughly the same rate" / "no warming hot-spot" reworded beside the printed 0.23–0.30 °C/dec range.
+- Guards added: `prose_states_filter` (the intro's "Ecoregions under N km²" must match the filter; fired when the filter was set back to 50), `prcp_window_down_every_shown`.
+- `fp()` now 2 significant figures, so a p of 0.046–0.049 cannot print as "≈ 0.05" beside "significant".
+- Snow-station numbers (74 station-years, 40–63 % low, r = 0.90) come from `data-raw/qa_snow_validation_kootenay_lake.R`, not the rds; not re-derived here.
+- Not fixed, recorded: patch scripts (`data-raw/vignette_data_*_patch.R`) write `kootenay_lake.rds` without running the claims block, so the guards cover a full regen only. The `per-ecoregion-reshape` comment "already by area_km2 desc on disk" is wrong (gpkg order TOP, SBF, NCM, PTR) but harmless, and outside this diff.
+- Peace "cumulative since 1951" range is window Δ, not slope × years: reproduced, filed as #148.

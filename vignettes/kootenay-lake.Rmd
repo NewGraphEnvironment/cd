@@ -267,15 +267,19 @@ significant Δ p but not trend p; a gradual ramp shows up as both.
 ```{r prose-numbers-regional, include = FALSE}
 # Numbers the soil-moisture sentences below and in Interpretation state.
 # data-raw/kootenay_lake_vignette_data.R asserts the words around them.
-fp <- function(p) format(signif(p, 1), scientific = FALSE)
+fp  <- function(p) format(signif(p, 2), scientific = FALSE)
+rng <- function(x, fmt) paste(sprintf(fmt, range(x)), collapse = " and ")
+t_cmp <- cd::cd_compare(ts[ts$variable %in% c("tmean", "tmax", "tmin") &
+                             ts$period == "annual", ])
 sm_cmp <- cd::cd_compare(ts[ts$variable == "soil_moisture" & ts$period == "annual", ])
 sm_pct <- 100 * (sm_cmp$mean_a - sm_cmp$mean_b) / sm_cmp$mean_b
 sm_trn <- trn[trn$variable == "soil_moisture" & trn$period == "annual", ]
 sm_p   <- setNames(sm_trn$mk_pvalue, sm_trn$trend_start)
 ```
 
-The recent decade was 1.6 to 1.8 °C warmer than the pre-warming
-reference for annual mean, daytime maximum, and overnight minimum,
+The recent decade was between `r rng(t_cmp$difference, "%.1f")` °C
+warmer than the pre-warming reference for annual mean, daytime
+maximum, and overnight minimum,
 with both window and trend p-values below 0.001. Vapour pressure
 deficit is up significantly on both tests. Annual precipitation
 was about 6 to 7 % *lower* in the recent decade, and the long-term
@@ -431,8 +435,9 @@ below are credible. The absolute mm values are not ground truth.
 
 ### Seasonal snowpack curve
 
-The four monthly-native snow variables — SWE, snowfall, snowmelt, and
-snow cover — show *when* snow accumulates and melts. Aggregated to
+Three of the monthly-native snow variables — SWE, snowfall and
+snowmelt — show *when* snow accumulates and melts (snow cover, already
+a percentage, has no percent change to compare). Aggregated to
 the four standard meteorological seasons — winter (December–February),
 spring (March–May), summer (June–August), and fall
 (September–November) — the table below compares the recent decade
@@ -561,8 +566,8 @@ boundary is just north of the Kootenay Lake Region.
 
 **Summer is becoming snow-free.** Summer SWE has collapsed by 73%
 and summer snowmelt is down 61%. The high-elevation snowpack that
-historically lingered into summer no longer does in the recent
-decade. For aquatic ecosystems downstream, this is a loss of
+historically lingered into summer now holds about a quarter of
+what it did. For aquatic ecosystems downstream, this is a loss of
 late-season cold-water input to streams during the warmest, most
 thermally stressful weeks of the year.
 
@@ -648,14 +653,13 @@ er_num <- do.call(rbind, lapply(er_shown, function(x) {
   p <- x$cmp_pct[x$cmp_pct$variable == "prcp" & x$cmp_pct$period == "annual", ]
   data.frame(rate = 10 * t$slope, delta = d$difference, prcp_pct = p$difference)
 }))
-rng <- function(x, fmt) paste(sprintf(fmt, range(x)), collapse = " and ")
 wsg_p <- vapply(vignette_data$wsg, function(x) {
   x$trn$mk_pvalue[x$trn$variable == "prcp" & x$trn$period == "annual" &
                     x$trn$trend_start == 1951]
 }, numeric(1))
 ```
 
-All three ecoregions shown warmed at roughly the same rate, between
+All three ecoregions shown warmed, at rates between
 `r rng(er_num$rate, "+%.2f")` °C per decade since 1951. Precipitation
 shows a region-wide decline; the magnitude is consistent across
 ecoregions rather than concentrated in any one zone. Vapour
@@ -928,7 +932,8 @@ The Kootenay Lake Region is reported and managed at the watershed-group
 scale — the British Columbia Freshwater Atlas hydrological reporting
 unit, and the unit the Fish & Wildlife Compensation Program funds
 work in. Four watershed groups make up the AOI for this
-list. They span the four ecoregions in different ways. KOTL, DUNC,
+list. They span the four ecoregions in different ways (TOP, too
+small to draw, appears only in the table). KOTL, DUNC,
 and SLOC sit almost entirely within Northern Columbia Mountains
 (NCM); LARL is the most-mixed group, splitting across NCM and the
 Selkirk-Bitterroot Foothills (SBF). The map below shows the
@@ -1012,8 +1017,9 @@ between `r rng(er_num$delta, "%.1f")` °C warmer in 2015–2025 than in
 per decade since 1951, with Mann-Kendall p-values below 0.001 in every
 ecoregion. The trend is statistically significant beyond reasonable
 doubt of being random noise. Daily maximum, daily minimum, and daily
-mean temperatures all tell the same story. The whole region moved
-together — there is no warming hot-spot at the ecoregion scale.
+mean temperatures all tell the same story. The whole region warmed;
+the ecoregions differ by a few tenths of a degree, small beside the
+warming itself.
 
 **Precipitation is declining and the decline is regionally
 consistent.** Annual precipitation dropped **~7%** from the
@@ -1069,7 +1075,7 @@ rain is falling, not rising. **The cold-water input that
 high-elevation snowpack provides during the warmest weeks of summer
 is dropping in parallel with summer SWE.** **The spring freshet — the
 high-flow event that shapes channels, moves spawning gravels, and
-refills off-channel rearing habitat — is arriving weeks earlier.**
+refills off-channel rearing habitat — is arriving nearly two weeks earlier.**
 
 Lower Columbia River reaches below Hugh Keenleyside Dam are
 dam-fragmented and not anadromous, so the framing is about resident

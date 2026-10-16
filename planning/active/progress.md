@@ -11,3 +11,6 @@
 - Branch installed, Kootenay article rendered (10 s); each rewritten sentence read back from the HTML
 - Phase 6 sweep: two more inherited sentences found false (seasonal snow caption carried Peace's −75 % / +37 %; the sentence above it cited "headline numbers above" the text never states). Caption computed inline; two more claims; verdict per sentence in findings.md
 - Harness re-run: PASS unperturbed, all nine perturbations fire; both articles re-render with the branch installed
+- Plan review landed after Phase 6; folded in (review-plan.md, dispositions in findings.md). Filed #148 (Peace "cumulative" mislabel)
+- Tests: devtools::test() FAIL 0 | PASS 768
+- Harness: PASS unperturbed; ten perturbations fire; filter set back to 50 fires `prose_states_filter`
