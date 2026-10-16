@@ -19,7 +19,7 @@ test_that("cd_variables anomaly types are valid", {
   vars <- cd_variables()
   expect_true(all(vars$anomaly_type %in%
                     c("absolute", "pct_normal", "pct_point_diff")))
-  expect_equal(sum(vars$anomaly_type == "pct_normal"), 5)
+  expect_equal(sum(vars$anomaly_type == "pct_normal"), 6)
   expect_equal(sum(vars$anomaly_type == "pct_point_diff"), 2)
 })
 
@@ -28,7 +28,7 @@ test_that("cd_variables pct_normal variables are correct", {
   pct_vars <- vars$variable[vars$anomaly_type == "pct_normal"]
   expect_equal(
     sort(pct_vars),
-    c("prcp", "snowfall", "snowmelt", "soil_moisture", "swe")
+    c("prcp", "snowfall", "snowmelt", "soil_moisture", "swe", "swe_max")
   )
 })
 
@@ -54,9 +54,11 @@ test_that("cd_variables gives vpd the unit its data is in (hPa)", {
   expect_equal(vars$unit[vars$variable == "vpd"], "hPa")
 })
 
-test_that("bundled vignette data carries the registry's units (#96)", {
-  # A carried `unit` wins over cd_variables() in meta_resolve(), so a unit
-  # baked into the vignettes' precomputed tables outlives a registry fix.
+test_that("bundled vignette data carries the registry's types and units (#96, #139)", {
+  # A carried `unit` or `anomaly_type` wins over cd_variables() in
+  # meta_resolve(), so one baked into the vignettes' precomputed tables
+  # outlives a registry fix. Only tables carrying `anomaly_type` are held to
+  # it: northern_bc.rds's lookup and scorecard use their own unit words.
   files <- list.files(
     system.file("vignette-data", package = "cd"),
     pattern = "\\.rds$", full.names = TRUE
@@ -69,11 +71,18 @@ test_that("bundled vignette data carries the registry's units (#96)", {
       if (all(c("variable", "unit", "anomaly_type") %in% names(x))) {
         tables <<- tables + 1L
         idx <- match(as.character(x$variable), vars$variable)
-        same_type <- !is.na(idx) & x$anomaly_type == vars$anomaly_type[idx]
-        bad <- same_type & x$unit != vars$unit[idx]
+        known <- !is.na(idx)
+        # A carried type wins over the registry too, so a type change (#139)
+        # outlives the registry fix in the same way a unit does
+        bad_type <- known & x$anomaly_type != vars$anomaly_type[idx]
+        expect_false(
+          any(bad_type, na.rm = TRUE),
+          info = paste(path, "type:", paste(unique(x$variable[which(bad_type)]), collapse = ", "))
+        )
+        bad <- known & x$unit != vars$unit[idx]
         expect_false(
           any(bad, na.rm = TRUE),
-          info = paste(path, paste(unique(x$variable[which(bad)]), collapse = ", "))
+          info = paste(path, "unit:", paste(unique(x$variable[which(bad)]), collapse = ", "))
         )
       }
     } else if (is.list(x)) {

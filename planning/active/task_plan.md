@@ -17,19 +17,19 @@ Decide which is right, then make the registry and `CLAUDE.md` agree. If the regi
 - `cd_compare()` keeps `window_a = 2015:2025`; only its docs change ("the recent 11 years").
 
 ## Phase 1: Registry and tests
-- [ ] `R/cd_variables.R`: swe_max `anomaly_type` → `"pct_normal"`, `unit` → `"%"`. Update the roxygen `pct_change` note: "`vpd` and `swe_max` are `absolute`" becomes `vpd` and `snowmelt_rate_peak`
-- [ ] `tests/testthat/test-cd_variables.R`: pct_normal count 5 → 6, add `swe_max` to the pct_normal list
-- [ ] Tighten the bundled-data test so a registry variable carried with a different `anomaly_type` fails. Exempt only rows the registry does not list, or rows a carrier deliberately overrides (check whether any bundled table does). Restore the old rds and confirm the test goes red
-- [ ] grep R/ and tests/ for anything else keyed on swe_max being absolute or mm (e.g. `test-cd_compare.R:271` pct series), and fix it
-- [ ] `devtools::document()`, then run the tests
+- [x] `R/cd_variables.R`: swe_max `anomaly_type` → `"pct_normal"`, `unit` → `"%"`. Update the roxygen `pct_change` note: "`vpd` and `swe_max` are `absolute`" becomes `vpd` and `snowmelt_rate_peak`
+- [x] `tests/testthat/test-cd_variables.R`: pct_normal count 5 → 6, add `swe_max` to the pct_normal list
+- [x] Tighten the bundled-data test so a registry variable carried with a different `anomaly_type` fails. No bundled table overrides a type (measured: only swe_max differed), so no exemption; tables without `anomaly_type` stay excluded. Restore the old rds and confirm the test goes red
+- [x] grep R/ and tests/ for anything else keyed on swe_max being absolute or mm and fix it: `test-cd_fetch.R` hardcoded the pct_normal list (review B1); `test-cd_compare.R:271` swapped to snowmelt_rate_peak (G5); `R/cd_anomaly.R` and `cd_variables()` `unit` docs (G1, G2)
+- [x] `devtools::document()`, then run the tests
 
 ## Phase 2: Patch the bundled vignette data
-- [ ] `data-raw/vignette_data_swe_max_type_patch.R`, modelled on the vpd patch. For every `ts`/`ano`/`trn` group in `peace_fwcp.rds` and `kootenay_lake.rds`: rebuild the swe_max baseline from `ts` using the reference the data-raw script used, then recompute `ano` with `cd_anomaly()` and `trn` with `cd_trend(trend_start = c(1951, 1981))`
-- [ ] Guard before writing: recomputing with type `absolute` reproduces the stored swe_max rows exactly, which proves the inputs match. Every non-swe_max row, every other list element and every attribute must be unchanged. Re-running must be a no-op
-- [ ] Run the patch, commit both rds files, and confirm the bundled-data test passes on the patched data
+- [x] `data-raw/vignette_data_swe_max_type_patch.R`, modelled on the vpd patch. For every `ts`/`ano`/`trn` group in `peace_fwcp.rds` and `kootenay_lake.rds`: rebuild the swe_max baseline from `ts` using the reference the data-raw script used, then recompute `ano` with `cd_anomaly()` and `trn` with `cd_trend(trend_start = c(1951, 1981))`
+- [x] Guard before writing: recomputing with type `absolute` reproduces the stored swe_max rows exactly, which proves the inputs match. Every non-swe_max row, every other list element and every attribute must be unchanged. Re-running must be a no-op
+- [x] Run the patch, commit both rds files, and confirm the bundled-data test passes on the patched data
 
 ## Phase 3: Vignettes, docs, CLAUDE.md
-- [ ] `peace-fwcp.Rmd` and `kootenay-lake.Rmd`: change the facet-swe-max caption ("Bars are mm…") and y label to percent of normal; change the snow-annual panel label "Peak SWE (mm)" to %. grep the prose for swe_max anomaly or trend figures stated in mm. The `cd_compare` mm values (135 → 122 mm) come from `value`, so they stay
+- [ ] `peace-fwcp.Rmd` and `kootenay-lake.Rmd` (incl. kootenay `facet-wsg-swe-max`, review G3; peace :912 mislabels annual `swe` as peak, A1): change the facet-swe-max caption ("Bars are mm…") and y label to percent of normal; change the snow-annual panel label "Peak SWE (mm)" to %. grep the prose for swe_max anomaly or trend figures stated in mm. The `cd_compare` mm values (135 → 122 mm) come from `value`, so they stay
 - [ ] `data-raw/northern_bc_vignette_data.R`: fix the lookup comment (only the comment; the lookup and the rds stay as they are)
 - [ ] Also check whether `peace_fwcp_vignette_data.R` and `kootenay_lake_vignette_data.R` need a note, so a future full regen picks up pct_normal from the registry with no extra step
 - [ ] `R/cd_compare.R`: change "a recent decade (`2015:2025`)" to "the recent 11 years (`2015:2025`)", including the "recent decade" in the cumulative-impact sentence; `document()`

@@ -8,7 +8,7 @@ test_that("cd_fetch determines pct_normal variables", {
   pct <- vars$variable[vars$anomaly_type == "pct_normal"]
   expect_equal(
     sort(pct),
-    c("prcp", "snowfall", "snowmelt", "soil_moisture", "swe")
+    c("prcp", "snowfall", "snowmelt", "soil_moisture", "swe", "swe_max")
   )
 })
 

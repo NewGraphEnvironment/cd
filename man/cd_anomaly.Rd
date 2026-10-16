@@ -26,8 +26,9 @@ one.
 \description{
 Calculates departure from a baseline for each year. The anomaly type
 decides the arithmetic: absolute deviation for temperature, VPD, RH,
-and the annual snow scalars; percent of normal for precipitation, soil
-moisture, and the monthly snow vars (\code{swe}, \code{snowfall}, \code{snowmelt});
+the day of 50\% melt and the peak melt rate; percent of normal for
+precipitation, soil moisture, the monthly snow vars (\code{swe}, \code{snowfall},
+\code{snowmelt}) and the annual peak snowpack (\code{swe_max});
 percentage-point difference for variables that are already
 fractions/percentages (\code{snow_cover}, \code{snowfall_fraction}).
 }
