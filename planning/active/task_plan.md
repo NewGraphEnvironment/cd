@@ -39,8 +39,8 @@ Decide which is right, then make the registry and `CLAUDE.md` agree. If the regi
 ## Validation
 - [x] Tests pass (`devtools::test()`, grep FAIL/ERROR)
 - [x] Render both regional vignettes (`pkgdown::build_article()` or `rmarkdown::render`) and look at the swe_max facet and snow-annual panels
-- [ ] `lintr::lint_package()` clean on touched files
-- [ ] `/code-check` clean (each commit, or once over the branch with `/code-check branch`)
-- [ ] PWF checkboxes match landed work
+- [x] `lintr::lint_package()` clean on touched files
+- [x] `/code-check` clean (each commit, or once over the branch with `/code-check branch`)
+- [x] PWF checkboxes match landed work
 - [ ] `/planning-archive` on completion
 
