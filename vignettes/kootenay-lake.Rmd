@@ -95,7 +95,7 @@ rivers      <- st_read(ctx, layer = "rivers",     quiet = TRUE)
 streams     <- st_read(ctx, layer = "streams",    quiet = TRUE)
 highways    <- st_read(ctx, layer = "highways",   quiet = TRUE)
 ecoregions  <- st_read(ctx, layer = "ecoregions", quiet = TRUE)
-ecoregions  <- ecoregions[ecoregions$area_km2 > 50, ]
+ecoregions  <- ecoregions[ecoregions$area_km2 > 100, ]
 ecoregions$name_tc <- tools::toTitleCase(tolower(ecoregions$name))
 
 wsgs <- st_read(ctx, layer = "wsgs", quiet = TRUE)
@@ -264,14 +264,27 @@ from the pre-warming reference. **Trend p (75-yr)** asks whether the
 full series ramps year-on-year. A sudden step change shows up as
 significant Δ p but not trend p; a gradual ramp shows up as both.
 
+```{r prose-numbers-regional, include = FALSE}
+# Numbers the soil-moisture sentences below and in Interpretation state.
+# data-raw/kootenay_lake_vignette_data.R asserts the words around them.
+fp <- function(p) format(signif(p, 1), scientific = FALSE)
+sm_cmp <- cd::cd_compare(ts[ts$variable == "soil_moisture" & ts$period == "annual", ])
+sm_pct <- 100 * (sm_cmp$mean_a - sm_cmp$mean_b) / sm_cmp$mean_b
+sm_trn <- trn[trn$variable == "soil_moisture" & trn$period == "annual", ]
+sm_p   <- setNames(sm_trn$mk_pvalue, sm_trn$trend_start)
+```
+
 The recent decade was 1.6 to 1.8 °C warmer than the pre-warming
 reference for annual mean, daytime maximum, and overnight minimum,
 with both window and trend p-values below 0.001. Vapour pressure
 deficit is up significantly on both tests. Annual precipitation
 was about 6 to 7 % *lower* in the recent decade, and the long-term
 Mann-Kendall trend test confirms a steady year-on-year decline
-(trend p ≈ 0.02). Soil moisture is roughly flat. Relative humidity
-shows a small significant decline.
+(trend p ≈ 0.02). Soil moisture is down `r sprintf("%.1f", -sm_pct)` %, too
+small a step for the window test (p ≈ `r fp(sm_cmp$p_value)`), but the trend
+test finds a steady decline (trend p ≈ `r fp(sm_p[["1951"]])` from 1951 and
+≈ `r fp(sm_p[["1981"]])` from 1981). Relative humidity shows a small
+significant decline.
 
 ```{r compare-recipe, eval = FALSE}
 cmp <- cd::cd_compare(ts)   # defaults: 2015–2025 vs 1951–1980, Welch t-test
@@ -605,13 +618,34 @@ elevations and exposures: Northern Columbia Mountains (NCM, the
 dominant zone covering most of the AOI including the Selkirks and
 Purcells), Selkirk-Bitterroot Foothills (SBF, the western lower-
 elevation tier of LARL), Thompson-Okanagan Plateau (TOP, a 26 km²
-sliver in LARL's far west, too small for the per-ecoregion trend figures
-and roll-up table below, which leave it out), and Purcell Transitional Ranges (PTR,
-a small sliver on the eastern edge). To check whether the regional story holds
+sliver in LARL's far west), and Purcell Transitional Ranges (PTR,
+a small sliver on the eastern edge). Ecoregions under 100 km² — here
+TOP, smaller than one ERA5-Land cell — are left out of the maps, the
+per-ecoregion trend figures and the roll-up table below, so they show
+three. To check whether the regional story holds
 within each ecoregion — and where it does not — we run the same
 pipeline on each ecoregion polygon individually.
 
-All four ecoregions warmed at roughly the same rate. Precipitation
+```{r prose-numbers-ecoregion, include = FALSE}
+# Per-ecoregion numbers the prose states, over the ecoregions shown.
+# data-raw/kootenay_lake_vignette_data.R asserts the words around them.
+er_shown <- vignette_data$ecoregion[ecoregions$code]
+er_num <- do.call(rbind, lapply(er_shown, function(x) {
+  t <- x$trn[x$trn$variable == "tmean" & x$trn$period == "annual" &
+               x$trn$trend_start == 1951, ]
+  d <- cd::cd_compare(x$ts[x$ts$variable == "tmean" & x$ts$period == "annual", ])
+  p <- x$cmp_pct[x$cmp_pct$variable == "prcp" & x$cmp_pct$period == "annual", ]
+  data.frame(rate = 10 * t$slope, delta = d$difference, prcp_pct = p$difference)
+}))
+rng <- function(x, fmt) paste(sprintf(fmt, range(x)), collapse = " and ")
+wsg_p <- vapply(vignette_data$wsg, function(x) {
+  x$trn$mk_pvalue[x$trn$variable == "prcp" & x$trn$period == "annual" &
+                    x$trn$trend_start == 1951]
+}, numeric(1))
+```
+
+All three ecoregions shown warmed at roughly the same rate, between
+`r rng(er_num$rate, "+%.2f")` °C per decade since 1951. Precipitation
 shows a region-wide decline; the magnitude is consistent across
 ecoregions rather than concentrated in any one zone. Vapour
 pressure deficit is up significantly across the region.
@@ -959,11 +993,12 @@ kableExtra::kable_styling(
 
 ## Interpretation
 
-Three findings emerge from the climate departures shown above.
+Four findings emerge from the climate departures shown above.
 
-**Warming is broad and fast.** All four ecoregions warmed between
-+1.6 °C and +1.9 °C cumulative since 1951, at a rate near
-+0.25 °C per decade, with Mann-Kendall p-values below 0.001 in every
+**Warming is broad and fast.** The three ecoregions shown were
+between `r rng(er_num$delta, "%.1f")` °C warmer in 2015–2025 than in
+1951–1980, warming at rates between `r rng(er_num$rate, "+%.2f")` °C
+per decade since 1951, with Mann-Kendall p-values below 0.001 in every
 ecoregion. The trend is statistically significant beyond reasonable
 doubt of being random noise. Daily maximum, daily minimum, and daily
 mean temperatures all tell the same story. The whole region moved
@@ -973,10 +1008,11 @@ together — there is no warming hot-spot at the ecoregion scale.
 consistent.** Annual precipitation dropped **~7%** from the
 1951-1980 reference to the 2015-2025 recent decade, with a long-term
 Mann-Kendall p of 0.02. Spatially the decline is consistent across
-all four ecoregions of the AOI, so the pattern at the regional
-average mirrors what each watershed group sees individually. All
-four watershed groups in the AOI are sitting in the same drying
-signal.
+the three ecoregions shown, down between `r rng(-er_num$prcp_pct, "%.1f")` %.
+The watershed groups agree in direction more than in strength: the
+precipitation trend since 1951 points down in all four, but only in
+KOTL is it statistically significant (p `r sprintf("%.3f", wsg_p[["KOTL"]])`); in
+DUNC, LARL and SLOC it is not (p between `r rng(wsg_p[names(wsg_p) != "KOTL"], "%.3f")`).
 
 **The atmosphere is drying.** Vapour pressure deficit — the gap
 between how much water the air could hold and how much it actually
@@ -989,11 +1025,12 @@ relative-humidity declines. Combined
 with declining precipitation, this is a "double-dipping" signal:
 less water arriving as precipitation, *and* warmer air pulling more
 water out of soil and vegetation through evapotranspiration. Soil
-moisture is essentially flat despite the precipitation decline —
-the warmer atmosphere is drinking surface moisture at a rate that
-keeps the topsoil layer roughly even, but the resulting
-late-summer water deficit shows up in stream baseflow rather than
-in soil-moisture statistics.
+moisture is falling too: down `r sprintf("%.1f", -sm_pct)` % between
+the two windows, a step the window test cannot separate from
+year-to-year noise (p ≈ `r fp(sm_cmp$p_value)`), but part of a
+significant long-term decline (trend p ≈ `r fp(sm_p[["1951"]])` from
+1951 and ≈ `r fp(sm_p[["1981"]])` from 1981). From 1981 the decline is
+significant in every ecoregion shown.
 
 **Snow is leaving *and* falling less.** Annual snowfall is
 **down 15%** alongside the freshet shift — winter precipitation is

@@ -851,7 +851,7 @@ kableExtra::kable_styling(
 
 ## Interpretation
 
-Three findings emerge from the climate departures shown above.
+Four findings emerge from the climate departures shown above.
 
 **Warming is broad, fast, and uniform.** All five ecoregions warmed
 between +1.7 °C and +1.9 °C cumulative since 1951, at a rate near

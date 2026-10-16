@@ -30,26 +30,26 @@ ecoregion") are added to the existing `claims` block in `data-raw/kootenay_lake_
 (#102's pattern), so a regen that falsifies one stops. No rds regen, no change under `R/`.
 
 ## Phase 1: One area threshold, three ecoregions in the prose (item 5)
-- [ ] `kootenay-lake.Rmd:98` filter 50 → 100 km², matching `peace-fwcp.Rmd:92`
-- [ ] Per-Ecoregion intro (`:603-611`): state the 100 km² rule once where TOP is named
-- [ ] `:614`, `:964`, `:976` "four ecoregions" → the three shown (`:886`, the overlap table intro, stays four: that table shows four)
+- [x] `kootenay-lake.Rmd:98` filter 50 → 100 km², matching `peace-fwcp.Rmd:92`
+- [x] Per-Ecoregion intro (`:603-611`): state the 100 km² rule once where TOP is named
+- [x] `:614`, `:964`, `:976` "four ecoregions" → the three shown (`:886`, the overlap table intro, stays four: that table shows four)
 
 ## Phase 2: Soil moisture is declining, not flat (item 1)
-- [ ] `:273` rewrite from inline values: window Δ % and window p from `cmp_pct`/`cmp`, 1951 and 1981 trend p from `trn`
-- [ ] `:992-996` rewrite: drop the unsupported "keeps the topsoil roughly even … shows up in baseflow" mechanism; state the decline with inline numbers
-- [ ] `claims`: regional soil_moisture slope < 0 and p < 0.05 for both starts; window p ≥ 0.05 (if the sentence says the window test misses it); 1981 trend p < 0.05 in every shown ecoregion
+- [x] `:273` rewrite from inline values: window Δ % and window p from `cmp_pct`/`cmp`, 1951 and 1981 trend p from `trn`
+- [x] `:992-996` rewrite: drop the unsupported "keeps the topsoil roughly even … shows up in baseflow" mechanism; state the decline with inline numbers
+- [x] `claims`: regional soil_moisture slope < 0 and p < 0.05 for both starts; window p ≥ 0.05 (if the sentence says the window test misses it); 1981 trend p < 0.05 in every shown ecoregion
 
 ## Phase 3: Warming range and rate from the shown ecoregions (item 2)
-- [ ] `:964-966` range of window differences and range of °C/decade slopes computed inline over the shown ecoregions
-- [ ] `:614` "roughly the same rate" carries the same inline slope range
-- [ ] `claims`: tmean 1951 trend p < 0.001 in every shown ecoregion
+- [x] `:964-966` range of window differences and range of °C/decade slopes computed inline over the shown ecoregions
+- [x] `:614` "roughly the same rate" carries the same inline slope range
+- [x] `claims`: tmean 1951 trend p < 0.001 in every shown ecoregion
 
 ## Phase 4: Findings count (item 3)
-- [ ] `kootenay-lake.Rmd:962` and `peace-fwcp.Rmd:854` "Three findings" → "Four findings"
+- [x] `kootenay-lake.Rmd:962` and `peace-fwcp.Rmd:854` "Three findings" → "Four findings"
 
 ## Phase 5: WSG drying is consistent in direction, not strength (item 4)
-- [ ] `:976-979` rewrite: all four WSGs trend down since 1951; significant only in the WSG(s) computed inline from `vignette_data$wsg`, with the others' p range
-- [ ] `claims`: every WSG 1951 prcp slope < 0; significant set is exactly KOTL (the sentence names it)
+- [x] `:976-979` rewrite: all four WSGs trend down since 1951; significant only in the WSG(s) computed inline from `vignette_data$wsg`, with the others' p range
+- [x] `claims`: every WSG 1951 prcp slope < 0; significant set is exactly KOTL (the sentence names it)
 
 ## Phase 6: Sweep the article's remaining quantified sentences
 - [ ] Walk every "all / every / each / both / none / no" and stated number in the Kootenay prose and captions (grep list in findings.md) against the rds; record a verdict per sentence in findings.md
@@ -57,7 +57,7 @@ ecoregion") are added to the existing `claims` block in `data-raw/kootenay_lake_
 
 ## Validation
 
-- [ ] Offline claims harness passes on the committed rds, and each new claim fires when its input is perturbed
+- [x] Offline claims harness passes on the committed rds, and each new claim fires when its input is perturbed
 - [ ] Branch installed; both changed articles render; rewritten sentences present in the HTML with no `NA`
 - [ ] Tests pass
 - [ ] `/code-check` clean (once over the branch with `/code-check branch`)

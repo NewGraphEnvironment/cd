@@ -90,9 +90,10 @@ wsg_results <- lapply(seq_len(nrow(wsgs)), function(i) {
 })
 names(wsg_results) <- wsgs$code
 
-# -- Sentences the prcp captions state (#102) ---------------------------------
-# kootenay-lake.Rmd's captions are static text, so refuse to save data they
-# no longer describe. Significance is Mann-Kendall p < 0.05.
+# -- Sentences the vignette states (#102, #146) ------------------------------
+# kootenay-lake.Rmd's captions and prose carry static words (significant, every,
+# only), so refuse to save data they no longer describe. The numbers beside
+# them are computed inline at render. Significance is p < 0.05.
 # The ecoregions the vignette shows: it filters by area in its load-context
 # chunk, so read its threshold rather than restate it here. This reads source
 # text, so it refuses any shape it was not written for: `ecoregions` assigned
@@ -123,6 +124,25 @@ prcp_trend <- function(start) {
 }
 p51 <- prcp_trend(1951)
 p81 <- prcp_trend(1981)
+annual_trend <- function(trn, var, start) {
+  r <- trn[trn$variable == var & trn$period == "annual" & trn$trend_start == start, ]
+  stopifnot(NROW(r) == 1)
+  r
+}
+er_p <- function(var, start) {
+  vapply(shown, function(code) {
+    annual_trend(ecoregion_results[[code]]$trn, var, start)$mk_pvalue
+  }, numeric(1))
+}
+sm51 <- annual_trend(regional_trn, "soil_moisture", 1951)
+sm81 <- annual_trend(regional_trn, "soil_moisture", 1981)
+sm_window_p <- regional_cmp$p_value[regional_cmp$variable == "soil_moisture" &
+                                      regional_cmp$period == "annual"]
+stopifnot(length(sm_window_p) == 1)
+wsg_prcp <- do.call(rbind, lapply(names(wsg_results), function(code) {
+  r <- annual_trend(wsg_results[[code]]$trn, "prcp", 1951)
+  data.frame(code = code, slope = r$slope, p = r$mk_pvalue)
+}))
 # The roll-up's `prcp %/yr` header: its slopes are trends of pct_normal anomalies
 prcp_rows <- do.call(rbind, lapply(ecoregion_results[shown], function(x) {
   x$trn[x$trn$variable == "prcp", ]
@@ -141,7 +161,22 @@ claims <- c(
   # "significant in ... (NCM) and ... (PTR), not in SBF"
   prcp_significant_ncm_ptr = setequal(p51$code[p51$p < 0.05], c("NCM", "PTR")),
   # "None of the 45-year trends is significant"
-  prcp_none_significant_1981 = all(p81$p >= 0.05)
+  prcp_none_significant_1981 = all(p81$p >= 0.05),
+  # Soil moisture: "the trend test finds a steady decline" from 1951 and 1981
+  soil_declines_both_starts = sm51$slope < 0 && sm81$slope < 0 &&
+    sm51$mk_pvalue < 0.05 && sm81$mk_pvalue < 0.05,
+  # "too small a step for the window test"
+  soil_window_not_significant = sm_window_p >= 0.05,
+  # "when the decline is significant in every ecoregion shown"
+  soil_significant_every_shown_1981 = all(er_p("soil_moisture", 1981) < 0.05),
+  # "Mann-Kendall p-values below 0.001 in every ecoregion", and the roll-up's
+  # "All temperature p-values are below 0.001"
+  temperature_p_below_0.001_every_shown = all(
+    c(er_p("tmean", 1951), er_p("tmax", 1951), er_p("tmin", 1951)) < 0.001
+  ),
+  # "points down in all four, but only in KOTL is it statistically significant"
+  wsg_prcp_declines_everywhere = nrow(wsg_prcp) == 4 && all(wsg_prcp$slope < 0),
+  wsg_prcp_significant_kotl_only = setequal(wsg_prcp$code[wsg_prcp$p < 0.05], "KOTL")
 )
 if (!all(claims %in% TRUE)) {
   stop("Vignette sentences no longer true of the data: ",
