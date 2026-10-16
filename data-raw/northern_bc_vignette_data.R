@@ -30,9 +30,9 @@ aoi <- st_read(
 
 # How each variable's change is expressed, and which direction is the warm /
 # dry one. Chosen here, not read from cd_variables()$anomaly_type: a percent
-# change of a temperature in degrees C is meaningless, and the registry calls
-# swe_max "absolute" where a percent of the normal snowpack is the
-# plain-language number. Every sign and tint in the vignette reads `warm_if`.
+# change of a temperature in degrees C is meaningless, and the anomaly type
+# says how a departure is computed, not how a change between two windows is
+# best told. Every sign and tint in the vignette reads `warm_if`.
 lookup <- data.frame(
   variable = c("tmean", "tmax", "snowmelt_doy_50", "snowfall_fraction",
                "prcp", "swe_max", "vpd", "soil_moisture"),

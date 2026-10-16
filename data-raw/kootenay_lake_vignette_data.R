@@ -42,8 +42,9 @@ wsgs <- wsgs[order(wsgs$code), ]
 
 catalog <- cd_catalog()
 
-# pct_change for vars with pct_normal anomaly type. Mirrors the
-# extension done in peace_fwcp_vignette_data.R.
+# pct_change for the variables the vignette's percent tables read. Mirrors
+# peace_fwcp_vignette_data.R. These were the pct_normal variables until #139
+# made swe_max pct_normal too; the vignette tables do not read swe_max.
 pct_normal_vars <- c("prcp", "soil_moisture", "swe", "snowfall", "snowmelt")
 
 # -- Regional ----------------------------------------------------------------

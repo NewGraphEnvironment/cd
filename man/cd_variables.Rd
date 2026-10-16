@@ -11,7 +11,9 @@ A tibble with columns:
 \describe{
 \item{variable}{Short name used throughout the package.}
 \item{long_name}{Human-readable label for plots and tables.}
-\item{unit}{Measurement unit (degree C, percent, hPa, mm, day, mm/wk).}
+\item{unit}{Unit of the anomaly (degree C, percent, hPa, day,
+mm/wk): percent for every \code{pct_normal} and \code{pct_point_diff}
+variable, whatever the unit of its values.}
 \item{anomaly_type}{"absolute" for direct departures (value - baseline,
 reported in the variable's native unit), "pct_normal" for
 percent-of-normal anomalies (100 * value / baseline - 100, capped),
@@ -25,8 +27,8 @@ temperatures in degree C and the day of 50\% melt, whose zero is
 arbitrary (a base mean near 0 degree C makes the percent unbounded
 and its sign arbitrary), and for variables whose values are already in percent (\code{rh},
 \code{snow_cover}, \code{snowfall_fraction}). Read
-by \code{\link[=cd_compare]{cd_compare()}}. Independent of \code{anomaly_type}: \code{vpd} and \code{swe_max}
-are \code{absolute} and still take a percent.}
+by \code{\link[=cd_compare]{cd_compare()}}. Independent of \code{anomaly_type}: \code{vpd} and
+\code{snowmelt_rate_peak} are \code{absolute} and still take a percent.}
 \item{era5_name}{ERA5-Land variable name for CDS API requests,
 or NA for derived variables.}
 }

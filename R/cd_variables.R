@@ -19,7 +19,9 @@
 #'   \describe{
 #'     \item{variable}{Short name used throughout the package.}
 #'     \item{long_name}{Human-readable label for plots and tables.}
-#'     \item{unit}{Measurement unit (degree C, percent, hPa, mm, day, mm/wk).}
+#'     \item{unit}{Unit of the anomaly (degree C, percent, hPa, day,
+#'       mm/wk): percent for every `pct_normal` and `pct_point_diff`
+#'       variable, whatever the unit of its values.}
 #'     \item{anomaly_type}{"absolute" for direct departures (value - baseline,
 #'       reported in the variable's native unit), "pct_normal" for
 #'       percent-of-normal anomalies (100 * value / baseline - 100, capped),
@@ -33,8 +35,8 @@
 #'       arbitrary (a base mean near 0 degree C makes the percent unbounded
 #'       and its sign arbitrary), and for variables whose values are already in percent (`rh`,
 #'       `snow_cover`, `snowfall_fraction`). Read
-#'       by [cd_compare()]. Independent of `anomaly_type`: `vpd` and `swe_max`
-#'       are `absolute` and still take a percent.}
+#'       by [cd_compare()]. Independent of `anomaly_type`: `vpd` and
+#'       `snowmelt_rate_peak` are `absolute` and still take a percent.}
 #'     \item{era5_name}{ERA5-Land variable name for CDS API requests,
 #'       or NA for derived variables.}
 #'   }
@@ -62,7 +64,7 @@ cd_variables <- function() {
     unit = c(
       "\u00b0C", "\u00b0C", "\u00b0C", "%", "hPa", "%", "%",
       "%", "%", "%", "%",
-      "mm", "%", "day", "mm/wk"
+      "%", "%", "day", "mm/wk"
     ),
     anomaly_type = c(
       "absolute", "absolute", "absolute",
@@ -70,7 +72,7 @@ cd_variables <- function() {
       "absolute", "absolute",
       "pct_normal",
       "pct_normal", "pct_normal", "pct_normal", "pct_point_diff",
-      "absolute", "pct_point_diff", "absolute", "absolute"
+      "pct_normal", "pct_point_diff", "absolute", "absolute"
     ),
     pct_change = c(
       FALSE, FALSE, FALSE,

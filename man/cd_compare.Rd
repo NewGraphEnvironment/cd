@@ -53,9 +53,9 @@ difference between them, and (by default) a p-value testing
 whether the two windows differ.
 }
 \details{
-Defaults compare a recent decade (\code{2015:2025}) to a pre-warming
+Defaults compare the recent 11 years (\code{2015:2025}) to a pre-warming
 reference (\code{1951:1980}, the GISS base period) — the framing used
-in the package vignettes. This is a \emph{cumulative-impact} comparison ("how much warmer is the recent decade than the
+in the package vignettes. This is a \emph{cumulative-impact} comparison ("how much warmer are the recent years than the
 pre-warming reference?") rather than a rate-of-change
 comparison; for the latter use \code{\link[=cd_trend]{cd_trend()}}.
 

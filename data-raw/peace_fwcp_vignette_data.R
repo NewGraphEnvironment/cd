@@ -47,9 +47,11 @@ regional_bl  <- cd_baseline(regional_ts, baseline_years = 1951:1980)
 regional_ano <- cd_anomaly(regional_ts, regional_bl)
 regional_trn <- cd_trend(regional_ano, trend_start = c(1951, 1981))
 regional_cmp <- cd_compare(regional_ts, method = "mean_diff")  # defaults: 2015:2025 vs 1951:1980, Welch t
-# pct_change for vars with pct_normal anomaly type (#48 added swe / snowfall /
-# snowmelt to this list; snow_cover and snowfall_fraction are pct_point_diff so
-# mean_diff is the right comparison method for those — already in regional_cmp).
+# pct_change for the variables the vignette's percent tables read (#48 added
+# swe / snowfall / snowmelt to this list; snow_cover and snowfall_fraction are
+# pct_point_diff so mean_diff is the right comparison method for those —
+# already in regional_cmp). These were the pct_normal variables until #139 made
+# swe_max pct_normal too; the vignette tables do not read swe_max.
 pct_normal_vars <- c("prcp", "soil_moisture", "swe", "snowfall", "snowmelt")
 regional_cmp_pct <- cd_compare(
   regional_ts[regional_ts$variable %in% pct_normal_vars, ],

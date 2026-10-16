@@ -268,7 +268,7 @@ test_that("cd_compare blocks every variable without a real zero (#138)", {
 })
 
 test_that("cd_compare keeps the percent for the rest of a mixed table (#138)", {
-  ts <- pct_series(c("tmean", "prcp", "vpd", "swe_max"))
+  ts <- pct_series(c("tmean", "prcp", "vpd", "snowmelt_rate_peak"))
   ts$value[ts$variable != "tmean"] <- rep(c(rep(100, 5), rep(150, 5)), 3)
   w <- testthat::capture_warnings(
     cmp <- cd_compare(ts, window_a = 1956:1960, window_b = 1951:1955,
@@ -276,7 +276,7 @@ test_that("cd_compare keeps the percent for the rest of a mixed table (#138)", {
   )
   expect_length(w, 1)
   expect_match(w, "tmean/annual", fixed = TRUE)
-  expect_false(grepl("prcp|vpd|swe_max", w))
+  expect_false(grepl("prcp|vpd|snowmelt_rate_peak", w))
   expect_equal(nrow(cmp), 4)
   expect_true(is.na(cmp$difference[cmp$variable == "tmean"]))
   expect_equal(cmp$difference[cmp$variable != "tmean"], rep(50, 3))
