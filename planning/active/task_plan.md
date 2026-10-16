@@ -14,9 +14,9 @@ The plan review for #97 reports that the same label was ported into the `fish_pa
 Also folded in at the plan gate: the Kootenay `facet-prcp` caption (`kootenay-lake.Rmd:697`) was copied from Peace and names BMP/NRM, neither of which is in Kootenay.
 
 ## Phase 1: Relabel the roll-up prcp trend (#102)
-- [ ] `vignettes/peace-fwcp.Rmd` rollup chunk: rename `` `prcp mm/yr` `` to `` `prcp %/yr` ``. Change the caption's "annual precipitation trend (mm per year)" to "annual precipitation trend (percentage points of the 1951-1980 normal per year)".
-- [ ] `vignettes/kootenay-lake.Rmd` rollup chunk: the same two edits.
-- [ ] Grep `vignettes/`, `R/`, `data-raw/` and `README*` for any remaining `mm/yr` or `mm per year` attached to an anomaly trend (expected: none).
+- [x] `vignettes/peace-fwcp.Rmd` rollup chunk: rename `` `prcp mm/yr` `` to `` `prcp %/yr` ``. Change the caption's "annual precipitation trend (mm per year)" to "annual precipitation trend (percentage points of the 1951-1980 normal per year)".
+- [x] `vignettes/kootenay-lake.Rmd` rollup chunk: the same two edits.
+- [x] Grep `vignettes/`, `R/`, `data-raw/` and `README*` for any remaining `mm/yr` or `mm per year` attached to an anomaly trend (expected: none).
 
 ## Phase 2: Kootenay facet-prcp caption
 - [ ] Replace the copied sentence at `kootenay-lake.Rmd:697` with one written from the committed numbers: NCM and PTR show statistically significant precipitation decreases over the full record; SBF and TOP decline but not significantly.

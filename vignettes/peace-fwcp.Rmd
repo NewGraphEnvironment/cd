@@ -758,7 +758,7 @@ rollup <- do.call(rbind, lapply(seq_along(results), function(i) {
     `tmean degC/dec` = round(10 * tmean$slope, 2),
     `tmax degC/dec`  = round(10 * tmax$slope, 2),
     `tmin degC/dec`  = round(10 * tmin$slope, 2),
-    `prcp mm/yr` = round(prcp$slope, 3),
+    `prcp %/yr` = round(prcp$slope, 3),
     `prcp p` = round(prcp$mk_pvalue, 3),
     `vpd hPa/dec` = round(10 * vpd$slope, 3),
     `vpd p` = round(vpd$mk_pvalue, 3),
@@ -772,7 +772,7 @@ rollup <- do.call(rbind, lapply(seq_along(results), function(i) {
   )
 }))
 knitr::kable(rollup, row.names = FALSE,
-  caption = "Per-ecoregion roll-up over the 75-year window (1951-present): annual mean, daytime maximum, and overnight minimum temperature trends (degrees C per decade); annual precipitation trend (mm per year) and Mann-Kendall p-value; annual vapour pressure deficit trend (hPa per decade) and p-value; and recent (2015-2025) vs pre-warming (1951-1980) percent change for precipitation and soil moisture. All temperature p-values are below 0.001. A tmin slope greater than the tmax slope indicates the textbook day-night asymmetry.")
+  caption = "Per-ecoregion roll-up over the 75-year window (1951-present): annual mean, daytime maximum, and overnight minimum temperature trends (degrees C per decade); annual precipitation trend (percentage points of the 1951-1980 normal per year) and Mann-Kendall p-value; annual vapour pressure deficit trend (hPa per decade) and p-value; and recent (2015-2025) vs pre-warming (1951-1980) percent change for precipitation and soil moisture. All temperature p-values are below 0.001. A tmin slope greater than the tmax slope indicates the textbook day-night asymmetry.")
 ```
 
 Ecoregion codes used in the table above: `r paste0(ecoregions$code, " — ", ecoregions$name_tc, collapse = "; ")`.

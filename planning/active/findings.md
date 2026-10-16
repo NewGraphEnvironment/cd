@@ -45,3 +45,7 @@ So the Kootenay `facet-prcp` caption ("two northernmost ecoregions (BMP, NRM) sh
 
 | Error | Resolution |
 |-------|------------|
+
+## pct_normal anomaly scale
+
+`R/cd_anomaly.R:137-138`: `pct_normal` anomaly = `value / baseline_mean * 100 - 100` (capped), the percent departure from the baseline mean. A `cd_trend()` slope on it is therefore percentage points of the 1951-1980 normal per year, which is what the new column header (`prcp %/yr`) and caption say.
