@@ -35,7 +35,25 @@ ecoregions <- st_read(
   system.file("extdata", "context_fwcp_peace.gpkg", package = "cd"),
   layer = "ecoregions", quiet = TRUE
 )
-ecoregions <- ecoregions[ecoregions$area_km2 > 100, ]
+# The ecoregions the vignette shows: it filters by area in its load-context
+# chunk, so read its threshold rather than restate it here. This reads source
+# text, so it refuses any shape it was not written for: `ecoregions` assigned
+# only by st_read() and one bare area filter, and `results` subset only by
+# `results[ecoregions$code]`. The rendered page is still the final check.
+vignette_min_km2 <- function(rmd) {
+  lines <- readLines(rmd)
+  filt <- "^\\s*ecoregions\\s*<-\\s*ecoregions\\[ecoregions\\$area_km2 > ([0-9.]+), \\]\\s*$"
+  stopifnot(
+    sum(grepl(filt, lines)) == 1,
+    sum(grepl("^\\s*ecoregions\\s*<-", lines)) == 2,
+    sum(grepl("^\\s*ecoregions\\s*<-\\s*st_read\\(", lines)) == 1,
+    sum(grepl("^\\s*results\\s*<-\\s*results\\[", lines)) == 1,
+    sum(grepl("^\\s*results\\s*<-\\s*results\\[ecoregions\\$code\\]\\s*$", lines)) == 1
+  )
+  as.numeric(sub(filt, "\\1", grep(filt, lines, value = TRUE)))
+}
+peace_min_km2 <- vignette_min_km2("vignettes/peace-fwcp.Rmd")
+ecoregions <- ecoregions[ecoregions$area_km2 > peace_min_km2, ]
 ecoregions <- ecoregions[order(-ecoregions$area_km2), ]
 
 catalog <- cd_catalog()
@@ -72,6 +90,41 @@ ecoregion_results <- lapply(seq_len(nrow(ecoregions)), function(i) {
   list(ts = ts, ano = ano, trn = trn, cmp_pct = cmp_pct)
 })
 names(ecoregion_results) <- ecoregions$code
+
+# -- Sentences the prcp captions state (#102) ---------------------------------
+# peace-fwcp.Rmd's captions are static text, so refuse to save data they no
+# longer describe. Significance is Mann-Kendall p < 0.05.
+# `ecoregions` was filtered with the vignette's own threshold above
+shown <- ecoregions$code
+p51 <- do.call(rbind, lapply(shown, function(code) {
+  t <- ecoregion_results[[code]]$trn
+  r <- t[t$variable == "prcp" & t$period == "annual" & t$trend_start == 1951, ]
+  stopifnot(NROW(r) == 1)
+  data.frame(code = code, slope = r$slope, p = r$mk_pvalue)
+}))
+# The roll-up's `prcp %/yr` header: its slopes are trends of pct_normal anomalies
+prcp_rows <- do.call(rbind, lapply(ecoregion_results[shown], function(x) {
+  x$trn[x$trn$variable == "prcp", ]
+}))
+centroid_lat <- suppressWarnings(
+  st_coordinates(st_centroid(st_transform(ecoregions, 4326)))
+)[, 2]
+claims <- c(
+  prcp_trend_pct_of_baseline = all(prcp_rows$trend_on == "anomaly" &
+                                     prcp_rows$anomaly_type == "pct_normal"),
+  # "The two northernmost ecoregions (BMP, NRM) show statistically significant
+  # precipitation increases over the full record; the others do not."
+  bmp_nrm_northernmost = setequal(
+    head(shown[order(-centroid_lat[match(shown, ecoregions$code)])], 2),
+    c("BMP", "NRM")
+  ),
+  prcp_significant_bmp_nrm = setequal(p51$code[p51$p < 0.05], c("BMP", "NRM")),
+  prcp_bmp_nrm_increase = all(p51$slope[p51$code %in% c("BMP", "NRM")] > 0)
+)
+if (!all(claims %in% TRUE)) {
+  stop("Vignette sentences no longer true of the data: ",
+       paste(names(claims)[!claims %in% TRUE], collapse = ", "))
+}
 
 # -- Spatial pattern raster (pre-cropped, masked, departure) -----------------
 message("Spatial pattern raster ...")

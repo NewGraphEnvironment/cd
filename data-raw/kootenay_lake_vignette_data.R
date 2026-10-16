@@ -90,6 +90,64 @@ wsg_results <- lapply(seq_len(nrow(wsgs)), function(i) {
 })
 names(wsg_results) <- wsgs$code
 
+# -- Sentences the prcp captions state (#102) ---------------------------------
+# kootenay-lake.Rmd's captions are static text, so refuse to save data they
+# no longer describe. Significance is Mann-Kendall p < 0.05.
+# The ecoregions the vignette shows: it filters by area in its load-context
+# chunk, so read its threshold rather than restate it here. This reads source
+# text, so it refuses any shape it was not written for: `ecoregions` assigned
+# only by st_read() and one bare area filter, and `results` subset only by
+# `results[ecoregions$code]`. The rendered page is still the final check.
+vignette_min_km2 <- function(rmd) {
+  lines <- readLines(rmd)
+  filt <- "^\\s*ecoregions\\s*<-\\s*ecoregions\\[ecoregions\\$area_km2 > ([0-9.]+), \\]\\s*$"
+  stopifnot(
+    sum(grepl(filt, lines)) == 1,
+    sum(grepl("^\\s*ecoregions\\s*<-", lines)) == 2,
+    sum(grepl("^\\s*ecoregions\\s*<-\\s*st_read\\(", lines)) == 1,
+    sum(grepl("^\\s*results\\s*<-\\s*results\\[", lines)) == 1,
+    sum(grepl("^\\s*results\\s*<-\\s*results\\[ecoregions\\$code\\]\\s*$", lines)) == 1
+  )
+  as.numeric(sub(filt, "\\1", grep(filt, lines, value = TRUE)))
+}
+shown <- ecoregions$code[
+  ecoregions$area_km2 > vignette_min_km2("vignettes/kootenay-lake.Rmd")
+]
+prcp_trend <- function(start) {
+  do.call(rbind, lapply(shown, function(code) {
+    t <- ecoregion_results[[code]]$trn
+    r <- t[t$variable == "prcp" & t$period == "annual" & t$trend_start == start, ]
+    stopifnot(NROW(r) == 1)
+    data.frame(code = code, slope = r$slope, p = r$mk_pvalue)
+  }))
+}
+p51 <- prcp_trend(1951)
+p81 <- prcp_trend(1981)
+# The roll-up's `prcp %/yr` header: its slopes are trends of pct_normal anomalies
+prcp_rows <- do.call(rbind, lapply(ecoregion_results[shown], function(x) {
+  x$trn[x$trn$variable == "prcp", ]
+}))
+claims <- c(
+  prcp_trend_pct_of_baseline = all(prcp_rows$trend_on == "anomaly" &
+                                     prcp_rows$anomaly_type == "pct_normal"),
+  # "all three ecoregions shown", and the caption names each of them
+  shown_are_ncm_sbf_ptr = setequal(shown, c("NCM", "SBF", "PTR")),
+  ncm_ptr_names = setequal(
+    toupper(ecoregions$name[ecoregions$code %in% c("NCM", "PTR")]),
+    c("NORTHERN COLUMBIA MOUNTAINS", "PURCELL TRANSITIONAL RANGES")
+  ),
+  # "Precipitation declines in all three ecoregions shown over the full record"
+  prcp_declines_everywhere = all(p51$slope < 0),
+  # "significant in ... (NCM) and ... (PTR), not in SBF"
+  prcp_significant_ncm_ptr = setequal(p51$code[p51$p < 0.05], c("NCM", "PTR")),
+  # "None of the 45-year trends is significant"
+  prcp_none_significant_1981 = all(p81$p >= 0.05)
+)
+if (!all(claims %in% TRUE)) {
+  stop("Vignette sentences no longer true of the data: ",
+       paste(names(claims)[!claims %in% TRUE], collapse = ", "))
+}
+
 # -- Spatial pattern raster (pre-cropped, masked, departure) -----------------
 message("Spatial pattern raster ...")
 tmean_row <- catalog[catalog$variable == "tmean" & catalog$period == "annual", ]

@@ -1,0 +1,25 @@
+# Code-check round 5 (#102), branch HEAD ae3664b
+
+## Findings
+
+- **[severity: fragile]** data-raw/kootenay_lake_vignette_data.R:96-103 and data-raw/peace_fwcp_vignette_data.R:38-48 (`vignette_min_km2()`): the comment says "The pattern takes only a bare `> N, ]`, so a filter extended with another condition stops". That is true only for a condition added after the threshold. The regex is unanchored on the left, so a prepended condition or a negation still matches and returns the threshold. Probed with the function body on single lines:
+  - `ecoregions[ecoregions$area_km2 > 50, ]` gives 50
+  - `ecoregions[ecoregions$code != "PTR" & ecoregions$area_km2 > 50, ]` gives **50** (passes, but the vignette would show NCM and SBF only)
+  - `ecoregions[ecoregions$area_km2 > 50 & ecoregions$code != "PTR", ]` stops (the only extension in the round-4 mutation table)
+  - `ecoregions[!ecoregions$area_km2 > 50, ]` gives **50** (the vignette would show only TOP)
+
+  A second subsetting line elsewhere in the Rmd (`ecoregions <- ecoregions[...]`, or `results <- results[...]` after `:641`) is also invisible, because the guard reads the text of one filter expression, not the set of ecoregions the vignette ends up drawing. This is the round-3/4 mechanism again: the guard checks something upstream of what is shown (here, one line of source text) and treats it as the shown set. So findings.md's "Peace's data script also filters with it, so the two cannot disagree" and both scripts' comments overclaim. In the first case above, the Kootenay guard would still assert `shown_are_ncm_sbf_ptr` against a vignette that drops PTR, and the facet-prcp caption ("all three ecoregions shown", PTR significant) would ship false. Minimal fix: anchor the whole statement (`^\s*ecoregions\s*<-\s*ecoregions\[ecoregions\$area_km2 > [0-9.]+, \]\s*$`) and require that it is the only line in the Rmd that reassigns `ecoregions` (or subsets `results`) apart from the `st_read()`. Alternatively, correct the comment and the findings.md sentence to say only an appended condition is caught.
+
+- **[severity: fragile]** cd#146 body, item 5 (outside the diff, but "corrected again" in round 4 per progress.md). It says Peace's 100 km² is at "`peace-fwcp.Rmd:92`, matching `data-raw/peace_fwcp_vignette_data.R:38`", and the body says its line numbers are "as of the #102 branch's merge". At HEAD, `peace_fwcp_vignette_data.R:38` is a comment line. The script no longer hard-codes 100: it reads the vignette's threshold at `:47-48`. The citation is stale against the branch it names.
+
+## Checked and true (no finding)
+
+- Kootenay ecoregions (context gpkg, AOI-clipped): TOP 26.1 km² (all in LARL, overlap table 26.1 km²; bbox lon -118.51 to -118.36, the AOI's west edge -118.51), so "26 km² sliver in LARL's far west" holds. PTR is 495 km², a main patch of 477 km² with centroid -115.97, 49.40, touching the AOI's eastern boundary in the rendered `map-wsgs-1.png`, plus sub-km² slivers. "Small sliver on the eastern edge" holds (it is the south-east, but it is on the eastern edge). Names: NCM and PTR spelled correctly.
+- Every ecoregion-dependent object in kootenay-lake.Rmd, enumerated by grep: `ecoregions` (filtered >50 at :98) feeds map-location, spatial-tmean outlines, `results[ecoregions$code]` (:641), `er_labels`, `ano_all`, `build_segments` (facet-tmean, facet-prcp, facet-swe-max, facet-doy-50), the roll-up, the inline codes line and map-wsgs. Only `ovr` (`vignette_data$wsg_eco_overlap`, unfiltered) shows TOP. The intro's "per-ecoregion trend figures and roll-up table below, which leave it out" is true and does not claim more. No use of `vignette_data$ecoregion_codes`.
+- facet-prcp caption against kootenay_lake.rds: 1951 slopes NCM -0.121 (p 0.030), SBF -0.110 (p 0.061), PTR -0.141 (p 0.0096): all decline, significant in NCM and PTR at the 0.05 the guard uses, not in SBF. 1981 p values 0.278, 0.140, 0.323: none significant. Rendered `facet-prcp-1.png` has three panels (SBF, NCM, PTR).
+- Roll-ups: prcp `trn` rows are `trend_on = "anomaly"`, `anomaly_type = "pct_normal"` in both rds files. `cd_anomaly()` computes pct_normal as `value / baseline_mean * 100 - 100` and `cd_baseline()` uses `mean()`, so "percent of the 1951-1980 baseline mean per year" is correct. The rendered tables carry `prcp %/yr`, with no `mm/yr` or `mm per year` left in either article.
+- Recipe `method = "pct_change"` matches data-raw's `cmp_pct` (data-raw subsets to `pct_normal_vars` first; the recipe does not, so a reader running it gets NA plus a warning for the °C rows, but the prcp and soil-moisture values the table uses are the same).
+- Peace: BMP (0.144, p 0.023) and NRM (0.156, p 0.015) are the only significant ones and the two northernmost by centroid latitude (57.13, 57.41). The caption is unchanged and the guard is correct.
+- Rendered HTML (docs/articles, built from HEAD) carries the new captions verbatim. "Pacific and Cascade" and "BMP, NRM" are absent from the Kootenay article.
+
+/Users/airvine/Projects/repo/cd/planning/active/review-round5.md
