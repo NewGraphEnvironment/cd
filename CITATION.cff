@@ -9,7 +9,6 @@ type: software
 license: MIT
 title: 'cd: Climate Departure Analysis from ERA5-Land Reanalysis'
 version: 0.6.11
-doi: 10.32614/CRAN.package.cd
 abstract: Compute climate anomalies from ERA5-Land reanalysis data for custom areas
   of interest. Producer functions download ERA5-Land monthly means, derive variables
   (VPD, RH, soil moisture), and publish Cloud-Optimized GeoTIFFs with a static STAC
@@ -21,7 +20,23 @@ authors:
   given-names: Allan
   email: al@newgraphenvironment.com
   orcid: https://orcid.org/0000-0002-3495-2128
-repository: https://CRAN.R-project.org/package=cd
+  affiliation: New Graph Environment Ltd.
+preferred-citation:
+  title: 'cd: Climate Departure Analysis from ERA5-Land Reanalysis'
+  authors:
+  - family-names: Irvine
+    given-names: Allan
+    email: al@newgraphenvironment.com
+    orcid: https://orcid.org/0000-0002-3495-2128
+    affiliation: New Graph Environment Ltd.
+  version: 0.6.11
+  date-released: '2026-10-16'
+  url: https://newgraphenvironment.github.io/cd/
+  repository-code: https://github.com/NewGraphEnvironment/cd
+  license: MIT
+  type: software
+  publisher:
+    name: New Graph Environment Ltd.
 repository-code: https://github.com/NewGraphEnvironment/cd
 url: https://newgraphenvironment.github.io/cd/
 date-released: '2026-10-16'
@@ -30,4 +45,5 @@ contact:
   given-names: Allan
   email: al@newgraphenvironment.com
   orcid: https://orcid.org/0000-0002-3495-2128
+  affiliation: New Graph Environment Ltd.
 

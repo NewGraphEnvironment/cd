@@ -4,9 +4,10 @@ Version: 0.6.11
 Date: 2026-10-16
 Authors@R: c(
     person("Allan", "Irvine", , "al@newgraphenvironment.com", role = c("aut", "cre"),
-           comment = c(ORCID = "0000-0002-3495-2128")),
-    person("New Graph Environment Ltd.", role = "cph")
-  )
+           comment = c(ORCID = "0000-0002-3495-2128",
+                       affiliation = "New Graph Environment Ltd.")),
+    person("New Graph Environment Ltd.", role = c("cph", "fnd"))
+    )
 Description: Compute climate anomalies from ERA5-Land reanalysis data for
     custom areas of interest. Producer functions download ERA5-Land
     monthly means, derive variables (VPD, RH, soil moisture), and publish
