@@ -90,9 +90,9 @@ wsg_results <- lapply(seq_len(nrow(wsgs)), function(i) {
 })
 names(wsg_results) <- wsgs$code
 
-# -- Sentences the facet-prcp caption states (#102) ---------------------------
-# kootenay-lake.Rmd's caption is static text, so refuse to save data it no
-# longer describes. Significance is Mann-Kendall p < 0.05.
+# -- Sentences the prcp captions state (#102) ---------------------------------
+# kootenay-lake.Rmd's captions are static text, so refuse to save data they
+# no longer describe. Significance is Mann-Kendall p < 0.05.
 prcp_trend <- function(start) {
   do.call(rbind, lapply(names(ecoregion_results), function(code) {
     t <- ecoregion_results[[code]]$trn
@@ -103,7 +103,19 @@ prcp_trend <- function(start) {
 }
 p51 <- prcp_trend(1951)
 p81 <- prcp_trend(1981)
+# The roll-up's `prcp %/yr` header: its slopes are trends of pct_normal anomalies
+prcp_rows <- do.call(rbind, lapply(ecoregion_results, function(x) {
+  x$trn[x$trn$variable == "prcp", ]
+}))
 claims <- c(
+  prcp_trend_pct_of_baseline = all(prcp_rows$trend_on == "anomaly" &
+                                     prcp_rows$anomaly_type == "pct_normal"),
+  # "all four ecoregions", and the caption names each of them
+  ecoregions_are_ncm_sbf_ptr_top = setequal(p51$code, c("NCM", "SBF", "PTR", "TOP")),
+  ncm_ptr_names = setequal(
+    toupper(ecoregions$name[ecoregions$code %in% c("NCM", "PTR")]),
+    c("NORTHERN COLUMBIA MOUNTAINS", "PURCELL TRANSITIONAL RANGES")
+  ),
   # "Precipitation declines in all four ecoregions over the full record"
   prcp_declines_everywhere = all(p51$slope < 0),
   # "significant in ... (NCM) and ... (PTR), not in SBF or TOP"
@@ -111,9 +123,9 @@ claims <- c(
   # "None of the 45-year trends is significant"
   prcp_none_significant_1981 = all(p81$p >= 0.05)
 )
-if (!all(claims)) {
+if (!all(claims %in% TRUE)) {
   stop("Vignette sentences no longer true of the data: ",
-       paste(names(claims)[!claims], collapse = ", "))
+       paste(names(claims)[!claims %in% TRUE], collapse = ", "))
 }
 
 # -- Spatial pattern raster (pre-cropped, masked, departure) -----------------

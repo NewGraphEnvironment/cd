@@ -73,24 +73,35 @@ ecoregion_results <- lapply(seq_len(nrow(ecoregions)), function(i) {
 })
 names(ecoregion_results) <- ecoregions$code
 
-# -- Sentences the facet-prcp caption states (#102) ---------------------------
-# peace-fwcp.Rmd's caption is static text, so refuse to save data it no
-# longer describes. Significance is Mann-Kendall p < 0.05.
+# -- Sentences the prcp captions state (#102) ---------------------------------
+# peace-fwcp.Rmd's captions are static text, so refuse to save data they no
+# longer describe. Significance is Mann-Kendall p < 0.05.
 p51 <- do.call(rbind, lapply(names(ecoregion_results), function(code) {
   t <- ecoregion_results[[code]]$trn
   r <- t[t$variable == "prcp" & t$period == "annual" & t$trend_start == 1951, ]
   stopifnot(nrow(r) == 1)
   data.frame(code = code, slope = r$slope, p = r$mk_pvalue)
 }))
+# The roll-up's `prcp %/yr` header: its slopes are trends of pct_normal anomalies
+prcp_rows <- do.call(rbind, lapply(ecoregion_results, function(x) {
+  x$trn[x$trn$variable == "prcp", ]
+}))
+centroid_lat <- suppressWarnings(
+  st_coordinates(st_centroid(st_transform(ecoregions, 4326)))
+)[, 2]
 claims <- c(
+  prcp_trend_pct_of_baseline = all(prcp_rows$trend_on == "anomaly" &
+                                     prcp_rows$anomaly_type == "pct_normal"),
   # "The two northernmost ecoregions (BMP, NRM) show statistically significant
   # precipitation increases over the full record; the others do not."
+  bmp_nrm_northernmost = setequal(ecoregions$code[order(-centroid_lat)][1:2],
+                                  c("BMP", "NRM")),
   prcp_significant_bmp_nrm = setequal(p51$code[p51$p < 0.05], c("BMP", "NRM")),
   prcp_bmp_nrm_increase = all(p51$slope[p51$code %in% c("BMP", "NRM")] > 0)
 )
-if (!all(claims)) {
+if (!all(claims %in% TRUE)) {
   stop("Vignette sentences no longer true of the data: ",
-       paste(names(claims)[!claims], collapse = ", "))
+       paste(names(claims)[!claims %in% TRUE], collapse = ", "))
 }
 
 # -- Spatial pattern raster (pre-cropped, masked, departure) -----------------

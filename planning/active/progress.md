@@ -14,3 +14,4 @@
 - Plan review (Plan agent) landed after Phases 1-3: triage in `review-plan.md`; fixes in Phase 4; out-of-scope Kootenay prose filed as cd#146
 - Code-check round 1: Clean (`review-round1.md`)
 - Caption assertions tested against the committed rds by sourcing the block with `ecoregion_results` read from it: both pass, and five planted defects (SBF significant, TOP slope up, NCM 1981 significant, OMM significant, NRM slope down) each stop with the claim's name
+- Code-check round 2 (`review-round2.md`): two fragile findings, one inside the round-1 assertion fix ("all four" unchecked) and a stale findings.md line. Fixed; caption assertions enumerated clause by clause (findings.md) and mutation-tested, 11 of 11 stop
