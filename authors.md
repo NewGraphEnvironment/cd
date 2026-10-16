@@ -10,16 +10,16 @@
 ## Citation
 
 Source:
-[`DESCRIPTION`](https://github.com/NewGraphEnvironment/cd/blob/main/DESCRIPTION)
+[`DESCRIPTION`](https://github.com/NewGraphEnvironment/cd/blob/v0.6.9/DESCRIPTION)
 
 Irvine A (2026). *cd: Climate Departure Analysis from ERA5-Land
-Reanalysis*. R package version 0.6.8,
+Reanalysis*. R package version 0.6.9,
 <https://github.com/NewGraphEnvironment/cd>.
 
     @Manual{,
       title = {cd: Climate Departure Analysis from ERA5-Land Reanalysis},
       author = {Allan Irvine},
       year = {2026},
-      note = {R package version 0.6.8},
+      note = {R package version 0.6.9},
       url = {https://github.com/NewGraphEnvironment/cd},
     }

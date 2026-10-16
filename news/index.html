@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">cd</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.8</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.9</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,9 +34,14 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/NewGraphEnvironment/cd/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/NewGraphEnvironment/cd/blob/v0.6.9/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.6.9" id="cd-069-2026-10-16">cd 0.6.9 (2026-10-16)<a class="anchor" aria-label="anchor" href="#cd-069-2026-10-16"></a></h2>
+<ul><li>
+<code>cd_compare(method = "pct_change")</code> now returns <code>difference = NA</code>, with one warning naming the rows, for a variable whose values have no real zero or are already in percent: tmean, tmax, tmin, rh, snow_cover, snowfall_fraction and snowmelt_doy_50. A temperature’s percent depends on where 0 °C falls, so a base mean of −0.57 °C read as +343 %. Callers that asked for a temperature percent now get <code>NA</code> and the warning; use <code>method = "mean_diff"</code> for those. The rule is a new logical column, <code>cd_variables()$pct_change</code>, not the anomaly type: <code>vpd</code>, <code>swe_max</code> and <code>snowmelt_rate_peak</code> are <code>absolute</code> and still take a percent. A series from outside the registry can carry its own <code>pct_change</code> column (see the input contract in <code><a href="../reference/cd_anomaly.html">?cd_anomaly</a></code>); one measured in °C must carry <code>pct_change = FALSE</code>. (<a href="https://github.com/NewGraphEnvironment/cd/issues/138" class="external-link">#138</a>, <a href="https://github.com/NewGraphEnvironment/cd/pull/143" class="external-link">#143</a>)</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.6.8" id="cd-068-2026-10-15">cd 0.6.8 (2026-10-15)<a class="anchor" aria-label="anchor" href="#cd-068-2026-10-15"></a></h2>
 <ul><li>New article, <a href="https://newgraphenvironment.github.io/cd/articles/northern-bc.html">How the Weather Has Changed in Three Northern BC Watersheds</a>: a short, plain-language story of the Bulkley, Nechako and Parsnip watershed groups against 1951–1980, written for readers with no climate background, with the upper and lower Bulkley compared and a table of what the changes mean for streams and fish. Every number on the page is computed from bundled data, and the data script stops a regen that would make one of its sentences false. (<a href="https://github.com/NewGraphEnvironment/cd/issues/137" class="external-link">#137</a>, <a href="https://github.com/NewGraphEnvironment/cd/pull/141" class="external-link">#141</a>)</li>
