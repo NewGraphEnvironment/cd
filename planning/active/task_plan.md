@@ -19,7 +19,7 @@ Also folded in at the plan gate: the Kootenay `facet-prcp` caption (`kootenay-la
 - [x] Grep `vignettes/`, `R/`, `data-raw/` and `README*` for any remaining `mm/yr` or `mm per year` attached to an anomaly trend (expected: none).
 
 ## Phase 2: Kootenay facet-prcp caption
-- [ ] Replace the copied sentence at `kootenay-lake.Rmd:697` with one written from the committed numbers: NCM and PTR show statistically significant precipitation decreases over the full record; SBF and TOP decline but not significantly.
+- [x] Replace the copied sentence at `kootenay-lake.Rmd:697` with one written from the committed numbers: NCM and PTR show statistically significant precipitation decreases over the full record; SBF and TOP decline but not significantly.
 
 ## Phase 3: Downstream appendices
 - [ ] File one issue each in `fish_passage_peace_2025_reporting` and `fish_passage_skeena_2025_reporting`. Each names the file:line, the measured unit, and the fix, and links cd#102 (public).

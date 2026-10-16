@@ -694,7 +694,7 @@ ggplot(ano_all[ano_all$variable == "tmean" & ano_all$period == "annual", ],
   theme(legend.position = "bottom")
 ```
 
-```{r facet-prcp, fig.cap="Annual precipitation anomaly (% of the 1951-1980 baseline) by ecoregion. Dashed line is the 75-year trend (1951-present); solid line is the 45-year trend (1981-present). The two northernmost ecoregions (BMP, NRM) show statistically significant precipitation increases over the full record; the others do not.", fig.height=6, echo = FALSE}
+```{r facet-prcp, fig.cap="Annual precipitation anomaly (% of the 1951-1980 baseline) by ecoregion. Dashed line is the 75-year trend (1951-present); solid line is the 45-year trend (1981-present). Precipitation declines in all four ecoregions over the full record; the decline is statistically significant in Northern Columbia Mountains (NCM) and Pacific and Cascade Ranges (PTR), not in SBF or TOP. None of the 45-year trends is significant.", fig.height=6, echo = FALSE}
 ggplot(ano_all[ano_all$variable == "prcp" & ano_all$period == "annual", ],
        aes(x = year, y = anomaly)) +
   geom_col(aes(fill = anomaly >= 0), width = 0.85, show.legend = FALSE) +

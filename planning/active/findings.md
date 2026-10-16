@@ -49,3 +49,19 @@ So the Kootenay `facet-prcp` caption ("two northernmost ecoregions (BMP, NRM) sh
 ## pct_normal anomaly scale
 
 `R/cd_anomaly.R:137-138`: `pct_normal` anomaly = `value / baseline_mean * 100 - 100` (capped), the percent departure from the baseline mean. A `cd_trend()` slope on it is therefore percentage points of the 1951-1980 normal per year, which is what the new column header (`prcp %/yr`) and caption say.
+
+## Both windows, annual prcp, ecoregion trends (slope %/yr, MK p)
+
+| ecoregion | 1951 | 1981 |
+|---|---|---|
+| NCM | -0.121, 0.030 | -0.122, 0.278 |
+| SBF | -0.110, 0.061 | -0.217, 0.140 |
+| PTR | -0.141, 0.010 | -0.069, 0.323 |
+| TOP | -0.063, 0.356 | -0.140, 0.343 |
+| OMM | 0.052, 0.421 | -0.012, 0.930 |
+| BMP | 0.144, 0.023 | -0.008, 0.961 |
+| CRM | 0.077, 0.253 | 0.013, 0.945 |
+| FAB | 0.032, 0.634 | 0.030, 0.837 |
+| NRM | 0.156, 0.015 | -0.033, 0.732 |
+
+Peace's facet-prcp caption (BMP, NRM significant increases) holds. Kootenay's new caption: all four decline from 1951; significant in NCM and PTR; no 1981 trend significant.
