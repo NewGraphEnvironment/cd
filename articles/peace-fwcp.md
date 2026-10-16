@@ -623,7 +623,8 @@ results <- lapply(seq_len(nrow(ecoregions)), function(i) {
   bl_i  <- cd::cd_baseline(ts_i, baseline_years = 1951:1980)
   ano_i <- cd::cd_anomaly(ts_i, bl_i)
   trn_i <- cd::cd_trend(ano_i, trend_start = c(1951, 1981))
-  cmp_i <- cd::cd_compare(ts_i, window_a = 2015:2025, window_b = 1951:1980)
+  cmp_i <- cd::cd_compare(ts_i, window_a = 2015:2025, window_b = 1951:1980,
+                           method = "pct_change")
   list(ano = ano_i, trn = trn_i, cmp = cmp_i)
 })
 ```
@@ -684,7 +685,7 @@ Snowmelt 50% day-of-year (DOY-50) anomaly by ecoregion, relative to the
 shifted earlier in the year. Dashed line is the 75-year Theil-Sen trend;
 solid line is the 45-year trend.
 
-| Ecoregion | tmean degC/dec | tmax degC/dec | tmin degC/dec | prcp mm/yr | prcp p | vpd hPa/dec | vpd p | prcp pct change | soil moisture pct change |
+| Ecoregion | tmean degC/dec | tmax degC/dec | tmin degC/dec | prcp %/yr | prcp p | vpd hPa/dec | vpd p | prcp pct change | soil moisture pct change |
 |:---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
 | FAB | 0.29 | 0.26 | 0.31 | 0.032 | 0.634 | 0.061 | 0.002 | 0.8 | -1.3 |
 | CRM | 0.29 | 0.26 | 0.30 | 0.077 | 0.253 | 0.045 | 0.001 | 4.1 | -0.5 |
@@ -694,12 +695,12 @@ solid line is the 45-year trend.
 
 Per-ecoregion roll-up over the 75-year window (1951-present): annual
 mean, daytime maximum, and overnight minimum temperature trends (degrees
-C per decade); annual precipitation trend (mm per year) and Mann-Kendall
-p-value; annual vapour pressure deficit trend (hPa per decade) and
-p-value; and recent (2015-2025) vs pre-warming (1951-1980) percent
-change for precipitation and soil moisture. All temperature p-values are
-below 0.001. A tmin slope greater than the tmax slope indicates the
-textbook day-night asymmetry. {.table}
+C per decade); annual precipitation trend (percent of the 1951-1980
+baseline mean per year) and Mann-Kendall p-value; annual vapour pressure
+deficit trend (hPa per decade) and p-value; and recent (2015-2025) vs
+pre-warming (1951-1980) percent change for precipitation and soil
+moisture. All temperature p-values are below 0.001. A tmin slope greater
+than the tmax slope indicates the textbook day-night asymmetry. {.table}
 
 Ecoregion codes used in the table above: FAB — Fraser Basin; CRM —
 Central Canadian Rocky Mountains; OMM — Omineca Mountains; BMP — Boreal

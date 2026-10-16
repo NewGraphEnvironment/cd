@@ -618,11 +618,12 @@ The regional zonal mean averages over four ecoregions with different
 elevations and exposures: Northern Columbia Mountains (NCM, the dominant
 zone covering most of the AOI including the Selkirks and Purcells),
 Selkirk-Bitterroot Foothills (SBF, the western lower- elevation tier of
-LARL), Thompson-Okanagan Plateau (TOP, a small sliver in LARL’s far
-west), and Pacific and Cascade Ranges (PTR, also a small sliver). To
-check whether the regional story holds within each ecoregion — and where
-it does not — we run the same pipeline on each ecoregion polygon
-individually.
+LARL), Thompson-Okanagan Plateau (TOP, a 26 km² sliver in LARL’s far
+west, too small for the per-ecoregion trend figures and roll-up table
+below, which leave it out), and Purcell Transitional Ranges (PTR, a
+small sliver on the eastern edge). To check whether the regional story
+holds within each ecoregion — and where it does not — we run the same
+pipeline on each ecoregion polygon individually.
 
 All four ecoregions warmed at roughly the same rate. Precipitation shows
 a region-wide decline; the magnitude is consistent across ecoregions
@@ -638,7 +639,8 @@ results <- lapply(seq_len(nrow(ecoregions)), function(i) {
   bl_i  <- cd::cd_baseline(ts_i, baseline_years = 1951:1980)
   ano_i <- cd::cd_anomaly(ts_i, bl_i)
   trn_i <- cd::cd_trend(ano_i, trend_start = c(1951, 1981))
-  cmp_i <- cd::cd_compare(ts_i, window_a = 2015:2025, window_b = 1951:1980)
+  cmp_i <- cd::cd_compare(ts_i, window_a = 2015:2025, window_b = 1951:1980,
+                           method = "pct_change")
   list(ano = ano_i, trn = trn_i, cmp = cmp_i)
 })
 ```
@@ -656,16 +658,19 @@ than the dashed line indicates accelerating warming.
 
 ![Annual precipitation anomaly (% of the 1951-1980 baseline) by
 ecoregion. Dashed line is the 75-year trend (1951-present); solid line
-is the 45-year trend (1981-present). The two northernmost ecoregions
-(BMP, NRM) show statistically significant precipitation increases over
-the full record; the others do
-not.](kootenay-lake_files/figure-html/facet-prcp-1.png)
+is the 45-year trend (1981-present). Precipitation declines in all three
+ecoregions shown over the full record; the decline is statistically
+significant in Northern Columbia Mountains (NCM) and Purcell
+Transitional Ranges (PTR), not in SBF. None of the 45-year trends is
+significant.](kootenay-lake_files/figure-html/facet-prcp-1.png)
 
 Annual precipitation anomaly (% of the 1951-1980 baseline) by ecoregion.
 Dashed line is the 75-year trend (1951-present); solid line is the
-45-year trend (1981-present). The two northernmost ecoregions (BMP, NRM)
-show statistically significant precipitation increases over the full
-record; the others do not.
+45-year trend (1981-present). Precipitation declines in all three
+ecoregions shown over the full record; the decline is statistically
+significant in Northern Columbia Mountains (NCM) and Purcell
+Transitional Ranges (PTR), not in SBF. None of the 45-year trends is
+significant.
 
 ### Snow per ecoregion
 
@@ -735,7 +740,7 @@ year.](kootenay-lake_files/figure-html/facet-wsg-doy-50-1.png)
 Snowmelt DOY-50 anomaly by watershed group. Negative values (red) mean
 the freshet midpoint shifted earlier in the year.
 
-| Ecoregion | tmean degC/dec | tmax degC/dec | tmin degC/dec | prcp mm/yr | prcp p | vpd hPa/dec | vpd p | prcp pct change | soil moisture pct change |
+| Ecoregion | tmean degC/dec | tmax degC/dec | tmin degC/dec | prcp %/yr | prcp p | vpd hPa/dec | vpd p | prcp pct change | soil moisture pct change |
 |:---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
 | SBF | 0.30 | 0.28 | 0.30 | -0.110 | 0.061 | 0.154 | 0 | -6.6 | -2.1 |
 | NCM | 0.25 | 0.23 | 0.26 | -0.121 | 0.030 | 0.108 | 0 | -6.4 | -2.1 |
@@ -743,12 +748,12 @@ the freshet midpoint shifted earlier in the year.
 
 Per-ecoregion roll-up over the 75-year window (1951-present): annual
 mean, daytime maximum, and overnight minimum temperature trends (degrees
-C per decade); annual precipitation trend (mm per year) and Mann-Kendall
-p-value; annual vapour pressure deficit trend (hPa per decade) and
-p-value; and recent (2015-2025) vs pre-warming (1951-1980) percent
-change for precipitation and soil moisture. All temperature p-values are
-below 0.001. A tmin slope greater than the tmax slope indicates the
-textbook day-night asymmetry. {.table}
+C per decade); annual precipitation trend (percent of the 1951-1980
+baseline mean per year) and Mann-Kendall p-value; annual vapour pressure
+deficit trend (hPa per decade) and p-value; and recent (2015-2025) vs
+pre-warming (1951-1980) percent change for precipitation and soil
+moisture. All temperature p-values are below 0.001. A tmin slope greater
+than the tmax slope indicates the textbook day-night asymmetry. {.table}
 
 Ecoregion codes used in the table above: SBF — Selkirk-Bitterroot
 Foothills; NCM — Northern Columbia Mountains; PTR — Purcell Transitional
@@ -772,15 +777,15 @@ share of each watershed group’s area falling in each ecoregion.
 ![The four watershed groups making up the AOI (KOTL, LARL, DUNC, SLOC)
 on top of ecoregion fills. Northern Columbia Mountains (NCM) covers most
 of the area; Selkirk-Bitterroot Foothills (SBF) covers the western
-portion of LARL; small slivers in the southwest belong to
-Thompson-Okanagan Plateau (TOP) and Pacific and Cascade Ranges
+portion of LARL; a small sliver on the eastern edge belongs to Purcell
+Transitional Ranges
 (PTR).](kootenay-lake_files/figure-html/map-wsgs-1.png)
 
 The four watershed groups making up the AOI (KOTL, LARL, DUNC, SLOC) on
 top of ecoregion fills. Northern Columbia Mountains (NCM) covers most of
 the area; Selkirk-Bitterroot Foothills (SBF) covers the western portion
-of LARL; small slivers in the southwest belong to Thompson-Okanagan
-Plateau (TOP) and Pacific and Cascade Ranges (PTR).
+of LARL; a small sliver on the eastern edge belongs to Purcell
+Transitional Ranges (PTR).
 
 | Code | Name             | NCM % | SBF % | TOP % | PTR % |
 |:-----|:-----------------|------:|------:|------:|------:|

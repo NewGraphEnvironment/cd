@@ -60,7 +60,7 @@
       <img src="../logo.png" class="logo" alt=""><h1>Climate Departure for the FWCP Peace Region</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/NewGraphEnvironment/cd/blob/v0.6.10/vignettes/peace-fwcp.Rmd" class="external-link"><code>vignettes/peace-fwcp.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/NewGraphEnvironment/cd/blob/main/vignettes/peace-fwcp.Rmd" class="external-link"><code>vignettes/peace-fwcp.Rmd</code></a></small>
       <div class="d-none name"><code>peace-fwcp.Rmd</code></div>
     </div>
 
@@ -7106,7 +7106,8 @@ up significantly in all five.</p>
 <span>  <span class="va">bl_i</span>  <span class="op">&lt;-</span> <span class="fu">cd</span><span class="fu">::</span><span class="fu"><a href="../reference/cd_baseline.html">cd_baseline</a></span><span class="op">(</span><span class="va">ts_i</span>, baseline_years <span class="op">=</span> <span class="fl">1951</span><span class="op">:</span><span class="fl">1980</span><span class="op">)</span></span>
 <span>  <span class="va">ano_i</span> <span class="op">&lt;-</span> <span class="fu">cd</span><span class="fu">::</span><span class="fu"><a href="../reference/cd_anomaly.html">cd_anomaly</a></span><span class="op">(</span><span class="va">ts_i</span>, <span class="va">bl_i</span><span class="op">)</span></span>
 <span>  <span class="va">trn_i</span> <span class="op">&lt;-</span> <span class="fu">cd</span><span class="fu">::</span><span class="fu"><a href="../reference/cd_trend.html">cd_trend</a></span><span class="op">(</span><span class="va">ano_i</span>, trend_start <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1951</span>, <span class="fl">1981</span><span class="op">)</span><span class="op">)</span></span>
-<span>  <span class="va">cmp_i</span> <span class="op">&lt;-</span> <span class="fu">cd</span><span class="fu">::</span><span class="fu"><a href="../reference/cd_compare.html">cd_compare</a></span><span class="op">(</span><span class="va">ts_i</span>, window_a <span class="op">=</span> <span class="fl">2015</span><span class="op">:</span><span class="fl">2025</span>, window_b <span class="op">=</span> <span class="fl">1951</span><span class="op">:</span><span class="fl">1980</span><span class="op">)</span></span>
+<span>  <span class="va">cmp_i</span> <span class="op">&lt;-</span> <span class="fu">cd</span><span class="fu">::</span><span class="fu"><a href="../reference/cd_compare.html">cd_compare</a></span><span class="op">(</span><span class="va">ts_i</span>, window_a <span class="op">=</span> <span class="fl">2015</span><span class="op">:</span><span class="fl">2025</span>, window_b <span class="op">=</span> <span class="fl">1951</span><span class="op">:</span><span class="fl">1980</span>,</span>
+<span>                           method <span class="op">=</span> <span class="st">"pct_change"</span><span class="op">)</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>ano <span class="op">=</span> <span class="va">ano_i</span>, trn <span class="op">=</span> <span class="va">trn_i</span>, cmp <span class="op">=</span> <span class="va">cmp_i</span><span class="op">)</span></span>
 <span><span class="op">}</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
@@ -7155,18 +7156,19 @@ solid line is the 45-year trend.
 <table class="table">
 <caption>Per-ecoregion roll-up over the 75-year window (1951-present):
 annual mean, daytime maximum, and overnight minimum temperature trends
-(degrees C per decade); annual precipitation trend (mm per year) and
-Mann-Kendall p-value; annual vapour pressure deficit trend (hPa per
-decade) and p-value; and recent (2015-2025) vs pre-warming (1951-1980)
-percent change for precipitation and soil moisture. All temperature
-p-values are below 0.001. A tmin slope greater than the tmax slope
-indicates the textbook day-night asymmetry.</caption>
+(degrees C per decade); annual precipitation trend (percent of the
+1951-1980 baseline mean per year) and Mann-Kendall p-value; annual
+vapour pressure deficit trend (hPa per decade) and p-value; and recent
+(2015-2025) vs pre-warming (1951-1980) percent change for precipitation
+and soil moisture. All temperature p-values are below 0.001. A tmin
+slope greater than the tmax slope indicates the textbook day-night
+asymmetry.</caption>
 <colgroup>
 <col width="7%">
 <col width="11%">
 <col width="10%">
 <col width="10%">
-<col width="8%">
+<col width="7%">
 <col width="5%">
 <col width="9%">
 <col width="4%">
@@ -7178,7 +7180,7 @@ indicates the textbook day-night asymmetry.</caption>
 <th align="right">tmean degC/dec</th>
 <th align="right">tmax degC/dec</th>
 <th align="right">tmin degC/dec</th>
-<th align="right">prcp mm/yr</th>
+<th align="right">prcp %/yr</th>
 <th align="right">prcp p</th>
 <th align="right">vpd hPa/dec</th>
 <th align="right">vpd p</th>
