@@ -61,5 +61,5 @@ ecoregion") are added to the existing `claims` block in `data-raw/kootenay_lake_
 - [x] Branch installed; both changed articles render; rewritten sentences present in the HTML with no `NA`
 - [x] Tests pass
 - [x] `/code-check` clean (once over the branch with `/code-check branch`)
-- [ ] PWF checkboxes match landed work
-- [ ] `/planning-archive` on completion
+- [x] PWF checkboxes match landed work
+- [x] `/planning-archive` on completion
