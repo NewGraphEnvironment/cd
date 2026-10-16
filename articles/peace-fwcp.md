@@ -268,8 +268,8 @@ cd::cd_summary(trn)
 | Snow water equivalent | Summer | 1981 | -0.659 | 45 | -29.7 | % | 0.0799 |
 | Snow water equivalent | Winter | 1951 | 0.009 | 75 | 0.7 | % | 0.9126 |
 | Snow water equivalent | Winter | 1981 | 0.068 | 45 | 3.1 | % | 0.8220 |
-| Annual peak snow water equivalent | Annual | 1951 | -0.075 | 75 | -5.7 | mm | 0.7697 |
-| Annual peak snow water equivalent | Annual | 1981 | -0.251 | 45 | -11.3 | mm | 0.6884 |
+| Annual peak snow water equivalent | Annual | 1951 | -0.022 | 75 | -1.6 | % | 0.7697 |
+| Annual peak snow water equivalent | Annual | 1981 | -0.072 | 45 | -3.2 | % | 0.6884 |
 | Maximum temperature | Annual | 1951 | 0.027 | 75 | 2.0 | °C | 0.0000 |
 | Maximum temperature | Annual | 1981 | 0.021 | 45 | 0.9 | °C | 0.0564 |
 | Maximum temperature | Fall | 1951 | 0.015 | 75 | 1.1 | °C | 0.0432 |
@@ -663,15 +663,15 @@ Ecoregions section below to read each watershed group’s dominant
 ecoregion’s signal.
 
 ![Annual peak snow water equivalent (SWE) anomaly by ecoregion, relative
-to the 1951-1980 baseline. Bars are mm of water-equivalent snowpack
-departure from baseline. Dashed line is the 75-year Theil-Sen trend
-(1951-present); solid line is the 45-year trend
+to the 1951-1980 baseline. Bars are the percent departure of peak
+snowpack from its baseline mean. Dashed line is the 75-year Theil-Sen
+trend (1951-present); solid line is the 45-year trend
 (1981-present).](peace-fwcp_files/figure-html/facet-swe-max-1.png)
 
 Annual peak snow water equivalent (SWE) anomaly by ecoregion, relative
-to the 1951-1980 baseline. Bars are mm of water-equivalent snowpack
-departure from baseline. Dashed line is the 75-year Theil-Sen trend
-(1951-present); solid line is the 45-year trend (1981-present).
+to the 1951-1980 baseline. Bars are the percent departure of peak
+snowpack from its baseline mean. Dashed line is the 75-year Theil-Sen
+trend (1951-present); solid line is the 45-year trend (1981-present).
 
 ![Snowmelt 50% day-of-year (DOY-50) anomaly by ecoregion, relative to
 the 1951-1980 baseline. Negative values (red) mean the freshet midpoint
@@ -830,8 +830,8 @@ but soil and vegetation are not seeing more available moisture.
 snowfall across the FWCP Peace is essentially unchanged (-6%); the
 snowpack story is about *timing*, not *quantity*. Spring snowmelt rose
 37% (212 → 290 mm) and summer snowmelt fell 61% (165 → 64 mm) — same
-total annual melt, redistributed earlier in the calendar. Annual peak
-snow water equivalent (SWE) is down about 10% (135 → 122 mm), and most
+total annual melt, redistributed earlier in the calendar. Annual snow
+water equivalent (SWE) is down about 10% (135 → 122 mm), and most
 strikingly, **summer SWE has collapsed by 75%**: the high-elevation
 snowpack that historically lingered into June and July no longer does.
 This is the direct mechanism behind the freshet shift described in the

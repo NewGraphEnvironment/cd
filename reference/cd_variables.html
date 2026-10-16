@@ -68,7 +68,9 @@ derived) added in v0.2.0.</p>
 <dd><p>Human-readable label for plots and tables.</p></dd>
 
 <dt>unit</dt>
-<dd><p>Measurement unit (degree C, percent, hPa, mm, day, mm/wk).</p></dd>
+<dd><p>Unit of the anomaly (degree C, percent, hPa, day,
+mm/wk): percent for every <code>pct_normal</code> and <code>pct_point_diff</code>
+variable, whatever the unit of its values.</p></dd>
 
 <dt>anomaly_type</dt>
 <dd><p>"absolute" for direct departures (value - baseline,
@@ -86,8 +88,8 @@ temperatures in degree C and the day of 50% melt, whose zero is
 arbitrary (a base mean near 0 degree C makes the percent unbounded
 and its sign arbitrary), and for variables whose values are already in percent (<code>rh</code>,
 <code>snow_cover</code>, <code>snowfall_fraction</code>). Read
-by <code><a href="cd_compare.html">cd_compare()</a></code>. Independent of <code>anomaly_type</code>: <code>vpd</code> and <code>swe_max</code>
-are <code>absolute</code> and still take a percent.</p></dd>
+by <code><a href="cd_compare.html">cd_compare()</a></code>. Independent of <code>anomaly_type</code>: <code>vpd</code> and
+<code>snowmelt_rate_peak</code> are <code>absolute</code> and still take a percent.</p></dd>
 
 <dt>era5_name</dt>
 <dd><p>ERA5-Land variable name for CDS API requests,
@@ -124,7 +126,7 @@ months.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> snowfall           Snowfall           %     pct_normal   TRUE       <span style="color: #BB0000;">NA</span>       </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> snowmelt           Snowmelt           %     pct_normal   TRUE       <span style="color: #BB0000;">NA</span>       </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">11</span> snow_cover         Snow cover         %     pct_point_d… FALSE      <span style="color: #BB0000;">NA</span>       </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">12</span> swe_max            Annual peak snow … mm    absolute     TRUE       <span style="color: #BB0000;">NA</span>       </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">12</span> swe_max            Annual peak snow … %     pct_normal   TRUE       <span style="color: #BB0000;">NA</span>       </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">13</span> snowfall_fraction  Snowfall fraction  %     pct_point_d… FALSE      <span style="color: #BB0000;">NA</span>       </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">14</span> snowmelt_doy_50    Day of 50% melt    day   absolute     FALSE      <span style="color: #BB0000;">NA</span>       </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">15</span> snowmelt_rate_peak Peak weekly melt … mm/wk absolute     TRUE       <span style="color: #BB0000;">NA</span>       </span>

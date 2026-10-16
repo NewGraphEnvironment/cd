@@ -68,10 +68,10 @@ and read by
 
 ## Details
 
-Defaults compare a recent decade (`2015:2025`) to a pre-warming
+Defaults compare the recent 11 years (`2015:2025`) to a pre-warming
 reference (`1951:1980`, the GISS base period) — the framing used in the
 package vignettes. This is a *cumulative-impact* comparison ("how much
-warmer is the recent decade than the pre-warming reference?") rather
+warmer are the recent years than the pre-warming reference?") rather
 than a rate-of-change comparison; for the latter use
 [`cd_trend()`](https://newgraphenvironment.github.io/cd/reference/cd_trend.md).
 

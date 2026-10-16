@@ -26,7 +26,9 @@ A tibble with columns:
 
 - unit:
 
-  Measurement unit (degree C, percent, hPa, mm, day, mm/wk).
+  Unit of the anomaly (degree C, percent, hPa, day, mm/wk): percent for
+  every `pct_normal` and `pct_point_diff` variable, whatever the unit of
+  its values.
 
 - anomaly_type:
 
@@ -47,8 +49,8 @@ A tibble with columns:
   and for variables whose values are already in percent (`rh`,
   `snow_cover`, `snowfall_fraction`). Read by
   [`cd_compare()`](https://newgraphenvironment.github.io/cd/reference/cd_compare.md).
-  Independent of `anomaly_type`: `vpd` and `swe_max` are `absolute` and
-  still take a percent.
+  Independent of `anomaly_type`: `vpd` and `snowmelt_rate_peak` are
+  `absolute` and still take a percent.
 
 - era5_name:
 
@@ -85,7 +87,7 @@ cd_variables()
 #>  9 snowfall           Snowfall           %     pct_normal   TRUE       NA       
 #> 10 snowmelt           Snowmelt           %     pct_normal   TRUE       NA       
 #> 11 snow_cover         Snow cover         %     pct_point_d… FALSE      NA       
-#> 12 swe_max            Annual peak snow … mm    absolute     TRUE       NA       
+#> 12 swe_max            Annual peak snow … %     pct_normal   TRUE       NA       
 #> 13 snowfall_fraction  Snowfall fraction  %     pct_point_d… FALSE      NA       
 #> 14 snowmelt_doy_50    Day of 50% melt    day   absolute     FALSE      NA       
 #> 15 snowmelt_rate_peak Peak weekly melt … mm/wk absolute     TRUE       NA       

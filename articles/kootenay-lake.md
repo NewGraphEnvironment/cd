@@ -274,8 +274,8 @@ cd::cd_summary(trn)
 | Snow water equivalent | Summer | 1981 | -0.120 | 45 | -5.4 | % | 0.5906 |
 | Snow water equivalent | Winter | 1951 | -0.307 | 75 | -23.0 | % | 0.0013 |
 | Snow water equivalent | Winter | 1981 | 0.039 | 45 | 1.7 | % | 0.8988 |
-| Annual peak snow water equivalent | Annual | 1951 | -1.650 | 75 | -123.7 | mm | 0.0042 |
-| Annual peak snow water equivalent | Annual | 1981 | 0.460 | 45 | 20.7 | mm | 0.7468 |
+| Annual peak snow water equivalent | Annual | 1951 | -0.293 | 75 | -22.0 | % | 0.0042 |
+| Annual peak snow water equivalent | Annual | 1981 | 0.082 | 45 | 3.7 | % | 0.7468 |
 | Maximum temperature | Annual | 1951 | 0.024 | 75 | 1.8 | °C | 0.0000 |
 | Maximum temperature | Annual | 1981 | 0.030 | 45 | 1.4 | °C | 0.0012 |
 | Maximum temperature | Fall | 1951 | 0.019 | 75 | 1.4 | °C | 0.0122 |
@@ -678,15 +678,15 @@ Ecoregions section below to read each watershed group’s dominant
 ecoregion’s signal.
 
 ![Annual peak snow water equivalent (SWE) anomaly by ecoregion, relative
-to the 1951-1980 baseline. Bars are mm of water-equivalent snowpack
-departure from baseline. Dashed line is the 75-year Theil-Sen trend
-(1951-present); solid line is the 45-year trend
+to the 1951-1980 baseline. Bars are the percent departure of peak
+snowpack from its baseline mean. Dashed line is the 75-year Theil-Sen
+trend (1951-present); solid line is the 45-year trend
 (1981-present).](kootenay-lake_files/figure-html/facet-swe-max-1.png)
 
 Annual peak snow water equivalent (SWE) anomaly by ecoregion, relative
-to the 1951-1980 baseline. Bars are mm of water-equivalent snowpack
-departure from baseline. Dashed line is the 75-year Theil-Sen trend
-(1951-present); solid line is the 45-year trend (1981-present).
+to the 1951-1980 baseline. Bars are the percent departure of peak
+snowpack from its baseline mean. Dashed line is the 75-year Theil-Sen
+trend (1951-present); solid line is the 45-year trend (1981-present).
 
 ![Snowmelt 50% day-of-year (DOY-50) anomaly by ecoregion, relative to
 the 1951-1980 baseline. Negative values (red) mean the freshet midpoint
@@ -719,14 +719,14 @@ wsg_results <- lapply(seq_len(nrow(wsgs)), function(i) {
 })
 ```
 
-![Annual peak SWE anomaly by watershed group. Bars are mm of
-water-equivalent snowpack departure from the 1951-1980 baseline. Dashed
-line is the 75-year Theil-Sen trend; solid line is the 45-year
+![Annual peak SWE anomaly by watershed group. Bars are the percent
+departure of peak snowpack from its 1951-1980 mean. Dashed line is the
+75-year Theil-Sen trend; solid line is the 45-year
 trend.](kootenay-lake_files/figure-html/facet-wsg-swe-max-1.png)
 
-Annual peak SWE anomaly by watershed group. Bars are mm of
-water-equivalent snowpack departure from the 1951-1980 baseline. Dashed
-line is the 75-year Theil-Sen trend; solid line is the 45-year trend.
+Annual peak SWE anomaly by watershed group. Bars are the percent
+departure of peak snowpack from its 1951-1980 mean. Dashed line is the
+75-year Theil-Sen trend; solid line is the 45-year trend.
 
 ![Snowmelt DOY-50 anomaly by watershed group. Negative values (red) mean
 the freshet midpoint shifted earlier in the
