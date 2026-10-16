@@ -161,6 +161,17 @@ snow_season <- regional_cmp_pct[
 snow_season_pct <- setNames(snow_season$difference,
                             paste(snow_season$variable, snow_season$period))
 stopifnot(length(snow_season_pct) == 12)
+# Per-ecoregion window difference: "The three ecoregions shown were between
+# <x> °C warmer ... the ecoregions differ by a few tenths of a degree"
+er_tmean_window <- vapply(shown, function(code) {
+  ts <- ecoregion_results[[code]]$ts
+  d <- cd_compare(ts[ts$variable == "tmean" & ts$period == "annual", ])$difference
+  stopifnot(length(d) == 1)
+  d
+}, numeric(1))
+doy50_window <- regional_cmp$difference[regional_cmp$variable == "snowmelt_doy_50" &
+                                          regional_cmp$period == "annual"]
+stopifnot(length(doy50_window) == 1)
 # The roll-up's `prcp %/yr` header: its slopes are trends of pct_normal anomalies
 prcp_rows <- do.call(rbind, lapply(ecoregion_results[shown], function(x) {
   x$trn[x$trn$variable == "prcp", ]
@@ -221,7 +232,16 @@ claims <- c(
   # losses"; "winter and spring snowmelt rose"
   snow_summer_largest_losses = setequal(
     names(sort(snow_season_pct))[1:2], c("swe summer", "snowmelt summer")
-  ),
+  ) && all(snow_season_pct[c("swe summer", "snowmelt summer")] < 0),
+  # Summer snowpack "now holds about a quarter of what it did"
+  summer_swe_about_a_quarter = snow_season_pct[["swe summer"]] > -80 &&
+    snow_season_pct[["swe summer"]] < -67,
+  # "The three ecoregions shown were between <x> °C warmer" and "differ by a
+  # few tenths of a degree"
+  ecoregion_window_warmer_few_tenths = all(er_tmean_window > 0) &&
+    diff(range(er_tmean_window)) < 0.6,
+  # The freshet "is arriving nearly two weeks earlier" (DOY-50 window shift)
+  doy50_nearly_two_weeks_earlier = doy50_window > -14 && doy50_window < -10,
   snowmelt_winter_spring_rose = all(snow_season_pct[c("snowmelt winter",
                                                       "snowmelt spring")] > 0)
 )

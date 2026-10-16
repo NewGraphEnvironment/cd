@@ -15,3 +15,4 @@
 - Tests: devtools::test() FAIL 0 | PASS 768
 - Harness: PASS unperturbed; ten perturbations fire; filter set back to 50 fires `prose_states_filter`
 - code-check round 1: 3 findings, one mechanism (claims checked significance, not direction or sign). Fixed across every claim: soil 1981 slope < 0, soil window Δ < 0, regional temperature window/trend p and sign, ecoregion temperature slopes > 0. Harness: five more perturbations fire
+- code-check round 2: 2 findings, same mechanism as round 1, inside round 1's fix (snow 'losses' sign; per-ecoregion window 'warmer'). Fixed, plus two number-words found by the enumeration ('about a quarter', 'nearly two weeks'). Enumeration of every added static word → guard written to findings.md. Harness: 20 perturbations fire

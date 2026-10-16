@@ -74,3 +74,31 @@ Static numbers that are true today (tmax/tmin rates, snow percentages, spatial r
 - Snow-station numbers (74 station-years, 40–63 % low, r = 0.90) come from `data-raw/qa_snow_validation_kootenay_lake.R`, not the rds; not re-derived here.
 - Not fixed, recorded: patch scripts (`data-raw/vignette_data_*_patch.R`) write `kootenay_lake.rds` without running the claims block, so the guards cover a full regen only. The `per-ecoregion-reshape` comment "already by area_km2 desc on disk" is wrong (gpkg order TOP, SBF, NCM, PTR) but harmless, and outside this diff.
 - Peace "cumulative since 1951" range is window Δ, not slope × years: reproduced, filed as #148.
+
+## Code-check enumeration — every static word the branch added, and what guards it
+
+Rounds 1 and 2 found one mechanism twice: a claim checked significance or order but not the sign the sentence states, and round 2's instances sat inside round 1's "every claim" fix. Enumerated from every `+` prose/caption line of `git diff merge-base...HEAD -- vignettes` that carries a quantity, direction or set word (grep over the branch diff, 2026-10-16). Numbers printed inline are not listed: they cannot disagree with the data they are computed from.
+
+| added words (Rmd) | guard |
+|---|---|
+| Trends: "warmer … mean, max, min", "window and trend p-values below 0.001" | `regional_temperature_warmer_p_below_0.001` (window Δ > 0, window p, 1951 slope > 0, trend p) |
+| "Soil moisture is down" (twice) | `soil_window_down` |
+| "too small a step for the window test" / "cannot separate from noise" | `soil_window_not_significant` |
+| "the trend test finds a steady decline" / "significant long-term decline" from 1951 and 1981 | `soil_declines_both_starts` |
+| "From 1981 the decline is significant in every ecoregion shown" | `soil_significant_every_shown_1981` (p and slope < 0) |
+| "Three of the monthly-native snow variables — SWE, snowfall and snowmelt" | structural: the table's rows; `stopifnot(length(snow_season_pct) == 12)` |
+| "winter and spring snowmelt rose" (prose and caption) | `snowmelt_winter_spring_rose` |
+| caption "carry the largest losses" | `snow_summer_largest_losses` (two lowest and < 0) |
+| summer snowpack "now holds about a quarter" | `summer_swe_about_a_quarter` (−80 < Δ < −67 %) |
+| "Ecoregions under 100 km² … so they show three" | `prose_states_filter`, `shown_are_ncm_sbf_ptr` |
+| "All three ecoregions shown warmed, at rates …" | `temperature_p_below_0.001_every_shown` (slopes > 0) |
+| "TOP … appears only in the table" | accepted: fixed by the context gpkg's geometry (TOP 26 km², in LARL), which a data regen does not change |
+| "between … °C warmer in 2015–2025", "differ by a few tenths of a degree" | `ecoregion_window_warmer_few_tenths` (Δ > 0, spread < 0.6 °C; 0.39 today) |
+| "p-values below 0.001 in every ecoregion" | `temperature_p_below_0.001_every_shown` |
+| "Spatially the decline is consistent across the three ecoregions shown, down between" | `prcp_window_down_every_shown` |
+| "points down in all four" | `wsg_prcp_declines_everywhere` (4 rows, slopes < 0) |
+| "only in KOTL is it statistically significant … DUNC, LARL and SLOC it is not" | `wsg_prcp_significant_kotl_only` |
+| "arriving nearly two weeks earlier" | `doy50_nearly_two_weeks_earlier` (−14 < Δ < −10 d) |
+| "Four findings" (both articles) | structural: four bold findings follow in each |
+
+Every row has a guard or a stated reason. Harness: 20 perturbations, one or more per claim, each fires; perturbing TOP (not shown) passes.
