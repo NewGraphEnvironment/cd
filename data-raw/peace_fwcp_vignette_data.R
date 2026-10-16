@@ -52,8 +52,8 @@ vignette_min_km2 <- function(rmd) {
   )
   as.numeric(sub(filt, "\\1", grep(filt, lines, value = TRUE)))
 }
-ecoregions <- ecoregions[
-  ecoregions$area_km2 > vignette_min_km2("vignettes/peace-fwcp.Rmd"), ]
+peace_min_km2 <- vignette_min_km2("vignettes/peace-fwcp.Rmd")
+ecoregions <- ecoregions[ecoregions$area_km2 > peace_min_km2, ]
 ecoregions <- ecoregions[order(-ecoregions$area_km2), ]
 
 catalog <- cd_catalog()
