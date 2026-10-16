@@ -77,22 +77,24 @@ Peace's facet-prcp caption (BMP, NRM significant increases) holds. Kootenay's ne
 
 AOI bbox lon -118.51 to -115.52. The vignette called PTR "Pacific and Cascade Ranges" and put it with TOP "in the southwest"; PTR is on the eastern edge. Found while writing the facet-prcp caption, folded into Phase 2.
 
-## Caption assertions: enumeration (code-check round 2 found a gap inside the round-1 fix)
+## Caption assertions: enumeration (rounds 2 and 3 found gaps inside earlier fixes)
 
-Every clause of the two facet-prcp captions, and the unit claim behind the roll-up's `prcp %/yr` header, mapped to the `data-raw` claim that checks it:
+**Mechanism (round 3):** every check on this branch, mine and the reviewers', was made against something upstream of the rendered article: the rds, data-raw's `ecoregions`, the findings table. `kootenay-lake.Rmd:98` keeps only ecoregions over 50 km², so TOP (26 km²) is in the rds but in no Kootenay per-ecoregion figure or table. The vignette showed three panels while the caption said "all four ... not in SBF or TOP", and data-raw's unfiltered ecoregion set agreed with the vignette's only in Peace (both filter at 100 km²). The first render check printed the roll-up's three rows and nobody counted them.
 
-| caption clause | claim |
+**Remedy:** each data-raw block reads the vignette's own area threshold (`vignette_min_km2()`, a regex on `ecoregions$area_km2 > N`, which must match exactly once) and asserts on the ecoregions the vignette shows. The final check is the rendered page: `facet-prcp-1.png` has three panels (SBF, NCM, PTR), and the codes line lists those three.
+
+| caption clause (as rendered) | claim |
 |---|---|
-| roll-up `prcp %/yr`: slopes are trends of pct_normal anomalies | `prcp_trend_pct_of_baseline` (both) |
-| K "all four ecoregions" (and SBF, TOP named) | `ecoregions_are_ncm_sbf_ptr_top` |
+| roll-up `prcp %/yr`: slopes are trends of pct_normal anomalies | `prcp_trend_pct_of_baseline` (both, shown ecoregions) |
+| K "all three ecoregions shown" | `shown_are_ncm_sbf_ptr` (from the vignette's threshold) |
 | K "Northern Columbia Mountains (NCM)", "Purcell Transitional Ranges (PTR)" | `ncm_ptr_names` |
-| K "declines in all four ... over the full record" | `prcp_declines_everywhere` |
-| K "significant in NCM and PTR, not in SBF or TOP" | `prcp_significant_ncm_ptr` |
+| K "declines in all three ecoregions shown over the full record" | `prcp_declines_everywhere` |
+| K "significant in NCM and PTR, not in SBF" | `prcp_significant_ncm_ptr` |
 | K "None of the 45-year trends is significant" | `prcp_none_significant_1981` |
-| P "The two northernmost ecoregions (BMP, NRM)" | `bmp_nrm_northernmost` (centroid latitude) |
+| P "The two northernmost ecoregions (BMP, NRM)" | `bmp_nrm_northernmost` (centroid latitude, among shown) |
 | P "show statistically significant ... increases" | `prcp_significant_bmp_nrm`, `prcp_bmp_nrm_increase` |
-| P "the others do not" | `prcp_significant_bmp_nrm` (set equality) |
+| P "the others do not" | `prcp_significant_bmp_nrm` (set equality over shown) |
 
-Not asserted, on purpose: the "Dashed line is the 75-year trend; solid line is the 45-year" sentence is a property of the plotting code, not the data; PTR/TOP edge positions in the Kootenay intro and map caption come from the context gpkg, which `data-raw/example_context_kootenay_lake.R` builds, not from this script's outputs.
+Not asserted, on purpose: the dashed/solid sentence is plotting code; the PTR "eastern edge" in the intro and map caption comes from the context gpkg (`data-raw/example_context_kootenay_lake.R`), not this script; the map caption no longer mentions TOP, which the filtered map does not draw.
 
-Mutation table, run on each block extracted from its file, with `ecoregion_results` from the committed rds and `ecoregions` from the gpkg (Peace filtered >100 km²): clean data passes in both, and each of 11 mutations stops naming its claim (SBF significant, TOP slope up, NCM 1981 significant, TOP dropped, NCM p NA, PTR renamed, `trend_on = "value"`, OMM significant, NRM slope down, FAB moved north of NRM, `anomaly_type = "pct_point_diff"`). `claims %in% TRUE` makes an NA claim a named failure rather than an `if (NA)` error.
+Mutation table (blocks extracted from the files; `ecoregion_results` from the committed rds; `ecoregions` from the gpkg, Peace filtered >100 km²): clean passes in both; a significant TOP trend passes (TOP is not shown, correctly). Each of these stops: SBF significant, PTR slope up, NCM 1981 significant, PTR dropped (on `NROW(r) == 1`), NCM p NA, PTR renamed, `trend_on = "value"`, the Kootenay vignette's threshold lowered to 10 (TOP shown), OMM significant, NRM slope down, FAB moved north of NRM, `anomaly_type = "pct_point_diff"`, and the Peace threshold raised past every ecoregion.

@@ -93,32 +93,43 @@ names(wsg_results) <- wsgs$code
 # -- Sentences the prcp captions state (#102) ---------------------------------
 # kootenay-lake.Rmd's captions are static text, so refuse to save data they
 # no longer describe. Significance is Mann-Kendall p < 0.05.
+# The ecoregions the vignette shows: it filters by area in its load-context
+# chunk, so read its threshold rather than restate it here.
+vignette_min_km2 <- function(rmd) {
+  lines <- readLines(rmd)
+  hit <- regmatches(lines, regexpr("ecoregions\\$area_km2 > [0-9.]+", lines))
+  stopifnot(length(hit) == 1)
+  as.numeric(sub(".*> ", "", hit))
+}
+shown <- ecoregions$code[
+  ecoregions$area_km2 > vignette_min_km2("vignettes/kootenay-lake.Rmd")
+]
 prcp_trend <- function(start) {
-  do.call(rbind, lapply(names(ecoregion_results), function(code) {
+  do.call(rbind, lapply(shown, function(code) {
     t <- ecoregion_results[[code]]$trn
     r <- t[t$variable == "prcp" & t$period == "annual" & t$trend_start == start, ]
-    stopifnot(nrow(r) == 1)
+    stopifnot(NROW(r) == 1)
     data.frame(code = code, slope = r$slope, p = r$mk_pvalue)
   }))
 }
 p51 <- prcp_trend(1951)
 p81 <- prcp_trend(1981)
 # The roll-up's `prcp %/yr` header: its slopes are trends of pct_normal anomalies
-prcp_rows <- do.call(rbind, lapply(ecoregion_results, function(x) {
+prcp_rows <- do.call(rbind, lapply(ecoregion_results[shown], function(x) {
   x$trn[x$trn$variable == "prcp", ]
 }))
 claims <- c(
   prcp_trend_pct_of_baseline = all(prcp_rows$trend_on == "anomaly" &
                                      prcp_rows$anomaly_type == "pct_normal"),
-  # "all four ecoregions", and the caption names each of them
-  ecoregions_are_ncm_sbf_ptr_top = setequal(p51$code, c("NCM", "SBF", "PTR", "TOP")),
+  # "all three ecoregions shown", and the caption names each of them
+  shown_are_ncm_sbf_ptr = setequal(shown, c("NCM", "SBF", "PTR")),
   ncm_ptr_names = setequal(
     toupper(ecoregions$name[ecoregions$code %in% c("NCM", "PTR")]),
     c("NORTHERN COLUMBIA MOUNTAINS", "PURCELL TRANSITIONAL RANGES")
   ),
-  # "Precipitation declines in all four ecoregions over the full record"
+  # "Precipitation declines in all three ecoregions shown over the full record"
   prcp_declines_everywhere = all(p51$slope < 0),
-  # "significant in ... (NCM) and ... (PTR), not in SBF or TOP"
+  # "significant in ... (NCM) and ... (PTR), not in SBF"
   prcp_significant_ncm_ptr = setequal(p51$code[p51$p < 0.05], c("NCM", "PTR")),
   # "None of the 45-year trends is significant"
   prcp_none_significant_1981 = all(p81$p >= 0.05)
