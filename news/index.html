@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">cd</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.9</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.10</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,9 +34,16 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/NewGraphEnvironment/cd/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/NewGraphEnvironment/cd/blob/v0.6.10/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.6.10" id="cd-0610-2026-10-16">cd 0.6.10 (2026-10-16)<a class="anchor" aria-label="anchor" href="#cd-0610-2026-10-16"></a></h2>
+<ul><li>
+<code><a href="../reference/cd_variables.html">cd_variables()</a></code> gives <code>swe_max</code> (annual peak SWE) the anomaly type <code>pct_normal</code> and unit <code>"%"</code>, as <code>swe</code> already had, so <code><a href="../reference/cd_anomaly.html">cd_anomaly()</a></code> and <code><a href="../reference/cd_trend.html">cd_trend()</a></code> report peak snowpack as percent of the baseline normal rather than mm, clamped at <code>cap_pct</code> (±200 by default) like the other <code>pct_normal</code> variables. On raw swe_max values, <code><a href="../reference/cd_summary.html">cd_summary()</a></code> and <code><a href="../reference/cd_plot_timeseries.html">cd_plot_timeseries()</a></code> no longer show a unit, the same as for <code>swe</code>. A table saved under cd 0.6.9 or earlier keeps the <code>absolute</code>/<code>"mm"</code> it carries, because a carried type wins over the registry, and binding it to new output now errors (two types in one series); recompute it from the extracted series. The two regional articles’ peak-SWE figures are now in percent, and their other numbers are unchanged. (<a href="https://github.com/NewGraphEnvironment/cd/issues/139" class="external-link">#139</a>, <a href="https://github.com/NewGraphEnvironment/cd/pull/145" class="external-link">#145</a>)</li>
+<li>
+<code><a href="../reference/cd_compare.html">cd_compare()</a></code>’s docs now call its default <code>window_a = 2015:2025</code> the recent 11 years rather than a decade. Behaviour is unchanged.</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.6.9" id="cd-069-2026-10-16">cd 0.6.9 (2026-10-16)<a class="anchor" aria-label="anchor" href="#cd-069-2026-10-16"></a></h2>
 <ul><li>

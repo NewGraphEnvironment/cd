@@ -1,5 +1,31 @@
 # Changelog
 
+## cd 0.6.10 (2026-10-16)
+
+- [`cd_variables()`](https://newgraphenvironment.github.io/cd/reference/cd_variables.md)
+  gives `swe_max` (annual peak SWE) the anomaly type `pct_normal` and
+  unit `"%"`, as `swe` already had, so
+  [`cd_anomaly()`](https://newgraphenvironment.github.io/cd/reference/cd_anomaly.md)
+  and
+  [`cd_trend()`](https://newgraphenvironment.github.io/cd/reference/cd_trend.md)
+  report peak snowpack as percent of the baseline normal rather than mm,
+  clamped at `cap_pct` (±200 by default) like the other `pct_normal`
+  variables. On raw swe_max values,
+  [`cd_summary()`](https://newgraphenvironment.github.io/cd/reference/cd_summary.md)
+  and
+  [`cd_plot_timeseries()`](https://newgraphenvironment.github.io/cd/reference/cd_plot_timeseries.md)
+  no longer show a unit, the same as for `swe`. A table saved under cd
+  0.6.9 or earlier keeps the `absolute`/`"mm"` it carries, because a
+  carried type wins over the registry, and binding it to new output now
+  errors (two types in one series); recompute it from the extracted
+  series. The two regional articles’ peak-SWE figures are now in
+  percent, and their other numbers are unchanged.
+  ([\#139](https://github.com/NewGraphEnvironment/cd/issues/139),
+  [\#145](https://github.com/NewGraphEnvironment/cd/pull/145))
+- [`cd_compare()`](https://newgraphenvironment.github.io/cd/reference/cd_compare.md)’s
+  docs now call its default `window_a = 2015:2025` the recent 11 years
+  rather than a decade. Behaviour is unchanged.
+
 ## cd 0.6.9 (2026-10-16)
 
 - `cd_compare(method = "pct_change")` now returns `difference = NA`,
