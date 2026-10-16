@@ -21,6 +21,8 @@ Also folded in at the plan gate: the Kootenay `facet-prcp` caption (`kootenay-la
 ## Phase 2: Kootenay facet-prcp caption
 - [x] Replace the copied sentence at `kootenay-lake.Rmd:697` with one written from the committed numbers: NCM and PTR show statistically significant precipitation decreases over the full record; SBF and TOP decline but not significantly.
 
+- [x] (Added mid-run) PTR is Purcell Transitional Ranges, on the AOI's eastern edge, not "Pacific and Cascade Ranges" in the southwest: fix the name at the per-ecoregion intro (`:608`) and the `map-wsgs` caption (`:892`), from `inst/extdata/context_kootenay_lake.gpkg`.
+
 ## Phase 3: Downstream appendices
 - [ ] File one issue each in `fish_passage_peace_2025_reporting` and `fish_passage_skeena_2025_reporting`. Each names the file:line, the measured unit, and the fix, and links cd#102 (public).
 - [ ] The issue text follows the public-repo rule: no hosts and no private links. These repos are not edited from this branch.

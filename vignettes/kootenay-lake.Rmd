@@ -605,8 +605,8 @@ elevations and exposures: Northern Columbia Mountains (NCM, the
 dominant zone covering most of the AOI including the Selkirks and
 Purcells), Selkirk-Bitterroot Foothills (SBF, the western lower-
 elevation tier of LARL), Thompson-Okanagan Plateau (TOP, a small
-sliver in LARL's far west), and Pacific and Cascade Ranges (PTR,
-also a small sliver). To check whether the regional story holds
+sliver in LARL's far west), and Purcell Transitional Ranges (PTR,
+a small sliver on the eastern edge). To check whether the regional story holds
 within each ecoregion — and where it does not — we run the same
 pipeline on each ecoregion polygon individually.
 
@@ -694,7 +694,7 @@ ggplot(ano_all[ano_all$variable == "tmean" & ano_all$period == "annual", ],
   theme(legend.position = "bottom")
 ```
 
-```{r facet-prcp, fig.cap="Annual precipitation anomaly (% of the 1951-1980 baseline) by ecoregion. Dashed line is the 75-year trend (1951-present); solid line is the 45-year trend (1981-present). Precipitation declines in all four ecoregions over the full record; the decline is statistically significant in Northern Columbia Mountains (NCM) and Pacific and Cascade Ranges (PTR), not in SBF or TOP. None of the 45-year trends is significant.", fig.height=6, echo = FALSE}
+```{r facet-prcp, fig.cap="Annual precipitation anomaly (% of the 1951-1980 baseline) by ecoregion. Dashed line is the 75-year trend (1951-present); solid line is the 45-year trend (1981-present). Precipitation declines in all four ecoregions over the full record; the decline is statistically significant in Northern Columbia Mountains (NCM) and Purcell Transitional Ranges (PTR), not in SBF or TOP. None of the 45-year trends is significant.", fig.height=6, echo = FALSE}
 ggplot(ano_all[ano_all$variable == "prcp" & ano_all$period == "annual", ],
        aes(x = year, y = anomaly)) +
   geom_col(aes(fill = anomaly >= 0), width = 0.85, show.legend = FALSE) +
@@ -889,7 +889,7 @@ watershed groups labelled with their codes, on top of ecoregion
 fills. The table that follows gives the share of each watershed
 group's area falling in each ecoregion.
 
-```{r map-wsgs, fig.cap="The four watershed groups making up the AOI (KOTL, LARL, DUNC, SLOC) on top of ecoregion fills. Northern Columbia Mountains (NCM) covers most of the area; Selkirk-Bitterroot Foothills (SBF) covers the western portion of LARL; small slivers in the southwest belong to Thompson-Okanagan Plateau (TOP) and Pacific and Cascade Ranges (PTR).", fig.height=7, echo = FALSE}
+```{r map-wsgs, fig.cap="The four watershed groups making up the AOI (KOTL, LARL, DUNC, SLOC) on top of ecoregion fills. Northern Columbia Mountains (NCM) covers most of the area; Selkirk-Bitterroot Foothills (SBF) covers the western portion of LARL; small slivers belong to Thompson-Okanagan Plateau (TOP) on the western edge and Purcell Transitional Ranges (PTR) on the eastern edge.", fig.height=7, echo = FALSE}
 wsgs <- st_read(ctx, layer = "wsgs", quiet = TRUE)
 
 wsg_centroids <- suppressWarnings(st_centroid(wsgs))

@@ -65,3 +65,14 @@ So the Kootenay `facet-prcp` caption ("two northernmost ecoregions (BMP, NRM) sh
 | NRM | 0.156, 0.015 | -0.033, 0.732 |
 
 Peace's facet-prcp caption (BMP, NRM significant increases) holds. Kootenay's new caption: all four decline from 1951; significant in NCM and PTR; no 1981 trend significant.
+
+## Kootenay ecoregion names and positions (inst/extdata/context_kootenay_lake.gpkg, intersected with the AOI)
+
+| code | name | km² in AOI | centroid lon, lat |
+|---|---|---|---|
+| NCM | Northern Columbia Mountains | 19441 | -117.05, 49.84 |
+| SBF | Selkirk-Bitterroot Foothills | 4201 | -117.87, 49.39 |
+| PTR | Purcell Transitional Ranges | 494 | -115.98, 49.42 |
+| TOP | Thompson-Okanagan Plateau | 26 | -118.43, 50.06 |
+
+AOI bbox lon -118.51 to -115.52. The vignette called PTR "Pacific and Cascade Ranges" and put it with TOP "in the southwest"; PTR is on the eastern edge. Found while writing the facet-prcp caption, folded into Phase 2.
