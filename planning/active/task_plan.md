@@ -9,7 +9,7 @@ Measured from the committed `inst/vignette-data/peace_fwcp.rds`: the first ecore
 
 The plan review for #97 reports that the same label was ported into the `fish_passage_peace_2025_reporting` and `fish_passage_skeena_2025_reporting` appendices; not verified here.
 
-**Approach:** fix the labels and leave the data alone. Every other prcp figure in these vignettes is on the % of baseline scale. A mm/yr column would add a second scale and need a data regen, so the issue's alternative (trending `ts`) is not taken. The slope stays per year, as the issue proposes; rescaling to per decade would change the numbers, not just the label.
+**Approach:** fix the labels and leave the data alone. Every other prcp figure in these vignettes is on the % of baseline scale. A mm/yr column would add a second scale, so the issue's alternative (trending `ts`) is not taken. (Corrected after the plan review: it would not need a regen, since a Theil-Sen slope scales exactly, slope × baseline mean / 100.) The slope stays per year, as the issue proposes; rescaling to per decade would change the numbers, not just the label.
 
 Also folded in at the plan gate: the Kootenay `facet-prcp` caption (`kootenay-lake.Rmd:697`) was copied from Peace and names BMP/NRM, neither of which is in Kootenay.
 
@@ -26,6 +26,12 @@ Also folded in at the plan gate: the Kootenay `facet-prcp` caption (`kootenay-la
 ## Phase 3: Downstream appendices
 - [x] File one issue each in `fish_passage_peace_2025_reporting` and `fish_passage_skeena_2025_reporting`. Each names the file:line, the measured unit, and the fix, and links cd#102 (public).
 - [x] The issue text follows the public-repo rule: no hosts and no private links. These repos are not edited from this branch. Filed: fish_passage_peace_2025_reporting#50, fish_passage_skeena_2025_reporting#21.
+
+## Phase 4: Plan-review fixes (planning/active/review-plan.md)
+- [x] Caption says "percent of the 1951-1980 baseline mean per year", not "normal" (the vignettes reserve "climate normal" for WMO 1981-2010)
+- [x] Shown `per-ecoregion-recipe` passes `method = "pct_change"` to `cd_compare()`, matching the bundled data behind the `pct change` columns
+- [x] `data-raw/kootenay_lake_vignette_data.R` and `data-raw/peace_fwcp_vignette_data.R` assert their facet-prcp caption clauses before saving
+- [x] Out-of-scope Kootenay prose filed as cd#146; downstream issue bodies updated to the final wording
 
 ## Verification
 - Install the branch with `pak::local_install()`. The rds is unchanged, but `build_article` reads the installed cd.

@@ -90,6 +90,32 @@ wsg_results <- lapply(seq_len(nrow(wsgs)), function(i) {
 })
 names(wsg_results) <- wsgs$code
 
+# -- Sentences the facet-prcp caption states (#102) ---------------------------
+# kootenay-lake.Rmd's caption is static text, so refuse to save data it no
+# longer describes. Significance is Mann-Kendall p < 0.05.
+prcp_trend <- function(start) {
+  do.call(rbind, lapply(names(ecoregion_results), function(code) {
+    t <- ecoregion_results[[code]]$trn
+    r <- t[t$variable == "prcp" & t$period == "annual" & t$trend_start == start, ]
+    stopifnot(nrow(r) == 1)
+    data.frame(code = code, slope = r$slope, p = r$mk_pvalue)
+  }))
+}
+p51 <- prcp_trend(1951)
+p81 <- prcp_trend(1981)
+claims <- c(
+  # "Precipitation declines in all four ecoregions over the full record"
+  prcp_declines_everywhere = all(p51$slope < 0),
+  # "significant in ... (NCM) and ... (PTR), not in SBF or TOP"
+  prcp_significant_ncm_ptr = setequal(p51$code[p51$p < 0.05], c("NCM", "PTR")),
+  # "None of the 45-year trends is significant"
+  prcp_none_significant_1981 = all(p81$p >= 0.05)
+)
+if (!all(claims)) {
+  stop("Vignette sentences no longer true of the data: ",
+       paste(names(claims)[!claims], collapse = ", "))
+}
+
 # -- Spatial pattern raster (pre-cropped, masked, departure) -----------------
 message("Spatial pattern raster ...")
 tmean_row <- catalog[catalog$variable == "tmean" & catalog$period == "annual", ]
