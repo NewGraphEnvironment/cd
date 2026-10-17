@@ -39,3 +39,12 @@ The New Graph website will describe this package from its README (NewGraphEnviro
 - DESCRIPTION `Description` says producer functions "download ERA5-Land monthly means": true of the legacy `cd_fetch()` (CDS), not of the EDH pipeline CI runs.
 - `update-citation-cff.yaml` calls `cffr::cff_create()` with default roles, so New Graph Environment Ltd. (`cph`, `fnd`) is not a citation author.
 - `example_aoi_kotl.gpkg` is the KOTL watershed group, ~9,339 km².
+
+## README rewrite (Phase 2)
+
+- Words: 962 on main -> 593 (`wc -w`, includes the code block and pasted output). No forecast was set; the floor is the convention's fixed sections: opening, figure, install + pin line, example with output, three vignette lines, ecosystem table, data and methods, citation, license.
+- Removed: Overview inventory, Caching section (now one sentence), Data inventory (15 variables, extent, years), Architecture function table (with `cd_stac_item()`), Roadmap, Acknowledgements (folded into "Data and methods it builds on").
+- Claims checked against code: catalog periods are annual + four seasons (59 items; no monthly layers), so the opening says "by season and year"; `cd_sha` is "Git commit of the cd code that built the file read" (`R/cd_extract.R:30`, `R/cd_extract_daily.R:90`), hence "commit", not "version"; trends are `Kendall::MannKendall` + `zyp::zyp.sen` (`R/cd_trend.R:74-75`).
+- No ERA5-Land / Copernicus attribution existed anywhere in the repo or `catalog.json`; added the C3S "contains modified Copernicus Climate Change Service information" sentence and Muñoz-Sabater et al. 2021 (doi:10.5194/essd-13-4349-2021, resolves to ESSD 13/4349).
+- Ecosystem roles copied from wet's README (cd's own row) and link's (wet, gq).
+- Mechanical: all 6 functions named are exported; all 15 links return 200.
