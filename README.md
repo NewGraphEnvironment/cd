@@ -20,6 +20,8 @@ pak::pak("NewGraphEnvironment/cd")
 
 cd is under active development and its functions change between releases (see [NEWS](https://newgraphenvironment.github.io/cd/news/index.html)). Pin a release for reproducible work: `pak::pak("NewGraphEnvironment/cd@vX.Y.Z")`.
 
+The example below also needs sf, Kendall and zyp: `pak::pak(c("sf", "Kendall", "zyp"))`.
+
 ## Example
 
 Extract a series for an area, compare it with a baseline, and test the trend. This is the run behind the figure above:
@@ -45,7 +47,7 @@ cd_summary(trn)
 #> 1 Mean temperature Annual 0.025    75            1.9 °C            0
 ```
 
-Each file is downloaded once and read from a local cache after that. Every value extracted records the commit of cd's code that built the file it came from.
+Files are cached after the first read and downloaded again only when they are republished. Extracted rows record which commit of cd built each file they came from.
 
 ## Learn more
 
@@ -60,16 +62,17 @@ Each file is downloaded once and read from a local cache after that. Every value
 |---|---|
 | **cd** | Climate departure: baselines, anomalies and trends, and ERA5-Land climate (this package) |
 | [wet](https://github.com/NewGraphEnvironment/wet) | Stream flow and water temperature for BC's Freshwater Atlas |
-| [gq](https://github.com/NewGraphEnvironment/gq) | Shared map symbology |
+
+cd computes the departures from wet's yearly station values.
 
 ## Data and methods it builds on
 
-The climate data are [ERA5-Land](https://www.ecmwf.int/en/era5-land) ([Muñoz-Sabater et al. 2021](https://doi.org/10.5194/essd-13-4349-2021)), produced by ECMWF for the Copernicus Climate Change Service and read from the [DestinE Earth Data Hub](https://earthdatahub.destine.eu/). The published layers contain modified Copernicus Climate Change Service information. Trends are Mann-Kendall tests with Theil-Sen slopes, from the [Kendall](https://cran.r-project.org/package=Kendall) and [zyp](https://cran.r-project.org/package=zyp) packages. cd's variables and its ecoregion and watershed framing follow [`bcgov/bc_climate_anomaly`](https://github.com/bcgov/bc_climate_anomaly), a Shiny app by the Province of British Columbia (Aseem Sharma and contributors).
+The climate data are [ERA5-Land](https://www.ecmwf.int/en/era5-land) ([Muñoz-Sabater et al. 2021](https://doi.org/10.5194/essd-13-4349-2021)), produced by ECMWF for the Copernicus Climate Change Service and read from the [DestinE Earth Data Hub](https://earthdatahub.destine.eu/). The published layers contain modified Copernicus Climate Change Service information, under CC BY 4.0. Trends are Mann-Kendall tests with Theil-Sen slopes, from the [Kendall](https://cran.r-project.org/package=Kendall) and [zyp](https://cran.r-project.org/package=zyp) packages. cd's variables and its ecoregion and watershed framing follow [`bcgov/bc_climate_anomaly`](https://github.com/bcgov/bc_climate_anomaly), a Shiny app by the Province of British Columbia (Aseem Sharma and contributors).
 
 ## Citation
 
-Cite cd with `citation("cd")`, or from [`CITATION.cff`](CITATION.cff).
+Cite cd with `citation("cd")`.
 
 ## License
 
-MIT © New Graph Environment Ltd. See [LICENSE](LICENSE.md).
+MIT © New Graph Environment Ltd. See [LICENSE](LICENSE.md). The ERA5-Land data it ships and publishes are CC BY 4.0; see [NOTICE](NOTICE.md).

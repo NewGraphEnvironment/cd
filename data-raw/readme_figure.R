@@ -39,7 +39,8 @@ print(cd_summary(trn))
 
 p <- cd_plot_timeseries(ano, trend = trn) +
   ggplot2::theme_minimal(base_size = 15) +
-  ggplot2::theme(legend.position = "none")
+  ggplot2::theme(legend.position = "none") +
+  ggplot2::labs(y = "Difference from 1951–1980\naverage (°C)")
 
 out <- "man/figures/readme-kotl-tmean.png"
 # png() gives an opaque white background, which survives a dark web page.
