@@ -354,13 +354,15 @@ the pre-warming reference. **Trend p (75-yr)** asks whether the full
 series ramps year-on-year. A sudden step change shows up as significant
 Δ p but not trend p; a gradual ramp shows up as both.
 
-The recent decade was 1.6 to 1.8 °C warmer than the pre-warming
+The recent decade was between 1.6 and 1.7 °C warmer than the pre-warming
 reference for annual mean, daytime maximum, and overnight minimum, with
 both window and trend p-values below 0.001. Vapour pressure deficit is
 up significantly on both tests. Annual precipitation was about 6 to 7 %
 *lower* in the recent decade, and the long-term Mann-Kendall trend test
 confirms a steady year-on-year decline (trend p ≈ 0.02). Soil moisture
-is roughly flat. Relative humidity shows a small significant decline.
+is down 2.1 %, too small a step for the window test (p ≈ 0.062), but the
+trend test finds a steady decline (trend p ≈ 0.04 from 1951 and ≈ 0.0037
+from 1981). Relative humidity shows a small significant decline.
 
 ``` r
 
@@ -501,14 +503,15 @@ values are not ground truth.
 
 ### Seasonal snowpack curve
 
-The four monthly-native snow variables — SWE, snowfall, snowmelt, and
-snow cover — show *when* snow accumulates and melts. Aggregated to the
-four standard meteorological seasons — winter (December–February),
-spring (March–May), summer (June–August), and fall (September–November)
-— the table below compares the recent decade (2015-2025) against the
-pre-warming reference (1951-1980) directly. The headline numbers above
-(summer SWE collapse, spring snowmelt rise) are in the **summer** and
-**spring** rows.
+Three of the monthly-native snow variables — SWE, snowfall and snowmelt
+— show *when* snow accumulates and melts (snow cover, already a
+percentage, has no percent change to compare). Aggregated to the four
+standard meteorological seasons — winter (December–February), spring
+(March–May), summer (June–August), and fall (September–November) — the
+table below compares the recent decade (2015-2025) against the
+pre-warming reference (1951-1980) directly. The **summer** rows carry
+the snow-free-summer finding below, and winter and spring snowmelt rose
+as melt moved earlier.
 
 | Variable      | Season | Pre-warming (1951–1980) | Recent (2015–2025) |   Δ % |
 |:--------------|:-------|------------------------:|-------------------:|------:|
@@ -526,9 +529,9 @@ pre-warming reference (1951-1980) directly. The headline numbers above
 | Snowmelt (mm) | fall   |                    34.4 |               33.8 |  -1.7 |
 
 Seasonal snowpack: recent decade compared to pre-warming reference for
-the Kootenay Lake Region. Summer SWE collapse (-75%) and spring snowmelt
-rise (+37%) are the headline signals. {.table .table .table-striped
-.table-hover .table-condensed
+the Kootenay Lake Region. Summer SWE (-73%) and summer snowmelt (-61%)
+carry the largest losses; winter (+138%) and spring (+12%) snowmelt
+rose. {.table .table .table-striped .table-hover .table-condensed
 style="margin-left: auto; margin-right: auto;"}
 
   
@@ -583,8 +586,8 @@ boundary is just north of the Kootenay Lake Region.
 
 **Summer is becoming snow-free.** Summer SWE has collapsed by 73% and
 summer snowmelt is down 61%. The high-elevation snowpack that
-historically lingered into summer no longer does in the recent decade.
-For aquatic ecosystems downstream, this is a loss of late-season
+historically lingered into summer now holds about a quarter of what it
+did. For aquatic ecosystems downstream, this is a loss of late-season
 cold-water input to streams during the warmest, most thermally stressful
 weeks of the year.
 
@@ -619,16 +622,19 @@ elevations and exposures: Northern Columbia Mountains (NCM, the dominant
 zone covering most of the AOI including the Selkirks and Purcells),
 Selkirk-Bitterroot Foothills (SBF, the western lower- elevation tier of
 LARL), Thompson-Okanagan Plateau (TOP, a 26 km² sliver in LARL’s far
-west, too small for the per-ecoregion trend figures and roll-up table
-below, which leave it out), and Purcell Transitional Ranges (PTR, a
-small sliver on the eastern edge). To check whether the regional story
-holds within each ecoregion — and where it does not — we run the same
-pipeline on each ecoregion polygon individually.
+west), and Purcell Transitional Ranges (PTR, a small sliver on the
+eastern edge). Ecoregions under 100 km² — here TOP, smaller than one
+ERA5-Land cell — are left out of the maps, the per-ecoregion trend
+figures and the roll-up table below, so they show three. To check
+whether the regional story holds within each ecoregion — and where it
+does not — we run the same pipeline on each ecoregion polygon
+individually.
 
-All four ecoregions warmed at roughly the same rate. Precipitation shows
-a region-wide decline; the magnitude is consistent across ecoregions
-rather than concentrated in any one zone. Vapour pressure deficit is up
-significantly across the region.
+All three ecoregions shown warmed, at rates between +0.23 and +0.30 °C
+per decade since 1951. Precipitation shows a region-wide decline; the
+magnitude is consistent across ecoregions rather than concentrated in
+any one zone. Vapour pressure deficit is up significantly across the
+region.
 
 ``` r
 
@@ -767,12 +773,13 @@ The Kootenay Lake Region is reported and managed at the watershed-group
 scale — the British Columbia Freshwater Atlas hydrological reporting
 unit, and the unit the Fish & Wildlife Compensation Program funds work
 in. Four watershed groups make up the AOI for this list. They span the
-four ecoregions in different ways. KOTL, DUNC, and SLOC sit almost
-entirely within Northern Columbia Mountains (NCM); LARL is the
-most-mixed group, splitting across NCM and the Selkirk-Bitterroot
-Foothills (SBF). The map below shows the watershed groups labelled with
-their codes, on top of ecoregion fills. The table that follows gives the
-share of each watershed group’s area falling in each ecoregion.
+four ecoregions in different ways (TOP, too small to draw, appears only
+in the table). KOTL, DUNC, and SLOC sit almost entirely within Northern
+Columbia Mountains (NCM); LARL is the most-mixed group, splitting across
+NCM and the Selkirk-Bitterroot Foothills (SBF). The map below shows the
+watershed groups labelled with their codes, on top of ecoregion fills.
+The table that follows gives the share of each watershed group’s area
+falling in each ecoregion.
 
 ![The four watershed groups making up the AOI (KOTL, LARL, DUNC, SLOC)
 on top of ecoregion fills. Northern Columbia Mountains (NCM) covers most
@@ -806,23 +813,25 @@ style="margin-left: auto; margin-right: auto;"}
 
 ## Interpretation
 
-Three findings emerge from the climate departures shown above.
+Four findings emerge from the climate departures shown above.
 
-**Warming is broad and fast.** All four ecoregions warmed between +1.6
-°C and +1.9 °C cumulative since 1951, at a rate near +0.25 °C per
-decade, with Mann-Kendall p-values below 0.001 in every ecoregion. The
-trend is statistically significant beyond reasonable doubt of being
-random noise. Daily maximum, daily minimum, and daily mean temperatures
-all tell the same story. The whole region moved together — there is no
-warming hot-spot at the ecoregion scale.
+**Warming is broad and fast.** The three ecoregions shown were between
+1.5 and 1.9 °C warmer in 2015–2025 than in 1951–1980, warming at rates
+between +0.23 and +0.30 °C per decade since 1951, with Mann-Kendall
+p-values below 0.001 in every ecoregion. The trend is statistically
+significant beyond reasonable doubt of being random noise. Daily
+maximum, daily minimum, and daily mean temperatures all tell the same
+story. The whole region warmed; the ecoregions differ by a few tenths of
+a degree, small beside the warming itself.
 
 **Precipitation is declining and the decline is regionally consistent.**
 Annual precipitation dropped **~7%** from the 1951-1980 reference to the
 2015-2025 recent decade, with a long-term Mann-Kendall p of 0.02.
-Spatially the decline is consistent across all four ecoregions of the
-AOI, so the pattern at the regional average mirrors what each watershed
-group sees individually. All four watershed groups in the AOI are
-sitting in the same drying signal.
+Spatially the decline is consistent across the three ecoregions shown,
+down between 6.4 and 7.0 %. The watershed groups agree in direction more
+than in strength: the precipitation trend since 1951 points down in all
+four, but only in KOTL is it statistically significant (p 0.015); in
+DUNC, LARL and SLOC it is not (p between 0.051 and 0.094).
 
 **The atmosphere is drying.** Vapour pressure deficit — the gap between
 how much water the air could hold and how much it actually does — is up
@@ -834,11 +843,11 @@ concentrated in the western and southern portions, driven by combined
 air-temperature increases and relative-humidity declines. Combined with
 declining precipitation, this is a “double-dipping” signal: less water
 arriving as precipitation, *and* warmer air pulling more water out of
-soil and vegetation through evapotranspiration. Soil moisture is
-essentially flat despite the precipitation decline — the warmer
-atmosphere is drinking surface moisture at a rate that keeps the topsoil
-layer roughly even, but the resulting late-summer water deficit shows up
-in stream baseflow rather than in soil-moisture statistics.
+soil and vegetation through evapotranspiration. Soil moisture is falling
+too: down 2.1 % between the two windows, a step the window test cannot
+separate from year-to-year noise (p ≈ 0.062), but part of a significant
+long-term decline (trend p ≈ 0.04 from 1951 and ≈ 0.0037 from 1981).
+From 1981 the decline is significant in every ecoregion shown.
 
 **Snow is leaving *and* falling less.** Annual snowfall is **down 15%**
 alongside the freshet shift — winter precipitation is falling more often
@@ -866,7 +875,7 @@ cold-water input that high-elevation snowpack provides during the
 warmest weeks of summer is dropping in parallel with summer SWE.** **The
 spring freshet — the high-flow event that shapes channels, moves
 spawning gravels, and refills off-channel rearing habitat — is arriving
-weeks earlier.**
+nearly two weeks earlier.**
 
 Lower Columbia River reaches below Hugh Keenleyside Dam are
 dam-fragmented and not anadromous, so the framing is about resident
