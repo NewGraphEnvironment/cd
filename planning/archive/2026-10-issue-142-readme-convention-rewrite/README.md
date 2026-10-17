@@ -10,4 +10,4 @@ README 962 → 626 words (`wc -w`, including the example's code and output). No 
 
 `planning/archive/2026-10-issue-142-*/review-*.md`
 
-Closed by: PR (see branch `142-readme-add-daily-point-temperatures-and`)
+Closed by: PR #152
