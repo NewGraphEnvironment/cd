@@ -15,6 +15,9 @@ This repository redistributes modified ERA5-Land data, under CC BY 4.0, in:
 - `inst/extdata/example_daily/` (daily air temperature, 2002)
 - `inst/vignette-data/` (the precomputed series and rasters the vignettes read)
 
-It also redistributes, in `inst/extdata/example_aoi_*.gpkg` and `inst/extdata/context_*.gpkg`, watershed groups, lakes, rivers and streams from the BC Freshwater Atlas and ecoregions from the Ecoregion Ecosystem Classification of British Columbia, under the [Open Government Licence – British Columbia](https://www2.gov.bc.ca/gov/content/data/policy-standards/open-data/open-government-licence-bc).
+It also redistributes data from the BC Freshwater Atlas and the Ecoregion Ecosystem Classification of British Columbia, under the [Open Government Licence – British Columbia](https://www2.gov.bc.ca/gov/content/data/policy-standards/open-data/open-government-licence-bc), in:
+
+- `inst/extdata/example_aoi_kootenay_lake.gpkg`, `example_aoi_kotl.gpkg` and `example_aoi_northern_bc.gpkg` (watershed groups and watersheds)
+- `inst/extdata/context_fwcp_peace.gpkg`, `context_kootenay_lake.gpkg` and `context_northern_bc.gpkg` (every layer except `towns` and `highways`)
 
 > Contains information licensed under the Open Government Licence – British Columbia.
