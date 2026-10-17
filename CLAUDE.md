@@ -174,7 +174,7 @@ The two-vignette template is the foundation for additional regional reporting ap
 # Agent Operating Rules
 
 How an agent session works here: clocks and waiting, subagents, evidence, and when to come
-back to the user. Sections 5–8 of `karpathy.md` until 2026-10-11 (soul#366). Worked commands
+back to the user. Sections 5–8 of `karpathy.md` until 2026-10-11. Worked commands
 and background, under the same headings, are in
 `~/Projects/repo/soul/conventions/reference/agent-operations.md`, which no `CLAUDE.md` loads.
 
@@ -519,7 +519,7 @@ which indexes **default branches only**: a file on a feature branch needs
 `gh api repos/<owner>/<repo>/contents/<path>?ref=<branch>`. `s3cmd ls` and `aws s3 ls` each
 list only their own provider's buckets; the backup script names the rest.
 
-*16 lines of evidence for this rule are in `conventions/agent-operations.md`.*
+*17 lines of evidence for this rule are in `conventions/agent-operations.md`.*
 
 #### The temporal version: what you build against may be about to change
 
@@ -615,7 +615,7 @@ It is not the secret-read clamp (`newgraph.md`, "Reading a secret clamps the res
 session"), which names *earlier conversation content* and needs a restart. This refusal
 names a **category** of action, such as "Production Deploy".
 
-*9 lines of evidence for this rule are in `conventions/agent-operations.md`.*
+*10 lines of evidence for this rule are in `conventions/agent-operations.md`.*
 
 ### Hand the user bare commands
 
@@ -637,16 +637,16 @@ granted separately, so probe each. If blocked, do not retry variants: ask for **
 into the repo, with absolute source and destination paths. Full Disk Access for the terminal
 app removes the block.
 
-*12 lines of evidence for this rule are in `conventions/agent-operations.md`.*
+*13 lines of evidence for this rule are in `conventions/agent-operations.md`.*
 
 ### Link every issue and PR you name to the user
 
 When a message to the user names an issue or a PR, make the number a link the user can
-click: `[soul#191](https://github.com/NewGraphEnvironment/soul/issues/191)`,
-`[soul PR #192](https://github.com/NewGraphEnvironment/soul/pull/192)`.
+click: `[repo#12](https://github.com/<owner>/<repo>/issues/12)`,
+`[repo PR #13](https://github.com/<owner>/<repo>/pull/13)`.
 
 - Issues under `/issues/N`, pull requests under `/pull/N`; when unsure, ask `gh` for the URL.
-- **Cross-repo references carry the repo** (`rfp#268`): a bare `#N` is a working link to the
+- **Cross-repo references carry the repo** (`other#12`): a bare `#N` is a working link to the
   wrong repo, and naming the collision in prose afterwards does not fix it; re-qualify the link.
 - Before sending a report with many numbers, spot-check two or three through `gh`: the ones
   typed from memory or whose type you inferred.
@@ -1460,7 +1460,7 @@ Two traps in the same file type, both of which read perfectly and fail at run ti
 The harness applies an isolation guard to a session that entered a worktree: *"a worktree-isolated session's git operations must target its own worktree."*
 
 ### A `git filter-repo` seed carries the source repo's tags, and a path sed misses the language's path constructor
-Two traps from seeding one repo out of another's history (fish_passage_template_reporting#236, 2026-09-02), both silent.
+Two traps from seeding one repo out of another's history (2026-09-02), both silent.
 
 ### `git check-ignore -v` prints the matching pattern, and its exit status is not a per-file verdict
 `-v` reports the **last matching pattern**, negations included.
@@ -2006,7 +2006,7 @@ rather than redundant, and a mechanical resolution keeps whichever half git pref
 
 When main only moved under you, with other work and no duplicate, bring it in with
 `git merge origin/main`, not a rebase: `progress.md` and the archive README cite the
-branch's commit SHAs, and a rebase rewrites every one they name (soul#352, 2026-10-12).
+branch's commit SHAs, and a rebase rewrites every one they name (2026-10-12).
 
 ## Re-read the issue body before the baseline
 
@@ -2027,7 +2027,7 @@ Nothing downstream checks that the issue it names has anything to do with the co
 beside it.
 
 Measured 2026-09-08 in rtj. Work with no issue was branched as `322-sern-thompson-2026`
-on a guess, and four `rtj#322` citations went into a `project.yml` header and two
+on a guess, and four citations of that number went into a `project.yml` header and two
 shared-library comments. A parallel session then filed #322 — about a STAC registration
 script. Every citation was wrong, all four looked fine, and the real issue for the work
 (#319) went uncited until the merge.
@@ -2081,13 +2081,13 @@ The skip covers the **workflow**, never the **review**. Two questions, answered 
 Three things are exempt, each for a stated reason:
 
 - **Whitespace, and spelling inside a single word.** Changing a word changes what a rule
-  says, and soul#214's wrong claims each read correctly on their own.
+  says, and one batch's wrong claims each read correctly on their own.
 - **Commits a skill writes itself and gates mechanically**: `/gh-pr-merge`'s release
   bookkeeping, CLAUDE.md syncs, `CITATION.cff` refreshes.
 - **Commits from the skills built to run unattended**: `/compact-prep`'s capture commit
   of the working tree and its convention appends, and `/claude-memory-audit`'s writes to
   CLAUDE.md and `research/`. They are exempt for now, not reviewed, and a capture commit
-  can carry code. Whether they should get review is soul#359.
+  can carry code. Whether they should get review is an open issue.
 
 The review is the cheap half. Scaffolding costs a plan, a branch and an archive; a review
 costs a few reviewer agents, and its three-round floor stays, because small edits are
@@ -2201,7 +2201,7 @@ We've hit snags repeatedly when half-doing this — branches that mix concerns, 
 <!-- Last synced: 2026-02-06 -->
 <!-- These principles are hardcoded locally. We do not curl at deploy time. -->
 <!-- Periodically check the source for meaningful updates. -->
-<!-- Only the upstream guidelines live here. NGE's own operating rules, once sections 5-8 of this file, are in agent-operations.md (soul#366). -->
+<!-- Only the upstream guidelines live here. NGE's own operating rules, once sections 5-8 of this file, are in agent-operations.md. -->
 
 Behavioral guidelines to reduce common LLM coding mistakes. Merge with project-specific instructions as needed.
 
@@ -2429,7 +2429,7 @@ Skip planning for single-file edits, quick fixes, or tasks with obvious next ste
 
 ## The Workflow
 
-1. **Explore first** — Enter plan mode (read-only). Read code, trace paths, understand the problem before proposing anything. When the work codifies a pattern that already exists in multiple places (reference implementations across repos), read **every** reference in full, not just the canonical one — variation across references surfaces patches before v0.1 instead of as churn later (soul#52: reading all 4 references preempted 5 of the 7 fixes a dry-run would have found). Don't substitute Explore-agent summaries for direct reads; agents sometimes report existing files as absent.
+1. **Explore first** — Enter plan mode (read-only). Read code, trace paths, understand the problem before proposing anything. When the work codifies a pattern that already exists in multiple places (reference implementations across repos), read **every** reference in full, not just the canonical one — variation across references surfaces patches before v0.1 instead of as churn later (measured: reading all 4 references preempted 5 of the 7 fixes a dry-run would have found). Don't substitute Explore-agent summaries for direct reads; agents sometimes report existing files as absent.
 2. **Plan to files** — Write the plan into 3 files in `planning/active/`:
    - `task_plan.md` — Phases with checkbox tasks
    - `findings.md` — Research, discoveries, technical analysis
@@ -2484,7 +2484,7 @@ Skip planning for single-file edits, quick fixes, or tasks with obvious next ste
    **Review the fixes, not just the code.** The second pass is where the value concentrates, because a fix written under a wrong assumption reproduces the same defect. Measured on gq#52: pass 1 found 13 defects, pass 2 found 7 more — including a blocker sitting *inside the fix* for pass 1's blocker, the same class twice (`lty`, then `fill_alpha`) because completeness was reasoned about rather than computed. Pass 3, scoped narrowly to the file edited most, found no new instances; **convergence is the signal to stop, not a fixed number of rounds.**
 
    Convergence is measured, not felt — a quiet round and an exhausted reviewer look
-   identical. The rule that terminated trap#28 (five rounds; each of the first four
+   identical. The rule that terminated one package's review (five rounds; each of the first four
    found its best defect *inside the previous round's fix*) was to **enumerate the
    candidate set mechanically and show nothing sits above its source of truth**: parse
    the files and walk every `cli_abort`/`warning`/`stop` rather than recalling them, so
@@ -2498,7 +2498,7 @@ Skip planning for single-file edits, quick fixes, or tasks with obvious next ste
    Ask for the **mechanism**, not more instances. Pass 3's best finding was that an invariant was enforced by two lists happening to agree — which is what had produced instances two and three.
 
    The thing reviewers catch that self-probing does not is **interop**: 18 tests inspected a legend object and none handed it to the renderer, which rejected it outright. Ask the consumer.
-4. **Lock naming before the baseline** — If naming feedback surfaces during planning (legacy filename, inconsistency with an existing file family), fold the rename into the convention + task_plan BEFORE the baseline commit, not as a follow-up. Pre-baseline it's free; retrofitting after implementation cascades (soul#52: `build_exec_pdf.R` → `run_pagedown_exec_summary.R` locked in pre-baseline meant zero downstream rework).
+4. **Lock naming before the baseline** — If naming feedback surfaces during planning (legacy filename, inconsistency with an existing file family), fold the rename into the convention + task_plan BEFORE the baseline commit, not as a follow-up. Pre-baseline it's free; retrofitting after implementation cascades (measured: `build_exec_pdf.R` → `run_pagedown_exec_summary.R` locked in pre-baseline meant zero downstream rework).
 5. **Commit the plan** — After Plan-agent review + fixes. This is the baseline.
 6. **Work in atomic commits** — Each commit bundles code changes WITH checkbox updates in the planning files. The diff shows both what was done and the checkbox marking it done.
 7. **Code check before commit** — Run `/code-check` on staged diffs before committing, or once over the branch with `/code-check branch` before the PR (`feature-workflow.md`, "When to Skip"). Per commit, don't mark a task done until its diff passes review. In branch mode each commit still carries its own checkbox flip (Atomic Commits, below), the Validation box for `/code-check` is the one that waits for the branch review, and its fixes land as follow-up commits.
@@ -3120,13 +3120,13 @@ EOF
 ### Scaffold checklist
 
 - `usethis::create_package(".")`
-- `usethis::use_mit_license("New Graph Environment Ltd.")`
+- `usethis::use_mit_license("New Graph Environment Ltd.")`; `Authors@R` as in `/citation-cff`
 - `usethis::use_testthat(edition = 3)`
 - `usethis::use_pkgdown()`
-- `usethis::use_github_action("pkgdown")`
+- `usethis::use_github_action("pkgdown")`, then `timeout-minutes: 90` on its job
 - `usethis::use_directory("dev")` — reproducible setup script
 - `usethis::use_directory("data-raw")` — data generation scripts
-- Hex sticker via `hexSticker` (see `data-raw/make_hexsticker.R`)
+- Hex sticker: copy `~/Projects/repo/soul/templates/make_hexsticker.R` to `data-raw/`
 - Set GitHub Pages to serve from `gh-pages` branch
 
 ### dev/dev.R
@@ -3234,7 +3234,7 @@ mean it is not running, which is exactly the wrong conclusion to draw at that mo
 wait and retry once before diagnosing.
 
 The key's location, the password-manager item that holds it and the local port are
-infrastructure identity and stay in machine-local memory, not here (soul#177).
+infrastructure identity and stay in machine-local memory, not here.
 
 **`immutable=1` serves a stale snapshot, so it cannot confirm a write landed.** The
 read-only URI the skills prescribe —
@@ -3249,7 +3249,7 @@ create also needs Zotero to **sync** before it is in the local database at all.
 Three skills prescribe that URI (`zotero-lookup`, `zotero-api`, `lit-search`) and none
 of them says this, which is why it is here rather than in one of them.
 
-**A copy of the live file needs a consistency check** (knowledge#19). Zotero holds
+**A copy of the live file needs a consistency check**. Zotero holds
 `zotero.sqlite` in exclusive locking mode, so a normal read-only connection blocks, an
 `immutable=1` read during a sync can fail as malformed, and the header change counter does
 not move per commit. Accept a copy only when the live file's mtime and size are unchanged
@@ -3281,9 +3281,9 @@ PATCHed clean after the user caught it.
   File…" from the BBT releases page.
 
 A key is unique within one library, not across them: 12 of 327 keys shared between
-libraries named different works (knowledge#19), so resolve a key within its library.
+libraries named different works, so resolve a key within its library.
 
-`/lit-search` and `/zotero-api` point here; this is the authority (soul#43).
+`/lit-search` and `/zotero-api` point here; this is the authority.
 
 ## Adding References Workflow
 
