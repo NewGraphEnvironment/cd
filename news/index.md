@@ -1,5 +1,23 @@
 # Changelog
 
+## cd 0.6.13 (2026-10-17)
+
+- The README is rewritten in plain language: what cd measures and the
+  restoration decisions it informs, daily point temperatures and the
+  baselines for any annual series, a figure and an example with a
+  1951–1980 baseline built from one committed script
+  (`data-raw/readme_figure.R`). The DESCRIPTION Title and Description,
+  the README tagline and the GitHub About now say the same thing. A new
+  `NOTICE.md` attributes ERA5-Land (CC BY 4.0) and the BC Freshwater
+  Atlas and ecoregion data (Open Government Licence – British Columbia)
+  that the bundled data are built from, and the pkgdown reference index
+  is grouped by purpose.
+  ([\#142](https://github.com/NewGraphEnvironment/cd/issues/142),
+  [\#152](https://github.com/NewGraphEnvironment/cd/pull/152))
+- `citation("cd")` uses the key `cd` and the note “Version x”, so
+  [`knitr::write_bib()`](https://rdrr.io/pkg/knitr/man/write_bib.html)
+  keeps the entry and a report can cite `@cd`.
+
 ## cd 0.6.12 (2026-10-17)
 
 - Rewrites the sentences in the Kootenay Lake article that its own data

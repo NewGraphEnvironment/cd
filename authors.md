@@ -11,10 +11,10 @@
 ## Citation
 
 Source:
-[`inst/CITATION`](https://github.com/NewGraphEnvironment/cd/blob/main/inst/CITATION)
+[`inst/CITATION`](https://github.com/NewGraphEnvironment/cd/blob/v0.6.13/inst/CITATION)
 
 Irvine A (2026). *cd: How far any BC watershed's climate has shifted
-from your chosen baseline*. New Graph Environment Ltd. Version 0.6.12,
+from your chosen baseline*. New Graph Environment Ltd. Version 0.6.13,
 <https://github.com/NewGraphEnvironment/cd>.
 
     @Manual{cd,
@@ -22,7 +22,7 @@ from your chosen baseline*. New Graph Environment Ltd. Version 0.6.12,
       author = {Allan Irvine},
       organization = {New Graph Environment Ltd.},
       year = {2026},
-      version = {0.6.12},
-      note = {Version 0.6.12},
+      version = {0.6.13},
+      note = {Version 0.6.13},
       url = {https://github.com/NewGraphEnvironment/cd},
     }

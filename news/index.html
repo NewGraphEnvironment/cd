@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">cd</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.12</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.13</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,9 +34,15 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/NewGraphEnvironment/cd/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/NewGraphEnvironment/cd/blob/v0.6.13/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.6.13" id="cd-0613-2026-10-17">cd 0.6.13 (2026-10-17)<a class="anchor" aria-label="anchor" href="#cd-0613-2026-10-17"></a></h2>
+<ul><li>The README is rewritten in plain language: what cd measures and the restoration decisions it informs, daily point temperatures and the baselines for any annual series, a figure and an example with a 1951–1980 baseline built from one committed script (<code>data-raw/readme_figure.R</code>). The DESCRIPTION Title and Description, the README tagline and the GitHub About now say the same thing. A new <code>NOTICE.md</code> attributes ERA5-Land (CC BY 4.0) and the BC Freshwater Atlas and ecoregion data (Open Government Licence – British Columbia) that the bundled data are built from, and the pkgdown reference index is grouped by purpose. (<a href="https://github.com/NewGraphEnvironment/cd/issues/142" class="external-link">#142</a>, <a href="https://github.com/NewGraphEnvironment/cd/pull/152" class="external-link">#152</a>)</li>
+<li>
+<code>citation("cd")</code> uses the key <code>cd</code> and the note “Version x”, so <code><a href="https://rdrr.io/pkg/knitr/man/write_bib.html" class="external-link">knitr::write_bib()</a></code> keeps the entry and a report can cite <code>@cd</code>.</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.6.12" id="cd-0612-2026-10-17">cd 0.6.12 (2026-10-17)<a class="anchor" aria-label="anchor" href="#cd-0612-2026-10-17"></a></h2>
 <ul><li>Rewrites the sentences in the Kootenay Lake article that its own data contradicts. Soil moisture is declining, not flat. The warming range comes from the three ecoregions shown. The watershed groups agree in direction but only KOTL is significant. Both articles introduce four findings. The prose counts the three ecoregions it draws. The seasonal snow caption no longer carries the Peace numbers, and the Kootenay ecoregion filter moves to the Peace article’s 100 km², which draws the same three ecoregions. (<a href="https://github.com/NewGraphEnvironment/cd/issues/146" class="external-link">#146</a>, <a href="https://github.com/NewGraphEnvironment/cd/pull/149" class="external-link">#149</a>)</li>
