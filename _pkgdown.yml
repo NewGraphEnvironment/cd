@@ -2,3 +2,42 @@ url: https://newgraphenvironment.github.io/cd/
 template:
   bootstrap: 5
 
+reference:
+- title: Read the data
+  desc: Climate series for an area, or daily air temperature at points.
+  contents:
+  - cd_catalog
+  - cd_catalog_default
+  - cd_extract
+  - cd_extract_daily
+  - cd_crop
+- title: Departures and trends
+  desc: Compare a series with a baseline or between two windows, test its trend, and tabulate the result. These take any annual series in cd's long format.
+  contents:
+  - cd_baseline
+  - cd_anomaly
+  - cd_compare
+  - cd_trend
+  - cd_summary
+- title: Plots
+  contents:
+  - cd_plot_timeseries
+  - cd_plot_comparison
+- title: Variables, periods and seasons
+  contents:
+  - cd_variables
+  - cd_periods
+  - cd_seasons
+- title: Cache
+  desc: Each file is downloaded once and read locally after that.
+  contents:
+  - starts_with("cd_cache_")
+- title: Building the published data
+  desc: For maintainers. The catalog is built and published by a scheduled workflow; users do not need these.
+  contents:
+  - cd_fetch
+  - cd_derive
+  - cd_aggregate
+  - cd_cog_write
+  - cd_stac_catalog
+  - cd_s3_push

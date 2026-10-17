@@ -30,8 +30,8 @@ Scope set at the plan gate (2026-10-17): rewrite the README to soul's `readme.md
 
 ## Phase 4: Grouped reference index
 
-- [ ] `_pkgdown.yml` `reference:` sections: Read the data (`cd_catalog`, `cd_catalog_default`, `cd_crop`, `cd_extract`, `cd_extract_daily`, `cd_variables`, `cd_periods`, `cd_seasons`); Departures and trends (`cd_baseline`, `cd_anomaly`, `cd_compare`, `cd_trend`, `cd_summary`); Plots (`cd_plot_*`); Cache (`cd_cache_*`); Publishing the data, for maintainers (`cd_fetch`, `cd_derive`, `cd_aggregate`, `cd_cog_write`, `cd_stac_catalog`, `cd_s3_push`)
-- [ ] `pkgdown::check_pkgdown()` clean; `pkgdown::build_home()` locally and look at the rendered page and figure
+- [x] `_pkgdown.yml` `reference:` sections: Read the data (`cd_catalog`, `cd_catalog_default`, `cd_crop`, `cd_extract`, `cd_extract_daily`, `cd_variables`, `cd_periods`, `cd_seasons`); Departures and trends (`cd_baseline`, `cd_anomaly`, `cd_compare`, `cd_trend`, `cd_summary`); Plots (`cd_plot_*`); Cache (`cd_cache_*`); Publishing the data, for maintainers (`cd_fetch`, `cd_derive`, `cd_aggregate`, `cd_cog_write`, `cd_stac_catalog`, `cd_s3_push`)
+- [x] `pkgdown::check_pkgdown()` clean; `pkgdown::build_home()` locally and look at the rendered page and figure
 
 ## Phase 5: Close out
 
