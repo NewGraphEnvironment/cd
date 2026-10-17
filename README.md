@@ -67,7 +67,7 @@ cd computes the departures from wet's yearly station values.
 
 ## Data and methods it builds on
 
-The climate data are [ERA5-Land](https://www.ecmwf.int/en/era5-land) ([Muñoz-Sabater et al. 2021](https://doi.org/10.5194/essd-13-4349-2021)), produced by ECMWF for the Copernicus Climate Change Service and read from the [DestinE Earth Data Hub](https://earthdatahub.destine.eu/). The published layers contain modified Copernicus Climate Change Service information, under CC BY 4.0. Trends are Mann-Kendall tests with Theil-Sen slopes, from the [Kendall](https://cran.r-project.org/package=Kendall) and [zyp](https://cran.r-project.org/package=zyp) packages. cd's variables and its ecoregion and watershed framing follow [`bcgov/bc_climate_anomaly`](https://github.com/bcgov/bc_climate_anomaly), a Shiny app by the Province of British Columbia (Aseem Sharma and contributors).
+The climate data are [ERA5-Land](https://www.ecmwf.int/en/era5-land) ([Muñoz-Sabater et al. 2021](https://doi.org/10.5194/essd-13-4349-2021)), produced by ECMWF for the Copernicus Climate Change Service and read from the [DestinE Earth Data Hub](https://earthdatahub.destine.eu/). The published layers contain modified Copernicus Climate Change Service information, under CC BY 4.0. Trends are Mann-Kendall tests with Theil-Sen slopes, from the [Kendall](https://cran.r-project.org/package=Kendall) and [zyp](https://cran.r-project.org/package=zyp) packages. cd's core climate variables and its ecoregion and watershed framing follow [`bcgov/bc_climate_anomaly`](https://github.com/bcgov/bc_climate_anomaly), a Shiny app by the Province of British Columbia (Aseem Sharma and contributors).
 
 ## Citation
 

@@ -12,6 +12,9 @@ cd reads ERA5-Land from the [DestinE Earth Data Hub](https://earthdatahub.destin
 
 This repository redistributes modified ERA5-Land data, under CC BY 4.0, in:
 
-- `inst/extdata/example_climate.tif`
 - `inst/extdata/example_daily/` (daily air temperature, 2002)
 - `inst/vignette-data/` (the precomputed series and rasters the vignettes read)
+
+It also redistributes, in `inst/extdata/example_aoi_*.gpkg` and `inst/extdata/context_*.gpkg`, watershed groups, lakes, rivers and streams from the BC Freshwater Atlas and ecoregions from the Ecoregion Ecosystem Classification of British Columbia, under the [Open Government Licence – British Columbia](https://www2.gov.bc.ca/gov/content/data/policy-standards/open-data/open-government-licence-bc).
+
+> Contains information licensed under the Open Government Licence – British Columbia.

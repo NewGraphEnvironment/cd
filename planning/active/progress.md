@@ -10,3 +10,4 @@
 - Phase 2: README rewritten to the convention, 962 -> 593 words; exports and links checked.
 - Phase 3: DESCRIPTION Title/Description and README tagline in step; cffr call passes authors_roles (local cff_create shows New Graph Environment Ltd. as second author); GitHub About set to the tagline (was: "Climate departure analysis from ERA5-Land reanalysis. Producer pipeline publishes monthly-refreshed COGs + STAC catalog for BC; ...").
 - Phase 4: `_pkgdown.yml` reference grouped in six sections (variables/periods/seasons split out of "Read the data" for clarity; `starts_with("cd_cache_")`); `check_pkgdown()` clean; home and reference index built to scratch, figure copied to `reference/figures/`, page screenshot reviewed.
+- code-check round 1 (spawned 07:34 UTC): 5 findings, 4 fixed, 1 accepted; filed #150 (anomaly axis label) and #151 (bundled data licences). Tests: FAIL 0 | PASS 768 (6 pre-existing warnings in cd_plot_comparison).
