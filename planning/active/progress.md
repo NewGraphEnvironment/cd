@@ -8,3 +8,4 @@
 - Next: start Phase 1
 - Phase 1: `data-raw/readme_figure.R` run against the live catalog (07:26 UTC, 4 s with the cache warm). KOTL annual tmean, 1951:1980 baseline: slope 0.025 °C/yr over 75 years, total change 1.9 °C. PNG 1050 x 525, min alpha 1 (opaque); text legible at a ~700 px column.
 - Phase 2: README rewritten to the convention, 962 -> 593 words; exports and links checked.
+- Phase 3: DESCRIPTION Title/Description and README tagline in step; cffr call passes authors_roles (local cff_create shows New Graph Environment Ltd. as second author); GitHub About set to the tagline (was: "Climate departure analysis from ERA5-Land reanalysis. Producer pipeline publishes monthly-refreshed COGs + STAC catalog for BC; ...").

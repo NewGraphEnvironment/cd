@@ -24,9 +24,9 @@ Scope set at the plan gate (2026-10-17): rewrite the README to soul's `readme.md
 
 ## Phase 3: Texts that travel with the README
 
-- [ ] DESCRIPTION `Title` in step with the tagline; `Description` in step with the opening (drops the stale "download ERA5-Land monthly means"), ends "Under active development."; `devtools::document()`
-- [ ] `update-citation-cff.yaml`: `cff_create(authors_roles = c("aut", "cre", "cph"))` so New Graph Environment Ltd. is a citation author
-- [ ] GitHub About via `gh repo edit NewGraphEnvironment/cd --description "…"`, same words as the tagline
+- [x] DESCRIPTION `Title` in step with the tagline; `Description` in step with the opening (drops the stale "download ERA5-Land monthly means"), ends "Under active development."; `devtools::document()`
+- [x] `update-citation-cff.yaml`: `cff_create(authors_roles = c("aut", "cre", "cph"))` so New Graph Environment Ltd. is a citation author
+- [x] GitHub About via `gh repo edit NewGraphEnvironment/cd --description "…"`, same words as the tagline
 
 ## Phase 4: Grouped reference index
 

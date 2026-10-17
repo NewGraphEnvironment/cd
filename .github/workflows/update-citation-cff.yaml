@@ -27,7 +27,7 @@ jobs:
       - name: Update CITATION.cff
         run: |
           Rscript -e '
-            x <- cffr::cff_create()
+            x <- cffr::cff_create(authors_roles = c("aut", "cre", "cph"))
             x$references <- NULL; x$doi <- NULL; x$repository <- NULL
             x$identifiers <- Filter(function(i) !grepl("CRAN.package", i$value, fixed = TRUE), unclass(x$identifiers))
             if (!length(x$identifiers)) x$identifiers <- NULL
