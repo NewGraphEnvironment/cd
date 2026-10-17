@@ -1,3 +1,7 @@
+# cd 0.6.12 (2026-10-17)
+
+* Rewrites the sentences in the Kootenay Lake article that its own data contradicts. Soil moisture is declining, not flat. The warming range comes from the three ecoregions shown. The watershed groups agree in direction but only KOTL is significant. Both articles introduce four findings. The prose counts the three ecoregions it draws. The seasonal snow caption no longer carries the Peace numbers, and the Kootenay ecoregion filter moves to the Peace article's 100 km², which draws the same three ecoregions. ([#146](https://github.com/NewGraphEnvironment/cd/issues/146), [#149](https://github.com/NewGraphEnvironment/cd/pull/149))
+
 # cd 0.6.11 (2026-10-16)
 
 * The two regional articles' per-ecoregion roll-up tables labelled the precipitation trend as mm per year; it is a trend of percent anomalies, so the column is now `prcp %/yr` and the caption reads "percent of the 1951-1980 baseline mean per year". The numbers are unchanged. The Kootenay article's precipitation captions now describe its own ecoregions: the facet caption no longer names the Peace ecoregions BMP and NRM, PTR is Purcell Transitional Ranges on the eastern edge, and the captions cover the three ecoregions drawn (Thompson-Okanagan Plateau falls under the 50 km² filter). ([#102](https://github.com/NewGraphEnvironment/cd/issues/102), [#147](https://github.com/NewGraphEnvironment/cd/pull/147))
