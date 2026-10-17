@@ -1,5 +1,18 @@
 # Changelog
 
+## cd 0.6.12 (2026-10-17)
+
+- Rewrites the sentences in the Kootenay Lake article that its own data
+  contradicts. Soil moisture is declining, not flat. The warming range
+  comes from the three ecoregions shown. The watershed groups agree in
+  direction but only KOTL is significant. Both articles introduce four
+  findings. The prose counts the three ecoregions it draws. The seasonal
+  snow caption no longer carries the Peace numbers, and the Kootenay
+  ecoregion filter moves to the Peace article’s 100 km², which draws the
+  same three ecoregions.
+  ([\#146](https://github.com/NewGraphEnvironment/cd/issues/146),
+  [\#149](https://github.com/NewGraphEnvironment/cd/pull/149))
+
 ## cd 0.6.11 (2026-10-16)
 
 - The two regional articles’ per-ecoregion roll-up tables labelled the
