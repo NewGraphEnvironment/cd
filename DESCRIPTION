@@ -1,5 +1,5 @@
 Package: cd
-Title: Climate Departure for British Columbia from ERA5-Land Reanalysis
+Title: How far any BC watershed's climate has shifted from your chosen baseline
 Version: 0.6.12
 Date: 2026-10-17
 Authors@R: c(

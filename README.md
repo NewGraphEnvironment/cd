@@ -4,7 +4,7 @@
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 <!-- badges: end -->
 
-> Climate departure for British Columbia: how far the climate of any area has moved from any baseline, from ERA5-Land reanalysis
+> How far any BC watershed's climate has shifted from your chosen baseline
 
 cd measures how much the climate of a watershed or any other area in British Columbia has changed: air temperature, precipitation, humidity, soil moisture and snow, by season and year since 1950, compared with whatever reference period you choose, with the trend and how much it has moved. It reads ERA5-Land reanalysis from a public catalog that needs no account, so restoration can be planned and monitored against the climate a site has now rather than the one it had. It also gives daily air temperature at any point in the province, for stream-temperature models and degree-day work, and its baseline and trend steps take any annual series, such as streamflow or stream temperature.
 

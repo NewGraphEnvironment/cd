@@ -4,7 +4,7 @@
 \name{cd-package}
 \alias{cd}
 \alias{cd-package}
-\title{cd: Climate Departure for British Columbia from ERA5-Land Reanalysis}
+\title{cd: How far any BC watershed's climate has shifted from your chosen baseline}
 \description{
 \if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
 
