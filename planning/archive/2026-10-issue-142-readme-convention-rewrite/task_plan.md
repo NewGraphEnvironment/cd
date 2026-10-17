@@ -35,13 +35,13 @@ Scope set at the plan gate (2026-10-17): rewrite the README to soul's `readme.md
 
 ## Phase 5: Close out
 
-- [ ] Edit #142's body: scope is the convention rewrite; VPD fix left to NEWS
-- [ ] Mechanical checks: every function the README names is exported; every link resolves
-- [ ] `/code-check branch` with every README/DESCRIPTION claim enumerated against code
+- [x] Edit #142's body: scope is the convention rewrite; VPD fix left to NEWS
+- [x] Mechanical checks: every function the README names is exported; every link resolves
+- [x] `/code-check branch` with every README/DESCRIPTION claim enumerated against code
 
 ## Validation
 
-- [ ] Tests pass
-- [ ] `/code-check` clean (each commit, or once over the branch with `/code-check branch`)
-- [ ] PWF checkboxes match landed work
-- [ ] `/planning-archive` on completion
+- [x] Tests pass
+- [x] `/code-check` clean (each commit, or once over the branch with `/code-check branch`)
+- [x] PWF checkboxes match landed work
+- [x] `/planning-archive` on completion
