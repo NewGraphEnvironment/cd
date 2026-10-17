@@ -4,11 +4,11 @@
 \name{cd-package}
 \alias{cd}
 \alias{cd-package}
-\title{cd: Climate Departure Analysis from ERA5-Land Reanalysis}
+\title{cd: How far any BC watershed's climate has shifted from your chosen baseline}
 \description{
 \if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
 
-Compute climate anomalies from ERA5-Land reanalysis data for custom areas of interest. Producer functions download ERA5-Land monthly means, derive variables (VPD, RH, soil moisture), and publish Cloud-Optimized GeoTIFFs with a static STAC catalog. Consumer functions query the catalog, crop to AOI, compute baselines and anomalies for arbitrary reference periods, and run trend analysis (Mann-Kendall and Theil-Sen).
+Measures how far the climate of any area in British Columbia has moved from a chosen reference period: air temperature, precipitation, humidity, soil moisture and snow, by season and year since 1950, with trends (Mann-Kendall and Theil-Sen). Reads ERA5-Land reanalysis from a public STAC catalog of Cloud-Optimized GeoTIFFs, and daily air temperature at points. The baseline, anomaly and trend functions take any annual series, such as streamflow. Includes the functions that build and publish the catalog. Under active development.
 }
 \seealso{
 Useful links:
@@ -20,11 +20,11 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Allan Irvine \email{al@newgraphenvironment.com} (\href{https://orcid.org/0000-0002-3495-2128}{ORCID})
+\strong{Maintainer}: Allan Irvine \email{al@newgraphenvironment.com} (\href{https://orcid.org/0000-0002-3495-2128}{ORCID}) (New Graph Environment Ltd.)
 
 Other contributors:
 \itemize{
-  \item New Graph Environment Ltd. [copyright holder]
+  \item New Graph Environment Ltd. [copyright holder, funder]
 }
 
 }

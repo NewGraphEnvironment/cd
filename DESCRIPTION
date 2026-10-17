@@ -1,5 +1,5 @@
 Package: cd
-Title: Climate Departure Analysis from ERA5-Land Reanalysis
+Title: How far any BC watershed's climate has shifted from your chosen baseline
 Version: 0.6.12
 Date: 2026-10-17
 Authors@R: c(
@@ -8,13 +8,15 @@ Authors@R: c(
                        affiliation = "New Graph Environment Ltd.")),
     person("New Graph Environment Ltd.", role = c("cph", "fnd"))
     )
-Description: Compute climate anomalies from ERA5-Land reanalysis data for
-    custom areas of interest. Producer functions download ERA5-Land
-    monthly means, derive variables (VPD, RH, soil moisture), and publish
-    Cloud-Optimized GeoTIFFs with a static STAC catalog. Consumer
-    functions query the catalog, crop to AOI, compute baselines and
-    anomalies for arbitrary reference periods, and run trend analysis
-    (Mann-Kendall and Theil-Sen).
+Description: Measures how far the climate of any area in British Columbia
+    has moved from a chosen reference period: air temperature,
+    precipitation, humidity, soil moisture and snow, by season and year
+    since 1950, with trends (Mann-Kendall and Theil-Sen). Reads ERA5-Land
+    reanalysis from a public STAC catalog of Cloud-Optimized GeoTIFFs, and
+    daily air temperature at points. The baseline, anomaly and trend
+    functions take any annual series, such as streamflow. Includes the
+    functions that build and publish the catalog. Under active
+    development.
 License: MIT + file LICENSE
 URL: https://github.com/NewGraphEnvironment/cd,
     https://newgraphenvironment.github.io/cd/

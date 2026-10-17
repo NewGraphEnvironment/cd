@@ -59,7 +59,7 @@ jobs:
       - name: Fail if an unexpected page reached the site
         run: |
           set -eu
-          allowed="404 authors index LICENSE LICENSE-text"
+          allowed="404 authors index LICENSE LICENSE-text NOTICE"
 
           # An empty result set is not a pass. A loop over nothing exits 0, so a build
           # that produced no pages at all would report "all declared" — the guard

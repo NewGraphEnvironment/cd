@@ -133,6 +133,7 @@ Configurable via `cd_seasons()`. Default: standard meteorological (DJF, MAM, JJA
 - `scripts/rag_departure_framing_build.R` — ragnar store for departure framing
 - Naming: `rag_<topic>_<verb>.R` (`noun_verb`, mirrors the `cd_*` function convention)
 - `data-raw/make_hexsticker.R` — hex sticker (reads from DESCRIPTION)
+- `data-raw/readme_figure.R` — the README figure and the `cd_summary()` output pasted under its example, from one live run; its marked block is the README example verbatim, so re-run it and repaste when the catalog gains a year (#142)
 - `data-raw/example_*.R` — bundled AOIs + context geodata for vignettes
 
 ## Vignettes
