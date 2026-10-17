@@ -10,14 +10,16 @@ cd reads ERA5-Land from the [DestinE Earth Data Hub](https://earthdatahub.destin
 
 ## Redistributed data
 
-This repository redistributes modified ERA5-Land data, under CC BY 4.0, in:
+The example and vignette data in `inst/` are built from these sources (scripts in `data-raw/`):
 
-- `inst/extdata/example_daily/` (daily air temperature, 2002)
-- `inst/vignette-data/` (the precomputed series and rasters the vignettes read)
-
-It also redistributes data from the BC Freshwater Atlas and the Ecoregion Ecosystem Classification of British Columbia, under the [Open Government Licence – British Columbia](https://www2.gov.bc.ca/gov/content/data/policy-standards/open-data/open-government-licence-bc), in:
-
-- `inst/extdata/example_aoi_kootenay_lake.gpkg`, `example_aoi_kotl.gpkg` and `example_aoi_northern_bc.gpkg` (watershed groups and watersheds)
-- `inst/extdata/context_fwcp_peace.gpkg`, `context_kootenay_lake.gpkg` and `context_northern_bc.gpkg` (every layer except `towns` and `highways`)
+| Source | Licence |
+|---|---|
+| ERA5-Land, as processed by cd | CC BY 4.0 (above) |
+| BC Freshwater Atlas: watershed groups, lakes, rivers, streams | [Open Government Licence – British Columbia](https://www2.gov.bc.ca/gov/content/data/policy-standards/open-data/open-government-licence-bc) |
+| Ecoregion Ecosystem Classification of British Columbia | Open Government Licence – British Columbia |
+| BC Geographical Names (town points) | Not yet confirmed ([#151](https://github.com/NewGraphEnvironment/cd/issues/151)) |
+| Digital Road Atlas (highways) | Not yet confirmed ([#151](https://github.com/NewGraphEnvironment/cd/issues/151)) |
+| Fish & Wildlife Compensation Program Peace Region boundary, and the Peace layers clipped or masked to it | Not yet confirmed ([#151](https://github.com/NewGraphEnvironment/cd/issues/151)) |
+| `bcgov/bc_climate_anomaly` (`inst/extdata/example_climate.tif`) | Not yet confirmed ([#151](https://github.com/NewGraphEnvironment/cd/issues/151)) |
 
 > Contains information licensed under the Open Government Licence – British Columbia.

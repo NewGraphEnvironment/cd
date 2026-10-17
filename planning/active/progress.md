@@ -12,3 +12,4 @@
 - Phase 4: `_pkgdown.yml` reference grouped in six sections (variables/periods/seasons split out of "Read the data" for clarity; `starts_with("cd_cache_")`); `check_pkgdown()` clean; home and reference index built to scratch, figure copied to `reference/figures/`, page screenshot reviewed.
 - code-check round 1 (spawned 07:34 UTC): 5 findings, 4 fixed, 1 accepted; filed #150 (anomaly axis label) and #151 (bundled data licences). Tests: FAIL 0 | PASS 768 (6 pre-existing warnings in cd_plot_comparison).
 - code-check round 2 (spawned 07:44 UTC): 1 finding, inside round 1's NOTICE fix; fixed by naming files; #151 extended. Enumerated all 18 bundled data files against NOTICE (table in review-round2.md).
+- code-check round 3 (spawned 07:50 UTC): mechanism named (a label standing for its members); 2 findings, both from the per-file NOTICE; NOTICE rewritten by source; terminal enumeration of 7 external sources in review-round3.md.
