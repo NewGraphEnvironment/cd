@@ -6,8 +6,8 @@ Scope set at the plan gate (2026-10-17): rewrite the README to soul's `readme.md
 
 ## Phase 1: Figure from committed code
 
-- [ ] `data-raw/readme_figure.R` (local only, `pkgload::load_all()`): live catalog, `example_aoi_kotl.gpkg` (Kootenay Lake watershed group, ~9,300 km²), annual tmean, `cd_baseline(1951:1980)` -> `cd_anomaly()` -> `cd_trend(trend_start = 1951)` -> `cd_plot_timeseries()`; writes `man/figures/readme-kotl-tmean.png` (opaque white background) and prints the `cd_summary()` table for the README example
-- [ ] Check the PNG at its published width (~700 px column): type legible, no transparency
+- [x] `data-raw/readme_figure.R` (local only, `pkgload::load_all()`): live catalog, `example_aoi_kotl.gpkg` (Kootenay Lake watershed group, ~9,300 km²), annual tmean, `cd_baseline(1951:1980)` -> `cd_anomaly()` -> `cd_trend(trend_start = 1951)` -> `cd_plot_timeseries()`; writes `man/figures/readme-kotl-tmean.png` (opaque white background) and prints the `cd_summary()` table for the README example
+- [x] Check the PNG at its published width (~700 px column): type legible, no transparency
 
 ## Phase 2: README rewrite, in the convention's order
 
