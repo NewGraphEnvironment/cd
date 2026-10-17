@@ -1,11 +1,13 @@
-# cd: Climate Departure Analysis from ERA5-Land Reanalysis
+# cd: How far any BC watershed's climate has shifted from your chosen baseline
 
-Compute climate anomalies from ERA5-Land reanalysis data for custom
-areas of interest. Producer functions download ERA5-Land monthly means,
-derive variables (VPD, RH, soil moisture), and publish Cloud-Optimized
-GeoTIFFs with a static STAC catalog. Consumer functions query the
-catalog, crop to AOI, compute baselines and anomalies for arbitrary
-reference periods, and run trend analysis (Mann-Kendall and Theil-Sen).
+Measures how far the climate of any area in British Columbia has moved
+from a chosen reference period: air temperature, precipitation,
+humidity, soil moisture and snow, by season and year since 1950, with
+trends (Mann-Kendall and Theil-Sen). Reads ERA5-Land reanalysis from a
+public STAC catalog of Cloud-Optimized GeoTIFFs, and daily air
+temperature at points. The baseline, anomaly and trend functions take
+any annual series, such as streamflow. Includes the functions that build
+and publish the catalog. Under active development.
 
 ## See also
 
@@ -20,8 +22,9 @@ Useful links:
 ## Author
 
 **Maintainer**: Allan Irvine <al@newgraphenvironment.com>
-([ORCID](https://orcid.org/0000-0002-3495-2128))
+([ORCID](https://orcid.org/0000-0002-3495-2128)) (New Graph Environment
+Ltd.)
 
 Other contributors:
 
-- New Graph Environment Ltd. \[copyright holder\]
+- New Graph Environment Ltd. \[copyright holder, funder\]

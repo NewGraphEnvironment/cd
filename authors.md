@@ -13,12 +13,12 @@
 Source:
 [`inst/CITATION`](https://github.com/NewGraphEnvironment/cd/blob/main/inst/CITATION)
 
-Irvine A (2026). *cd: Climate Departure Analysis from ERA5-Land
-Reanalysis*. New Graph Environment Ltd. Version 0.6.12,
+Irvine A (2026). *cd: How far any BC watershed's climate has shifted
+from your chosen baseline*. New Graph Environment Ltd. Version 0.6.12,
 <https://github.com/NewGraphEnvironment/cd>.
 
     @Manual{cd,
-      title = {cd: Climate Departure Analysis from ERA5-Land Reanalysis},
+      title = {cd: How far any BC watershed's climate has shifted from your chosen baseline},
       author = {Allan Irvine},
       organization = {New Graph Environment Ltd.},
       year = {2026},

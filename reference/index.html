@@ -37,9 +37,9 @@
     </div>
 
     <div class="section level2">
-      <h2 id="all-functions">All functions<a class="anchor" aria-label="anchor" href="#all-functions"></a></h2>
+      <h2 id="read-the-data">Read the data<a class="anchor" aria-label="anchor" href="#read-the-data"></a></h2>
 
-
+      <div class="section-desc"><p>Climate series for an area, or daily air temperature at points.</p></div>
 
       <dl></dl></div><div class="section level2">
 
@@ -48,10 +48,54 @@
 
       <dl><dt>
 
-          <code><a href="cd_aggregate.html">cd_aggregate()</a></code>
+          <code><a href="cd_catalog.html">cd_catalog()</a></code>
 
         </dt>
-        <dd>Aggregate monthly rasters to seasonal and annual periods</dd>
+        <dd>Load and parse a STAC catalog</dd>
+
+        <dt>
+
+          <code><a href="cd_catalog_default.html">cd_catalog_default()</a></code>
+
+        </dt>
+        <dd>Default STAC catalog URL</dd>
+
+        <dt>
+
+          <code><a href="cd_extract.html">cd_extract()</a></code>
+
+        </dt>
+        <dd>Extract zonal mean time series for an AOI</dd>
+
+        <dt>
+
+          <code><a href="cd_extract_daily.html">cd_extract_daily()</a></code>
+
+        </dt>
+        <dd>Extract daily air temperature at points</dd>
+
+        <dt>
+
+          <code><a href="cd_crop.html">cd_crop()</a></code>
+
+        </dt>
+        <dd>Crop and mask a raster to an AOI</dd>
+      </dl></div><div class="section level2">
+      <h2 id="departures-and-trends">Departures and trends<a class="anchor" aria-label="anchor" href="#departures-and-trends"></a></h2>
+
+      <div class="section-desc"><p>Compare a series with a baseline or between two windows, test its trend, and tabulate the result. These take any annual series in cd’s long format.</p></div>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="cd_baseline.html">cd_baseline()</a></code>
+
+        </dt>
+        <dd>Compute climatological baseline</dd>
 
         <dt>
 
@@ -62,12 +106,88 @@
 
         <dt>
 
-          <code><a href="cd_baseline.html">cd_baseline()</a></code>
+          <code><a href="cd_compare.html">cd_compare()</a></code>
 
         </dt>
-        <dd>Compute climatological baseline</dd>
+        <dd>Compare arbitrary time windows</dd>
 
         <dt>
+
+          <code><a href="cd_trend.html">cd_trend()</a></code>
+
+        </dt>
+        <dd>Compute trend statistics</dd>
+
+        <dt>
+
+          <code><a href="cd_summary.html">cd_summary()</a></code>
+
+        </dt>
+        <dd>Format trend results as a reporting table</dd>
+      </dl></div><div class="section level2">
+      <h2 id="plots">Plots<a class="anchor" aria-label="anchor" href="#plots"></a></h2>
+
+
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="cd_plot_timeseries.html">cd_plot_timeseries()</a></code>
+
+        </dt>
+        <dd>Plot climate anomaly time series</dd>
+
+        <dt>
+
+          <code><a href="cd_plot_comparison.html">cd_plot_comparison()</a></code>
+
+        </dt>
+        <dd>Plot time window comparison</dd>
+      </dl></div><div class="section level2">
+      <h2 id="variables-periods-and-seasons">Variables, periods and seasons<a class="anchor" aria-label="anchor" href="#variables-periods-and-seasons"></a></h2>
+
+
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="cd_variables.html">cd_variables()</a></code>
+
+        </dt>
+        <dd>Climate variable metadata</dd>
+
+        <dt>
+
+          <code><a href="cd_periods.html">cd_periods()</a></code>
+
+        </dt>
+        <dd>Valid temporal aggregation periods</dd>
+
+        <dt>
+
+          <code><a href="cd_seasons.html">cd_seasons()</a></code>
+
+        </dt>
+        <dd>Default meteorological season definitions</dd>
+      </dl></div><div class="section level2">
+      <h2 id="cache">Cache<a class="anchor" aria-label="anchor" href="#cache"></a></h2>
+
+      <div class="section-desc"><p>Files are cached after the first read and downloaded again only when they are republished.</p></div>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
 
           <code><a href="cd_cache_clear.html">cd_cache_clear()</a></code>
 
@@ -94,20 +214,22 @@
 
         </dt>
         <dd>Get cd cache directory path</dd>
+      </dl></div><div class="section level2">
+      <h2 id="publishing-the-catalog">Publishing the catalog<a class="anchor" aria-label="anchor" href="#publishing-the-catalog"></a></h2>
 
-        <dt>
+      <div class="section-desc"><p>For maintainers. A scheduled workflow uses these to write the published files and catalog; users do not need them.</p></div>
 
-          <code><a href="cd_catalog.html">cd_catalog()</a></code>
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="cd_aggregate.html">cd_aggregate()</a></code>
 
         </dt>
-        <dd>Load and parse a STAC catalog</dd>
-
-        <dt>
-
-          <code><a href="cd_catalog_default.html">cd_catalog_default()</a></code>
-
-        </dt>
-        <dd>Default STAC catalog URL</dd>
+        <dd>Aggregate monthly rasters to seasonal and annual periods</dd>
 
         <dt>
 
@@ -118,40 +240,28 @@
 
         <dt>
 
-          <code><a href="cd_compare.html">cd_compare()</a></code>
+          <code><a href="cd_stac_catalog.html">cd_stac_catalog()</a></code>
 
         </dt>
-        <dd>Compare arbitrary time windows</dd>
+        <dd>Generate a static STAC catalog from COGs</dd>
 
         <dt>
 
-          <code><a href="cd_crop.html">cd_crop()</a></code>
+          <code><a href="cd_s3_push.html">cd_s3_push()</a></code>
 
         </dt>
-        <dd>Crop and mask a raster to an AOI</dd>
+        <dd>Push files to S3</dd>
+      </dl></div><div class="section level2">
+      <h2 id="downloading-from-the-copernicus-climate-data-store">Downloading from the Copernicus Climate Data Store<a class="anchor" aria-label="anchor" href="#downloading-from-the-copernicus-climate-data-store"></a></h2>
 
-        <dt>
+      <div class="section-desc"><p>An alternative route to monthly ERA5-Land through the Copernicus Climate Data Store. The published catalog is not built this way.</p></div>
 
-          <code><a href="cd_derive.html">cd_derive()</a></code>
+      <dl></dl></div><div class="section level2">
 
-        </dt>
-        <dd>Derive climate variables from raw ERA5-Land fields</dd>
 
-        <dt>
 
-          <code><a href="cd_extract.html">cd_extract()</a></code>
 
-        </dt>
-        <dd>Extract zonal mean time series for an AOI</dd>
-
-        <dt>
-
-          <code><a href="cd_extract_daily.html">cd_extract_daily()</a></code>
-
-        </dt>
-        <dd>Extract daily air temperature at points</dd>
-
-        <dt>
+      <dl><dt>
 
           <code><a href="cd_fetch.html">cd_fetch()</a></code>
 
@@ -160,68 +270,13 @@
 
         <dt>
 
-          <code><a href="cd_periods.html">cd_periods()</a></code>
+          <code><a href="cd_derive.html">cd_derive()</a></code>
 
         </dt>
-        <dd>Valid temporal aggregation periods</dd>
-
-        <dt>
-
-          <code><a href="cd_plot_comparison.html">cd_plot_comparison()</a></code>
-
-        </dt>
-        <dd>Plot time window comparison</dd>
-
-        <dt>
-
-          <code><a href="cd_plot_timeseries.html">cd_plot_timeseries()</a></code>
-
-        </dt>
-        <dd>Plot climate anomaly time series</dd>
-
-        <dt>
-
-          <code><a href="cd_s3_push.html">cd_s3_push()</a></code>
-
-        </dt>
-        <dd>Push files to S3</dd>
-
-        <dt>
-
-          <code><a href="cd_seasons.html">cd_seasons()</a></code>
-
-        </dt>
-        <dd>Default meteorological season definitions</dd>
-
-        <dt>
-
-          <code><a href="cd_stac_catalog.html">cd_stac_catalog()</a></code>
-
-        </dt>
-        <dd>Generate a static STAC catalog from COGs</dd>
-
-        <dt>
-
-          <code><a href="cd_summary.html">cd_summary()</a></code>
-
-        </dt>
-        <dd>Format trend results as a reporting table</dd>
-
-        <dt>
-
-          <code><a href="cd_trend.html">cd_trend()</a></code>
-
-        </dt>
-        <dd>Compute trend statistics</dd>
-
-        <dt>
-
-          <code><a href="cd_variables.html">cd_variables()</a></code>
-
-        </dt>
-        <dd>Climate variable metadata</dd>
+        <dd>Derive climate variables from raw ERA5-Land fields</dd>
       </dl></div>
-  </main></div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside></div>
 
 
     <footer><div class="pkgdown-footer-left">

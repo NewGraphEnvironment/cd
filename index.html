@@ -5,14 +5,14 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Climate Departure Analysis from ERA5-Land Reanalysis • cd</title>
+<title>How far any BC watershed's climate has shifted from your chosen baseline • cd</title>
 <script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
 <script src="deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Climate Departure Analysis from ERA5-Land Reanalysis">
-<meta name="description" content="Compute climate anomalies from ERA5-Land reanalysis data for custom areas of interest. Producer functions download ERA5-Land monthly means, derive variables (VPD, RH, soil moisture), and publish Cloud-Optimized GeoTIFFs with a static STAC catalog. Consumer functions query the catalog, crop to AOI, compute baselines and anomalies for arbitrary reference periods, and run trend analysis (Mann-Kendall and Theil-Sen).">
-<meta property="og:description" content="Compute climate anomalies from ERA5-Land reanalysis data for custom areas of interest. Producer functions download ERA5-Land monthly means, derive variables (VPD, RH, soil moisture), and publish Cloud-Optimized GeoTIFFs with a static STAC catalog. Consumer functions query the catalog, crop to AOI, compute baselines and anomalies for arbitrary reference periods, and run trend analysis (Mann-Kendall and Theil-Sen).">
+<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="How far any BC watershed's climate has shifted from your chosen baseline">
+<meta name="description" content="Measures how far the climate of any area in British Columbia has moved from a chosen reference period: air temperature, precipitation, humidity, soil moisture and snow, by season and year since 1950, with trends (Mann-Kendall and Theil-Sen). Reads ERA5-Land reanalysis from a public STAC catalog of Cloud-Optimized GeoTIFFs, and daily air temperature at points. The baseline, anomaly and trend functions take any annual series, such as streamflow. Includes the functions that build and publish the catalog. Under active development.">
+<meta property="og:description" content="Measures how far the climate of any area in British Columbia has moved from a chosen reference period: air temperature, precipitation, humidity, soil moisture and snow, by season and year since 1950, with trends (Mann-Kendall and Theil-Sen). Reads ERA5-Land reanalysis from a public STAC catalog of Cloud-Optimized GeoTIFFs, and daily air temperature at points. The baseline, anomaly and trend functions take any annual series, such as streamflow. Includes the functions that build and publish the catalog. Under active development.">
 <meta property="og:image" content="https://newgraphenvironment.github.io/cd/logo.png">
 </head>
 <body>
@@ -60,150 +60,99 @@
 <img src="logo.png" class="logo" alt=""><h1 id="cd-">cd <a class="anchor" aria-label="anchor" href="#cd-"></a>
 </h1>
 </div>
-<p>Climate Departure Analysis from ERA5-Land Reanalysis</p>
-<div class="section level2">
-<h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
-</h2>
-<p>cd fetches <a href="https://www.ecmwf.int/en/era5-land" class="external-link">ERA5-Land</a> hourly reanalysis (1950–present, ~9 km native grid) from the <a href="https://earthdatahub.destine.eu/" class="external-link">DestinE Earth Data Hub</a>, subsets to British Columbia, aggregates to monthly, seasonal, and annual periods, derives additional climate variables (vapour pressure deficit and relative humidity from temperature + dewpoint via the Tetens equation; soil moisture as a 4-depth mean) and snow-pack variables (snow water equivalent, snowfall, snowmelt, snow cover, plus annual derived scalars: peak SWE, snowfall fraction, snowmelt 50% day-of-year, peak weekly melt rate), and writes Cloud-Optimized GeoTIFFs alongside a static SpatioTemporal Asset Catalog (STAC) in a public S3 bucket. A monthly GitHub Action keeps the catalog current. On the consumer side, R functions (<code>cd_catalog</code>, <code>cd_extract</code>, <code>cd_baseline</code>, <code>cd_anomaly</code>, <code>cd_trend</code>, <code>cd_compare</code>, <code>cd_summary</code>, <code>cd_plot_timeseries</code>, <code>cd_plot_comparison</code>) read the COGs directly via GDAL’s <code>/vsicurl/</code> — no credentials, no tile server — crop to a user-supplied area of interest, compute baselines and anomalies for arbitrary reference periods, and run Mann-Kendall and Theil-Sen trend statistics. All baseline and comparison logic stays on the consumer side, so reference periods are not baked into the served data.</p>
-</div>
+<!-- badges: start -->
+
+<blockquote>
+<p>How far any BC watershed’s climate has shifted from your chosen baseline</p>
+</blockquote>
+<p>cd measures how much the climate of a watershed or any other area in British Columbia has changed: air temperature, precipitation, humidity, soil moisture and snow, by season and year since 1950, compared with whatever reference period you choose, with the trend and how much it has moved. It reads ERA5-Land reanalysis from a public catalog that needs no account, so restoration can be planned and monitored against the climate a site has now rather than the one it had. It also gives daily air temperature at any point in the province, for stream-temperature models and degree-day work, and its baseline and trend steps take any annual series, such as streamflow or stream temperature.</p>
+<p><img src="reference/figures/readme-kotl-tmean.png" alt="Bar chart of annual mean air temperature in the Kootenay Lake watershed group from 1950 to 2025, as the difference from the 1951 to 1980 average, with a dashed trend line rising about 1.9 degrees" width="100%"></p>
+<p><em>Annual mean air temperature in the Kootenay Lake watershed group, compared with its 1951–1980 average. Red years were warmer, blue years cooler; the dashed line is the trend since 1951.</em></p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"NewGraphEnvironment/cd"</span><span class="op">)</span></span></code></pre></div>
+<p>cd is under active development and its functions change between releases (see <a href="https://newgraphenvironment.github.io/cd/news/index.html">NEWS</a>). Pin a release for reproducible work: <code>pak::pak("NewGraphEnvironment/cd@vX.Y.Z")</code>.</p>
+<p>The example below also needs sf, Kendall and zyp: <code>pak::pak(c("sf", "Kendall", "zyp"))</code>.</p>
 </div>
 <div class="section level2">
-<h2 id="quick-start">Quick start<a class="anchor" aria-label="anchor" href="#quick-start"></a>
+<h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
 </h2>
+<p>Extract a series for an area, compare it with a baseline, and test the trend. This is the run behind the figure above:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/NewGraphEnvironment/cd" class="external-link">cd</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Load the live STAC catalog and an example area of interest</span></span>
 <span><span class="va">catalog</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/cd_catalog.html">cd_catalog</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">aoi</span> <span class="op">&lt;-</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html" class="external-link">st_read</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"example_aoi_kotl.gpkg"</span>, package <span class="op">=</span> <span class="st">"cd"</span><span class="op">)</span>,</span>
 <span>  quiet <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Extract zonal mean time series</span></span>
-<span><span class="va">ts</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/cd_extract.html">cd_extract</a></span><span class="op">(</span><span class="va">catalog</span>, <span class="va">aoi</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Compute baseline and anomalies</span></span>
-<span><span class="va">bl</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/cd_baseline.html">cd_baseline</a></span><span class="op">(</span><span class="va">ts</span>, baseline_years <span class="op">=</span> <span class="fl">1951</span><span class="op">:</span><span class="fl">1955</span><span class="op">)</span></span>
+<span><span class="va">ts</span>  <span class="op">&lt;-</span> <span class="fu"><a href="reference/cd_extract.html">cd_extract</a></span><span class="op">(</span><span class="va">catalog</span>, <span class="va">aoi</span>, variables <span class="op">=</span> <span class="st">"tmean"</span>, periods <span class="op">=</span> <span class="st">"annual"</span><span class="op">)</span></span>
+<span><span class="va">bl</span>  <span class="op">&lt;-</span> <span class="fu"><a href="reference/cd_baseline.html">cd_baseline</a></span><span class="op">(</span><span class="va">ts</span>, baseline_years <span class="op">=</span> <span class="fl">1951</span><span class="op">:</span><span class="fl">1980</span><span class="op">)</span></span>
 <span><span class="va">ano</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/cd_anomaly.html">cd_anomaly</a></span><span class="op">(</span><span class="va">ts</span>, <span class="va">bl</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Trend analysis</span></span>
 <span><span class="va">trn</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/cd_trend.html">cd_trend</a></span><span class="op">(</span><span class="va">ano</span>, trend_start <span class="op">=</span> <span class="fl">1951</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Reporting table</span></span>
 <span><span class="fu"><a href="reference/cd_summary.html">cd_summary</a></span><span class="op">(</span><span class="va">trn</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Compare time windows directly</span></span>
-<span><span class="fu"><a href="reference/cd_compare.html">cd_compare</a></span><span class="op">(</span><span class="va">ts</span>, window_a <span class="op">=</span> <span class="fl">1956</span><span class="op">:</span><span class="fl">1960</span>, window_b <span class="op">=</span> <span class="fl">1951</span><span class="op">:</span><span class="fl">1955</span><span class="op">)</span></span></code></pre></div>
+<span><span class="co">#&gt; # A tibble: 1 × 7</span></span>
+<span><span class="co">#&gt;   Parameter        Period Slope Years `Total Change` Unit  `p-value`</span></span>
+<span><span class="co">#&gt;   &lt;chr&gt;            &lt;chr&gt;  &lt;dbl&gt; &lt;int&gt;          &lt;dbl&gt; &lt;chr&gt;     &lt;dbl&gt;</span></span>
+<span><span class="co">#&gt; 1 Mean temperature Annual 0.025    75            1.9 °C            0</span></span></code></pre></div>
+<p>Files are cached after the first read and downloaded again only when they are republished. Extracted rows record which commit of cd built each file they came from.</p>
 </div>
 <div class="section level2">
-<h2 id="caching">Caching<a class="anchor" aria-label="anchor" href="#caching"></a>
+<h2 id="learn-more">Learn more<a class="anchor" aria-label="anchor" href="#learn-more"></a>
 </h2>
-<p><code><a href="reference/cd_extract.html">cd_extract()</a></code> and <code><a href="reference/cd_crop.html">cd_crop()</a></code> cache each COG on first read, so repeated extractions, report renders, and vignette rebuilds pull each file from S3 <strong>once</strong> and read locally thereafter — turning recurring S3 egress into a one-time cost. Caching is on by default (<code>cache = TRUE</code>).</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># First call downloads; later calls read the local cache.</span></span>
-<span><span class="va">ts</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/cd_extract.html">cd_extract</a></span><span class="op">(</span><span class="va">catalog</span>, <span class="va">aoi</span><span class="op">)</span>            <span class="co"># cache = TRUE by default</span></span>
-<span></span>
-<span><span class="fu"><a href="reference/cd_cache_info.html">cd_cache_info</a></span><span class="op">(</span><span class="op">)</span>                           <span class="co"># where the cache lives + size</span></span>
-<span><span class="fu"><a href="reference/cd_cache_clear.html">cd_cache_clear</a></span><span class="op">(</span><span class="op">)</span>                          <span class="co"># wipe it</span></span>
-<span><span class="fu"><a href="reference/cd_extract.html">cd_extract</a></span><span class="op">(</span><span class="va">catalog</span>, <span class="va">aoi</span>, cache <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>   <span class="co"># bypass the cache for one call</span></span></code></pre></div>
-<p>Freshness is checked with a cheap HTTP HEAD (S3 ETag), so the monthly catalog republish is picked up automatically; <code>cd_cache_fetch(href, refresh = TRUE)</code> forces a re-download. For a fully-offline session set <code>options(cd.cache_revalidate = FALSE)</code> to serve cached copies without any network call.</p>
-<p><strong>Stopgap without the cache.</strong> If you read COGs through GDAL directly (e.g. raw <code>terra::rast("/vsicurl/...")</code> outside <code><a href="reference/cd_crop.html">cd_crop()</a></code>), you can cut repeat egress within a session by enabling GDAL’s <code>/vsicurl/</code> cache:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv</a></span><span class="op">(</span>VSI_CACHE <span class="op">=</span> <span class="st">"TRUE"</span>, VSI_CACHE_SIZE <span class="op">=</span> <span class="st">"100000000"</span><span class="op">)</span>  <span class="co"># 100 MB</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv</a></span><span class="op">(</span>GDAL_HTTP_MAX_RETRY <span class="op">=</span> <span class="st">"3"</span>, GDAL_HTTP_RETRY_DELAY <span class="op">=</span> <span class="st">"1"</span><span class="op">)</span></span></code></pre></div>
-<p>This only persists within one R session; the <code>cd_*</code> cache above persists across sessions, which is what kills recurring report-dev egress.</p>
-</div>
-<div class="section level2">
-<h2 id="data">Data<a class="anchor" aria-label="anchor" href="#data"></a>
-</h2>
-<p>The producer pipeline fetches ERA5-Land hourly reanalysis from <a href="https://earthdatahub.destine.eu/" class="external-link">DestinE Earth Data Hub</a>, derives additional variables (VPD, RH, soil moisture), aggregates to monthly, seasonal, and annual periods on a single EPSG:4326 BC grid, and writes Cloud-Optimized GeoTIFFs alongside a static SpatioTemporal Asset Catalog (STAC) in a public S3 bucket.</p>
-<ul>
-<li>Catalog (JSON): <a href="https://stac-era5-land.s3.us-west-2.amazonaws.com/catalog.json" class="external-link uri">https://stac-era5-land.s3.us-west-2.amazonaws.com/catalog.json</a>
-</li>
-<li>Region: BC (~48–60° N, 114–140° W), 1950–2025, ~9 km native grid</li>
-<li>Variables (15):
 <ul>
 <li>
-<strong>Core climate</strong> (7): tmean, tmax, tmin, prcp, vpd, rh, soil_moisture</li>
+<a href="https://newgraphenvironment.github.io/cd/articles/peace-fwcp.html">Climate Departure for the FWCP Peace Region</a>: trends, snowpack and the spatial pattern across a large northern region, by ecoregion and watershed group.</li>
 <li>
-<strong>Snow monthly natives</strong> (4): swe, snowfall, snowmelt, snow_cover</li>
+<a href="https://newgraphenvironment.github.io/cd/articles/kootenay-lake.html">Climate Departure for the Kootenay Lake Region</a>: the same report for the southern Kootenays, where precipitation changes sharply from east to west.</li>
 <li>
-<strong>Snow annual derived</strong> (4): swe_max, snowfall_fraction, snowmelt_doy_50, snowmelt_rate_peak</li>
+<a href="https://newgraphenvironment.github.io/cd/articles/northern-bc.html">How the Weather Has Changed in Three Northern BC Watersheds</a>: a short, plain-language story for readers with no climate background.</li>
+<li><a href="https://newgraphenvironment.github.io/cd/reference/">Function reference</a></li>
 </ul>
-</li>
-<li>Periods: seasonal (DJF/MAM/JJA/SON) and annual for monthly-native vars; annual only for snow_max / snowfall_fraction / snowmelt_doy_50 / snowmelt_rate_peak</li>
-</ul>
-<p>The catalog is consumable directly outside R — for example, in QGIS via the STAC plugin, in <code>gdalcubes</code>, or with any STAC-aware client. The <code><a href="reference/cd_catalog.html">cd_catalog()</a></code> consumer function reads the catalog URL by default.</p>
 </div>
 <div class="section level2">
-<h2 id="architecture">Architecture<a class="anchor" aria-label="anchor" href="#architecture"></a>
+<h2 id="ecosystem">Ecosystem<a class="anchor" aria-label="anchor" href="#ecosystem"></a>
 </h2>
-<p>cd has a strict producer / consumer split, kept separate so reference periods, baselines, and statistical choices are not baked into the published data:</p>
 <table class="table">
 <colgroup>
-<col width="33%">
-<col width="33%">
-<col width="33%">
+<col width="50%">
+<col width="50%">
 </colgroup>
 <thead><tr>
-<th>Side</th>
-<th>Functions</th>
-<th>Where it runs</th>
+<th>Package</th>
+<th>Role</th>
 </tr></thead>
 <tbody>
 <tr>
-<td><strong>Producer</strong></td>
-<td>
-<code><a href="reference/cd_fetch.html">cd_fetch()</a></code>, <code><a href="reference/cd_derive.html">cd_derive()</a></code>, <code><a href="reference/cd_aggregate.html">cd_aggregate()</a></code>, <code><a href="reference/cd_cog_write.html">cd_cog_write()</a></code>, <code><a href="reference/cd_stac_catalog.html">cd_stac_catalog()</a></code>, <code>cd_stac_item()</code>, <code><a href="reference/cd_s3_push.html">cd_s3_push()</a></code>, plus <code>scripts/backfill_edh_*.py</code> and <code>scripts/pipeline_*_edh.R</code>
-</td>
-<td>A monthly GitHub Action pulls fresh ERA5-Land data from DestinE EDH, derives variables, writes COGs, rebuilds the STAC catalog, and pushes to <code>s3://stac-era5-land</code>. Run by maintainers; users do not need to run it.</td>
+<td><strong>cd</strong></td>
+<td>Climate departure: baselines, anomalies and trends, and ERA5-Land climate (this package)</td>
 </tr>
 <tr>
-<td><strong>Consumer</strong></td>
-<td>
-<code><a href="reference/cd_catalog.html">cd_catalog()</a></code>, <code><a href="reference/cd_extract.html">cd_extract()</a></code>, <code><a href="reference/cd_crop.html">cd_crop()</a></code>, <code><a href="reference/cd_baseline.html">cd_baseline()</a></code>, <code><a href="reference/cd_anomaly.html">cd_anomaly()</a></code>, <code><a href="reference/cd_trend.html">cd_trend()</a></code>, <code><a href="reference/cd_compare.html">cd_compare()</a></code>, <code><a href="reference/cd_summary.html">cd_summary()</a></code>, <code><a href="reference/cd_plot_timeseries.html">cd_plot_timeseries()</a></code>, <code><a href="reference/cd_plot_comparison.html">cd_plot_comparison()</a></code>, <code><a href="reference/cd_periods.html">cd_periods()</a></code>, <code><a href="reference/cd_seasons.html">cd_seasons()</a></code>, <code>cd_cache_*()</code>
-</td>
-<td>Reads COGs directly via <code>/vsicurl/</code> — no credentials, no tile server. All baseline selection and statistical work (Mann-Kendall, Theil-Sen, Welch’s t, Mann-Whitney U) happen client-side on the cropped time series.</td>
+<td><a href="https://github.com/NewGraphEnvironment/wet" class="external-link">wet</a></td>
+<td>Stream flow and water temperature for BC’s Freshwater Atlas</td>
 </tr>
 </tbody>
 </table>
-<p>Anyone can compute climate departure against any baseline period, in any AOI, with whatever statistical test they prefer — without re-publishing the underlying data.</p>
+<p>cd computes the departures from wet’s yearly station values.</p>
 </div>
 <div class="section level2">
-<h2 id="roadmap">Roadmap<a class="anchor" aria-label="anchor" href="#roadmap"></a>
+<h2 id="data-and-methods-it-builds-on">Data and methods it builds on<a class="anchor" aria-label="anchor" href="#data-and-methods-it-builds-on"></a>
 </h2>
-<ul>
-<li>
-<strong>BEC zone shift analysis</strong> (<a href="https://github.com/NewGraphEnvironment/cd/issues/59" class="external-link">#59</a>) — methodology lit review for biogeoclimatic ecosystem classification (BEC) shifts under climate change, alongside the existing temperature / precipitation+drying / interpretation-framing methodology stacks.</li>
-<li>
-<strong>Vignette templates</strong> — <code>peace-fwcp</code> and <code>kootenay-lake</code> are reference implementations of the regional reporting pattern. Future regional vignettes follow the same structure (trends → recent vs pre-warming → spatial → per-ecoregion → snowpack) so cross-region findings are directly comparable.</li>
-</ul>
+<p>The climate data are <a href="https://www.ecmwf.int/en/era5-land" class="external-link">ERA5-Land</a> (<a href="https://doi.org/10.5194/essd-13-4349-2021" class="external-link">Muñoz-Sabater et al. 2021</a>), produced by ECMWF for the Copernicus Climate Change Service and read from the <a href="https://earthdatahub.destine.eu/" class="external-link">DestinE Earth Data Hub</a>. The published layers contain modified Copernicus Climate Change Service information, under CC BY 4.0. Trends are Mann-Kendall tests with Theil-Sen slopes, from the <a href="https://cran.r-project.org/package=Kendall" class="external-link">Kendall</a> and <a href="https://cran.r-project.org/package=zyp" class="external-link">zyp</a> packages. cd’s core climate variables and its ecoregion and watershed framing follow <a href="https://github.com/bcgov/bc_climate_anomaly" class="external-link"><code>bcgov/bc_climate_anomaly</code></a>, a Shiny app by the Province of British Columbia (Aseem Sharma and contributors).</p>
 </div>
 <div class="section level2">
-<h2 id="links">Links<a class="anchor" aria-label="anchor" href="#links"></a>
+<h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
 </h2>
-<ul>
-<li><a href="https://newgraphenvironment.github.io/cd/reference/">Function reference</a></li>
-<li>Vignettes:
-<ul>
-<li><a href="https://newgraphenvironment.github.io/cd/articles/peace-fwcp.html">Climate Departure for the FWCP Peace Region</a></li>
-<li><a href="https://newgraphenvironment.github.io/cd/articles/kootenay-lake.html">Climate Departure for the Kootenay Lake Region</a></li>
-<li>
-<a href="https://newgraphenvironment.github.io/cd/articles/northern-bc.html">How the Weather Has Changed in Three Northern BC Watersheds</a> — a short, plain-language story for readers with no climate background</li>
-</ul>
-</li>
-</ul>
+<p>Cite cd with <code>citation("cd")</code>.</p>
 </div>
 <div class="section level2">
-<h2 id="acknowledgements">Acknowledgements<a class="anchor" aria-label="anchor" href="#acknowledgements"></a>
+<h2 id="license">License<a class="anchor" aria-label="anchor" href="#license"></a>
 </h2>
-<p>This package is inspired by <a href="https://github.com/bcgov/bc_climate_anomaly" class="external-link"><code>bcgov/bc_climate_anomaly</code></a>, a Shiny app developed by the Province of British Columbia (Aseem Sharma and contributors) that visualizes monthly, seasonal, and annual climate anomalies for temperature, precipitation, humidity, vapor pressure, and soil moisture across BC. The variable set and the eco-region / watershed framing in <code>cd</code> follow directly from that work. <code>bc_climate_anomaly</code> is licensed under the Apache License 2.0.</p>
+<p>MIT © New Graph Environment Ltd. See <a href="LICENSE.html">LICENSE</a>. The ERA5-Land data it ships and publishes are CC BY 4.0; see <a href="NOTICE.html">NOTICE</a>.</p>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">
@@ -240,7 +189,12 @@
 </ul>
 </div>
 
-
+<div class="dev-status">
+<h2 data-toc-skip>Dev status</h2>
+<ul class="list-unstyled">
+<li><a href="https://lifecycle.r-lib.org/articles/stages.html#experimental" class="external-link"><img src="https://img.shields.io/badge/lifecycle-experimental-orange.svg" alt="Lifecycle: experimental"></a></li>
+</ul>
+</div>
 
   </aside>
 </div>

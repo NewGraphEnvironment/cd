@@ -1,13 +1,58 @@
 # Package index
 
-## All functions
+## Read the data
 
-- [`cd_aggregate()`](https://newgraphenvironment.github.io/cd/reference/cd_aggregate.md)
-  : Aggregate monthly rasters to seasonal and annual periods
-- [`cd_anomaly()`](https://newgraphenvironment.github.io/cd/reference/cd_anomaly.md)
-  : Compute climate anomalies
+Climate series for an area, or daily air temperature at points.
+
+- [`cd_catalog()`](https://newgraphenvironment.github.io/cd/reference/cd_catalog.md)
+  : Load and parse a STAC catalog
+- [`cd_catalog_default()`](https://newgraphenvironment.github.io/cd/reference/cd_catalog_default.md)
+  : Default STAC catalog URL
+- [`cd_extract()`](https://newgraphenvironment.github.io/cd/reference/cd_extract.md)
+  : Extract zonal mean time series for an AOI
+- [`cd_extract_daily()`](https://newgraphenvironment.github.io/cd/reference/cd_extract_daily.md)
+  : Extract daily air temperature at points
+- [`cd_crop()`](https://newgraphenvironment.github.io/cd/reference/cd_crop.md)
+  : Crop and mask a raster to an AOI
+
+## Departures and trends
+
+Compare a series with a baseline or between two windows, test its trend,
+and tabulate the result. These take any annual series in cd’s long
+format.
+
 - [`cd_baseline()`](https://newgraphenvironment.github.io/cd/reference/cd_baseline.md)
   : Compute climatological baseline
+- [`cd_anomaly()`](https://newgraphenvironment.github.io/cd/reference/cd_anomaly.md)
+  : Compute climate anomalies
+- [`cd_compare()`](https://newgraphenvironment.github.io/cd/reference/cd_compare.md)
+  : Compare arbitrary time windows
+- [`cd_trend()`](https://newgraphenvironment.github.io/cd/reference/cd_trend.md)
+  : Compute trend statistics
+- [`cd_summary()`](https://newgraphenvironment.github.io/cd/reference/cd_summary.md)
+  : Format trend results as a reporting table
+
+## Plots
+
+- [`cd_plot_timeseries()`](https://newgraphenvironment.github.io/cd/reference/cd_plot_timeseries.md)
+  : Plot climate anomaly time series
+- [`cd_plot_comparison()`](https://newgraphenvironment.github.io/cd/reference/cd_plot_comparison.md)
+  : Plot time window comparison
+
+## Variables, periods and seasons
+
+- [`cd_variables()`](https://newgraphenvironment.github.io/cd/reference/cd_variables.md)
+  : Climate variable metadata
+- [`cd_periods()`](https://newgraphenvironment.github.io/cd/reference/cd_periods.md)
+  : Valid temporal aggregation periods
+- [`cd_seasons()`](https://newgraphenvironment.github.io/cd/reference/cd_seasons.md)
+  : Default meteorological season definitions
+
+## Cache
+
+Files are cached after the first read and downloaded again only when
+they are republished.
+
 - [`cd_cache_clear()`](https://newgraphenvironment.github.io/cd/reference/cd_cache_clear.md)
   : Clear the cd cache
 - [`cd_cache_fetch()`](https://newgraphenvironment.github.io/cd/reference/cd_cache_fetch.md)
@@ -16,39 +61,27 @@
   : Show cd cache info
 - [`cd_cache_path()`](https://newgraphenvironment.github.io/cd/reference/cd_cache_path.md)
   : Get cd cache directory path
-- [`cd_catalog()`](https://newgraphenvironment.github.io/cd/reference/cd_catalog.md)
-  : Load and parse a STAC catalog
-- [`cd_catalog_default()`](https://newgraphenvironment.github.io/cd/reference/cd_catalog_default.md)
-  : Default STAC catalog URL
+
+## Publishing the catalog
+
+For maintainers. A scheduled workflow uses these to write the published
+files and catalog; users do not need them.
+
+- [`cd_aggregate()`](https://newgraphenvironment.github.io/cd/reference/cd_aggregate.md)
+  : Aggregate monthly rasters to seasonal and annual periods
 - [`cd_cog_write()`](https://newgraphenvironment.github.io/cd/reference/cd_cog_write.md)
   : Write a SpatRaster as a Cloud-Optimized GeoTIFF
-- [`cd_compare()`](https://newgraphenvironment.github.io/cd/reference/cd_compare.md)
-  : Compare arbitrary time windows
-- [`cd_crop()`](https://newgraphenvironment.github.io/cd/reference/cd_crop.md)
-  : Crop and mask a raster to an AOI
-- [`cd_derive()`](https://newgraphenvironment.github.io/cd/reference/cd_derive.md)
-  : Derive climate variables from raw ERA5-Land fields
-- [`cd_extract()`](https://newgraphenvironment.github.io/cd/reference/cd_extract.md)
-  : Extract zonal mean time series for an AOI
-- [`cd_extract_daily()`](https://newgraphenvironment.github.io/cd/reference/cd_extract_daily.md)
-  : Extract daily air temperature at points
-- [`cd_fetch()`](https://newgraphenvironment.github.io/cd/reference/cd_fetch.md)
-  : Download ERA5-Land climate data
-- [`cd_periods()`](https://newgraphenvironment.github.io/cd/reference/cd_periods.md)
-  : Valid temporal aggregation periods
-- [`cd_plot_comparison()`](https://newgraphenvironment.github.io/cd/reference/cd_plot_comparison.md)
-  : Plot time window comparison
-- [`cd_plot_timeseries()`](https://newgraphenvironment.github.io/cd/reference/cd_plot_timeseries.md)
-  : Plot climate anomaly time series
-- [`cd_s3_push()`](https://newgraphenvironment.github.io/cd/reference/cd_s3_push.md)
-  : Push files to S3
-- [`cd_seasons()`](https://newgraphenvironment.github.io/cd/reference/cd_seasons.md)
-  : Default meteorological season definitions
 - [`cd_stac_catalog()`](https://newgraphenvironment.github.io/cd/reference/cd_stac_catalog.md)
   : Generate a static STAC catalog from COGs
-- [`cd_summary()`](https://newgraphenvironment.github.io/cd/reference/cd_summary.md)
-  : Format trend results as a reporting table
-- [`cd_trend()`](https://newgraphenvironment.github.io/cd/reference/cd_trend.md)
-  : Compute trend statistics
-- [`cd_variables()`](https://newgraphenvironment.github.io/cd/reference/cd_variables.md)
-  : Climate variable metadata
+- [`cd_s3_push()`](https://newgraphenvironment.github.io/cd/reference/cd_s3_push.md)
+  : Push files to S3
+
+## Downloading from the Copernicus Climate Data Store
+
+An alternative route to monthly ERA5-Land through the Copernicus Climate
+Data Store. The published catalog is not built this way.
+
+- [`cd_fetch()`](https://newgraphenvironment.github.io/cd/reference/cd_fetch.md)
+  : Download ERA5-Land climate data
+- [`cd_derive()`](https://newgraphenvironment.github.io/cd/reference/cd_derive.md)
+  : Derive climate variables from raw ERA5-Land fields

@@ -1,29 +1,27 @@
 # cd
 
-Climate Departure Analysis from ERA5-Land Reanalysis
+> How far any BC watershed’s climate has shifted from your chosen
+> baseline
 
-## Overview
+cd measures how much the climate of a watershed or any other area in
+British Columbia has changed: air temperature, precipitation, humidity,
+soil moisture and snow, by season and year since 1950, compared with
+whatever reference period you choose, with the trend and how much it has
+moved. It reads ERA5-Land reanalysis from a public catalog that needs no
+account, so restoration can be planned and monitored against the climate
+a site has now rather than the one it had. It also gives daily air
+temperature at any point in the province, for stream-temperature models
+and degree-day work, and its baseline and trend steps take any annual
+series, such as streamflow or stream temperature.
 
-cd fetches [ERA5-Land](https://www.ecmwf.int/en/era5-land) hourly
-reanalysis (1950–present, ~9 km native grid) from the [DestinE Earth
-Data Hub](https://earthdatahub.destine.eu/), subsets to British
-Columbia, aggregates to monthly, seasonal, and annual periods, derives
-additional climate variables (vapour pressure deficit and relative
-humidity from temperature + dewpoint via the Tetens equation; soil
-moisture as a 4-depth mean) and snow-pack variables (snow water
-equivalent, snowfall, snowmelt, snow cover, plus annual derived scalars:
-peak SWE, snowfall fraction, snowmelt 50% day-of-year, peak weekly melt
-rate), and writes Cloud-Optimized GeoTIFFs alongside a static
-SpatioTemporal Asset Catalog (STAC) in a public S3 bucket. A monthly
-GitHub Action keeps the catalog current. On the consumer side, R
-functions (`cd_catalog`, `cd_extract`, `cd_baseline`, `cd_anomaly`,
-`cd_trend`, `cd_compare`, `cd_summary`, `cd_plot_timeseries`,
-`cd_plot_comparison`) read the COGs directly via GDAL’s `/vsicurl/` — no
-credentials, no tile server — crop to a user-supplied area of interest,
-compute baselines and anomalies for arbitrary reference periods, and run
-Mann-Kendall and Theil-Sen trend statistics. All baseline and comparison
-logic stays on the consumer side, so reference periods are not baked
-into the served data.
+![Bar chart of annual mean air temperature in the Kootenay Lake
+watershed group from 1950 to 2025, as the difference from the 1951 to
+1980 average, with a dashed trend line rising about 1.9
+degrees](reference/figures/readme-kotl-tmean.png)
+
+*Annual mean air temperature in the Kootenay Lake watershed group,
+compared with its 1951–1980 average. Red years were warmer, blue years
+cooler; the dashed line is the trend since 1951.*
 
 ## Installation
 
@@ -32,153 +30,93 @@ into the served data.
 pak::pak("NewGraphEnvironment/cd")
 ```
 
-## Quick start
+cd is under active development and its functions change between releases
+(see [NEWS](https://newgraphenvironment.github.io/cd/news/index.html)).
+Pin a release for reproducible work:
+`pak::pak("NewGraphEnvironment/cd@vX.Y.Z")`.
+
+The example below also needs sf, Kendall and zyp:
+`pak::pak(c("sf", "Kendall", "zyp"))`.
+
+## Example
+
+Extract a series for an area, compare it with a baseline, and test the
+trend. This is the run behind the figure above:
 
 ``` r
 
 library(cd)
 
-# Load the live STAC catalog and an example area of interest
 catalog <- cd_catalog()
 aoi <- sf::st_read(
   system.file("extdata", "example_aoi_kotl.gpkg", package = "cd"),
   quiet = TRUE
 )
 
-# Extract zonal mean time series
-ts <- cd_extract(catalog, aoi)
-
-# Compute baseline and anomalies
-bl <- cd_baseline(ts, baseline_years = 1951:1955)
+ts  <- cd_extract(catalog, aoi, variables = "tmean", periods = "annual")
+bl  <- cd_baseline(ts, baseline_years = 1951:1980)
 ano <- cd_anomaly(ts, bl)
-
-# Trend analysis
 trn <- cd_trend(ano, trend_start = 1951)
 
-# Reporting table
 cd_summary(trn)
-
-# Compare time windows directly
-cd_compare(ts, window_a = 1956:1960, window_b = 1951:1955)
+#> # A tibble: 1 × 7
+#>   Parameter        Period Slope Years `Total Change` Unit  `p-value`
+#>   <chr>            <chr>  <dbl> <int>          <dbl> <chr>     <dbl>
+#> 1 Mean temperature Annual 0.025    75            1.9 °C            0
 ```
 
-## Caching
+Files are cached after the first read and downloaded again only when
+they are republished. Extracted rows record which commit of cd built
+each file they came from.
 
-[`cd_extract()`](https://newgraphenvironment.github.io/cd/reference/cd_extract.md)
-and
-[`cd_crop()`](https://newgraphenvironment.github.io/cd/reference/cd_crop.md)
-cache each COG on first read, so repeated extractions, report renders,
-and vignette rebuilds pull each file from S3 **once** and read locally
-thereafter — turning recurring S3 egress into a one-time cost. Caching
-is on by default (`cache = TRUE`).
+## Learn more
 
-``` r
-
-# First call downloads; later calls read the local cache.
-ts <- cd_extract(catalog, aoi)            # cache = TRUE by default
-
-cd_cache_info()                           # where the cache lives + size
-cd_cache_clear()                          # wipe it
-cd_extract(catalog, aoi, cache = FALSE)   # bypass the cache for one call
-```
-
-Freshness is checked with a cheap HTTP HEAD (S3 ETag), so the monthly
-catalog republish is picked up automatically;
-`cd_cache_fetch(href, refresh = TRUE)` forces a re-download. For a
-fully-offline session set `options(cd.cache_revalidate = FALSE)` to
-serve cached copies without any network call.
-
-**Stopgap without the cache.** If you read COGs through GDAL directly
-(e.g. raw `terra::rast("/vsicurl/...")` outside
-[`cd_crop()`](https://newgraphenvironment.github.io/cd/reference/cd_crop.md)),
-you can cut repeat egress within a session by enabling GDAL’s
-`/vsicurl/` cache:
-
-``` r
-
-Sys.setenv(VSI_CACHE = "TRUE", VSI_CACHE_SIZE = "100000000")  # 100 MB
-Sys.setenv(GDAL_HTTP_MAX_RETRY = "3", GDAL_HTTP_RETRY_DELAY = "1")
-```
-
-This only persists within one R session; the `cd_*` cache above persists
-across sessions, which is what kills recurring report-dev egress.
-
-## Data
-
-The producer pipeline fetches ERA5-Land hourly reanalysis from [DestinE
-Earth Data Hub](https://earthdatahub.destine.eu/), derives additional
-variables (VPD, RH, soil moisture), aggregates to monthly, seasonal, and
-annual periods on a single EPSG:4326 BC grid, and writes Cloud-Optimized
-GeoTIFFs alongside a static SpatioTemporal Asset Catalog (STAC) in a
-public S3 bucket.
-
-- Catalog (JSON):
-  <https://stac-era5-land.s3.us-west-2.amazonaws.com/catalog.json>
-- Region: BC (~48–60° N, 114–140° W), 1950–2025, ~9 km native grid
-- Variables (15):
-  - **Core climate** (7): tmean, tmax, tmin, prcp, vpd, rh,
-    soil_moisture
-  - **Snow monthly natives** (4): swe, snowfall, snowmelt, snow_cover
-  - **Snow annual derived** (4): swe_max, snowfall_fraction,
-    snowmelt_doy_50, snowmelt_rate_peak
-- Periods: seasonal (DJF/MAM/JJA/SON) and annual for monthly-native
-  vars; annual only for snow_max / snowfall_fraction / snowmelt_doy_50 /
-  snowmelt_rate_peak
-
-The catalog is consumable directly outside R — for example, in QGIS via
-the STAC plugin, in `gdalcubes`, or with any STAC-aware client. The
-[`cd_catalog()`](https://newgraphenvironment.github.io/cd/reference/cd_catalog.md)
-consumer function reads the catalog URL by default.
-
-## Architecture
-
-cd has a strict producer / consumer split, kept separate so reference
-periods, baselines, and statistical choices are not baked into the
-published data:
-
-| Side | Functions | Where it runs |
-|----|----|----|
-| **Producer** | [`cd_fetch()`](https://newgraphenvironment.github.io/cd/reference/cd_fetch.md), [`cd_derive()`](https://newgraphenvironment.github.io/cd/reference/cd_derive.md), [`cd_aggregate()`](https://newgraphenvironment.github.io/cd/reference/cd_aggregate.md), [`cd_cog_write()`](https://newgraphenvironment.github.io/cd/reference/cd_cog_write.md), [`cd_stac_catalog()`](https://newgraphenvironment.github.io/cd/reference/cd_stac_catalog.md), `cd_stac_item()`, [`cd_s3_push()`](https://newgraphenvironment.github.io/cd/reference/cd_s3_push.md), plus `scripts/backfill_edh_*.py` and `scripts/pipeline_*_edh.R` | A monthly GitHub Action pulls fresh ERA5-Land data from DestinE EDH, derives variables, writes COGs, rebuilds the STAC catalog, and pushes to `s3://stac-era5-land`. Run by maintainers; users do not need to run it. |
-| **Consumer** | [`cd_catalog()`](https://newgraphenvironment.github.io/cd/reference/cd_catalog.md), [`cd_extract()`](https://newgraphenvironment.github.io/cd/reference/cd_extract.md), [`cd_crop()`](https://newgraphenvironment.github.io/cd/reference/cd_crop.md), [`cd_baseline()`](https://newgraphenvironment.github.io/cd/reference/cd_baseline.md), [`cd_anomaly()`](https://newgraphenvironment.github.io/cd/reference/cd_anomaly.md), [`cd_trend()`](https://newgraphenvironment.github.io/cd/reference/cd_trend.md), [`cd_compare()`](https://newgraphenvironment.github.io/cd/reference/cd_compare.md), [`cd_summary()`](https://newgraphenvironment.github.io/cd/reference/cd_summary.md), [`cd_plot_timeseries()`](https://newgraphenvironment.github.io/cd/reference/cd_plot_timeseries.md), [`cd_plot_comparison()`](https://newgraphenvironment.github.io/cd/reference/cd_plot_comparison.md), [`cd_periods()`](https://newgraphenvironment.github.io/cd/reference/cd_periods.md), [`cd_seasons()`](https://newgraphenvironment.github.io/cd/reference/cd_seasons.md), `cd_cache_*()` | Reads COGs directly via `/vsicurl/` — no credentials, no tile server. All baseline selection and statistical work (Mann-Kendall, Theil-Sen, Welch’s t, Mann-Whitney U) happen client-side on the cropped time series. |
-
-Anyone can compute climate departure against any baseline period, in any
-AOI, with whatever statistical test they prefer — without re-publishing
-the underlying data.
-
-## Roadmap
-
-- **BEC zone shift analysis**
-  ([\#59](https://github.com/NewGraphEnvironment/cd/issues/59)) —
-  methodology lit review for biogeoclimatic ecosystem classification
-  (BEC) shifts under climate change, alongside the existing temperature
-  / precipitation+drying / interpretation-framing methodology stacks.
-- **Vignette templates** — `peace-fwcp` and `kootenay-lake` are
-  reference implementations of the regional reporting pattern. Future
-  regional vignettes follow the same structure (trends → recent vs
-  pre-warming → spatial → per-ecoregion → snowpack) so cross-region
-  findings are directly comparable.
-
-## Links
-
+- [Climate Departure for the FWCP Peace
+  Region](https://newgraphenvironment.github.io/cd/articles/peace-fwcp.html):
+  trends, snowpack and the spatial pattern across a large northern
+  region, by ecoregion and watershed group.
+- [Climate Departure for the Kootenay Lake
+  Region](https://newgraphenvironment.github.io/cd/articles/kootenay-lake.html):
+  the same report for the southern Kootenays, where precipitation
+  changes sharply from east to west.
+- [How the Weather Has Changed in Three Northern BC
+  Watersheds](https://newgraphenvironment.github.io/cd/articles/northern-bc.html):
+  a short, plain-language story for readers with no climate background.
 - [Function
   reference](https://newgraphenvironment.github.io/cd/reference/)
-- Vignettes:
-  - [Climate Departure for the FWCP Peace
-    Region](https://newgraphenvironment.github.io/cd/articles/peace-fwcp.html)
-  - [Climate Departure for the Kootenay Lake
-    Region](https://newgraphenvironment.github.io/cd/articles/kootenay-lake.html)
-  - [How the Weather Has Changed in Three Northern BC
-    Watersheds](https://newgraphenvironment.github.io/cd/articles/northern-bc.html)
-    — a short, plain-language story for readers with no climate
-    background
 
-## Acknowledgements
+## Ecosystem
 
-This package is inspired by
+| Package | Role |
+|----|----|
+| **cd** | Climate departure: baselines, anomalies and trends, and ERA5-Land climate (this package) |
+| [wet](https://github.com/NewGraphEnvironment/wet) | Stream flow and water temperature for BC’s Freshwater Atlas |
+
+cd computes the departures from wet’s yearly station values.
+
+## Data and methods it builds on
+
+The climate data are [ERA5-Land](https://www.ecmwf.int/en/era5-land)
+([Muñoz-Sabater et
+al. 2021](https://doi.org/10.5194/essd-13-4349-2021)), produced by ECMWF
+for the Copernicus Climate Change Service and read from the [DestinE
+Earth Data Hub](https://earthdatahub.destine.eu/). The published layers
+contain modified Copernicus Climate Change Service information, under CC
+BY 4.0. Trends are Mann-Kendall tests with Theil-Sen slopes, from the
+[Kendall](https://cran.r-project.org/package=Kendall) and
+[zyp](https://cran.r-project.org/package=zyp) packages. cd’s core
+climate variables and its ecoregion and watershed framing follow
 [`bcgov/bc_climate_anomaly`](https://github.com/bcgov/bc_climate_anomaly),
-a Shiny app developed by the Province of British Columbia (Aseem Sharma
-and contributors) that visualizes monthly, seasonal, and annual climate
-anomalies for temperature, precipitation, humidity, vapor pressure, and
-soil moisture across BC. The variable set and the eco-region / watershed
-framing in `cd` follow directly from that work. `bc_climate_anomaly` is
-licensed under the Apache License 2.0.
+a Shiny app by the Province of British Columbia (Aseem Sharma and
+contributors).
+
+## Citation
+
+Cite cd with `citation("cd")`.
+
+## License
+
+MIT © New Graph Environment Ltd. See
+[LICENSE](https://newgraphenvironment.github.io/cd/LICENSE.md). The
+ERA5-Land data it ships and publishes are CC BY 4.0; see
+[NOTICE](https://newgraphenvironment.github.io/cd/NOTICE.md).
