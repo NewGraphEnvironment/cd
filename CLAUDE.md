@@ -519,7 +519,7 @@ which indexes **default branches only**: a file on a feature branch needs
 `gh api repos/<owner>/<repo>/contents/<path>?ref=<branch>`. `s3cmd ls` and `aws s3 ls` each
 list only their own provider's buckets; the backup script names the rest.
 
-*12 lines of evidence for this rule are in `conventions/agent-operations.md`.*
+*16 lines of evidence for this rule are in `conventions/agent-operations.md`.*
 
 #### The temporal version: what you build against may be about to change
 
