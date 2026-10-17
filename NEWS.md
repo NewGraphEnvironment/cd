@@ -1,3 +1,8 @@
+# cd 0.6.13 (2026-10-17)
+
+* The README is rewritten in plain language: what cd measures and the restoration decisions it informs, daily point temperatures and the baselines for any annual series, a figure and an example with a 1951–1980 baseline built from one committed script (`data-raw/readme_figure.R`). The DESCRIPTION Title and Description, the README tagline and the GitHub About now say the same thing. A new `NOTICE.md` attributes ERA5-Land (CC BY 4.0) and the BC Freshwater Atlas and ecoregion data (Open Government Licence – British Columbia) that the bundled data are built from, and the pkgdown reference index is grouped by purpose. ([#142](https://github.com/NewGraphEnvironment/cd/issues/142), [#152](https://github.com/NewGraphEnvironment/cd/pull/152))
+* `citation("cd")` uses the key `cd` and the note "Version x", so `knitr::write_bib()` keeps the entry and a report can cite `@cd`.
+
 # cd 0.6.12 (2026-10-17)
 
 * Rewrites the sentences in the Kootenay Lake article that its own data contradicts. Soil moisture is declining, not flat. The warming range comes from the three ecoregions shown. The watershed groups agree in direction but only KOTL is significant. Both articles introduce four findings. The prose counts the three ecoregions it draws. The seasonal snow caption no longer carries the Peace numbers, and the Kootenay ecoregion filter moves to the Peace article's 100 km², which draws the same three ecoregions. ([#146](https://github.com/NewGraphEnvironment/cd/issues/146), [#149](https://github.com/NewGraphEnvironment/cd/pull/149))

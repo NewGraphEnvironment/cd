@@ -1,6 +1,6 @@
 Package: cd
 Title: How far any BC watershed's climate has shifted from your chosen baseline
-Version: 0.6.12
+Version: 0.6.13
 Date: 2026-10-17
 Authors@R: c(
     person("Allan", "Irvine", , "al@newgraphenvironment.com", role = c("aut", "cre"),
