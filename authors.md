@@ -11,7 +11,7 @@
 ## Citation
 
 Source:
-[`inst/CITATION`](https://github.com/NewGraphEnvironment/cd/blob/v0.6.13/inst/CITATION)
+[`inst/CITATION`](https://github.com/NewGraphEnvironment/cd/blob/main/inst/CITATION)
 
 Irvine A (2026). *cd: How far any BC watershed's climate has shifted
 from your chosen baseline*. New Graph Environment Ltd. Version 0.6.13,
