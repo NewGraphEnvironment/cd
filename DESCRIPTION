@@ -43,6 +43,7 @@ Suggests:
     tidyterra,
     withr,
     zyp
+Config/DOI: 10.5281/zenodo.23264994
 Config/testthat/edition: 3
 Imports:
     curl,

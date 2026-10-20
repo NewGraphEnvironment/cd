@@ -4,11 +4,12 @@
 # ------------------------------------------------
  
 cff-version: 1.2.0
-message: 'To cite package "cd" in publications use:'
+message: If you use cd, please cite it by its DOI, 10.5281/zenodo.23264994.
 type: software
 license: MIT
 title: 'cd: How far any BC watershed''s climate has shifted from your chosen baseline'
 version: 0.6.13
+doi: 10.5281/zenodo.23264994
 abstract: 'Measures how far the climate of any area in British Columbia has moved
   from a chosen reference period: air temperature, precipitation, humidity, soil moisture
   and snow, by season and year since 1950, with trends (Mann-Kendall and Theil-Sen).
@@ -35,6 +36,7 @@ preferred-citation:
   url: https://newgraphenvironment.github.io/cd/
   repository-code: https://github.com/NewGraphEnvironment/cd
   license: MIT
+  doi: 10.5281/zenodo.23264994
   type: software
   publisher:
     name: New Graph Environment Ltd.
