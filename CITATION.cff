@@ -22,7 +22,6 @@ authors:
   email: al@newgraphenvironment.com
   orcid: https://orcid.org/0000-0002-3495-2128
   affiliation: New Graph Environment Ltd.
-- name: New Graph Environment Ltd.
 preferred-citation:
   title: 'cd: How far any BC watershed''s climate has shifted from your chosen baseline'
   authors:
@@ -31,7 +30,6 @@ preferred-citation:
     email: al@newgraphenvironment.com
     orcid: https://orcid.org/0000-0002-3495-2128
     affiliation: New Graph Environment Ltd.
-  - name: New Graph Environment Ltd.
   version: 0.6.13
   date-released: '2026-10-17'
   url: https://newgraphenvironment.github.io/cd/
