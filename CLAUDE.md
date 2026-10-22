@@ -123,14 +123,14 @@ Configurable via `cd_seasons()`. Default: standard meteorological (DJF, MAM, JJA
 - `scripts/backfill_edh_snow.py` — 4 snow natives + 4 derived (#48); handles ECMWF accumulation reset
 - `scripts/backfill_edh_daily.py` — daily local-day tmean/tmax/tmin cube (#116); `--check` prints `latest_complete=YYYY` for STEP D; `--rewrite` re-tags years on disk (#124)
 - `scripts/test_lib.py` — offline tests for `_lib.py` (`uv run scripts/test_lib.py`); local only, no workflow runs it
+- `scripts/test_lib.R` — offline tests for `_lib.R` (`Rscript scripts/test_lib.R`); same footing
 - `scripts/_lib.py` — shared safeguards (single-instance pgrep guard, exponential backoff, atomic write, timestamped logging, EDH token loader)
 - `scripts/pipeline_stage3_edh.R` — monthly TIFs → COGs + STAC + S3 push; refuses to build the catalog unless this run wrote all 59 COGs (and the COG dir holds nothing else), because a partial monthly dir (e.g. tmax/tmin only, after a regen) would otherwise replace the live catalog
 - `scripts/pipeline_update_edh.R` — monthly GH Action entry point (incremental); the same all-59 guard before STEP 5 (#89)
 - `scripts/qa_monthly.R` — month-end QA cross-check
 
 **Misc:**
-- `scripts/rag_snow_methodology_build.R` / `rag_snow_methodology_query.R` — ragnar lit review (#54)
-- `scripts/rag_departure_framing_build.R` — ragnar store for departure framing
+- `scripts/rag_<topic>_build.R` / `rag_<topic>_query.R` — ragnar lit-review stores, one pair per topic: `snow_methodology` (#54), `temp_methodology`, `precip_drying_methodology`, `interpretation_framing`, and `departure_framing` (build only)
 - Naming: `rag_<topic>_<verb>.R` (`noun_verb`, mirrors the `cd_*` function convention)
 - `data-raw/make_hexsticker.R` — hex sticker (reads from DESCRIPTION)
 - `data-raw/readme_figure.R` — the README figure and the `cd_summary()` output pasted under its example, from one live run; its marked block is the README example verbatim, so re-run it and repaste when the catalog gains a year (#142)
@@ -167,6 +167,7 @@ The two-vignette template is the foundation for additional regional reporting ap
 - **A single 403 from EDH at STEP 0 is not evidence of anything — re-dispatch before diagnosing.** Measured `2026-09-07`: the weekly dry-run died on `EDH rejected the token (HTTP 403)` at 12:00 UTC; a workflow_dispatch at 16:51 UTC, same secret and same commit, got **HTTP 200**. Transient. Before that re-run, two plausible causes had been argued from the log alone — an expired token (wrong: the standard key never expires and the classic key had seven months left) and free-tier quota exhaustion (wrong: quota resets on the 1st and would not clear mid-month). The probe makes this worse by collapsing every status >= 400 into one message, so 401, 403 and 404 are indistinguishable (#83) — and it has no retry, so one blip auto-files a failure issue. A dry-run costs about two minutes and one HEAD request; run it first.
 - **A weekly dry-run cron is cheap insurance.** It proves the plumbing between monthly live runs *and* keeps the workflow active — GitHub auto-disables scheduled workflows after 60 days of repo inactivity, a silent failure no notification catches.
 - **Close the auto-filed failure issue when the cause is fixed.** `climate-update.yml` dedups by label: it comments on *any* open issue tagged `climate-update-failure` and only opens a new one when none exists. A resolved-but-open thread therefore captures every future incident — a November failure lands as a comment on an August ticket describing a fixed cause, which reads as old news and gets skimmed. Deduping is the right design; it just assumes the thread is closed on resolution, and nothing enforces that. Caught in #79, which stayed open after #78 fixed its root cause.
+- **A local `R CMD check` needs every Suggests package installed, or `_R_CHECK_FORCE_SUGGESTS_=false`.** `ecmwfr` is a Suggests entry for the CDS fallback (`cd_fetch()`) and `aws.s3` one that no code calls (the S3 push shells out to the CLI), so nothing on a consumer machine pulls either in, and a check there stops at "checking package dependencies" before any test runs. Set the variable for a quick check, or install the two with `pak` when the tests that exercise them should run (measured 2026-10-01, R 4.5.2, #100).
 
 
 <!-- BEGIN SOUL CONVENTIONS — DO NOT EDIT BELOW THIS LINE -->
