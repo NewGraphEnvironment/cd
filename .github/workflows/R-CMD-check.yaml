@@ -43,6 +43,8 @@ jobs:
         with:
           upload-snapshots: true
           build_args: 'c("--no-manual")'
+          # WARNINGs that predate this workflow (#155); back to the default once they are cleared.
+          error-on: '"error"'
 
       # A skip is invisible behind a green tick, so print every skip block the tests wrote.
       - name: Report skipped tests
