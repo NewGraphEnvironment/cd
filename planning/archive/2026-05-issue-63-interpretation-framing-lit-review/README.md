@@ -69,7 +69,7 @@ philosophy.
 ## Notable execution wrinkles
 
 - **Lessons from #58 + #61 applied cleanly.** No `Citation Key:`
-  overrides in `extra` (BBT auto-derives per `soul#43`). All 4
+  overrides in `extra` (BBT auto-derives per an internal issue). All 4
   papers had ≥2 individual creators per CrossRef (no Pepin-style
   PATCH needed). macOS auto-restart fired without user prompt and
   all 4 BBT keys captured first try (~30 s wait sufficient).

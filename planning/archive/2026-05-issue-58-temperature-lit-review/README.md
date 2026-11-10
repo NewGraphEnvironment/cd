@@ -70,7 +70,7 @@ here at the time of merge).
 
 ## Side-channel issues filed during this work
 
-- **`soul#43`** — convention update for `/lit-search` + `/zotero-api`
+- **an internal issue** — convention update for `/lit-search` + `/zotero-api`
   skills: citation keys must be BBT-auto-derived, never manually set
   in the `extra` field. Caught when the user reviewed my initial
   Phase 2 adds; PATCH'd all 10 to clear the override. Future runs

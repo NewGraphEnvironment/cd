@@ -28,7 +28,7 @@ Missing safeguards to add on this branch:
 ### Layer 2: extract as a soul convention
 
 Once Layer 1 lands, propagate the pattern to the
-[soul](https://github.com/NewGraphEnvironment/soul) repo as a
+soul repo as a
 convention.
 
 ## State found during plan-mode exploration

@@ -9,7 +9,7 @@ only keeps a small in-memory chunk cache per session with no on-disk
 persistence across R sessions, so every report render, appendix knit,
 or vignette build re-pulls the full COG for each AOI from scratch. This
 is the likely dominant driver of S3 egress (~$17 / ~290 GB in May 2026,
-NewGraphEnvironment/rtj#168). The fix is half-built: `R/cd_cache.R` ships
+an internal issue). The fix is half-built: `R/cd_cache.R` ships
 `cd_cache_path()` / `cd_cache_clear()` / `cd_cache_info()` but nothing in
 `R/` calls them — the module is orphaned.
 

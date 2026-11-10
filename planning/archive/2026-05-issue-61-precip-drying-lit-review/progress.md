@@ -25,11 +25,11 @@
   Marvel LLNL preprint); 7 papers POSTed to NewGraphEnvironment/
   climate (parent itemKey + attach itemKey table in findings.md);
   3 fresh PDF uploads + 4 md5-dedupes. No `Citation Key:` overrides
-  (soul#43 + #58 lesson applied). All 7 items have ≥2 creators
+  (an internal issue + #58 lesson applied). All 7 items have ≥2 creators
 - **User action pending: restart Zotero desktop** so BBT generates
   citation keys for the 7 new items
 - Auto-restarted Zotero via osascript+open (verified, ~30s
-  sufficient); pattern documented in soul#43. All 7 BBT keys
+  sufficient); pattern documented in an internal issue. All 7 BBT keys
   captured cleanly
 - Phase 3 done: scripts/rag_precip_drying_methodology_build.R
   cloned from temp build script with 7-paper pdf_specs map; built

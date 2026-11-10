@@ -77,7 +77,7 @@ test_that("cd_cog_write rejects malformed tags", {
 
 test_that("cd_cog_write is byte-deterministic for the same input and tags", {
   # A checksum is only informative if an unchanged input reproduces it
-  # (NewGraphEnvironment/sred#39). The run-time tag is the only intended
+  #. The run-time tag is the only intended
   # difference between two builds.
   r <- terra::rast(nrows = 20, ncols = 30, nlyrs = 3,
                    vals = seq_len(20 * 30 * 3) / 7)

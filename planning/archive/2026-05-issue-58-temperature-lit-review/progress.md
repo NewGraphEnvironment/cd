@@ -19,7 +19,7 @@
 - Phase 2 done: 10 papers POSTed to NewGraphEnvironment/climate via
   Web API; PDFs attached via S3 (3 fresh uploads, 7 md5-deduped).
   PATCH'd all 10 to clear manual Citation Key override per BBT-auto-
-  derived NGE convention (soul#43 filed to update lit-search +
+  derived NGE convention (an internal issue filed to update lit-search +
   zotero-api skills). 2 PDFs needed OCR (Karl 93, Richter 05).
   Parent itemKey + attachKey table in findings.md
 - **User action pending: restart Zotero desktop** so BBT generates

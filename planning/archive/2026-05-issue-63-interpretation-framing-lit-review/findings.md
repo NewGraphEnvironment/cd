@@ -75,8 +75,8 @@ canonical) is the template. Reads PDFs from
    hardcoded map, local PDF cache, Ollama embeddings, `noun_verb`
    naming.
 4. **No `Citation Key:` overrides** in `extra` — BBT auto-derives
-   per NGE convention (soul#43).
-5. **Auto-restart Zotero** for BBT key generation per soul#43
+   per NGE convention.
+5. **Auto-restart Zotero** for BBT key generation per an internal issue
    pattern; no need to prompt user.
 6. **BBT 9.x** already active for Z8/9 from #58 compat fix.
 
@@ -147,7 +147,7 @@ perception of cumulative change.
 4 new papers POSTed to `NewGraphEnvironment/climate` (key
 `8MH9LCC9`) via Web API with PDFs attached. Tags
 `interpretation-framing-methodology` + `cd-issue-63`. No `Citation
-Key:` overrides in `extra` (per soul#43 + #58/#61 lessons). All 4
+Key:` overrides in `extra` (per an internal issue + #58/#61 lessons). All 4
 items have ≥2 individual creators per CrossRef.
 
 | File label | Parent itemKey | Attach itemKey | n creators | PDF | BBT citation key |
@@ -157,7 +157,7 @@ items have ≥2 individual creators per CrossRef.
 | `hawkins_sutton2012` | `HZNAB47T` | `NG4EZK8V` | 2 | uploaded | `hawkins_sutton2012Timeemergence` |
 | `hansen_etal2012` | `9ICS93S7` | `S7JUXCGB` | 3 | exists | `hansen_etal2012Perceptionclimate` |
 
-Auto-restart pattern (per soul#43) used for BBT key generation —
+Auto-restart pattern (per an internal issue) used for BBT key generation —
 worked first try, all 4 keys clean.
 
 ## Methodology quotes by topic (Phases 4 + 5)

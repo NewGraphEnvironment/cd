@@ -12,7 +12,7 @@ Follow NewGraphEnvironment/stac_airphoto_bc#30 and `stac_floodplains_bc` (`item_
 - **The daily cube is not in `catalog.json`** (`cd_stac_catalog()` lists non-recursively). It needs its own manifest, e.g. `daily/manifest.json` with key, size and multihash per file, written by STEP D and by any local backfill push.
 - **Run provenance written as GDAL tags before the COG write**, not with `r+` afterwards: cd version and SHA, run time. For the monthly COGs that is `cd_cog_write()`; for the daily cube it is `write_cog()` in `scripts/_lib.py`. Take the hash after tagging, because the tags are part of the bytes.
 - **Re-hash on every publish.** STEP 4 appends a year to every monthly COG each year, and STEP D adds a daily year, so `pipeline_update_edh.R` and `pipeline_stage3_edh.R` both regenerate checksums. Before the sync, a validator in `scripts/_lib.R` (beside `publish_problems()` / `catalog_problems()`) recomputes them from the local files and refuses a mismatch.
-- **Determinism check.** Write one unchanged input twice through `cd_cog_write()` and through `write_cog()`, and compare the bytes. If GDAL embeds anything that varies by run, a checksum churns on every rebuild and carries no information (NewGraphEnvironment/sred#39).
+- **Determinism check.** Write one unchanged input twice through `cd_cog_write()` and through `write_cog()`, and compare the bytes. If GDAL embeds anything that varies by run, a checksum churns on every rebuild and carries no information.
 
 ## Sequencing
 

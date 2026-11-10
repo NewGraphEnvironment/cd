@@ -3,7 +3,7 @@
 Wired the orphaned `cd_cache` module into the consumer COG read path so
 repeated extractions, report renders, and vignette rebuilds read each COG
 from a local on-disk cache instead of re-pulling from S3 every call —
-killing the dominant recurring S3 egress driver (rtj#168). New exported
+killing the dominant recurring S3 egress driver. New exported
 `cd_cache_fetch()` downloads a remote http(s) COG once (filename =
 `hash(url)` + ext, sidecar `.meta` JSON with the S3 ETag/size/timestamp),
 revalidates freshness with a cheap HTTP HEAD (ETag, falling back to

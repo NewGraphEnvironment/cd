@@ -12,14 +12,14 @@
 - Carrying forward 5 lessons from #58 + 1 from #61:
   1. BBT 9.x for Zotero 8/9 (compat split)
   2. No `Citation Key:` overrides in `extra` (BBT auto-derives,
-     soul#43)
+     an internal issue)
   3. PATCH individual authors after Web API POST when CrossRef
      returns only corporate authorship (Pepin 2015 lesson)
   4. OCR image-only scans before Zotero attach (Karl 93 + Richter
      & Kolmes 05 + Marvel 19 lessons)
   5. `noun_verb` naming for new rag scripts
   6. Auto-restart Zotero via osascript+open+30s for BBT key gen,
-     no manual prompt needed (#61 lesson, in soul#43)
+     no manual prompt needed (#61 lesson, in an internal issue)
 - Phase 1 done: 4 new candidate papers confirmed (DOI + OA);
   Wiken/Demarchi BC-ecoregion gov refs dropped from formal scope
   (well-established convention, vignette can describe in prose).

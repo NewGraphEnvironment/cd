@@ -59,7 +59,7 @@ Shipped 2 of the 4 candidate angles:
 ## Phase 6: PR
 
 - [ ] Branch per issue convention, PR to main with `Fixes #39`
-- [ ] SRED cross-ref in PR body (`Relates to NewGraphEnvironment/sred-2025-2026#23`)
+- [ ] SRED cross-ref in PR body (`Relates to an internal issue`)
 - [ ] Archive this PWF dir to `planning/archive/` on merge
 
 ## Success criteria

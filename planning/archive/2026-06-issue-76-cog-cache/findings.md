@@ -57,7 +57,7 @@ documented here as the issue's "second knit does ~zero egress" check.
 Sidecar `.meta` captured the real S3 ETag (`bb297f3a…`) and
 Content-Length (5518610). So a repeat report/vignette build drops from
 N × full-COG egress to N × ~1 KB HEAD (or zero with revalidate off).
-Confirms the fix kills the recurring egress driver in rtj#168.
+Confirms the fix kills the recurring egress driver in an internal issue.
 
 ## Issue context
 
@@ -72,12 +72,12 @@ render, appendix knit, or vignette build re-pulls the full overviews +
 tiles for each AOI from scratch. Multiple dev iterations × multiple AOIs
 × all variables/periods → hundreds of GB of repeated downloads. This is
 the likely dominant driver of S3 egress (~$17 / ~290 GB May 2026,
-rtj#168). Self-inflicted, recurring, avoidable.
+an internal issue). Self-inflicted, recurring, avoidable.
 
 `R/cd_cache.R` ships the cache helpers but nothing in `R/` calls them.
 Wiring it into the read path turns repeated builds from network pulls
 into local reads.
 
 References:
-- NewGraphEnvironment/rtj#168 — account-wide S3 cost guardrails (this is
+- An internal issue — account-wide S3 cost guardrails (this is
   the source-side fix for the egress that issue alarms on).

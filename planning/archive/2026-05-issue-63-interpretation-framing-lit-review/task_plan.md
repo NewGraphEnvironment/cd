@@ -59,7 +59,7 @@ Already in `climate` collection (no re-add): `mora_etal2013projectedtiming`,
 - [x] For each of 4 candidates: CrossRef metadata fetch → POST to
       Web API with `"collections": ["8MH9LCC9"]`, tags
       `interpretation-framing-methodology` + `cd-issue-63`. No
-      `Citation Key:` override in `extra` (per soul#43 + #58/#61
+      `Citation Key:` override in `extra` (per an internal issue + #58/#61
       lesson). All 4 items created with ≥2 individual creators
 - [x] PDF acquisition: 2 fetched via curl (Hansen 2012 harvard.edu,
       Livezey 2007 meto.umd.edu), 2 user-provided via ResearchGate
@@ -123,7 +123,7 @@ Already in `climate` collection (no re-add): `mora_etal2013projectedtiming`,
 - [ ] `/code-check` clean (lint + tests) before each commit
 - [ ] Atomic commits — Phase 1 search log, Phase 2 Zotero adds
       summary + key capture, Phases 3–5 build/query/findings
-- [ ] PR with `Fixes #63`. SRED tag (`Relates to NewGraphEnvironment/sred-2025-2026#23`)
+- [ ] PR with `Fixes #63`. SRED tag (`Relates to an internal issue`)
       in PR body, **not** issue
 - [ ] After merge: `/planning-archive` → archived findings.md becomes
       long-lived methodology reference. Bump v0.2.3 → v0.2.4
@@ -159,7 +159,7 @@ Already in `climate` collection (no re-add): `mora_etal2013projectedtiming`,
 - Vignette edits forbidden on this branch
 - Ollama prerequisite: `ollama serve` + `ollama pull nomic-embed-text`
 - BBT 9.x already active; auto-restart pattern documented in
-  soul#43 — apply directly without prompting user
+  an internal issue — apply directly without prompting user
 - After this issue lands, the 3-split is complete; flag #59 (BEC
   zone shifts) as the natural next pickup if reporting visibility
   warrants it

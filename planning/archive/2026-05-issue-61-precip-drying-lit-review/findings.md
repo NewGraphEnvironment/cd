@@ -86,7 +86,7 @@ without re-adding)
 4. **Mirror existing rag-build script structure** verbatim — hardcoded
    map, local PDF cache, Ollama embeddings, `noun_verb` naming.
 5. **No `Citation Key:` overrides** in `extra` — BBT auto-derives
-   per NGE convention (soul#43). For corporate-author papers (cf
+   per NGE convention. For corporate-author papers (cf
    Pepin 2015 in #58), PATCH individual authors after Web API POST
    so BBT doesn't fall back to title-key.
 6. **BBT version compat** — Zotero 8/9 needs BBT 9.x. If a BBT
@@ -176,7 +176,7 @@ text-layered, gitignored.
 7 papers POSTed to `NewGraphEnvironment/climate` (key `8MH9LCC9`)
 via Web API with PDFs attached. CrossRef-driven metadata; tags
 `precip-drying-departure-methodology` + `cd-issue-61`. No `Citation
-Key:` overrides in `extra` (per soul#43 + #58 lesson). All 7 papers
+Key:` overrides in `extra` (per an internal issue + #58 lesson). All 7 papers
 have at least 2 individual creators per CrossRef; no corporate-only
 authorship to PATCH around (cf Pepin 2015 in #58).
 
@@ -202,7 +202,7 @@ uniquely identified by DOI; year discrepancy is cosmetic and shows
 up only in the citation key string.
 
 **Auto-restart pattern verified.** Used the macOS auto-restart
-recipe added to soul#43:
+recipe added to an internal issue:
 ```bash
 osascript -e 'tell application "Zotero" to quit'
 sleep 3

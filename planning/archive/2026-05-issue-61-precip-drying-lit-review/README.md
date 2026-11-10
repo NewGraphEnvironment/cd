@@ -64,13 +64,13 @@ archived here at the time of merge).
 ## Notable execution wrinkles (lessons applied from #58)
 
 - **No `Citation Key:` overrides in `extra`** — BBT auto-derives per
-  NGE convention (`soul#43`). All 7 items have ≥2 individual
+  NGE convention (an internal issue). All 7 items have ≥2 individual
   creators per CrossRef, so no Pepin-style corporate-author PATCH
   was needed.
 - **macOS Zotero auto-restart automated** for BBT key generation:
   `osascript -e 'tell application "Zotero" to quit'; sleep 3; open
   -a Zotero; sleep 30`. Verified working for 7 items; ~30 s wait
-  was sufficient. Pattern added to `soul#43` for future runs.
+  was sufficient. Pattern added to an internal issue for future runs.
 - **Trenberth 2014 BBT key** came back as
   `trenberth_etal2013Globalwarming` because CrossRef issued =
   2013-12-17 online (print issue 2014-01). Left as-is per the
@@ -82,7 +82,7 @@ archived here at the time of merge).
 
 ## Side-channel update during this work
 
-- **`soul#43` body edited** (not commented) to add three follow-up
+- **an internal issue body edited** (not commented) to add three follow-up
   wrinkles: corporate-author guard (Pepin 2015 case from #58),
   the macOS auto-restart bash recipe, and the BBT plugin compat-
   split note (BBT 8.x↔Z7, BBT 9.x↔Z8/9).

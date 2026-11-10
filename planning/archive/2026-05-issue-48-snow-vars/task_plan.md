@@ -221,7 +221,7 @@ Target release: **v0.2.0** (minor bump — new variables and a new
       Phase 3 QA, Phase 4 registry/anomaly, Phase 5 vignette, Phase 6
       GHA/docs.
 - [ ] PR with `Fixes #48`, SRED ref
-      (`Relates to NewGraphEnvironment/sred-2025-2026#23`).
+      (`Relates to an internal issue`).
 - [ ] Bump DESCRIPTION 0.1.6 → 0.2.0; NEWS entry; tag `v0.2.0`.
 
 ## Phase 8 — KOTL decision (#49)

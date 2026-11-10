@@ -191,7 +191,7 @@ field; per NGE convention BBT keys are auto-derived not manually
 overridden, so all 10 items were PATCHed to clear the `extra` field
 override. **BBT will generate the actual citation keys after Zotero
 desktop restart** (sync alone doesn't trigger key generation for
-Web-API-created items per CLAUDE.md). soul#43 filed to update
+Web-API-created items per CLAUDE.md). An internal issue filed to update
 `/lit-search` + `/zotero-api` skills so future runs avoid the
 override pattern.
 
@@ -223,7 +223,7 @@ S. N. Williamson, D. Q. Yang). BBT then regenerated to
 **BBT plugin compat note:** During Phase 2 a BBT 8.x → BBT 9.x update
 was needed because Zotero (now on Z9) had auto-disabled BBT 8.0.25 as
 incompatible. BBT 9.x line supports Zotero 8/9. After update + Pepin
-authors PATCH, all 10 keys regenerated cleanly. soul#43 is the
+authors PATCH, all 10 keys regenerated cleanly. An internal issue is the
 already-filed convention issue; consider folding a "if BBT is disabled,
 re-install matching version" note there too.
 

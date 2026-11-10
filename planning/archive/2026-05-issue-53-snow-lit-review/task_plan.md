@@ -125,7 +125,7 @@ Starting candidate list:
 - [ ] Atomic commits — Phase 1 search log, Phase 2 Zotero adds summary,
       Phase 3 rag-build script, Phases 4–5 findings.
 - [ ] PR with `Fixes #53`. SRED ref in PR body
-      (`Relates to NewGraphEnvironment/sred-2025-2026#23`) — not in
+      (`Relates to an internal issue`) — not in
       issue body per memory.
 - [ ] After merge: `/planning-archive`. Archived findings.md becomes
       the long-lived methodology reference.

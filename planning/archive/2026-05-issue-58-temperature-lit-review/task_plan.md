@@ -88,7 +88,7 @@ Starting candidate list (will refine):
 - [x] Auto-attach all 10 PDFs via 4-step S3 upload (3 fresh uploads,
       7 deduped via md5)
 - [x] PATCH all 10 items to clear `Citation Key: ...` override from
-      `extra` field — BBT auto-derives keys per NGE convention; soul#43
+      `extra` field — BBT auto-derives keys per NGE convention; an internal issue
       filed to update `/lit-search` + `/zotero-api` skills
 - [x] Captured per-paper `parent itemKey + attachment key` in
       `findings.md`
@@ -153,7 +153,7 @@ Starting candidate list (will refine):
 - [ ] Atomic commits — Phase 0 rename, Phase 1 search log, Phase 2
       Zotero adds summary, Phase 3 build script, Phases 4–5
       findings.md
-- [ ] PR with `Fixes #58`. SRED tag (`Relates to NewGraphEnvironment/sred-2025-2026#23`)
+- [ ] PR with `Fixes #58`. SRED tag (`Relates to an internal issue`)
       in PR body, **not** issue
 - [ ] After merge: `/planning-archive` → archived findings.md becomes
       long-lived methodology reference. Bump v0.2.1 → v0.2.2

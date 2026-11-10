@@ -80,7 +80,7 @@ helper that codifies the on-disk pattern. Soul convention extraction
 - [ ] Atomic commits: `_lib.py` + `backfill_edh_all.py` refactor (1),
       `backfill_edh_tmax_tmin.py` port (2), `backup_before_delete` (3).
 - [ ] PR with `Fixes #38`, SRED ref in body
-      (`Relates to NewGraphEnvironment/sred-2025-2026#23`).
+      (`Relates to an internal issue`).
 
 ## Validation
 

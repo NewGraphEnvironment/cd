@@ -13,7 +13,7 @@
 #   - Zotero desktop running with BBT plugin enabled
 #       BBT 9.x for Zotero 8/9; BBT 8.x for Zotero 7
 #       (if BBT shows "disabled by Zotero" in the plugin manager,
-#       reinstall the matching version per soul#43)
+#       reinstall the matching version per an internal issue)
 #   - All [@key] markers in every vignette must resolve to items
 #     in the NewGraphEnvironment Zotero library
 #

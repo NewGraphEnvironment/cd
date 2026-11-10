@@ -106,7 +106,7 @@ namespace.
 - [ ] `/code-check` clean on each commit.
 - [ ] Atomic commits per phase.
 - [ ] PR with `Fixes #56`. SRED ref in PR body
-      (`Relates to NewGraphEnvironment/sred-2025-2026#23`) — not in
+      (`Relates to an internal issue`) — not in
       issue body per memory.
 - [ ] Bump DESCRIPTION 0.2.0 → 0.2.1; NEWS entry; tag v0.2.1.
 

@@ -63,7 +63,7 @@ Starting candidate list (will refine):
 - [x] For each of 7 candidates: CrossRef metadata fetch → POST to
       Web API with `"collections": ["8MH9LCC9"]`, tags
       `precip-drying-departure-methodology` + `cd-issue-61`. No
-      `Citation Key:` override in `extra` (per soul#43 + #58 lesson).
+      `Citation Key:` override in `extra` (per an internal issue + #58 lesson).
       All 7 items created with ≥2 individual creators (no Pepin-style
       fallback risk)
 - [x] PDF acquisition: 4 fetched via curl (Williams emnrd.nm.gov,
@@ -78,7 +78,7 @@ Starting candidate list (will refine):
       gitignored, text-layered, ready for Phase 3 ingestion
 - [x] **Auto-restarted Zotero** via osascript+open (~30 s wait); BBT
       generated all 7 citation keys cleanly. Pattern documented and
-      added to soul#43 for the /lit-search + /zotero-api skills.
+      added to an internal issue for the /lit-search + /zotero-api skills.
       Final 7 BBT keys mapped in findings.md Phase 2 table
 
 ## Phase 3 — Build ragnar DuckDB store
@@ -130,7 +130,7 @@ Starting candidate list (will refine):
 - [ ] `/code-check` clean (lint + tests) before each commit
 - [ ] Atomic commits — Phase 1 search log, Phase 2 Zotero adds
       summary, Phase 3 build script, Phases 4–5 findings.md
-- [ ] PR with `Fixes #61`. SRED tag (`Relates to NewGraphEnvironment/sred-2025-2026#23`)
+- [ ] PR with `Fixes #61`. SRED tag (`Relates to an internal issue`)
       in PR body, **not** issue
 - [ ] After merge: `/planning-archive` → archived findings.md becomes
       long-lived methodology reference. Bump v0.2.2 → v0.2.3

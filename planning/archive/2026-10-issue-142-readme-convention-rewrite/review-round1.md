@@ -74,5 +74,5 @@ data-raw/readme_figure.R
 | pkgdown Cache desc "downloaded once" | Fixed: same wording as README |
 | `cd_fetch`/`cd_derive` under "Building the published data" | Confirmed (only a comment in `backfill_edh_all.py:207` names `cd_derive`); split into "Publishing the catalog" and "Downloading from the Copernicus Climate Data Store" |
 | "cd's variables follow bc_climate_anomaly" | Fixed: "core climate variables" |
-| `citation("cd")` lists NGE as organization, CFF as author | Accepted: `inst/CITATION` pattern shared with link; cross-repo rule in soul#426 territory |
+| `citation("cd")` lists NGE as organization, CFF as author | Accepted: `inst/CITATION` pattern shared with link; cross-repo rule in an internal issue territory |
 | NOTICE: example_climate.tif not cd's ERA5-Land; BC data unattributed | Fixed: example_climate.tif removed from the ERA5-Land list; FWA + ecoregions attributed under OGL-BC (licences read from the BC Data Catalogue API). GNS towns and DRA highways are "Access Only", and bc_climate_anomaly has no licence: filed #151 |

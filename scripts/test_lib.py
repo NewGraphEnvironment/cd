@@ -335,8 +335,8 @@ def cube_year(seed: int = 124) -> xr.DataArray:
 def cog_tags_and_determinism() -> bool:
     """Provenance survives the COG copy, and is the only thing that varies.
 
-    A checksum carries information only if an unchanged input reproduces it
-    (NewGraphEnvironment/sred#39); and a re-tag through read_cog_days() must
+    A checksum carries information only if an unchanged input reproduces it;
+    and a re-tag through read_cog_days() must
     give the same bytes as the original write, or --rewrite changed data.
     """
     import tempfile
