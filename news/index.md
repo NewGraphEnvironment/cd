@@ -861,8 +861,8 @@
   drying + Williams (2020) anthropogenic-warming attribution of NA
   megadrought + Trenberth (2014) Penman-Monteith drought framework.
   Macos Zotero auto-restart pattern (`osascript quit` + `open -a` + 30 s
-  wait) automated the BBT key generation step end-to-end (added to
-  `soul#43` for `/lit-search` + `/zotero-api`).
+  wait) automated the BBT key generation step end-to-end (added to an
+  internal issue for `/lit-search` + `/zotero-api`).
   ([\#62](https://github.com/NewGraphEnvironment/cd/pull/62))
 
 ## cd 0.2.2 (2026-05-05)
